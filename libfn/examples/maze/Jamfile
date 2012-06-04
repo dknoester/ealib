@@ -1,0 +1,7 @@
+exe maze
+    : src/main.cpp
+        src/tAgent.cpp
+        src/tGame.cpp
+        /libfn//libfn
+    : <include>./include
+    ;

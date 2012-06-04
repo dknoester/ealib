@@ -1,0 +1,211 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf320
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue255;}
+\margl1440\margr1440\vieww12560\viewh16600\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\b\fs24 \cf0 HOW TO INSTALL BOOST\
+(The Right Way)\
+\
+========
+\b0 \
+Why do you need to install Boost like this?  Because very few package management systems package the Boost libraries AND Boost.Build correctly.  If you don't care about Boost.Build, and/or are feeling adventurous, feel free to explore MacPorts (OS X) or the package repositories appropriate for your platform.  Directions in this document are for OS X and Ubuntu.\
+\
+
+\b Conventions:
+\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 Text like this
+\f0  refers to something that is case & punctuation specific, for example, a path like "/usr/local".\
+\
+
+\f1 $ Text like this, delimited by $-signs, should be executed in a terminal $
+\f0   For example, 
+\f1 $ ./b2 $ 
+\f0 means to type "./b2" in a terminal (command prompt, a la bash), and press enter to execute the "b2" command.\
+\
+Blue text, \cf2 like this, \cf0 is a URL.\
+\
+========\
+PREREQUISITES:\
+- You need a working development environment.  On OS X, this is Xcode, which can be downloaded from the App Store.  On Ubuntu, this can be done by 
+\f1 $ sudo apt-get install build-essential $
+\f0 .\
+\
+- Decide where you are going to install the Boost libraries.  This is called the 
+\i\b prefix
+\i0\b0 .  The default prefix on Unix-like systems is 
+\f1 /usr/local
+\f0 .  If you don't have root permissions on your system, you will need to use your home directory as the prefix.  In the rest of this document, wherever you see 
+\i prefix
+\i0 , either: omit it if you are using the default, or replace it with your home directory.  For example, 
+\f1 $ ./bootstrap --prefix=
+\f2\i prefix 
+\f1\i0 $
+\f0  means execute "./bootstrap.sh" in a terminal if you are using the default location, or execute "./bootstrap.sh --prefix=$\{HOME\}" in a terminal if you are using your home directory.  Note that "$\{HOME\}" is shorthand for your home directory on Unix-like systems.\
+\
+- If you are installing to 
+\f1 /usr/local
+\f0 , you'll need to have root permissions.  In the directions that follow, wherever you see 
+\f1 sudo
+\f0 , if you are NOT installing to 
+\f1 /usr/local,
+\f0  you should NOT include the sudo command.  E.g., if you are installing to your home directory and you see 
+\f1 $ sudo ./b2 install $
+\f0 , you should execute "./b2 install" instead of "sudo ./b2 install".\
+\
+========\
+\
+1) Download the "Current Release" version of the Boost libraries.  At the time of this writing, this was 1.48, which could be downloaded from: \cf2 http://www.boost.org/users/download\cf0 .  Un-(zip,tar,7z) the file to a temporary location, and change directory (cd) to the resulting boost directory.\
+\
+2) Build the Boost libraries\
+\
+	A) OS X\
+
+\f1 	$ ./bootstrap.sh --prefix=
+\f2\i prefix 
+\f1\i0 --with-python-root=/System/Library/Frameworks/Python.framework/Versions/Current --with-toolset=darwin $\
+	$ ./b2 --without-mpi $\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 	\
+	B) Ubuntu\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 	$ ./bootstrap.sh --prefix=
+\f2\i prefix
+\f1\i0  --with-toolset=gcc $\
+	$ ./b2 --without-mpi $\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+This step should take a while.  When it's done, you should see something like this:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 The Boost C++ Libraries were successfully built!\
+\
+The following directory should be added to compiler include paths:\
+...      \
+The following directory should be added to linker library paths:\
+...\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+If you see something different, something went wrong.  Try googling the error message.  DON'T CONTINUE WITH THESE DIRECTIONS UNTIL THIS STEP WORKS.\
+\
+2) Install the Boost libraries\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 	$ sudo ./b2 --without-mpi install $\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 	\
+You should see a large list scroll by, and then something like "\'85 updated X targets\'85" where X is probably a largish number.  To make sure there were no errors, make sure that 
+\f1 $ echo $? $
+\f0  responds with 
+\f1 0
+\f0 .\
+\
+3) Installing Boost.Build\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 	$ cd tools/build/v2 $\
+	$ ./bootstrap.sh $\
+	$ sudo ./b2 install --prefix=
+\f2\i prefix
+\f1\i0  $
+\f0 \
+\
+4) Make the Boost libraries available to your own jamfiles.\
+
+\f1 	$ sudo cp contrib/boost.jam 
+\f2\i prefix
+\f1\i0 /share/boost-build/build $\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+5) Create a site-config.jam file.\
+	Put this:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 		using 
+\f2\i toolset
+\f1\i0  ;\
+		import boost ;\
+		boost.use-project ;\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 	in a file named 
+\f2\i prefix
+\f1\i0 /share/boost-build/site-config.jam
+\f0 \
+	Replace "toolset" above with 
+\f1 darwin
+\f0  if you're using OS X, or 
+\f1 gcc
+\f0  if you're using Ubuntu.\
+\
+6) Add 
+\f2\i prefix
+\f1\i0 /bin
+\f0  to your PATH environment variable.\
+\
+7) Add an environment variable BOOST_BUILD_PATH that points to 
+\f2\i prefix
+\f1\i0 /share/boost-build
+\f0 \
+\
+\
+
+\b ========\
+USING BOOST\
+
+\b0 \
+- Link against the Boost libraries in 
+\f2\i prefix
+\f1\i0 /lib
+\f0 , compile against the headers in 
+\f2\i prefix
+\f1\i0 /include\
+
+\f0 \
+- If you're using Boost.Build (bjam), the following is an example jamfile that links against the Boost program options library:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 	exe hello : hello.cpp : <library>/boost//program_options ;
+\f0 \
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b \cf0 ========\
+BUILDING BOOST ON THE HPC\
+\
+
+\b0 Things are a little different on the HPC.  If you don't need your own version of Boost & Boost.Build, you may use mine -- scroll down to "USING A PRE-BUILT VERSION OF BOOST"\
+\
+1) \
+./bootstrap.sh --prefix=
+\i prefix\
+
+\i0 ./b2 link=static --without-python --without-mpi\
+
+\b \
+\
+\
+========\
+USING A PRE-BUILT VERSION OF BOOST\
+
+\b0 \
+\
+- Boost version 1.47.0 is installed on the HPC by iCER.  If you don't need Boost.Build (bjam), use that.\
+\
+- If you do need Boost.Build, I have made a version available for use by anyone with an HPC account.  Add 
+\f1 /mnt/home/dk/bin
+\f0  to your path (before the normal HPCC path entries), and set BOOST_BUILD_PATH to 
+\f1 /mnt/home/dk/share/boost-build
+\f0 .  Also, you'll need to remove the Boost module installed by the HPC: 
+\f1 module rm Boost.}

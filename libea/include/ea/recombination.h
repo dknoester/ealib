@@ -1,0 +1,84 @@
+#ifndef _EA_RECOMBINATION_H_
+#define _EA_RECOMBINATION_H_
+
+#include <algorithm>
+#include <utility>
+#include <ea/interface.h>
+
+namespace ea {
+    namespace recombination {
+        
+        /*! Asexual reproduction.
+         */
+        struct asexual {
+            std::size_t capacity() const { return 1; }
+            
+            //! Asexual reproduction (copies a single parent).
+            template <typename Population, typename EA>
+            void operator()(Population& parents, Population& offspring, EA& ea) {
+                offspring.append(make_population_entry(ind(parents.begin(),ea).repr(),ea));
+            }
+        };
+        
+        
+        /*! Single-point crossover.
+         */
+        struct single_point_crossover {
+            std::size_t capacity() const { return 2; }
+            
+            //! Perform single-point crossover on two parents to produce two offspring.
+            template <typename Population, typename EA>
+            void operator()(Population& parents, Population& offspring, EA& ea) {
+                // build the offspring:
+                typename Population::iterator p=parents.begin();
+                typename EA::representation_type o1=representation(ind(p,ea),ea);
+                typename EA::representation_type o2=representation(ind(++p,ea),ea);
+                
+                // they need to be the same size...
+                assert(o1.size() == o2.size());
+                
+                // select the crossover point:
+                std::size_t xover = ea.rng()(o1.size());
+                
+                // and swap [begin,xover) between o1 and o2:
+                std::swap_ranges(o1.begin(), o1.begin()+xover, o2.begin());
+                
+                // output the individuals:
+                offspring.append(make_population_entry(typename EA::individual_type(o1),ea));
+                offspring.append(make_population_entry(typename EA::individual_type(o2),ea));
+            }
+        };
+        
+        
+        /*! Two-point crossover.
+         */
+        struct two_point_crossover {
+            std::size_t capacity() const { return 2; }
+
+            //! Perform two-point crossover on two parents to produce two offspring.
+            template <typename Population, typename EA>
+            void operator()(Population& parents, Population& offspring, EA& ea) {
+                // build the offspring:
+                typename Population::iterator p=parents.begin();
+                typename EA::representation_type o1=ind(p,ea).repr();
+                typename EA::representation_type o2=ind(++p,ea).repr();
+                
+                // they need to be the same size...
+                assert(o1.size() == o2.size());
+
+                // select the crossover points:
+                std::pair<std::size_t, std::size_t> xover = ea.rng().choose_two(static_cast<std::size_t>(0), o1.size());
+                
+                // and swap [begin+first,begin+second) between o1 and o2:
+                std::swap_ranges(o1.begin()+xover.first, o1.begin()+xover.second, o2.begin()+xover.first);
+                
+                // output the individuals:
+                offspring.append(make_population_entry(typename EA::individual_type(o1),ea));
+                offspring.append(make_population_entry(typename EA::individual_type(o2),ea));
+            }
+        };
+        
+    } // recombination
+} // ea
+
+#endif

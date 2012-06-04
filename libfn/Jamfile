@@ -1,0 +1,12 @@
+lib libfn :
+    src/hmm/deterministic_node.cpp
+    src/hmm/graph.cpp
+    src/hmm/hmm.cpp
+    src/hmm/hmm_network.cpp
+    src/hmm/hmm_node.cpp
+    src/hmm/probabilistic_node.cpp
+    /libea//libea
+    : <include>./include
+    :
+    : <include>./include
+    ;

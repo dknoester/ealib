@@ -1,0 +1,160 @@
+#ifndef _EA_EVOLUTIONARY_ALGORITHM_H_
+#define _EA_EVOLUTIONARY_ALGORITHM_H_
+
+#include <boost/serialization/nvp.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <ea/concepts.h>
+#include <ea/generational_models/synchronous.h>
+#include <ea/individual.h>
+#include <ea/initialization.h>
+#include <ea/interface.h>
+#include <ea/meta_data.h>
+#include <ea/mutation.h>
+#include <ea/population.h>
+#include <ea/recombination.h>
+#include <ea/events.h>
+#include <ea/rng.h>
+
+namespace ea {
+    
+    /*! A placeholder struct that can be used to remove extraneous template 
+     arguments.
+     */
+    struct not_used { };
+    
+	
+	/*! Generic evolutionary algorithm class.
+	 
+	 This class is designed to be generic, such that all the main features of evolutionary
+	 algorithms can be easily incorporated.  The focus of this class is on the 
+	 common features of most EAs, while leaving the problem-specific components 
+	 easily customizable.  For example, this class includes selection strategies
+	 such as tournament selection, but does not specify fitness functions.
+	 */
+	template <
+	typename Representation,
+	typename MutationOperator,
+	typename FitnessFunction,
+	typename RecombinationOperator=recombination::two_point_crossover,
+	typename GenerationalModel=generational_models::synchronous<selection::fitness_proportional,selection::tournament>,
+    template <typename,typename> class Individual=individual,
+	template <typename,typename> class Population=population,
+	typename Initializer=initialization::complete_population<initialization::random_individual>,
+	template <typename> class EventHandler=event_handler,
+	typename MetaData=meta_data,
+	typename RandomNumberGenerator=ea::default_rng_type>
+	class evolutionary_algorithm {
+    public:
+        //! This evolutionary_algorithm's type.
+        typedef evolutionary_algorithm<Representation, MutationOperator, FitnessFunction,
+        RecombinationOperator, GenerationalModel, 
+        Individual, Population, Initializer, EventHandler, MetaData, RandomNumberGenerator
+        > ea_type;
+        
+        //! Representation type.
+        typedef Representation representation_type;
+        //! Fitness function type.
+        typedef FitnessFunction fitness_function_type;
+        //! Fitness function fitness type.
+        typedef typename fitness_function_type::fitness_type fitness_type;
+        //! Fitness function value type.
+        typedef typename fitness_function_type::value_type fitness_value_type;
+        //! Individual type.
+        typedef Individual<representation_type,fitness_function_type> individual_type;
+        //! Individual pointer type.
+        typedef boost::shared_ptr<individual_type> individual_ptr_type;
+        //! Mutation operator type.
+        typedef MutationOperator mutation_operator_type;
+        //! Crossover operator type.
+        typedef RecombinationOperator recombination_operator_type;
+        //! Generational model type.
+        typedef GenerationalModel generational_model_type;
+        //! Population type.
+        typedef Population<individual_type, individual_ptr_type> population_type;
+        //! Value type stored in population.
+        typedef typename population_type::value_type population_entry_type;
+        //! Meta-data type.
+        typedef MetaData md_type;
+        //! Population initializer type.
+        typedef Initializer initializer_type;
+        //! Random number generator type.
+        typedef RandomNumberGenerator rng_type;
+        //! Event handler.
+        typedef EventHandler<ea_type> event_handler_type;
+        
+        //! Default constructor.
+        evolutionary_algorithm() {
+        }
+                
+        //! Initialize this EA.
+        void initialize() {
+            _fitness_function.initialize(*this);
+            _population.initialize(*this);
+            _generational_model.initialize(*this);
+        }        
+        
+        //! Advance the epoch of this EA by n updates.
+        void advance_epoch(std::size_t n) {
+            calculate_fitness(_population.begin(), _population.end(), *this);
+            for( ; n>0; --n) {
+                update();
+            }
+            _events.record_statistics(*this);
+            _events.end_of_epoch(*this);
+        }
+        
+        //! Advance this EA by one update.
+        void update() {
+            _events.record_statistics(*this);
+            _generational_model(_population, *this);
+            _generational_model.next_update();
+            _events.end_of_update(*this);
+        }
+        
+        //! Returns the current update of this EA.
+        unsigned long current_update() {
+            return _generational_model.current_update();
+        }
+        
+        //! Accessor for the random number generator.
+        rng_type& rng() { return _rng; }
+        
+        //! Accessor for the population model object.
+        population_type& population() { return _population; }
+        
+        //! Accessor for this EA's meta-data.
+        md_type& md() { return _md; }
+        
+        //! Accessor for the fitness function object.
+        fitness_function_type& fitness_function() { return _fitness_function; }
+        
+        //! Accessor for the generational model object.
+        generational_model_type& generational_model() { return _generational_model; }
+        
+        //! Returns the event handler.
+        event_handler_type& events() { return _events; }
+        
+    protected:
+        rng_type _rng; //!< Random number generator.
+        fitness_function_type _fitness_function; //!< Fitness function object.
+        population_type _population; //!< Population instance.
+        md_type _md; //!< Meta-data for this evolutionary algorithm instance.
+        generational_model_type _generational_model; //!< Generational model instance.
+        event_handler_type _events; //!< Event handler.
+        
+    private:
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("rng", _rng);
+            ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
+            ar & boost::serialization::make_nvp("population", _population);
+            ar & boost::serialization::make_nvp("generational_model", _generational_model);
+            ar & boost::serialization::make_nvp("meta_data", _md);
+        }
+    };
+    
+}
+
+#endif

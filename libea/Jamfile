@@ -1,0 +1,13 @@
+alias libea : : : : <include>./include ;
+
+lib libea_runner :
+    src/main.cpp
+    src/runner.cpp
+    libea
+    /boost//program_options
+    /boost//serialization
+    /boost//signals
+    /boost//iostreams
+    /boost//regex
+    /site-config//z
+    ;
