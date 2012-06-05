@@ -139,8 +139,8 @@ namespace ea {
             };
             
             //! Calculates crowding distance among individuals in population I.
-            template <typename Population>
-            void crowding_distance(Population& I) {
+            template <typename Population, typename EA>
+            void crowding_distance(Population& I, EA& ea) {
                 for(typename Population::iterator i=I.begin(); i!=I.end(); ++i) {
                     (*i)->distance = 0.0;
                 }
@@ -149,16 +149,12 @@ namespace ea {
                 
                 for(std::size_t m=0; m<M; ++m) {
                     std::sort(I.begin(), I.end(), objective_comparator(m));
-                    double range = (*I.rbegin())->fitness()[m] - (*I.begin())->fitness()[m];
-                    if(range == 0.0) {
-                        range = 1.0;
-                    }
                     
                     (*I.begin())->distance = std::numeric_limits<double>::max();
                     (*I.rbegin())->distance = std::numeric_limits<double>::max();
                     
                     for(std::size_t i=1; i<(I.size()-1); ++i) {
-                        I[i]->distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / range;
+                        I[i]->distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
                     }
                 }
             }
@@ -271,9 +267,8 @@ namespace ea {
                 // the set of all possible parents are pulled from the best fronts:
                 Population parents;
                 for(std::size_t i=0; (i<F.size()) && (parents.size()<N); ++i) {
-                    crowding_distance(F[i]);
-                    
-                    parents.append(F[i].begin(), 
+                    crowding_distance(F[i],ea);
+                    parents.append(F[i].begin(),
                                    F[i].begin() + std::min(F[i].size(), (N-parents.size())));
                 }
 
@@ -287,12 +282,12 @@ namespace ea {
                 // mutate the offspring:
 				mutate(offspring.begin(), offspring.end(), ea);
 
-                // calculate their fitness:
-                calculate_fitness(offspring.begin(), offspring.end(), ea);
-                
                 // add the offspring to the parent population to create the next generation:
                 parents.append(offspring.begin(), offspring.end());
 
+                // calculate fitness:
+                calculate_fitness(parents.begin(), parents.end(), ea);
+                
                 // and swap 'em in:
                 std::swap(population, parents);
 			}

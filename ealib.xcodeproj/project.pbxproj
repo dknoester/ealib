@@ -203,6 +203,7 @@
 		423CBE6D157D10C80003A644 /* libboost_serialization.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_serialization.dylib; path = /usr/local/lib/libboost_serialization.dylib; sourceTree = "<absolute>"; };
 		423CBE6E157D10C80003A644 /* libboost_signals.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_signals.dylib; path = /usr/local/lib/libboost_signals.dylib; sourceTree = "<absolute>"; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
+		42B0566C157E4D2300C51E6D /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -399,6 +400,7 @@
 				423CBDD7157D0E450003A644 /* death_birth_process.h */,
 				423CBDD8157D0E450003A644 /* nsga2.h */,
 				423CBDD9157D0E450003A644 /* synchronous.h */,
+				42B0566C157E4D2300C51E6D /* novelty_search.h */,
 			);
 			path = generational_models;
 			sourceTree = "<group>";
@@ -955,6 +957,7 @@
 				420EB2FA157D11540060CAB2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		423CBC75157D0D440003A644 /* Build configuration list for PBXProject "ealib" */ = {
 			isa = XCConfigurationList;

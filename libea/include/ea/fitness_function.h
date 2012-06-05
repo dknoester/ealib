@@ -6,6 +6,7 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <ea/algorithm.h>
 #include <ea/meta_data.h>
 
 namespace ea {
