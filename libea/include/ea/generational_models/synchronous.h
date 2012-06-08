@@ -46,11 +46,11 @@ namespace ea {
 				// mutate them:
 				mutate(offspring.begin(), offspring.end(), ea);
 				
+                // make sure all have their fitness calculated:
+                calculate_fitness(offspring.begin(), offspring.end(), ea);
+
 				// add the offspring to the current population:
 				population.append(offspring.begin(), offspring.end());
-                
-                // make sure all have their fitness calculated:
-                calculate_fitness(population.begin(), population.end(), ea);
                 
 				// select individuals for survival:
 				Population next_gen;

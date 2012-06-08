@@ -37,7 +37,7 @@ namespace ea {
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
 				std::insert_iterator<Population> ii(dst,dst.end());
-				ea.rng().sample_with_replacement(src.begin(), src.end(), ii, n);
+				ea.rng().sample_without_replacement(src.begin(), src.end(), ii, n);
 			}
 		};
         

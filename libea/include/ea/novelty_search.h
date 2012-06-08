@@ -90,6 +90,7 @@ namespace ea {
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
             calculate_fitness(_population.begin(), _population.end(), *this);
+            relativize_fitness(_population.begin(), _population.end(), *this);
             for( ; n>0; --n) {
                 update();
             }
