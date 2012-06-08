@@ -129,6 +129,8 @@ namespace ea {
             //                    _archive.append(i);
             //                }
             //            }
+            
+            // RESETS FITNESS on individuals to novelty fitness.
         }
         
         //! Retrieve the random number generator.
