@@ -54,6 +54,12 @@ namespace ea {
             return *this;
         }
 
+        //! Addition assignment operator.
+        unary_fitness& operator+=(const unary_fitness& that) {
+            _f += that._f;
+            return *this;
+        }
+        
         //! Value-type cast operator.
         operator value_type() { return _f; }
 
@@ -120,7 +126,11 @@ namespace ea {
         //! Value-type cast operator.
         operator value_type() { return _f; }
         
+        //! Retrieve the value of objective i.
         objective_type operator[](std::size_t i) { return _f[i]; }
+        
+        //! Retrieve the value of objective i (const-qualified).
+        const objective_type operator[](std::size_t i) const { return _f[i]; }
 
         //! String cast operator.
         operator std::string() { return algorithm::vcat(_f.begin(), _f.end()); }
@@ -152,14 +162,14 @@ namespace ea {
      */
     template <typename T, 
     typename ConstantTag=constantS,
-    typename StabilityTag=stableS,
-    typename RelativeTag=absoluteS>
+    typename RelativeTag=absoluteS,
+    typename StabilityTag=stableS>
     struct fitness_function {
         typedef T fitness_type;
         typedef typename fitness_type::value_type value_type;
+        typedef ConstantTag constant_tag;
         typedef RelativeTag relative_tag;
         typedef StabilityTag stability_tag;
-        typedef ConstantTag constant_tag;
         
         template <typename EA>
         void initialize(EA& ea) {
@@ -206,6 +216,18 @@ namespace ea {
         void calculate_fitness(typename EA::individual_type& i, nonstationaryS, EA& ea) {
             calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
         }
+        
+        //! Absolute: do nothing.
+        template <typename ForwardIterator, typename EA>
+        void relativize_fitness(ForwardIterator first, ForwardIterator last, absoluteS, EA& ea) {
+        }
+        
+        //! Relative: relativize(?) fitness.
+        template <typename ForwardIterator, typename EA>
+        void relativize_fitness(ForwardIterator first, ForwardIterator last, relativeS, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            ea.relativize(first, last);
+        }
     }
     
     /*! Calculate the fitness of an individual, respecting various fitness function tags.
@@ -226,12 +248,20 @@ namespace ea {
 		}
 	}
 
+    /*! Calculate relative fitness for the range [f,l).
+	 */
+	template <typename ForwardIterator, typename EA>
+	void relativize_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        detail::relativize_fitness(first, last, typename EA::fitness_function_type::relative_tag(), ea);
+	}
+
     /*! Accumulated the fitness for a range of individuals, calculating it if needed.
      */
     template <typename ForwardIterator, typename EA>
     typename EA::fitness_type accumulate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        typename EA::fitness_value_type sum=0.0;
+        typename EA::fitness_type sum=0.0;
         for(; first!=last; ++first) {
             calculate_fitness(ind(first,ea),ea);
             sum += ind(first,ea).fitness();

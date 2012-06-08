@@ -7,39 +7,7 @@
 namespace ea {
 	namespace algorithm {
         
-        
-        template <typename EA>
-        struct fitness_comp {
-            typedef typename EA::individual_ptr_type individual_ptr_type;
-            
-            fitness_comp(EA& ea) : _ea(ea) { }
-            
-            bool operator()(individual_ptr_type x, individual_ptr_type y) {
-                return x->fitness() < y->fitness();
-            }
-            EA& _ea;
-        };
-        
-        /*! Roulette wheel selection.
-		 
-		 Returns an iterator selected from the range [f,l), based on the sum of values
-		 of the items in the sequence.
-		 
-		 If a value could not be found, return l.
-		 */
-		template <typename T, typename InputIterator, typename EA>
-		InputIterator roulette_wheel(const T& target, InputIterator f, InputIterator l, EA& ea) {
-			T running=0.0;
-			for( ; f!=l; ++f) {
-				running += static_cast<T>(ind(f,ea).fitness());
-				if(running >= target) {
-					return f;
-				}
-			}			
-			return l;
-		}
-
-		/*! Assign sequentially increasing values to a range.
+        /*! Assign sequentially increasing values to a range.
 		 */
 		template <typename ForwardIterator, typename T>
 		void iota(ForwardIterator first, ForwardIterator last, T initial, T delta) {

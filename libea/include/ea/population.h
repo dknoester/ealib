@@ -36,10 +36,6 @@ namespace ea {
         virtual ~population() {
         }
         
-        template <typename EA>
-        void initialize(EA& ea) {
-        }
-
         void append(value_type i) {
             base_type::push_back(i);
         }

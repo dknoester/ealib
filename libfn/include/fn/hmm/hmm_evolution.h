@@ -98,7 +98,7 @@ namespace ea {
                                          get<HMM_HIDDEN_N>(ea));
             datafile df(get<ANALYSIS_OUTPUT>(ea));
             std::ostringstream title;
-            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+//            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
             fn::hmm::write_graphviz(title.str(), df, fn::hmm::as_genetic_graph(network));
         }
     };
@@ -120,7 +120,7 @@ namespace ea {
                                          get<HMM_HIDDEN_N>(ea));
             datafile df(get<ANALYSIS_OUTPUT>(ea));
             std::ostringstream title;
-            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+//            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
             fn::hmm::write_graphviz(title.str(), df, fn::hmm::as_reduced_graph(network));
         }
     };
@@ -142,7 +142,7 @@ namespace ea {
                                          get<HMM_HIDDEN_N>(ea));
             datafile df(get<ANALYSIS_OUTPUT>(ea));
             std::ostringstream title;
-            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+//            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
             fn::hmm::write_graphviz(title.str(), df, fn::hmm::as_reduced_graph(network), true);
         }
     };
@@ -164,7 +164,7 @@ namespace ea {
                                          get<HMM_HIDDEN_N>(ea));
             datafile df(get<ANALYSIS_OUTPUT>(ea));
             std::ostringstream title;
-            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+//            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
             fn::hmm::write_graphviz(title.str(), df, fn::hmm::as_causal_graph(network));
         }
     };

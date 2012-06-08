@@ -5,7 +5,7 @@
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/generational_model.h>
-#include <ea/selection/fitness_proportional.h>
+#include <ea/selection/proportional.h>
 #include <ea/selection/tournament.h>
 
 namespace ea {
@@ -22,8 +22,8 @@ namespace ea {
 		 for inclusion in the next generation.
 		 */
         template <
-        typename ParentSelectionStrategy=selection::fitness_proportional,
-        typename SurvivorSelectionStrategy=selection::tournament>
+        typename ParentSelectionStrategy=selection::proportional< >,
+        typename SurvivorSelectionStrategy=selection::tournament< > >
 		struct synchronous : public generational_model {
             typedef ParentSelectionStrategy parent_selection_type;
             typedef SurvivorSelectionStrategy survivor_selection_type;
@@ -52,7 +52,7 @@ namespace ea {
                 // make sure all have their fitness calculated:
                 calculate_fitness(population.begin(), population.end(), ea);
                 
-				// select individuals for survival to the next generation:into the next generation:
+				// select individuals for survival:
 				Population next_gen;
                 select_n<survivor_selection_type>(population, next_gen, get<POPULATION_SIZE>(ea), ea);
 				

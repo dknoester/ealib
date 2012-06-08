@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iterator>
 #include <ea/algorithm.h>
+#include <ea/comparators.h>
 #include <ea/meta_data.h>
 
 namespace ea {
@@ -16,6 +17,7 @@ namespace ea {
 		 
 		 <b>Model of:</b> SelectionStrategyConcept.
 		 */
+        template <typename Comparator=comparators::fitness>
 		struct tournament {
             //! Initializing constructor.
 			template <typename Population, typename EA>
@@ -32,7 +34,7 @@ namespace ea {
 					std::insert_iterator<Population> tii(tourney,tourney.end());
 					ea.rng().sample_without_replacement(src.begin(), src.end(), tii, N);
 					
-                    std::sort(tourney.begin(), tourney.end(), algorithm::fitness_comp<EA>(ea));
+                    std::sort(tourney.begin(), tourney.end(), Comparator());
                     typename Population::reverse_iterator rl=tourney.rbegin();
                     std::size_t copy_size = std::min(n,K);
                     std::advance(rl, copy_size);

@@ -10,25 +10,23 @@
 #include <ea/meta_data.h>
 
 namespace ea {
-	
+
 	/*! Definition of an individual.
 	 
-	 Individuals within ealib are three things:
+	 Individuals within ealib are four things:
 	 1) A container for a representation
-	 2) A container for a fitness
+	 2) A container for fitness
 	 3) A container for meta data
-	 
-	 By supporting arbitrary meta data, individuals can have location, lineage, or
-	 other information attached to them.  We require that they at least contain a
-	 representation and a fitness value.
+     4) A container for attributes
+
 	 */
-	template <typename Representation, typename FitnessFunction>
+	template <typename Representation, typename FitnessType, typename Attributes>
 	class individual {
 	public:
 		typedef Representation representation_type;
-		typedef FitnessFunction fitness_function_type;
-		typedef typename fitness_function_type::fitness_type fitness_type;
-        typedef individual<representation_type,fitness_function_type> individual_type;
+		typedef FitnessType fitness_type;
+        typedef Attributes attr_type;
+        typedef individual<representation_type,fitness_type,attr_type> individual_type;
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
 		
 		//! Constructor.
@@ -47,6 +45,7 @@ namespace ea {
             _fitness = that._fitness;
             _repr = that._repr;
             _md = that._md;
+            _attr = that._attr;
         }
         
         //! Assignment operator.
@@ -58,6 +57,7 @@ namespace ea {
                 _fitness = that._fitness;
                 _repr = that._repr;
                 _md = that._md;
+                _attr = that._attr;
             }
             return *this;
         }
@@ -69,19 +69,19 @@ namespace ea {
         //! Retrieve this individual's name.
         long& name() { return _name; }
 		
-        //! Retrieve this individual's id.
+        //! Retrieve this individual's name (const-qualified).
         const long& name() const { return _name; }
 
         //! Retrieve this individual's generation.
         double& generation() { return _generation; }
 
-        //! Retrieve this individual's generation.
+        //! Retrieve this individual's generation (const-qualified).
         const double& generation() const { return _generation; }
         
         //! Retrieve this individual's update.
         long& update() { return _update; }
 
-        //! Retrieve this individual's update.
+        //! Retrieve this individual's update (const-qualified).
         const long& update() const { return _update; }
 
         //! Cast this individual to its fitness.
@@ -96,14 +96,20 @@ namespace ea {
 		//! Retrieve this individual's representation.
 		representation_type& repr() { return _repr; }
         
-		//! Retrieve this individual's representation.
+		//! Retrieve this individual's representation (const-qualified).
 		const representation_type& repr() const { return _repr; }
         
         //! Retrieve this individual's meta data.
         meta_data& md() { return _md; }
 
-        //! Retrieve this individual's meta data.
+        //! Retrieve this individual's meta data (const-qualified).
         const meta_data& md() const { return _md; }
+        
+        //! Retrieve this individual's attributes.
+        attr_type& attr() { return _attr; }
+        
+        //! Retrieve this individual's attributes (const-qualified).
+        const attr_type& attr() const { return _attr; }
 
 	protected:
         long _name; //!< Name (id number) of this individual.
@@ -112,6 +118,7 @@ namespace ea {
 		fitness_type _fitness; //!< This individual's fitness.
 		representation_type _repr; //!< This individual's representation.
         meta_data _md; //!< This individual's meta data.
+        attr_type _attr; //!< This individual's attributes.
         
 	private:
 		/* These enable serialization and de-serialization of individuals.
@@ -131,6 +138,7 @@ namespace ea {
 			ar & boost::serialization::make_nvp("representation", _repr);
             ar & boost::serialization::make_nvp("meta_data", _md);
             ar & boost::serialization::make_nvp("update", _update);
+            ar & boost::serialization::make_nvp("attributes", _attr);
 		}
 		
 		template<class Archive>
@@ -147,17 +155,18 @@ namespace ea {
 			ar & boost::serialization::make_nvp("representation", _repr);
             ar & boost::serialization::make_nvp("meta_data", _md);
             ar & boost::serialization::make_nvp("update", _update);
+            ar & boost::serialization::make_nvp("attributes", _attr);
 		}
         
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};	
 
-	/*! Compare individuals by their fitness.
-	 */
-	template <typename Representation, typename FitnessFunction>
-	bool operator<(const individual<Representation,FitnessFunction>& a, const individual<Representation,FitnessFunction>& b) {
-		return a.fitness() < b.fitness();
-	}
+//	/*! Compare individuals by their fitness.
+//	 */
+//	template <typename Representation, typename FitnessFunction>
+//	bool operator<(const individual<Representation,FitnessFunction>& a, const individual<Representation,FitnessFunction>& b) {
+//		return a.fitness() < b.fitness();
+//	}
     
     
     /*! Serialize an individual.

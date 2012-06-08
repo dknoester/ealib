@@ -83,13 +83,19 @@ namespace ea {
         }
         offspring.resize(n); // in case extra were generated...
     }
-        
+
+
 	/*! Select n individuals from src into dst using the given selector type.
+     
+     This is "survivor selection" -- The near-final step of most generational models,
+     immediately prior to population swaps (if any).  As such, this is where relative 
+     fitness is calculated, if the fitness function specifies it.
 	 */
 	template <typename Selector, typename Population, typename EA>
 	void select_n(Population& src, Population& dst, std::size_t n, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
+        relativize_fitness(src.begin(), src.end(), ea);
         Selector select(n,src,ea);
         select(src, dst, n, ea);
 	}
@@ -158,17 +164,53 @@ namespace ea {
 		typename EA::mutation_operator_type mutator;
 		mutate_p(first, last, mutator, prob, ea);
 	}
-    
+
+    //! Retrieve a reference to an individual given a population iterator.
     template <typename EA>
     typename EA::individual_type& ind(typename EA::population_type::iterator i, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         return ea.population().ind(i);
     }
     
+    //! Retrieve a const reference to an individual given a population const_iterator.
     template <typename EA>
     const typename EA::individual_type& ind(typename EA::population_type::const_iterator i, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         return ea.population().ind(i);
+    }
+    
+    //! Retrieve a reference to an individual given an individual pointer.
+    template <typename EA>
+    typename EA::individual_type& ind(typename EA::individual_ptr_type p, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        return *p;
+    }
+    
+    //! Retrieve a reference to an individual's attributes given a population iterator.
+    template <typename EA>
+    typename EA::individual_attr_type& attr(typename EA::population_type::iterator i, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        return ea.population().ind(i).attr();
+    }
+    
+    //! Retrieve a const reference to an individual's attributes given a population const_iterator.
+    template <typename EA>
+    const typename EA::individual_attr_type& attr(typename EA::population_type::const_iterator i, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        return ea.population().ind(i).attr();
+    }
+    
+    //! Retrieve a reference to an individual's attributes given an individual pointer.
+    template <typename EA>
+    typename EA::individual_attr_type& attr(typename EA::individual_ptr_type p, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        return p->attr();
+    }
+    
+    template <typename EA>
+    const typename EA::individual_ptr_type ptr(typename EA::population_type::const_iterator i, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        return ea.population().ptr(i);
     }
     
     template <typename EA>
@@ -182,17 +224,8 @@ namespace ea {
         return ea.population().ptr(i);
     }
     
-    template <typename EA>
-    const typename EA::individual_ptr_type ptr(typename EA::population_type::const_iterator i, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        return ea.population().ptr(i);
-    }
     
-    template <typename EA>
-    typename EA::individual_type& ind(typename EA::individual_ptr_type p, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        return *p;
-    }
+    
 
     template <typename EA>
     typename EA::individual_ptr_type make_individual_ptr(const typename EA::individual_type& i, EA& ea) {

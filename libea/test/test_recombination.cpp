@@ -1,6 +1,5 @@
 #include "test.h"
 
-#include <ea/selection/fitness_proportional.h>
 #include <ea/recombination.h>
 
 

@@ -37,6 +37,7 @@
 		423CBE73157D10C80003A644 /* libboost_serialization.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6D157D10C80003A644 /* libboost_serialization.dylib */; };
 		423CBE74157D10C80003A644 /* libboost_signals.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6E157D10C80003A644 /* libboost_signals.dylib */; };
 		423CBE75157D10C80003A644 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
+		42F4B63315822A7B0075D6EF /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F4B63215822A7B0075D6EF /* attributes.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -130,7 +131,7 @@
 		423CBDE6157D0E450003A644 /* numeric_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = numeric_vector.h; sourceTree = "<group>"; };
 		423CBDE7157D0E450003A644 /* rng.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rng.h; sourceTree = "<group>"; };
 		423CBDE9157D0E450003A644 /* elitism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = elitism.h; sourceTree = "<group>"; };
-		423CBDEA157D0E450003A644 /* fitness_proportional.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fitness_proportional.h; sourceTree = "<group>"; };
+		423CBDEA157D0E450003A644 /* proportional.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = proportional.h; sourceTree = "<group>"; };
 		423CBDEB157D0E450003A644 /* random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
 		423CBDEC157D0E450003A644 /* tournament.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tournament.h; sourceTree = "<group>"; };
 		423CBDED157D0E450003A644 /* truncation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = truncation.h; sourceTree = "<group>"; };
@@ -203,7 +204,9 @@
 		423CBE6D157D10C80003A644 /* libboost_serialization.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_serialization.dylib; path = /usr/local/lib/libboost_serialization.dylib; sourceTree = "<absolute>"; };
 		423CBE6E157D10C80003A644 /* libboost_signals.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_signals.dylib; path = /usr/local/lib/libboost_signals.dylib; sourceTree = "<absolute>"; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
-		42B0566C157E4D2300C51E6D /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
+		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
+		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
+		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -314,7 +317,9 @@
 				423CBDBB157D0E450003A644 /* artificial_life */,
 				423CBDC6157D0E450003A644 /* checkpoint.h */,
 				423CBDC7157D0E450003A644 /* circular_vector.h */,
+				42F4B63215822A7B0075D6EF /* attributes.h */,
 				423CBDC8157D0E450003A644 /* cmdline_interface.h */,
+				42F4B6191580EA0B0075D6EF /* comparators.h */,
 				423CBDC9157D0E450003A644 /* concepts.h */,
 				423CBDCA157D0E450003A644 /* datafile.h */,
 				423CBDCB157D0E450003A644 /* datafiles */,
@@ -333,6 +338,7 @@
 				423CBDDF157D0E450003A644 /* line_of_descent.h */,
 				423CBDE0157D0E450003A644 /* meta_data.h */,
 				423CBDE1157D0E450003A644 /* mutation.h */,
+				42F4B631158225F00075D6EF /* novelty_search.h */,
 				423CBDE2157D0E450003A644 /* population.h */,
 				423CBDE3157D0E450003A644 /* recombination.h */,
 				423CBDE4157D0E450003A644 /* representations */,
@@ -400,7 +406,6 @@
 				423CBDD7157D0E450003A644 /* death_birth_process.h */,
 				423CBDD8157D0E450003A644 /* nsga2.h */,
 				423CBDD9157D0E450003A644 /* synchronous.h */,
-				42B0566C157E4D2300C51E6D /* novelty_search.h */,
 			);
 			path = generational_models;
 			sourceTree = "<group>";
@@ -418,7 +423,7 @@
 			isa = PBXGroup;
 			children = (
 				423CBDE9157D0E450003A644 /* elitism.h */,
-				423CBDEA157D0E450003A644 /* fitness_proportional.h */,
+				423CBDEA157D0E450003A644 /* proportional.h */,
 				423CBDEB157D0E450003A644 /* random.h */,
 				423CBDEC157D0E450003A644 /* tournament.h */,
 				423CBDED157D0E450003A644 /* truncation.h */,
@@ -672,6 +677,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42F4B63315822A7B0075D6EF /* attributes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

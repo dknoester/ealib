@@ -1,9 +1,11 @@
-#ifndef _EA_EVOLUTIONARY_ALGORITHM_H_
-#define _EA_EVOLUTIONARY_ALGORITHM_H_
+#ifndef _EA_NOVELTY_SEARCH_H_
+#define _EA_NOVELTY_SEARCH_H_
+
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <ea/evolutionary_algorithm.h>
 #include <ea/attributes.h>
 #include <ea/concepts.h>
 #include <ea/generational_models/synchronous.h>
@@ -18,22 +20,16 @@
 #include <ea/events.h>
 #include <ea/rng.h>
 
+
 namespace ea {
     
-	/*! Generic evolutionary algorithm class.
-	 
-	 This class is designed to be generic, such that all the main features of evolutionary
-	 algorithms can be easily incorporated.  The focus of this class is on the 
-	 common features of most EAs, while leaving the problem-specific components 
-	 easily customizable.  For example, this class includes selection strategies
-	 such as tournament selection, but does not specify fitness functions.
-	 */
-	template <
+    template <
 	typename Representation,
 	typename MutationOperator,
 	typename FitnessFunction,
+    typename NoveltyMetric,
 	typename RecombinationOperator=recombination::two_point_crossover,
-	typename GenerationalModel=generational_models::synchronous<selection::proportional< >, selection::tournament< > >,
+	typename GenerationalModel=generational_models::synchronous< >,
 	typename Initializer=initialization::complete_population<initialization::random_individual>,
     template <typename> class IndividualAttrs=individual_attributes,
     template <typename,typename,typename> class Individual=individual,
@@ -41,10 +37,10 @@ namespace ea {
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
-	class evolutionary_algorithm {
+	class novelty_search {
     public:
         //! This evolutionary_algorithm's type.
-        typedef evolutionary_algorithm<Representation, MutationOperator, FitnessFunction,
+        typedef novelty_search<Representation, MutationOperator, FitnessFunction, NoveltyMetric,
         RecombinationOperator, GenerationalModel, Initializer, IndividualAttrs,
         Individual, Population, EventHandler, MetaData, RandomNumberGenerator
         > ea_type;
@@ -55,6 +51,8 @@ namespace ea {
         typedef FitnessFunction fitness_function_type;
         //! Fitness type.
         typedef typename fitness_function_type::fitness_type fitness_type;
+        //! Novelty metric.
+        typedef NoveltyMetric novely_metric_type;
         //! Attributes attached to individuals.
         typedef IndividualAttrs<ea_type> individual_attr_type;
         //! Individual type.
@@ -81,9 +79,9 @@ namespace ea {
         typedef EventHandler<ea_type> event_handler_type;
         
         //! Default constructor.
-        evolutionary_algorithm() {
+        novelty_search() {
         }
-                
+        
         //! Initialize this EA.
         void initialize() {
             _fitness_function.initialize(*this);
@@ -107,37 +105,58 @@ namespace ea {
             _events.end_of_update(*this);
         }
         
-        //! Returns the current update of this EA.
+        //! Retrieve the current update number.
         unsigned long current_update() {
             return _generational_model.current_update();
         }
         
-        //! Called immediately prior to survivor selection (does nothing here).
-        void preselect(population_type& src) {
+        //! Relativize fitness values of individuals in the range [f,l).
+        template <typename ForwardIterator>
+        void relativize(ForwardIterator f, ForwardIterator l) {
+            // TODO - make this (or similar) code work, add k-nearest neighbor, adaptive thresh, etc.
+            // refactor the specific strategy out as another template param?  dunno.
+            // use the novelty_metric_type defined above
+            //            for( ; f!=l; ++f) {
+            //                for(typename Population::iterator i=(f+1); i!=l; ++i)
+            //                    novelty(f) = std::min(novelty(f), dis(f,i));
+            //            }
+            //            for(typename Population::iterator i=_archive.begin(); i!=_archive.end(); ++i) {
+            //                novelty(f) = std::min(novelty(f), dis(f,i));
+            //            }
+            //            
+            //            for(typename Population::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
+            //                if(novelty(ind(i,ea)) > get<NOVELTY_THRESHOLD>(ea)) {
+            //                    _archive.append(i);
+            //                }
+            //            }
         }
         
-        //! Accessor for the random number generator.
+        //! Retrieve the random number generator.
         rng_type& rng() { return _rng; }
         
-        //! Accessor for the population model object.
+        //! Retrieve the population.
         population_type& population() { return _population; }
         
-        //! Accessor for this EA's meta-data.
+        //! Retrieve the archive of novel individuals.
+        population_type& archive() { return _archive; }
+        
+        //! Retrieve this EA's meta-data.
         md_type& md() { return _md; }
         
-        //! Accessor for the fitness function object.
+        //! Retrieve the fitness function.
         fitness_function_type& fitness_function() { return _fitness_function; }
         
-        //! Accessor for the generational model object.
+        //! Retrieve the generational model object.
         generational_model_type& generational_model() { return _generational_model; }
         
-        //! Returns the event handler.
+        //! Retrieve the event handler.
         event_handler_type& events() { return _events; }
         
     protected:
         rng_type _rng; //!< Random number generator.
         fitness_function_type _fitness_function; //!< Fitness function object.
         population_type _population; //!< Population instance.
+        population_type _archive; //!< Archive of novel individuals.
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
@@ -149,11 +168,12 @@ namespace ea {
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
             ar & boost::serialization::make_nvp("population", _population);
+            ar & boost::serialization::make_nvp("archive", _archive);
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
             ar & boost::serialization::make_nvp("meta_data", _md);
         }
     };
     
-}
+} // ea
 
 #endif

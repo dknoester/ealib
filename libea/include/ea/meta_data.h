@@ -146,24 +146,6 @@ namespace ea {
         return get<MDType>(hmd);
     }
     
-    //! Get an attribute.
-    template <typename Attr, typename HasMetaData>
-    typename Attr::value_type& getattr(HasMetaData& hmd) {
-        return hmd.md().getattr<typename Attr::value_type>(Attr::key());
-    }
-
-    //! Get an attribute.
-    template <typename Attr, typename HasMetaData>
-    void setattr(const typename Attr::value_type& v, HasMetaData& hmd) {
-        hmd.md().setattr<typename Attr::value_type>(Attr::key(), v);
-    }
-
-    //! Remove an attribute.
-    template <typename Attr, typename HasMetaData>
-    void rmattr(HasMetaData& hmd) {
-        hmd.md().rmattr(Attr::key());
-    }
-	
 } // ea
 
 /* This macro defines a new meta-data item. */

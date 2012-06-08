@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iterator>
 #include <ea/algorithm.h>
+#include <ea/comparators.h>
 
 namespace ea {
 	namespace selection {
@@ -25,7 +26,7 @@ namespace ea {
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
                 assert(src.size() >= n);
-                std::sort(src.begin(), src.end(), algorithm::fitness_comp<EA>(ea));
+                std::sort(src.begin(), src.end(), comparators::fitness());
                 typename Population::reverse_iterator rl=src.rbegin();
                 std::advance(rl, n);
                 dst.append(src.rbegin(), rl);

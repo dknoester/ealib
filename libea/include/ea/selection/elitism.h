@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iterator>
 #include <ea/algorithm.h>
+#include <ea/comparators.h>
 #include <ea/interface.h>
 
 namespace ea {
@@ -36,7 +37,7 @@ namespace ea {
                 _embedded(src, dst, n-e, ea);
                 
                 // now, append the e most-fit individuals:
-                std::sort(src.begin(), src.end(), algorithm::fitness_comp<EA>(ea));
+                std::sort(src.begin(), src.end(), comparators::fitness());
                 typename Population::reverse_iterator rl=src.rbegin();
                 std::advance(rl, e);
                 dst.append(src.rbegin(), rl);

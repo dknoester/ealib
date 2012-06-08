@@ -25,10 +25,6 @@ namespace ea {
                 ++update;
             }
             
-            template <typename EA>
-            void initialize(EA& ea) {
-            }
-            
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
                 ar & BOOST_SERIALIZATION_NVP(update);

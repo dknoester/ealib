@@ -1,59 +1,52 @@
 #ifndef _EA_GENERATIONAL_MODELS_NSGA2_H_
 #define _EA_GENERATIONAL_MODELS_NSGA2_H_
 
+#include <boost/serialization/nvp.hpp>
 #include <algorithm>
 #include <ea/interface.h>
 #include <ea/individual.h>
 #include <ea/meta_data.h>
 #include <ea/generational_model.h>
-#include <ea/selection/fitness_proportional.h>
+#include <ea/comparators.h>
+#include <ea/selection/proportional.h>
 #include <ea/selection/tournament.h>
 
 namespace ea {
     
-    template <typename Representation, typename FitnessFunction>
-	class nsga2_individual : public individual<Representation, FitnessFunction> {
-    public:
-        typedef Representation representation_type;
-		typedef FitnessFunction fitness_function_type;
-		typedef typename fitness_function_type::value_type fitness_type;
-        typedef individual<representation_type,fitness_function_type> base_type;
-        typedef nsga2_individual<representation_type,fitness_function_type> individual_type;
-        typedef boost::shared_ptr<individual_type> individual_ptr_type;
-        typedef population<individual_type,individual_ptr_type> population_type;
+    //! Attributes that must be added to individuals to support NSGA2.
+    template <typename EA>
+    struct nsga2_attrs {
+        typedef typename EA::population_type population_type;
         
         //! Constructor.
-        nsga2_individual() : base_type(), n(0), rank(0), distance(0.0) {
+        nsga2_attrs() : n(0), rank(0), distance(0.0) {
         }
         
-        //! Copy constructor.
-        nsga2_individual(const nsga2_individual& that) : base_type(that), n(0), rank(0), distance(0.0) {
+        //! Serialize some of these attributes.
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & BOOST_SERIALIZATION_NVP(rank);
+            ar & BOOST_SERIALIZATION_NVP(distance);
         }
-        
-        //! Constructor that builds an individual from a representation.
-		nsga2_individual(const representation_type& r) : base_type(r), n(0), rank(0), distance(0.0) {
-		}
-        
-        //! Assignment operator.
-        nsga2_individual& operator=(const nsga2_individual& that) {
-            if(this != & that) {
-                base_type::operator=(that);
-                n = 0;
-                rank = 0;
-                distance = 0.0;
-                S.clear();
-            }
-            return *this;
+
+        population_type S; //!< Population of individuals that are dominated by this individual.
+        std::size_t n; //!< Number of individuals dominating this individual.
+        std::size_t rank; //!< Rank of this individual.
+        double distance; //<! Crowding distance.
+    };
+    
+    
+    /*! Crowding comparison operator, <_n.  
+     
+     If a has lower rank than b, return true.
+     If a has the same rank as b, but greater crowding distance, return true.
+     Otherwise, return false.
+     */
+    struct crowding_comparator {
+        template <typename IndividualPtr>
+        bool operator()(IndividualPtr a, IndividualPtr b) {
+            return (a->attr().rank < b->attr().rank) || ((a->attr().rank == b->attr().rank) && (a->attr().distance > b->attr().distance));
         }
-        
-        //! Destructor.
-        virtual ~nsga2_individual() {
-        }
-        
-        population_type S;
-        std::size_t n;
-        std::size_t rank;
-        double distance;
     };
 
     
@@ -124,79 +117,30 @@ namespace ea {
              ++generation
 		 */
 		struct nsga2 : public generational_model {
-
-            //! Comparator for sorting a population by the m'th objective.
-            struct objective_comparator {
-                objective_comparator(std::size_t m) : _m(m) {
-                }
-                
-                template <typename IndividualPtr>
-                bool operator()(IndividualPtr& a, IndividualPtr& b) {
-                    return a->fitness()[_m] < b->fitness()[_m];
-                }
-                
-                std::size_t _m;
-            };
+            
             
             //! Calculates crowding distance among individuals in population I.
             template <typename Population, typename EA>
             void crowding_distance(Population& I, EA& ea) {
                 for(typename Population::iterator i=I.begin(); i!=I.end(); ++i) {
-                    (*i)->distance = 0.0;
+                    (*i)->attr().distance = 0.0;
                 }
                 
                 std::size_t M = (*I.begin())->fitness().size(); // how many objectives?
                 
                 for(std::size_t m=0; m<M; ++m) {
-                    std::sort(I.begin(), I.end(), objective_comparator(m));
+                    std::sort(I.begin(), I.end(), comparators::objective(m));
                     
-                    (*I.begin())->distance = std::numeric_limits<double>::max();
-                    (*I.rbegin())->distance = std::numeric_limits<double>::max();
+                    (*I.begin())->attr().distance = std::numeric_limits<double>::max();
+                    (*I.rbegin())->attr().distance = std::numeric_limits<double>::max();
                     
                     for(std::size_t i=1; i<(I.size()-1); ++i) {
-                        I[i]->distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
+                        I[i]->attr().distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
                     }
                 }
             }
             
-            /*! Crowding comparison operator, <_n.  
-             
-             If a has lower rank than b, return true.
-             If a has the same rank as b, but greater crowding distance, return true.
-             Otherwise, return false.
-             */
-            struct crowding_comparator {
-                template <typename IndividualPtr>
-                bool operator()(IndividualPtr a, IndividualPtr b) {
-                    return (a->rank < b->rank) || ((a->rank == b->rank) && (a->distance > b->distance));
-                }
-            };
-            
-            //! Crowding-based tournament selection.
-            struct crowding_tournament {
-                template <typename Population, typename EA>
-                crowding_tournament(std::size_t n, Population& src, EA& ea) { 
-                }
-                
-                template <typename Population, typename EA>
-                void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
-                    std::size_t N = get<TOURNAMENT_SELECTION_N>(ea);
-                    std::size_t K = get<TOURNAMENT_SELECTION_K>(ea);
-                    while(n > 0) {
-                        Population tourney;
-                        ea.rng().sample_without_replacement(src.begin(), src.end(), std::back_inserter(tourney), N);
-                        
-                        std::sort(tourney.begin(), tourney.end(), crowding_comparator());
-                        typename Population::reverse_iterator rl=tourney.rbegin();
-                        std::size_t copy_size = std::min(n,K);
-                        std::advance(rl, copy_size);
-                        dst.append(tourney.rbegin(), rl);
-                        n -= copy_size;
-                    }
-                }
-            };
-            
-            //! Returns true if a dominates b (all fitness values in a >= b).
+            //! Returns true if a dominates b.
             template <typename Individual>
             bool dominates(Individual& a, Individual& b) {
                 const typename Individual::fitness_type& fa=a.fitness();
@@ -213,22 +157,23 @@ namespace ea {
             }
 
             //! Sort at least n individuals from population P into fronts F.
-            template <typename Population, typename PopulationMap>
-            void nondominated_sort(Population& P, std::size_t n, PopulationMap& F) {
+            template <typename Population, typename PopulationMap, typename EA>
+            void nondominated_sort(Population& P, std::size_t n, PopulationMap& F, EA& ea) {
                 for(typename Population::iterator p=P.begin(); p!=P.end(); ++p) {
-                    (*p)->S.clear();
-                    (*p)->n = 0;                    
+                    attr(p,ea).S.clear();
+                    attr(p,ea).n = 0;
+                    
                     for(typename Population::iterator q=P.begin(); q!=P.end(); ++q) {
                         if(p!=q) {
                             if(dominates(**p,**q)) {
-                                (*p)->S.append(q);
+                                attr(p,ea).S.append(q);
                             } else if(dominates(**q,**p)) {
-                                ++(*p)->n;
+                                ++attr(p,ea).n;
                             }
                         }
                     }
-                    if((*p)->n == 0) {
-                        (*p)->rank = 0;
+                    if(attr(p,ea).n == 0) {
+                        attr(p,ea).rank = 0;
                         F[0].append(p);
                     }
                 }
@@ -237,10 +182,10 @@ namespace ea {
                 while((!F[i].empty()) && (n>0)) {
                     Population Q;
                     for(typename Population::iterator p=F[i].begin(); p!=F[i].end(); ++p) {
-                        for(typename Population::iterator q=(*p)->S.begin(); q!=(*p)->S.end(); ++q) {
-                            --(*q)->n;
-                            if((*q)->n == 0) {
-                                (*q)->rank = i+1;
+                        for(typename Population::iterator q=attr(p,ea).S.begin(); q!=attr(p,ea).S.end(); ++q) {
+                            --attr(q,ea).n;
+                            if(attr(q,ea).n == 0) {
+                                attr(q,ea).rank = i+1;
                                 Q.append(q);
                             }
                         }
@@ -262,7 +207,7 @@ namespace ea {
                 
                 // build up the fronts:
                 std::map<int,Population> F;
-                nondominated_sort(population, N, F);
+                nondominated_sort(population, N, F, ea);
                 
                 // the set of all possible parents are pulled from the best fronts:
                 Population parents;
@@ -275,7 +220,7 @@ namespace ea {
                 // select parents & recombine to create offspring:
                 Population offspring;                
                 recombine_n(parents, offspring,
-                            crowding_tournament(N,parents,ea),
+                            selection::tournament<crowding_comparator>(N,parents,ea),
                             typename EA::recombination_operator_type(),
                             N, ea);
 

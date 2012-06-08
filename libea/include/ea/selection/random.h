@@ -19,6 +19,20 @@ namespace ea {
 			random(std::size_t n, Population& src, EA& ea) {
 			}
             
+            // death (by virtue of not being copied into the next generation).
+            // this can be done in a few different ways -- however, the only
+            // correct way is one that ensures that each individual is tested
+            // for death *once*, and that the selection appears to occur in
+            // parallel:
+            //                Population survivors;
+            //                for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
+            //                    if(ea.rng().p(1.0-get<REPLACEMENT_RATE_P>(ea))) {
+            //                        survivors.append(i);
+            //                    }
+            //                }
+            //                std::swap(population, survivors);
+
+            
 			//! Select n individuals at random.
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
