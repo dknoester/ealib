@@ -7,6 +7,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/shared_ptr.hpp>
 #include <fstream>
+#include <vector>
 #include <ea/meta_data.h>
 
 namespace ea {
@@ -43,6 +44,13 @@ namespace ea {
             _generation = that._generation;
             _update = that._update;
             _fitness = that._fitness;
+            _objective_fitness = that._objective_fitness;
+            _novelty_fitness = that._novelty_fitness;
+            
+            for (vector<double>::iterator it = that._novelty_point.begin(); it != that._novelty_point.end(); ++it) {
+                _novelty_point.push_back(*it);
+            }
+            
             _repr = that._repr;
             _md = that._md;
             _attr = that._attr;
@@ -55,6 +63,13 @@ namespace ea {
                 _generation = that._generation;
                 _update = that._update;
                 _fitness = that._fitness;
+                _objective_fitness = that._objective_fitness;
+                _novelty_fitness = that._novelty_fitness;
+                
+                for (vector<double>::iterator it = that._novelty_point.begin(); it != that._novelty_point.end(); ++it) {
+                    _novelty_point.push_back(*it);
+                }
+                
                 _repr = that._repr;
                 _md = that._md;
                 _attr = that._attr;
@@ -89,6 +104,15 @@ namespace ea {
 
 		//! Retrieve this individual's fitness.
 		fitness_type& fitness() { return _fitness; }
+        
+        //! Retrieve this individual's objective fitness.
+		fitness_type& objective_fitness() { return _objective_fitness; }
+        
+        //! Retrieve this individual's novelty fitness.
+		fitness_type& novelty_fitness() { return _novelty_fitness; }
+        
+        //! Retrieve this individual's novelty point.
+		vector<double> novelty_point() { return _novelty_point; }
 		
 		//! Retrieve this individual's fitness (const-qualified).
 		const fitness_type& fitness() const { return _fitness; }
@@ -115,7 +139,10 @@ namespace ea {
         long _name; //!< Name (id number) of this individual.
         double _generation; //!< Generation of this individual.
         long _update; //!< Update at which this individual was born.
-		fitness_type _fitness; //!< This individual's fitness.
+		fitness_type _fitness; //!< This individual's fitness. This is the fitness that the GA uses for selection.
+        fitness_type _objective_fitness; //!< This individual's objective fitness.
+        fitness_type _novelty_fitness; //!< This individual's novelty fitness.
+        vector<double> _novelty_point; //!< This individual's location in phenotype space.
 		representation_type _repr; //!< This individual's representation.
         meta_data _md; //!< This individual's meta data.
         attr_type _attr; //!< This individual's attributes.
