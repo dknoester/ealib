@@ -104,15 +104,6 @@ namespace ea {
 
 		//! Retrieve this individual's fitness.
 		fitness_type& fitness() { return _fitness; }
-        
-        //! Retrieve this individual's objective fitness.
-		fitness_type& objective_fitness() { return _objective_fitness; }
-        
-        //! Retrieve this individual's novelty fitness.
-		fitness_type& novelty_fitness() { return _novelty_fitness; }
-        
-        //! Retrieve this individual's novelty point.
-		vector<double> novelty_point() { return _novelty_point; }
 		
 		//! Retrieve this individual's fitness (const-qualified).
 		const fitness_type& fitness() const { return _fitness; }
@@ -140,9 +131,6 @@ namespace ea {
         double _generation; //!< Generation of this individual.
         long _update; //!< Update at which this individual was born.
 		fitness_type _fitness; //!< This individual's fitness. This is the fitness that the GA uses for selection.
-        fitness_type _objective_fitness; //!< This individual's objective fitness.
-        fitness_type _novelty_fitness; //!< This individual's novelty fitness.
-        vector<double> _novelty_point; //!< This individual's location in phenotype space.
 		representation_type _repr; //!< This individual's representation.
         meta_data _md; //!< This individual's meta data.
         attr_type _attr; //!< This individual's attributes.
