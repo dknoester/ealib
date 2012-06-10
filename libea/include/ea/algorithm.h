@@ -72,7 +72,18 @@ namespace ea {
             return sqrt(ss);
         }
         
-        //! Calculate the cummulative XOR of [f,l).
+        //! Calculates Euclidean distance between two points of arbitrary dimension. Assumes points are of same dimension.
+        template <typename ForwardIterator>
+        double vdist(ForwardIterator af, ForwardIterator al, ForwardIterator bf, ForwardIterator bl) {
+            double ss = 0.0;
+            for( ; af != al && bf != bl; ++af, ++bf) {
+                double diff = (*af) - (*bf);
+                ss += diff * diff;
+            }
+            return sqrt(ss);
+        }
+        
+        //! Calculate the cumulative XOR of [f,l).
         template <typename ForwardIterator>
         int vxor(ForwardIterator f, ForwardIterator l) {
             int result = *f;
@@ -80,6 +91,17 @@ namespace ea {
                 result = result ^ *f;
             }
             return result;
+        }
+        
+        //! Calculates the mean of the values between [f, l).
+        template <typename ForwardIterator, typename T>
+        T vmean(ForwardIterator f, ForwardIterator l, T init) {
+            T sum=init;
+            std::size_t c=0;
+            for( ; f!=l; ++f) {
+                sum += *f;
+            }
+            return sum / static_cast<T>(c);
         }
 
 	} // algorithm
