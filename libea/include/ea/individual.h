@@ -3,8 +3,6 @@
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
 #include <boost/shared_ptr.hpp>
 #include <fstream>
 #include <vector>
