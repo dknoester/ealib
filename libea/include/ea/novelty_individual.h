@@ -3,10 +3,15 @@
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
+#include <boost/serialization/vector.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/shared_ptr.hpp>
+
 #include <fstream>
+#include <vector>
+
+#include <ea/individual.h>
 #include <ea/meta_data.h>
 
 namespace ea {
@@ -21,19 +26,26 @@ namespace ea {
      
 	 */
 	template <typename Representation, typename FitnessType, typename Attributes>
-	class novelty_individual : individual {
+	class novelty_individual : individual <Representation, FitnessType, Attributes> {
 	public:
+        
+        typedef Representation representation_type;
+		typedef FitnessType fitness_type;
+        typedef Attributes attributes;
+        
+        typedef individual<representation_type, fitness_type, attributes> base_type;
+        typedef lod_individual<representation_type, fitness_type, attributes> individual_type;
 		
 		//! Constructor.
-		novelty_individual() : individual() {
+		novelty_individual() : base_type() {
 		}
         
 		//! Constructor that builds a novelty individual from a representation.
-		novelty_individual(const representation_type& r) : individual(r) {
+		novelty_individual(const representation_type& r) : base_type(r) {
 		}
         
         //! Copy constructor.
-        novelty_individual(const novelty_individual& that) : individual(that) {
+        novelty_individual(const novelty_individual& that) : base_type(that) {
             _objective_fitness = that._objective_fitness;
             _novelty_fitness = that._novelty_fitness;
             _novelty_point = that._novelty_point;
@@ -41,18 +53,12 @@ namespace ea {
         
         //! Assignment operator.
         novelty_individual& operator=(const novelty_individual& that) {
-            //! TODO: rework so this inherits from base individual.
             if(this != &that) {
-                _name = that._name;
-                _generation = that._generation;
-                _update = that._update;
-                _fitness = that._fitness;
+                base_type::operator=(that);
+                
                 _objective_fitness = that._objective_fitness;
                 _novelty_fitness = that._novelty_fitness;
                 _novelty_point = that._novelty_point;
-                _repr = that._repr;
-                _md = that._md;
-                _attr = that._attr;
             }
             return *this;
         }
@@ -83,8 +89,6 @@ namespace ea {
         
 	private:
         
-        //! TODO: Change these private methods to protected so they can be used by subclasses of individual?
-        
 		/* These enable serialization and de-serialization of individuals.
 		 This would be easy, except for the fact that we can't round-trip NaNs.  So,
 		 we store a flag instead of fitness in that case.
@@ -92,65 +96,24 @@ namespace ea {
 		friend class boost::serialization::access;
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
-            ar & boost::serialization::make_nvp("name", _name);
-            ar & boost::serialization::make_nvp("generation", _generation);
-			bool null_fitness=_fitness.is_null();
-			ar & BOOST_SERIALIZATION_NVP(null_fitness);
-			if(!null_fitness) {
-				ar & boost::serialization::make_nvp("fitness", _fitness);
-			}
-			ar & boost::serialization::make_nvp("representation", _repr);
-            ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("update", _update);
-            ar & boost::serialization::make_nvp("attributes", _attr);
+            
+            //! TODO: what is base_object?
+            ar & boost::serialization::base_object<base_type>(*this);
+            ar & boost::serialization::make_nvp("objective_fitness", _objective_fitness);
+            ar & boost::serialization::make_nvp("novelty_fitness", _novelty_fitness);
+            ar & boost::serialization::make_nvp("novelty_point", _novelty_point);
 		}
 		
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("name", _name);
-            ar & boost::serialization::make_nvp("generation", _generation);
-			bool null_fitness=true;
-			ar & BOOST_SERIALIZATION_NVP(null_fitness);
-			if(null_fitness) {
-                _fitness.nullify();
-			} else {
-				ar & boost::serialization::make_nvp("fitness", _fitness);
-			}
-			ar & boost::serialization::make_nvp("representation", _repr);
-            ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("update", _update);
-            ar & boost::serialization::make_nvp("attributes", _attr);
+            ar & boost::serialization::base_object<base_type>(*this);
+            ar & boost::serialization::make_nvp("objective_fitness", _objective_fitness);
+            ar & boost::serialization::make_nvp("novelty_fitness", _novelty_fitness);
+            ar & boost::serialization::make_nvp("novelty_point", _novelty_point);
 		}
         
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
-	};	
-    
-    /*! Serialize an individual.
-     */
-    template <typename EA>
-    void individual_save(std::ostream& out, typename EA::individual_type& ind, EA& ea) {
-        boost::archive::xml_oarchive oa(out);
-        oa << boost::serialization::make_nvp("novelty_individual",ind);
-    }
-    
-    
-	/*! Load a previously serialized individual.
-     */
-	template <typename EA>
-    typename EA::individual_type individual_load(std::istream& in, EA& ea) {
-        typename EA::individual_type ind;
-		boost::archive::xml_iarchive ia(in);
-        ia >> boost::serialization::make_nvp("novelty_individual", ind);
-        return ind;
-	}
-	
-    //! TODO: Is the below function okay to omit?
-    
-    template <typename EA>
-    typename EA::individual_type individual_load(const std::string& fname, EA& ea) {
-        std::ifstream ifs(fname.c_str());
-        return individual_load(ifs, ea);
-    }
+	};
     
 } // ea
 

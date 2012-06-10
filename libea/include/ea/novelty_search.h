@@ -84,9 +84,6 @@ namespace ea {
         //! Initialize this EA.
         void initialize() {
             _fitness_function.initialize(*this);
-            
-            put<NOVELTY_THRESHOLD>(6.0, ea);
-            put<NUM_NEIGHBORS>(15, ea);
         }
         
         //! Advance the epoch of this EA by n updates.
@@ -127,8 +124,6 @@ namespace ea {
                 
                 for(typename Population::iterator j = f; j != l; ++j) {
                     
-                    // TODO: Can I do a simple i != j? Even if they're two separate instances but have the same values, will it catch this?
-                    // (it's possible for an offspring to mutate to something already in the population)
                     if (i != j) {
                         
                         nearest_neighbors.push_back(algorithm::vdist(ind(i, *this).novelty_point().begin(),
@@ -140,8 +135,6 @@ namespace ea {
                 
                 for(typename Population::iterator j = _archive.begin(); j != _archive.end(); ++j) {
                     
-                    // TODO: Can I do a simple i != j? Even if they're two separate instances but have the same values, will it catch this?
-                    // (it's possible for an offspring to mutate to something already in the archive)
                     if (i != j) {
                         nearest_neighbors.push_back(algorithm::vdist(ind(i, *this).novelty_point().begin(),
                                                                      ind(i, *this).novelty_point().end(),
@@ -164,7 +157,7 @@ namespace ea {
                 // add highly novel individuals to the archive
                 if(ind(i, *this).novelty_fitness() > get<NOVELTY_THRESHOLD>(ea)) {
                     
-                    _archive.append(ind(i, *this));
+                    _archive.append(i);
                     ++archive_add_count;
                 }
             }
