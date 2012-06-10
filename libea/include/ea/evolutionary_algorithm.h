@@ -112,10 +112,6 @@ namespace ea {
             return _generational_model.current_update();
         }
         
-        //! Called immediately prior to survivor selection (does nothing here).
-        void preselect(population_type& src) {
-        }
-        
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
         

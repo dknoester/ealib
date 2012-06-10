@@ -115,7 +115,6 @@ namespace ea {
         //! Initialize this EA.
         void initialize() {
             _env.initialize(*this);
-            _population.initialize(*this);
             _scheduler.initialize(*this);
         }        
         
