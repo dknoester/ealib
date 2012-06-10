@@ -3,10 +3,9 @@
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
 #include <boost/shared_ptr.hpp>
 #include <fstream>
+#include <vector>
 #include <ea/meta_data.h>
 
 namespace ea {
@@ -43,6 +42,13 @@ namespace ea {
             _generation = that._generation;
             _update = that._update;
             _fitness = that._fitness;
+            _objective_fitness = that._objective_fitness;
+            _novelty_fitness = that._novelty_fitness;
+            
+            for (vector<double>::iterator it = that._novelty_point.begin(); it != that._novelty_point.end(); ++it) {
+                _novelty_point.push_back(*it);
+            }
+            
             _repr = that._repr;
             _md = that._md;
             _attr = that._attr;
@@ -55,6 +61,13 @@ namespace ea {
                 _generation = that._generation;
                 _update = that._update;
                 _fitness = that._fitness;
+                _objective_fitness = that._objective_fitness;
+                _novelty_fitness = that._novelty_fitness;
+                
+                for (vector<double>::iterator it = that._novelty_point.begin(); it != that._novelty_point.end(); ++it) {
+                    _novelty_point.push_back(*it);
+                }
+                
                 _repr = that._repr;
                 _md = that._md;
                 _attr = that._attr;
@@ -115,7 +128,7 @@ namespace ea {
         long _name; //!< Name (id number) of this individual.
         double _generation; //!< Generation of this individual.
         long _update; //!< Update at which this individual was born.
-		fitness_type _fitness; //!< This individual's fitness.
+		fitness_type _fitness; //!< This individual's fitness. This is the fitness that the GA uses for selection.
 		representation_type _repr; //!< This individual's representation.
         meta_data _md; //!< This individual's meta data.
         attr_type _attr; //!< This individual's attributes.
