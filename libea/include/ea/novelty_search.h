@@ -9,7 +9,7 @@
 #include <ea/attributes.h>
 #include <ea/concepts.h>
 #include <ea/generational_models/synchronous.h>
-#include <ea/novelty_individual.h>
+#include <ea/individual.h>
 #include <ea/fitness_function.h>
 #include <ea/initialization.h>
 #include <ea/interface.h>
@@ -19,9 +19,92 @@
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>
+#include <vector>
 
 namespace ea {
     
+    /*! Definition of an individual for novelty search.
+     
+     This class extends the standard individual by adding objective, novelty, 
+     and novelty point member variables.
+	 */
+	template <typename Representation, typename FitnessType, typename Attributes>
+	class novelty_individual : public individual <Representation, FitnessType, Attributes> {
+	public:
+        
+        typedef Representation representation_type;
+		typedef FitnessType fitness_type;
+        typedef Attributes attr_type;
+        typedef individual<representation_type, fitness_type, attr_type> base_type;
+        typedef novelty_individual<representation_type, fitness_type, attr_type> individual_type;
+		
+		//! Constructor.
+		novelty_individual() : base_type() {
+		}
+        
+		//! Constructor that builds a novelty individual from a representation.
+		novelty_individual(const representation_type& r) : base_type(r) {
+		}
+        
+        //! Copy constructor.
+        novelty_individual(const novelty_individual& that) : base_type(that) {
+            _objective_fitness = that._objective_fitness;
+            _novelty_fitness = that._novelty_fitness;
+            _novelty_point = that._novelty_point;
+        }
+        
+        //! Assignment operator.
+        novelty_individual& operator=(const novelty_individual& that) {
+            if(this != &that) {
+                base_type::operator=(that);
+                
+                _objective_fitness = that._objective_fitness;
+                _novelty_fitness = that._novelty_fitness;
+                _novelty_point = that._novelty_point;
+            }
+            return *this;
+        }
+        
+        //! Destructor.
+        virtual ~novelty_individual() {
+        }
+        
+        //! Retrieve this individual's objective fitness.
+		fitness_type& objective_fitness() { return _objective_fitness; }
+        
+        //! Retrieve this individual's novelty fitness.
+		fitness_type& novelty_fitness() { return _novelty_fitness; }
+        
+        //! Retrieve this individual's novelty point.
+        std::vector<double> novelty_point() { return _novelty_point; }
+		
+        //! Retrieve this individual's fitness (const-qualified).
+		const fitness_type& objective_fitness() const { return _objective_fitness; }
+        
+        //! Retrieve this individual's fitness (const-qualified).
+		const fitness_type& novelty_fitness() const { return _novelty_fitness; }
+        
+	protected:
+        fitness_type _objective_fitness; //!< This individual's objective fitness.
+        fitness_type _novelty_fitness; //!< This individual's novelty fitness.
+        std::vector<double> _novelty_point; //!< This individual's location in phenotype space.
+        
+	private:
+		friend class boost::serialization::access;
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) { 
+            ar & boost::serialization::make_nvp("base_individual", boost::serialization::base_object<base_type>(*this));
+            ar & boost::serialization::make_nvp("objective_fitness", _objective_fitness);
+            ar & boost::serialization::make_nvp("novelty_fitness", _novelty_fitness);
+            ar & boost::serialization::make_nvp("novelty_point", _novelty_point);
+		}
+	};
+    
+    
+    /*! Novelty search evolutionary algorithm.
+     
+     TODO: Explain how NS works, provide cite to paper.
+     */
     template <
 	typename Representation,
 	typename MutationOperator,
@@ -31,7 +114,7 @@ namespace ea {
 	typename GenerationalModel=generational_models::synchronous< >,
 	typename Initializer=initialization::complete_population<initialization::random_individual>,
     template <typename> class IndividualAttrs=individual_attributes,
-    template <typename,typename,typename> class Individual=individual,
+    template <typename,typename,typename> class Individual=novelty_individual,
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
@@ -117,15 +200,11 @@ namespace ea {
             std::vector<double> nearest_neighbors(_archive.size() + std::distance(f, l));
             int archive_add_count = 0;
             
-            for(typename Population::iterator i = f; i != l; ++i) {
-                
-                // determine nearest neighbors in phenotype landscape
+            for(ForwardIterator i=f; i!=l; ++i) {
                 nearest_neighbors.clear();
                 
-                for(typename Population::iterator j = f; j != l; ++j) {
-                    
+                for(ForwardIterator j=f; j!=l; ++j) {
                     if (i != j) {
-                        
                         nearest_neighbors.push_back(algorithm::vdist(ind(i, *this).novelty_point().begin(),
                                                                      ind(i, *this).novelty_point().end(),
                                                                      ind(j, *this).novelty_point().begin(),
@@ -133,21 +212,18 @@ namespace ea {
                     }
                 }
                 
-                for(typename Population::iterator j = _archive.begin(); j != _archive.end(); ++j) {
-                    
-                    if (i != j) {
-                        nearest_neighbors.push_back(algorithm::vdist(ind(i, *this).novelty_point().begin(),
-                                                                     ind(i, *this).novelty_point().end(),
-                                                                     ind(j, *this).novelty_point().begin(),
-                                                                     ind(j, *this).novelty_point().end()));
-                    }
+                for(typename population_type::iterator j=_archive.begin(); j!=_archive.end(); ++j) {
+                    nearest_neighbors.push_back(algorithm::vdist(ind(i, *this).novelty_point().begin(),
+                                                                 ind(i, *this).novelty_point().end(),
+                                                                 ind(j, *this).novelty_point().begin(),
+                                                                 ind(j, *this).novelty_point().end()));
                 }
                 
                 // sort novelty distances ascending
                 std::sort(nearest_neighbors.begin(), nearest_neighbors.end());
                 
                 ind(i, *this).novelty_fitness() = algorithm::vmean(nearest_neighbors.begin(),
-                                                                   nearest_neighbors.begin() + get<NUM_NEIGHBORS>(ea),
+                                                                   nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
                                                                    0.0);
                 
                 // reassign novelty fitness to fitness so novelty is used in GA selection
@@ -155,8 +231,7 @@ namespace ea {
                 ind(i, *this).fitness() = ind(i, *this).novelty_fitness();
                 
                 // add highly novel individuals to the archive
-                if(ind(i, *this).novelty_fitness() > get<NOVELTY_THRESHOLD>(ea)) {
-                    
+                if(ind(i, *this).novelty_fitness() > get<NOVELTY_THRESHOLD>(*this)) {
                     _archive.append(i);
                     ++archive_add_count;
                 }
@@ -164,10 +239,9 @@ namespace ea {
             
             // adjust the archive threshold, if necessary
             if (archive_add_count > 3) {
-                put<NOVELTY_THRESHOLD>(get<NOVELTY_THRESHOLD>(ea) * 1.1, ea);
-            }
-            else if (archive_add_count == 0) {
-                put<NOVELTY_THRESHOLD>(get<NOVELTY_THRESHOLD>(ea) * 0.9, ea);
+                scale<NOVELTY_THRESHOLD>(1.1, *this);
+            } else if (archive_add_count == 0) {
+                scale<NOVELTY_THRESHOLD>(0.9, *this);
             }
         }
         

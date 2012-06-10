@@ -3,9 +3,6 @@
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
-#include <boost/shared_ptr.hpp>
-#include <fstream>
-#include <vector>
 #include <ea/meta_data.h>
 
 namespace ea {
@@ -25,8 +22,6 @@ namespace ea {
 		typedef Representation representation_type;
 		typedef FitnessType fitness_type;
         typedef Attributes attr_type;
-        typedef individual<representation_type,fitness_type,attr_type> individual_type;
-        typedef boost::shared_ptr<individual_type> individual_ptr_type;
 		
 		//! Constructor.
 		individual() : _name(0), _generation(0.0), _update(0) {
@@ -42,13 +37,6 @@ namespace ea {
             _generation = that._generation;
             _update = that._update;
             _fitness = that._fitness;
-            _objective_fitness = that._objective_fitness;
-            _novelty_fitness = that._novelty_fitness;
-            
-            for (vector<double>::iterator it = that._novelty_point.begin(); it != that._novelty_point.end(); ++it) {
-                _novelty_point.push_back(*it);
-            }
-            
             _repr = that._repr;
             _md = that._md;
             _attr = that._attr;
@@ -61,13 +49,6 @@ namespace ea {
                 _generation = that._generation;
                 _update = that._update;
                 _fitness = that._fitness;
-                _objective_fitness = that._objective_fitness;
-                _novelty_fitness = that._novelty_fitness;
-                
-                for (vector<double>::iterator it = that._novelty_point.begin(); it != that._novelty_point.end(); ++it) {
-                    _novelty_point.push_back(*it);
-                }
-                
                 _repr = that._repr;
                 _md = that._md;
                 _attr = that._attr;
@@ -184,28 +165,28 @@ namespace ea {
     
     /*! Serialize an individual.
      */
-    template <typename EA>
-    void individual_save(std::ostream& out, typename EA::individual_type& ind, EA& ea) {
-        boost::archive::xml_oarchive oa(out);
-        oa << boost::serialization::make_nvp("individual",ind);
-    }
-    
-    
-	/*! Load a previously serialized individual.
-     */
-	template <typename EA>
-    typename EA::individual_type individual_load(std::istream& in, EA& ea) {
-        typename EA::individual_type ind;
-		boost::archive::xml_iarchive ia(in);
-        ia >> boost::serialization::make_nvp("individual", ind);
-        return ind;
-	}
-	
-    template <typename EA>
-    typename EA::individual_type individual_load(const std::string& fname, EA& ea) {
-        std::ifstream ifs(fname.c_str());
-        return individual_load(ifs, ea);
-    }
+//    template <typename EA>
+//    void individual_save(std::ostream& out, typename EA::individual_type& ind, EA& ea) {
+//        boost::archive::xml_oarchive oa(out);
+//        oa << boost::serialization::make_nvp("individual",ind);
+//    }
+//    
+//    
+//	/*! Load a previously serialized individual.
+//     */
+//	template <typename EA>
+//    typename EA::individual_type individual_load(std::istream& in, EA& ea) {
+//        typename EA::individual_type ind;
+//		boost::archive::xml_iarchive ia(in);
+//        ia >> boost::serialization::make_nvp("individual", ind);
+//        return ind;
+//	}
+//	
+//    template <typename EA>
+//    typename EA::individual_type individual_load(const std::string& fname, EA& ea) {
+//        std::ifstream ifs(fname.c_str());
+//        return individual_load(ifs, ea);
+//    }
 
 } // ea
 

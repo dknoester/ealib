@@ -38,7 +38,6 @@
 		423CBE74157D10C80003A644 /* libboost_signals.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6E157D10C80003A644 /* libboost_signals.dylib */; };
 		423CBE75157D10C80003A644 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42F4B63315822A7B0075D6EF /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F4B63215822A7B0075D6EF /* attributes.h */; };
-		BA9DF42A1583BB52008AC07D /* novelty_individual.h in Headers */ = {isa = PBXBuildFile; fileRef = BA9DF4291583BB52008AC07D /* novelty_individual.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -208,7 +207,6 @@
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
-		BA9DF4291583BB52008AC07D /* novelty_individual.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = novelty_individual.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -334,7 +332,6 @@
 				423CBDD6157D0E450003A644 /* generational_models */,
 				423CBDDA157D0E450003A644 /* generators.h */,
 				423CBDDB157D0E450003A644 /* individual.h */,
-				BA9DF4291583BB52008AC07D /* novelty_individual.h */,
 				423CBDDC157D0E450003A644 /* initialization.h */,
 				423CBDDD157D0E450003A644 /* interface.h */,
 				423CBDDE157D0E450003A644 /* landscape.h */,
@@ -681,7 +678,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				42F4B63315822A7B0075D6EF /* attributes.h in Headers */,
-				BA9DF42A1583BB52008AC07D /* novelty_individual.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

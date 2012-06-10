@@ -146,6 +146,12 @@ namespace ea {
         return get<MDType>(hmd);
     }
     
+    //! Scale (multiply) meta-data by the given value.
+    template <typename MDType, typename HasMetaData>
+    void scale(const typename MDType::value_type& v, HasMetaData& hmd) {
+        put<MDType>(get<MDType>(hmd)*v,hmd);
+    }
+    
 } // ea
 
 /* This macro defines a new meta-data item. */
@@ -156,6 +162,10 @@ inline static const char* key() { return key_string; } \
 }
     
 namespace ea {
+    // ea.novelty_search.*
+    LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);
+    LIBEA_MD_DECL(NOVELTY_NEIGHBORHOOD_SIZE, "ea.novelty_search.neighborhood.size", int);
+    
     // ea.individual.*
     LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);
     
