@@ -199,6 +199,7 @@ namespace ea {
             
             std::vector<double> nearest_neighbors(_archive.size() + std::distance(f, l));
             int archive_add_count = 0;
+            double fitness_sum = 0.0;
             
             for(ForwardIterator i=f; i!=l; ++i) {
                 nearest_neighbors.clear();
@@ -230,6 +231,9 @@ namespace ea {
                 ind(i, *this).objective_fitness() = ind(i, *this).fitness();
                 ind(i, *this).fitness() = ind(i, *this).novelty_fitness();
                 
+                // keep a running sum of the novelty fitness
+                fitness_sum += ind(i, *this).fitness();
+                
                 // add highly novel individuals to the archive
                 if(ind(i, *this).novelty_fitness() > get<NOVELTY_THRESHOLD>(*this)) {
                     _archive.append(i);
@@ -242,6 +246,14 @@ namespace ea {
                 scale<NOVELTY_THRESHOLD>(1.1, *this);
             } else if (archive_add_count == 0) {
                 scale<NOVELTY_THRESHOLD>(0.9, *this);
+            }
+            
+            // if all novelty fitnesses are 0.0, reset all of them to 1.0 so selection doesn't break
+            if (fitness_sum == 0.0) {
+                
+                for(ForwardIterator i=f; i!=l; ++i) {
+                    ind(i, *this).fitness() = 1.0;
+                }
             }
         }
         
