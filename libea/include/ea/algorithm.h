@@ -100,6 +100,7 @@ namespace ea {
             std::size_t c=0;
             for( ; f!=l; ++f) {
                 sum += *f;
+                ++c;
             }
             return sum / static_cast<T>(c);
         }

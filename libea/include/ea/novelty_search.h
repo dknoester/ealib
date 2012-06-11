@@ -20,7 +20,6 @@
 #include <ea/events.h>
 #include <ea/rng.h>
 #include <vector>
-#include <cmath>
 
 namespace ea {
     
@@ -250,7 +249,7 @@ namespace ea {
             }
             
             // if all novelty fitnesses are 0.0, reset all of them to 1.0 so selection doesn't break
-            if (fitness_sum == 0.0 || std::isnan(fitness_sum)) {
+            if (fitness_sum == 0.0) {
                 
                 for(ForwardIterator i=f; i!=l; ++i) {
                     ind(i, *this).fitness() = 1.0;
