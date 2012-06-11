@@ -11,3 +11,6 @@
 *.la
 *.a
 .DS_Store
+bin
+libea/bin
+libfn/bin
