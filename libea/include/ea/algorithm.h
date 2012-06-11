@@ -1,3 +1,23 @@
+/* algorithm.h 
+ * 
+ * This file is part of EALib.
+ * 
+ * Copyright 2012 David B. Knoester.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef _EA_ALGORITHM_H_
 #define _EA_ALGORITHM_H_
 
@@ -23,7 +43,7 @@ namespace ea {
 			for(std::size_t i=0; first != last; ++first, ++i)
 				*first = i;
 		}
-                
+        
         //! x == [-x_range,x_range], normalized to [-output_range,output_range]
         template <typename T>
         T normalize(T x, T x_range, T output_range) {
@@ -36,7 +56,7 @@ namespace ea {
         T clip(T value, T min, T max) {
             return std::max(min, std::min(value, max));
         }
-
+        
         //! Convert a sequence of values to a single string with the given separator.
         template <typename ForwardIterator>
         std::string vcat(ForwardIterator f, ForwardIterator l, const char* sep=" ") {
@@ -103,7 +123,7 @@ namespace ea {
             }
             return sum / static_cast<T>(c);
         }
-
+        
 	} // algorithm
 } // ea
 
