@@ -31,10 +31,7 @@ namespace ea {
     
 	namespace generational_models {
 		
-        struct no_growth_tag { };
-        struct exponential_growth_tag { };
-        
-		/*! Death-birth process generational model.
+        /*! Death-birth process generational model.
 
 		 The idea here is that all individuals that are slated to die (according
          to a configurable replacement rate) die at once, and then the population
@@ -44,17 +41,7 @@ namespace ea {
          
          \warning Fitness can not be negative.
 		 */
-        template <typename GrowthType=no_growth_tag>
 		struct death_birth_process : public generational_model {
-            typedef GrowthType growth_type;
-            
-            double adjust_fitness_sum(double fsum, double f, no_growth_tag) {
-                return fsum;
-            }
-
-            double adjust_fitness_sum(double fsum, double f, exponential_growth_tag) {
-                return fsum + f;
-            }
             
 			//! Apply this generational model to the EA to produce a single new generation.
 			template <typename Population, typename EA>
