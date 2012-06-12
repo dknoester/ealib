@@ -246,8 +246,13 @@ namespace ea {
                                                                    nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
                                                                    0.0);
                 
+                // disallow objective fitness reassignment
+                if ( !(ind(i, *this).objective_fitness() > 0.0) )
+                {
+                    ind(i, *this).objective_fitness() = ind(i, *this).fitness();
+                }
+                
                 // reassign novelty fitness to fitness so novelty is used in GA selection
-                ind(i, *this).objective_fitness() = ind(i, *this).fitness();
                 ind(i, *this).fitness() = ind(i, *this).novelty_fitness();
                 
                 // keep a running sum of the novelty fitness
@@ -257,6 +262,37 @@ namespace ea {
                 if(ind(i, *this).novelty_fitness() > get<NOVELTY_THRESHOLD>(*this)) {
                     _archive.append(i);
                     ++archive_add_count;
+                }
+                
+                // maintain list of objectively fittest individuals discovered thus far
+                // list is sorted descending by objective fitness
+                if (_fittest.size() < get<NUM_FITTEST>(*this)) {
+                    _fittest.append(i);
+                }
+                else {
+                    bool inserted = false;
+                    bool already_in = false;
+                    population_type new_fittest;
+                    
+                    for (ForwardIterator j = _fittest.begin(), end = _fittest.end(); j != end; ++j) {
+                        
+                        if (!inserted && ind(i, *this).objective_fitness() > ind(j, *this).objective_fitness()) {
+                            
+                            new_fittest.append(i);
+                            inserted = true;
+                        }
+                        
+                        if (i == j) {
+                            already_in = true;
+                        }
+                        
+                        new_fittest.append(j);
+                    }
+                    
+                    if (inserted && !already_in) {
+                        new_fittest.pop_back();
+                        std::swap(_fittest, new_fittest);
+                    }
                 }
             }
             
@@ -285,6 +321,9 @@ namespace ea {
         //! Retrieve the archive of novel individuals.
         population_type& archive() { return _archive; }
         
+        //! Retrieve the list of objectively fittest individuals.
+        population_type& fittest() { return _fittest; }
+        
         //! Retrieve this EA's meta-data.
         md_type& md() { return _md; }
         
@@ -305,6 +344,7 @@ namespace ea {
         generational_model_type _generational_model;    //!< Generational model instance.
         event_handler_type _events;                     //!< Event handler.
         population_type _archive;                       //!< Archive of novel individuals.
+        population_type _fittest;                       //!< List of objectively fittest individuals.
         
     private:
         friend class boost::serialization::access;
