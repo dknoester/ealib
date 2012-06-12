@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>all_ones.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
 		<key>ea.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -53,6 +58,11 @@
 			<true/>
 		</dict>
 		<key>423CBE56157D0FCC0003A644</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>42F5BD231587668700EB6B14</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -29,7 +29,7 @@ namespace ea {
     
     // in all cases, random_walk the population?  check the sgi stl extension "random_sample"
     
-    // fitness_proportional; fitness_i/sum(priorities) cycles
+    // fitness_proportionate; fitness_i/sum(priorities) cycles
     LIBEA_MD_DECL(SCHEDULER_TIME_SLICE, "ea.scheduler.time_slice", unsigned int);
 
     struct round_robin : generational_models::generational_model {

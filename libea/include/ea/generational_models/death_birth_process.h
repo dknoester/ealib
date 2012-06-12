@@ -24,7 +24,7 @@
 #include <cmath>
 #include <ea/interface.h>
 #include <ea/generational_model.h>
-#include <ea/selection/proportional.h>
+#include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>
 
 namespace ea {
@@ -35,7 +35,7 @@ namespace ea {
 
 		 The idea here is that all individuals that are slated to die (according
          to a configurable replacement rate) die at once, and then the population
-         expands back to that size via fitness proportional selection (with replacement).
+         expands back to that size via fitness proportionate selection (with replacement).
          
          This is a reasonable approximation of the Moran process, as described by Patrick Moran.
          
@@ -62,7 +62,7 @@ namespace ea {
                 // recombine the survivors to produce offspring:
                 Population offspring;
                 recombine_n(survivors, offspring,
-                            selection::proportional< >(n,survivors,ea),
+                            selection::proportionate< >(n,survivors,ea),
                             typename EA::recombination_operator_type(),
                             n, ea);
                 

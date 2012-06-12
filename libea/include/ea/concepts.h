@@ -46,7 +46,7 @@ namespace ea {
 	 
 	 <b>Valid expressions:</b> See member functions.
 	 
-	 <b>Models:</b> ea::tournament, ea::elitism, ea::fitness_proportional, ea::truncation, ea::random
+	 <b>Models:</b> ea::tournament, ea::elitism, ea::fitness_proportionate, ea::truncation, ea::random
 	 */
 	template <typename X, typename Population, typename EA>
 	struct SelectionStrategyConcept {

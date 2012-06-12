@@ -36,14 +36,14 @@ namespace ea {
     //! Indicates that fitness of an individual is relative to the population.
     struct relativeS { };
     
-    //! Indicates that fitness is stationary, and thus should be cached.
-    struct stableS { };
+    //! Indicates that fitness is constant, and thus should be cached.
+    struct constantS { };
 
     //! Indicates that fitness may change between evalutions, and should not be cached.
     struct nonstationaryS { };
 
-    //! Indicates that fitness is stable, and does not require its own RNG.
-    struct constantS { };
+    //! Indicates that fitness is deterministic, and does not require its own RNG.
+    struct deterministicS { };
 
     //! Indicates that fitness is stochastic, and requires its own RNG.
     struct stochasticS { };
@@ -182,7 +182,7 @@ namespace ea {
     template <typename T, 
     typename ConstantTag=constantS,
     typename RelativeTag=absoluteS,
-    typename StabilityTag=stableS>
+    typename StabilityTag=deterministicS>
     struct fitness_function {
         typedef T fitness_type;
         typedef typename fitness_type::value_type value_type;
@@ -201,9 +201,9 @@ namespace ea {
     
     
     namespace detail {
-        //! Constant: evaluate fitness without an embedded RNG.
+        //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
-        void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
+        void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
             i.fitness() = ea.fitness_function()(i,ea);
             ea.events().fitness_evaluated(i,ea);
@@ -222,9 +222,9 @@ namespace ea {
             ea.events().fitness_evaluated(i,ea);
         }        
         
-        //! Stable: calculate fitness only if this individual has not yet been evaluated.
+        //! Constant: calculate fitness only if this individual has not yet been evaluated.
         template <typename EA>
-        void calculate_fitness(typename EA::individual_type& i, stableS, EA& ea) {
+        void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
             if(i.fitness().is_null()) {
                 calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
             }

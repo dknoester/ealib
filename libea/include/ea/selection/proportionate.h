@@ -1,4 +1,4 @@
-/* proportional.h
+/* proportionate.h
  * 
  * This file is part of EALib.
  * 
@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_SELECTION_PROPORTIONAL_H_
-#define _EA_SELECTION_PROPORTIONAL_H_
+#ifndef _EA_SELECTION_PROPORTIONATE_H_
+#define _EA_SELECTION_PROPORTIONATE_H_
 
 #include <ea/attributes.h>
 #include <ea/interface.h>
@@ -27,18 +27,18 @@
 namespace ea {
 	namespace selection {
         
-		/*! Proportional selection.
+		/*! {roportionate selection.
 		 
-         This strategy selects individuals proportionally by some attribute,
+         This strategy selects individuals proportionately by some attribute,
          usually fitness.
 		 */
         template <typename AttributeAccessor=attributes::fitness>
-		struct proportional {
-            typedef AttributeAccessor acc_type; //!< Accessor for proportional selection.
+		struct proportionate {
+            typedef AttributeAccessor acc_type; //!< Accessor for proportionate selection.
             
 			//! Initializing constructor.
 			template <typename Population, typename EA>
-			proportional(std::size_t n, Population& src, EA& ea) : _sum(0.0) {
+			proportionate(std::size_t n, Population& src, EA& ea) : _sum(0.0) {
                 for(typename Population::iterator i=src.begin(); i!=src.end(); ++i) {
                     _sum += static_cast<double>(_acc(**i));
                 }
@@ -50,7 +50,7 @@ namespace ea {
                 _sum += val;
             }
 			
-			/*! Select n individuals via fitness-proportional selection.
+			/*! Select n individuals via fitness-proportionate selection.
              
              We go through a few hoops here in order to avoid n linear time lookups...
              */
@@ -81,7 +81,7 @@ namespace ea {
                 }
             }
             
-            acc_type _acc; //!< Accessor for value used for proportional selection.
+            acc_type _acc; //!< Accessor for value used for proportionate selection.
 			double _sum; //!< Sum of fitnesses in the population being selected from.
 		};
 		

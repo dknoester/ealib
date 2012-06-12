@@ -22,7 +22,7 @@
 #include <ea/interface.h>
 #include <ea/selection/truncation.h>
 #include <ea/selection/elitism.h>
-#include <ea/selection/proportional.h>
+#include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>
 #include <ea/selection/tournament.h>
 
@@ -55,7 +55,7 @@ void test_selection_strategy() {
  */
 BOOST_AUTO_TEST_CASE(selection_functional) {
 	test_selection_strategy<ea::selection::truncation>();
-	test_selection_strategy<ea::selection::proportional< > >();
+	test_selection_strategy<ea::selection::proportionate< > >();
 	test_selection_strategy<ea::selection::random>();
 	test_selection_strategy<ea::selection::tournament< > >();
 	test_selection_strategy<ea::selection::elitism<ea::selection::tournament< > > >();

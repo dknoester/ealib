@@ -27,6 +27,25 @@
 namespace ea {
     namespace initialization {
         
+        /*! Generates an individual from random bits.
+         */
+        struct random_bit {            
+            //! Generate an individual.
+            template <typename EA>
+            typename EA::population_entry_type operator()(EA& ea) {
+                typedef typename EA::representation_type representation_type;
+                typename EA::individual_type ind;
+                ind.name() = next<INDIVIDUAL_COUNT>(ea);
+                ind.repr().resize(get<REPRESENTATION_SIZE>(ea));
+                representation_type& repr=ind.repr();
+                
+                for(typename representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
+                    *i = ea.rng().bit();
+                }
+                return make_population_entry(ind,ea);
+            }
+        };
+        
         /*! Generates an individual from a uniform distribution of integers.
          */
         struct uniform_integer {            

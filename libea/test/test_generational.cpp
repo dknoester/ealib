@@ -56,5 +56,5 @@ void test_generational_model() {
  */
 BOOST_AUTO_TEST_CASE(generational_functional) {
 	test_generational_model<ea::generational_models::synchronous< > >();
-    test_generational_model<ea::generational_models::death_birth_process< > >();
+    test_generational_model<ea::generational_models::death_birth_process>();
 }

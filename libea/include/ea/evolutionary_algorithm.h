@@ -52,7 +52,7 @@ namespace ea {
 	typename MutationOperator,
 	typename FitnessFunction,
 	typename RecombinationOperator=recombination::two_point_crossover,
-	typename GenerationalModel=generational_models::synchronous<selection::proportional< >, selection::tournament< > >,
+	typename GenerationalModel=generational_models::synchronous<selection::proportionate< >, selection::tournament< > >,
 	typename Initializer=initialization::complete_population<initialization::random_individual>,
     template <typename> class IndividualAttrs=individual_attributes,
     template <typename,typename,typename> class Individual=individual,
