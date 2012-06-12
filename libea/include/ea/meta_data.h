@@ -184,7 +184,7 @@ namespace ea {
     // ea.novelty_search.*
     LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);
     LIBEA_MD_DECL(NOVELTY_NEIGHBORHOOD_SIZE, "ea.novelty_search.neighborhood.size", int);
-    LIBEA_MD_DECL(NUM_FITTEST, "ea.novelty_search.num.fittest", int);
+    LIBEA_MD_DECL(NOVELTY_FITTEST_SIZE, "ea.novelty_search.novelty.fittest.size", int);
     
     // ea.individual.*
     LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);

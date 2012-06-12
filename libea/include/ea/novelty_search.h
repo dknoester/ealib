@@ -266,7 +266,7 @@ namespace ea {
                 
                 // maintain list of objectively fittest individuals discovered thus far
                 // list is sorted descending by objective fitness
-                if (_fittest.size() < get<NUM_FITTEST>(*this)) {
+                if (_fittest.size() < get<NOVELTY_FITTEST_SIZE>(*this)) {
                     _fittest.append(i);
                 }
                 else {
