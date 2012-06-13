@@ -14,7 +14,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "42F5BD231587668700EB6B14"
-               BuildableName = "libea_test copy"
+               BuildableName = "all_ones"
                BlueprintName = "all_ones"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
@@ -40,7 +40,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "42F5BD231587668700EB6B14"
-            BuildableName = "libea_test copy"
+            BuildableName = "all_ones"
             BlueprintName = "all_ones"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
@@ -67,7 +67,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "42F5BD231587668700EB6B14"
-            BuildableName = "libea_test copy"
+            BuildableName = "all_ones"
             BlueprintName = "all_ones"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>

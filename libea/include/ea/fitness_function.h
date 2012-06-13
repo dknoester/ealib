@@ -205,7 +205,7 @@ namespace ea {
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            i.fitness() = ea.fitness_function()(i,ea);
+            ea.evaluate_fitness(i);
             ea.events().fitness_evaluated(i,ea);
         }
         
@@ -213,12 +213,10 @@ namespace ea {
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, stochasticS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            
             next<FF_RNG_SEED>(ea);
             typename EA::rng_type rng(get<FF_RNG_SEED>(ea)+1); // +1 to avoid clock
             put<FF_RNG_SEED>(get<FF_RNG_SEED>(ea), i); // save the seed that was used to evaluate this individual
-
-            i.fitness() = ea.fitness_function()(i,rng,ea);
+            ea.evaluate_fitness(i,rng);
             ea.events().fitness_evaluated(i,ea);
         }        
         
@@ -226,14 +224,14 @@ namespace ea {
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
             if(i.fitness().is_null()) {
-                calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
+                calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
             }
         }
         
         //! Nonstationary: always calculate fitness.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, nonstationaryS, EA& ea) {
-            calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
+            calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
         }
         
         //! Absolute: do nothing.
@@ -254,7 +252,7 @@ namespace ea {
     template <typename EA>
     void calculate_fitness(typename EA::individual_type& i, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        detail::calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
+        detail::calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
     }
     
     /*! Calculate fitness for the range [f,l).

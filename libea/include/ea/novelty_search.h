@@ -50,7 +50,6 @@ namespace ea {
 	template <typename Representation, typename FitnessType, typename Attributes>
 	class novelty_individual : public individual <Representation, FitnessType, Attributes> {
 	public:
-        
         typedef Representation representation_type;
 		typedef FitnessType fitness_type;
         typedef Attributes attr_type;
@@ -76,7 +75,6 @@ namespace ea {
         novelty_individual& operator=(const novelty_individual& that) {
             if(this != &that) {
                 base_type::operator=(that);
-                
                 _objective_fitness = that._objective_fitness;
                 _novelty_fitness = that._novelty_fitness;
                 _novelty_point = that._novelty_point;
@@ -95,7 +93,7 @@ namespace ea {
 		fitness_type& novelty_fitness() { return _novelty_fitness; }
         
         //! Retrieve this individual's novelty point.
-        std::vector<double> novelty_point() { return _novelty_point; }
+        std::vector<double>& novelty_point() { return _novelty_point; }
 		
         //! Retrieve this individual's fitness (const-qualified).
 		const fitness_type& objective_fitness() const { return _objective_fitness; }
@@ -212,16 +210,29 @@ namespace ea {
             return _generational_model.current_update();
         }
         
+        //! Calculate fitness (non-stochastic).
+        void evaluate_fitness(individual_type& indi) {
+            indi.fitness().nullify();
+            indi.novelty_point().clear();
+            indi.objective_fitness() = _fitness_function(indi, *this);
+        }
+        
+        //! Calculate fitness (stochastic).
+        void evaluate_fitness(individual_type& indi, rng_type& rng) {
+            indi.fitness().nullify();
+            indi.novelty_point().clear();
+            indi.objective_fitness() = _fitness_function(indi, rng, *this);
+        }
+
         //! Relativize fitness values of individuals in the range [f,l).
         template <typename ForwardIterator>
         void relativize(ForwardIterator f, ForwardIterator l) {
             
-            std::vector<double> nearest_neighbors(_archive.size() + std::distance(f, l));
             int archive_add_count = 0;
             double fitness_sum = 0.0;
             
             for(ForwardIterator i=f; i!=l; ++i) {
-                nearest_neighbors.clear();
+                std::vector<double> nearest_neighbors(_archive.size() + std::distance(f, l));
                 
                 for(ForwardIterator j=f; j!=l; ++j) {
                     if (i != j) {
@@ -245,13 +256,9 @@ namespace ea {
                 ind(i, *this).novelty_fitness() = algorithm::vmean(nearest_neighbors.begin(),
                                                                    nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
                                                                    0.0);
-                
-                // reassign novelty fitness to fitness so novelty is used in GA selection
-                ind(i, *this).objective_fitness() = ind(i, *this).fitness();
-                ind(i, *this).fitness() = ind(i, *this).novelty_fitness();
-                
+                                
                 // keep a running sum of the novelty fitness
-                fitness_sum += ind(i, *this).fitness();
+                fitness_sum += ind(i, *this).novelty_fitness();
                 
                 // add highly novel individuals to the archive
                 if(ind(i, *this).novelty_fitness() > get<NOVELTY_THRESHOLD>(*this)) {
@@ -261,15 +268,14 @@ namespace ea {
             }
             
             // adjust the archive threshold, if necessary
-            if (archive_add_count > 3) {
+            if(archive_add_count > 3) {
                 scale<NOVELTY_THRESHOLD>(1.1, *this);
-            } else if (archive_add_count == 0) {
+            } else if(archive_add_count == 0) {
                 scale<NOVELTY_THRESHOLD>(0.9, *this);
             }
             
             // if all novelty fitnesses are 0.0, reset all of them to 1.0 so selection doesn't break
             if (fitness_sum == 0.0) {
-                
                 for(ForwardIterator i=f; i!=l; ++i) {
                     ind(i, *this).fitness() = 1.0;
                 }

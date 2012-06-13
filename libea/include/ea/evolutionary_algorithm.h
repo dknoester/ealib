@@ -131,6 +131,16 @@ namespace ea {
             return _generational_model.current_update();
         }
         
+        //! Calculate fitness (non-stochastic).
+        void evaluate_fitness(individual_type& indi) {
+            indi.fitness() = _fitness_function(indi, *this);
+        }
+        
+        //! Calculate fitness (stochastic).
+        void evaluate_fitness(individual_type& indi, rng_type& rng) {
+            indi.fitness() = _fitness_function(indi, rng, *this);
+        }
+        
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
         
