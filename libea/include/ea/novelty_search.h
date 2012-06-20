@@ -67,7 +67,6 @@ namespace ea {
         //! Copy constructor.
         novelty_individual(const novelty_individual& that) : base_type(that) {
             _objective_fitness = that._objective_fitness;
-            _novelty_fitness = that._novelty_fitness;
             _novelty_point = that._novelty_point;
         }
         
@@ -76,7 +75,6 @@ namespace ea {
             if(this != &that) {
                 base_type::operator=(that);
                 _objective_fitness = that._objective_fitness;
-                _novelty_fitness = that._novelty_fitness;
                 _novelty_point = that._novelty_point;
             }
             return *this;
@@ -89,21 +87,17 @@ namespace ea {
         //! Retrieve this individual's objective fitness.
 		fitness_type& objective_fitness() { return _objective_fitness; }
         
-        //! Retrieve this individual's novelty fitness.
-		fitness_type& novelty_fitness() { return _novelty_fitness; }
+        //! Retrieve this individual's fitness (const-qualified).
+		const fitness_type& objective_fitness() const { return _objective_fitness; }
         
         //! Retrieve this individual's novelty point.
         std::vector<double>& novelty_point() { return _novelty_point; }
 		
-        //! Retrieve this individual's fitness (const-qualified).
-		const fitness_type& objective_fitness() const { return _objective_fitness; }
-        
-        //! Retrieve this individual's fitness (const-qualified).
-		const fitness_type& novelty_fitness() const { return _novelty_fitness; }
-        
+        //! Retrieve this individual's novelty point (const-qualified).
+        const std::vector<double>& novelty_point() const { return _novelty_point; }
+
 	protected:
         fitness_type _objective_fitness; //!< This individual's objective fitness.
-        fitness_type _novelty_fitness; //!< This individual's novelty fitness.
         std::vector<double> _novelty_point; //!< This individual's location in phenotype space.
         
 	private:
@@ -112,7 +106,6 @@ namespace ea {
         void serialize(Archive& ar, const unsigned int version) { 
             ar & boost::serialization::make_nvp("base_individual", boost::serialization::base_object<base_type>(*this));
             ar & boost::serialization::make_nvp("objective_fitness", _objective_fitness);
-            ar & boost::serialization::make_nvp("novelty_fitness", _novelty_fitness);
             ar & boost::serialization::make_nvp("novelty_point", _novelty_point);
 		}
 	};
@@ -253,51 +246,21 @@ namespace ea {
                 // sort novelty distances ascending
                 std::sort(nearest_neighbors.begin(), nearest_neighbors.end());
                 
-                ind(i, *this).novelty_fitness() = algorithm::vmean(nearest_neighbors.begin(),
-                                                                   nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
-                                                                   0.0);
+                ind(i, *this).fitness() = algorithm::vmean(nearest_neighbors.begin(),
+                                                           nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
+                                                           0.0);
 
-                // reassign novelty fitness to fitness so novelty is used in GA selection
-                ind(i, *this).fitness() = ind(i, *this).novelty_fitness();
-
-                // keep a running sum of the novelty fitness
-                fitness_sum += ind(i, *this).novelty_fitness();
-                
-                // add highly novel individuals to the archive
-                if(ind(i, *this).novelty_fitness() > get<NOVELTY_THRESHOLD>(*this)) {
+                // add highly novel individuals to the archive:
+                if(ind(i, *this).fitness() > get<NOVELTY_THRESHOLD>(*this)) {
                     _archive.append(i);
                     ++archive_add_count;
                 }
-                
-                // maintain list of objectively fittest individuals discovered thus far
-                // list is sorted descending by objective fitness
-                if (_fittest.size() < get<NOVELTY_FITTEST_SIZE>(*this)) {
-                    _fittest.append(i);
-                }
-                else {
-                    bool inserted = false;
-                    bool already_in = false;
-                    population_type new_fittest;
-                    
-                    for (ForwardIterator j = _fittest.begin(), end = _fittest.end(); j != end; ++j) {
-                        
-                        if (!inserted && ind(i, *this).objective_fitness() > ind(j, *this).objective_fitness()) {
-                            
-                            new_fittest.append(i);
-                            inserted = true;
-                        }
-                        
-                        if (i == j) {
-                            already_in = true;
-                        }
-                        
-                        new_fittest.append(j);
-                    }
-                    
-                    if (inserted && !already_in) {
-                        new_fittest.pop_back();
-                        std::swap(_fittest, new_fittest);
-                    }
+
+                // update the fittest list:
+                _fittest.append(i);
+                if(_fittest.size() > get<NOVELTY_FITTEST_SIZE>(*this)) {
+                    std::sort(_fittest.begin(), _fittest.end(), comparators::fitness_desc());
+                    _fittest.resize(get<NOVELTY_FITTEST_SIZE>(*this));
                 }
             }
             
@@ -306,13 +269,6 @@ namespace ea {
                 scale<NOVELTY_THRESHOLD>(1.1, *this);
             } else if(archive_add_count == 0) {
                 scale<NOVELTY_THRESHOLD>(0.9, *this);
-            }
-            
-            // if all novelty fitnesses are 0.0, reset all of them to 1.0 so selection doesn't break
-            if (fitness_sum == 0.0) {
-                for(ForwardIterator i=f; i!=l; ++i) {
-                    ind(i, *this).fitness() = 1.0;
-                }
             }
         }
         
@@ -357,9 +313,10 @@ namespace ea {
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
             ar & boost::serialization::make_nvp("population", _population);
-            ar & boost::serialization::make_nvp("archive", _archive);
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
             ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("archive", _archive);
+            ar & boost::serialization::make_nvp("fittest", _fittest);
         }
     };
     

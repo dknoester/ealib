@@ -24,13 +24,22 @@
 namespace ea {
     namespace comparators {
 
-        //! Compare individual pointers based on the natural order of their fitnesses.
+        //! Compare individual pointers based on the natural order of their fitnesses in ascending order.
         struct fitness {
             template <typename IndividualPtr>
             bool operator()(IndividualPtr x, IndividualPtr y) {
                 return x->fitness() < y->fitness();
             }
         };
+        
+        //! Compare individual pointers based on the natural order of their fitnesses in descending order.
+        struct fitness_desc {
+            template <typename IndividualPtr>
+            bool operator()(IndividualPtr x, IndividualPtr y) {
+                return x->fitness() > y->fitness();
+            }
+        };
+
         
         /*! Compare individuals based on the natural order of their m'th objective,
          which is useful with multivalued fitnesses.

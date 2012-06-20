@@ -31,6 +31,12 @@ namespace ea {
 		 
          This strategy selects individuals proportionately by some attribute,
          usually fitness.
+         
+         Note: There is a member variable here called "offset," whose purpose is
+         to offset the selection attribute when the sum of that attribute is 0.0.
+         For example, if all fitnesses in the population are 0.0, then FPS normally
+         breaks (divide by zero).  The offset prevents users of proportionate selection
+         from having to deal with this.
 		 */
         template <typename AttributeAccessor=attributes::fitness>
 		struct proportionate {
@@ -38,18 +44,16 @@ namespace ea {
             
 			//! Initializing constructor.
 			template <typename Population, typename EA>
-			proportionate(std::size_t n, Population& src, EA& ea) : _sum(0.0) {
+			proportionate(std::size_t n, Population& src, EA& ea) : _sum(0.0), _offset(0.0) {
                 for(typename Population::iterator i=src.begin(); i!=src.end(); ++i) {
                     _sum += static_cast<double>(_acc(**i));
                 }
-                assert(_sum > 0.0);
+                if(_sum == 0.0) {
+                    _sum = src.size();
+                    _offset = 1.0;
+                }
 			}
-            
-            //! Adjust the sum of fitnesses by val.
-            void adjust(double val) {
-                _sum += val;
-            }
-			
+
 			/*! Select n individuals via fitness-proportionate selection.
              
              We go through a few hoops here in order to avoid n linear time lookups...
@@ -72,7 +76,7 @@ namespace ea {
                     while((running/_sum) < (*i)) {
                         ++p;
                         assert(p!=src.end());
-                        running += static_cast<double>(_acc(**p));
+                        running += static_cast<double>(_acc(**p) + _offset);
                     }
                     
                     // ok, running fitness is >= random number; select the p'th
@@ -83,6 +87,7 @@ namespace ea {
             
             acc_type _acc; //!< Accessor for value used for proportionate selection.
 			double _sum; //!< Sum of fitnesses in the population being selected from.
+            double _offset; //!< Amount by which to offset the attribute being selected over.
 		};
 		
         
