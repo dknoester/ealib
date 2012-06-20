@@ -111,6 +111,15 @@ namespace ea {
 	};
     
     
+    //! Compare individual pointers based on the natural order of their fitnesses in descending order.
+    struct objective_fitness_desc {
+        template <typename IndividualPtr>
+        bool operator()(IndividualPtr x, IndividualPtr y) {
+            return x->objective_fitness() > y->objective_fitness();
+        }
+    };
+    
+    
     /*! Novelty search evolutionary algorithm.
      
      TODO: Explain how NS works, provide cite to paper.
@@ -256,10 +265,10 @@ namespace ea {
                     ++archive_add_count;
                 }
 
-                // update the fittest list:
+                // update the fittest list -- base this on objective fitness
                 _fittest.append(i);
                 if(_fittest.size() > get<NOVELTY_FITTEST_SIZE>(*this)) {
-                    std::sort(_fittest.begin(), _fittest.end(), comparators::fitness_desc());
+                    std::sort(_fittest.begin(), _fittest.end(), objective_fitness_desc());
                     _fittest.resize(get<NOVELTY_FITTEST_SIZE>(*this));
                 }
             }
