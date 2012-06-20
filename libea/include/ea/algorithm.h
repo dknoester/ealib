@@ -2,7 +2,7 @@
  * 
  * This file is part of EALib.
  * 
- * Copyright 2012 David B. Knoester.
+ * Copyright 2012 David B. Knoester, Randal S. Olson.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ namespace ea {
         T vmean(ForwardIterator f, ForwardIterator l, T init) {
             T sum=init;
             std::size_t c=0;
-            for( ; f!=l; ++f) {
+            for( ; f!=l; ++f, ++c) {
                 sum += *f;
             }
             return sum / static_cast<T>(c);

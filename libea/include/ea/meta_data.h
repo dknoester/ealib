@@ -2,7 +2,7 @@
  * 
  * This file is part of EALib.
  * 
- * Copyright 2012 David B. Knoester.
+ * Copyright 2012 David B. Knoester, Randal S. Olson.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,6 +184,7 @@ namespace ea {
     // ea.novelty_search.*
     LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);
     LIBEA_MD_DECL(NOVELTY_NEIGHBORHOOD_SIZE, "ea.novelty_search.neighborhood.size", int);
+    LIBEA_MD_DECL(NOVELTY_FITTEST_SIZE, "ea.novelty_search.novelty.fittest.size", int);
     
     // ea.individual.*
     LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);
