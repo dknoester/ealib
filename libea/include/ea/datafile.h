@@ -79,13 +79,13 @@ namespace ea {
             return *this;
         }
 
-        datafile& write(double v) {                
+        datafile& write(float v) {                
             _row << std::fixed << std::setprecision(4) << v << " ";
             return *this;
         }
-        
-        datafile& write(std::size_t v) {
-            _row << v << " ";
+
+        datafile& write(double v) {                
+            _row << std::fixed << std::setprecision(4) << v << " ";
             return *this;
         }
         
@@ -100,6 +100,11 @@ namespace ea {
         }
 
         datafile& write(long v) {
+            _row << v << " ";
+            return *this;
+        }
+
+        datafile& write(long unsigned int v) {
             _row << v << " ";
             return *this;
         }
