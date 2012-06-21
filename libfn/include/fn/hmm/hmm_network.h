@@ -111,6 +111,38 @@ namespace fn {
 				
 				std::copy(_h->t_output_begin(), _h->t_output_end(), result);
 			}
+            
+            //! Update this network n times, accumulating the outputs.
+			template <typename InputIterator, typename OutputIterator, typename RNG>
+			void accumulate_updates(int n, InputIterator first, InputIterator last, OutputIterator result, RNG& rng, hmm_instrument* instr=0) {
+                if(std::distance(first,last) != _h->nin) {
+                    throw hmm_exception("number of inputs do not match this network");
+                }
+                
+                std::vector<int> outputs(_h->nout);
+                
+                for( ; n>0; --n) {
+                    _h->rotate();
+                    std::copy(first, last, _h->tminus1_begin());
+                    
+                    if(instr) {
+                        instr->upper_half(_h);
+                    }
+                    for(node_list::iterator i=_nodes.begin(); i!=_nodes.end(); ++i) {
+                        (*i)->update(_h, rng(std::numeric_limits<int>::max()));
+                    }
+                    if(instr) {
+                        instr->bottom_half(_h);
+                    }
+                    
+                    for(std::size_t i=0; i<_h->nout; ++i) {
+                        outputs[i] += *(_h->t_output_begin()+i);
+                    }
+                }
+				
+				std::copy(outputs.begin(), outputs.end(), result);
+			}
+
 			
 			//! Retrieve the number of HMM nodes in this network.
 			inline std::size_t num_nodes() const { return _nodes.size(); }
