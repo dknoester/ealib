@@ -72,28 +72,28 @@ namespace ea {
         }
 
         
-        /*! Attempt to sample peaks from the fitness landscape.
-         */
-        template <typename EA>
-        void sample_fitness_peaks(EA& ea) {
-            ea.population().clear();
-            
-            unsigned int samples=0;
-            while((ea.population().size() < get<POPULATION_SIZE>(ea)) && (samples < 100000000)) {
-                typename EA::population_entry_type s=generate_individual(ea);
-                samples++;
-                
-                if(is_peak(ind(s.second,ea),ea)) {
-                    datafile df(get<ANALYSIS_OUTPUT>(ea) + "/ind", samples, ".xml");
-                    boost::archive::xml_oarchive oa(df);
-                    oa << BOOST_SERIALIZATION_NVP(ind(s.second,ea));
-                    ea.population().insert(s);
-                }
-            }
-            datafile df(get<ANALYSIS_OUTPUT>(ea) + "/fitness_peaks.xml");
-            checkpoint_save(ea, df);
-        }
-        // LIBEA_ANALYSIS_TOOL(sample_fitness_peaks, "sample peaks from the fitness landscape")
+//        /*! Attempt to sample peaks from the fitness landscape.
+//         */
+//        template <typename EA>
+//        void sample_fitness_peaks(EA& ea) {
+//            ea.population().clear();
+//            
+//            unsigned int samples=0;
+//            while((ea.population().size() < get<POPULATION_SIZE>(ea)) && (samples < 100000000)) {
+//                typename EA::population_entry_type s=generate_individual(ea);
+//                samples++;
+//                
+//                if(is_peak(ind(s.second,ea),ea)) {
+//                    datafile df(get<ANALYSIS_OUTPUT>(ea) + "/ind", samples, ".xml");
+//                    boost::archive::xml_oarchive oa(df);
+//                    oa << BOOST_SERIALIZATION_NVP(ind(s.second,ea));
+//                    ea.population().insert(s);
+//                }
+//            }
+//            datafile df(get<ANALYSIS_OUTPUT>(ea) + "/fitness_peaks.xml");
+//            checkpoint_save(ea, df);
+//        }
+//        // LIBEA_ANALYSIS_TOOL(sample_fitness_peaks, "sample peaks from the fitness landscape")
         
         
         /*! Attempt to find fitness peaks via hill climbing.
