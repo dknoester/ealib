@@ -57,6 +57,17 @@ namespace ea {
             return std::max(min, std::min(value, max));
         }
         
+        template <typename T>
+        T modnorm(T x, T floor, T limit) {
+            using namespace ea;
+            T range = limit - floor;
+            if(range==0) {
+                return limit;
+            } else {
+                return (x % range) + floor;
+            }
+        }
+        
         //! Convert a sequence of values to a single string with the given separator.
         template <typename ForwardIterator>
         std::string vcat(ForwardIterator f, ForwardIterator l, const char* sep=" ") {

@@ -35,11 +35,13 @@ namespace ea {
     LIBEA_MD_DECL(HMM_INPUT_LIMIT, "hmm.gate.input_limit", unsigned int);
     LIBEA_MD_DECL(HMM_OUTPUT_FLOOR, "hmm.gate.output_floor", unsigned int);
     LIBEA_MD_DECL(HMM_OUTPUT_LIMIT, "hmm.gate.output_limit", unsigned int);
+
 	
 	/*! HMM mutation.
+     
+     Performs per-site, duplication, and deletion mutations.
 	 */
 	struct hmm_mutation {
-		//! Mutate a single point in the given representation.
 		template <typename Representation, typename EA>
 		void operator()(Representation& repr, EA& ea) {
 			typedef typename std::vector<typename Representation::codon_type> codon_buffer;

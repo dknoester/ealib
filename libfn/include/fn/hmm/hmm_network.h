@@ -135,7 +135,7 @@ namespace fn {
                         instr->bottom_half(_h);
                     }
                     
-                    for(std::size_t i=0; i<_h->nout; ++i) {
+                    for(int i=0; i<_h->nout; ++i) {
                         outputs[i] += *(_h->t_output_begin()+i);
                     }
                 }

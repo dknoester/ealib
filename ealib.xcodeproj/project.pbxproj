@@ -37,6 +37,7 @@
 		423CBE73157D10C80003A644 /* libboost_serialization.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6D157D10C80003A644 /* libboost_serialization.dylib */; };
 		423CBE74157D10C80003A644 /* libboost_signals.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6E157D10C80003A644 /* libboost_signals.dylib */; };
 		423CBE75157D10C80003A644 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
+		42841C1715A329B200AB18BE /* test_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C1615A329B200AB18BE /* test_markov_network.cpp */; };
 		42F4B63315822A7B0075D6EF /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F4B63215822A7B0075D6EF /* attributes.h */; };
 		42F5BD2F1587668700EB6B14 /* libboost_iostreams.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6A157D10C80003A644 /* libboost_iostreams.dylib */; };
 		42F5BD301587668700EB6B14 /* libboost_program_options.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6B157D10C80003A644 /* libboost_program_options.dylib */; };
@@ -154,7 +155,7 @@
 		423CBDE6157D0E450003A644 /* numeric_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = numeric_vector.h; sourceTree = "<group>"; };
 		423CBDE7157D0E450003A644 /* rng.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rng.h; sourceTree = "<group>"; };
 		423CBDE9157D0E450003A644 /* elitism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = elitism.h; sourceTree = "<group>"; };
-		423CBDEA157D0E450003A644 /* proportionate.h */ = {isa = PBXFileReference; path = proportionate.h; sourceTree = "<group>"; };
+		423CBDEA157D0E450003A644 /* proportionate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = proportionate.h; sourceTree = "<group>"; };
 		423CBDEB157D0E450003A644 /* random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
 		423CBDEC157D0E450003A644 /* tournament.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tournament.h; sourceTree = "<group>"; };
 		423CBDED157D0E450003A644 /* truncation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = truncation.h; sourceTree = "<group>"; };
@@ -227,6 +228,10 @@
 		423CBE6D157D10C80003A644 /* libboost_serialization.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_serialization.dylib; path = /usr/local/lib/libboost_serialization.dylib; sourceTree = "<absolute>"; };
 		423CBE6E157D10C80003A644 /* libboost_signals.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_signals.dylib; path = /usr/local/lib/libboost_signals.dylib; sourceTree = "<absolute>"; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
+		42841C13159CCDA900AB18BE /* svm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svm.h; sourceTree = "<group>"; };
+		42841C14159D50E900AB18BE /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
+		42841C1515A1F37800AB18BE /* update.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = update.h; sourceTree = "<group>"; };
+		42841C1615A329B200AB18BE /* test_markov_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_markov_network.cpp; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
@@ -617,6 +622,9 @@
 			children = (
 				423CBE19157D0E450003A644 /* hmm */,
 				423CBE25157D0E450003A644 /* nn */,
+				42841C13159CCDA900AB18BE /* svm.h */,
+				42841C1515A1F37800AB18BE /* update.h */,
+				42841C14159D50E900AB18BE /* markov_network.h */,
 			);
 			path = fn;
 			sourceTree = "<group>";
@@ -693,6 +701,7 @@
 				423CBE3D157D0E450003A644 /* test_cat.cpp */,
 				423CBE3E157D0E450003A644 /* test_network.cpp */,
 				423CBE3F157D0E450003A644 /* test_nodes.cpp */,
+				42841C1615A329B200AB18BE /* test_markov_network.cpp */,
 				423CBE40157D0E450003A644 /* test_update.cpp */,
 			);
 			path = test;
@@ -867,6 +876,7 @@
 				420EB2FD157D11760060CAB2 /* test_network.cpp in Sources */,
 				420EB2FE157D11760060CAB2 /* test_nodes.cpp in Sources */,
 				420EB2FF157D11760060CAB2 /* test_update.cpp in Sources */,
+				42841C1715A329B200AB18BE /* test_markov_network.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,6 +27,7 @@
 #include <iterator>
 #include <vector>
 #include <limits>
+#include <set>
 #include <sstream>
 #include <ctime>
 #include <ea/algorithm.h>
