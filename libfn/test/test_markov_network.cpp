@@ -23,6 +23,211 @@
 
 #include "test.h"
 
+
+/*!
+ */
+BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
+    using namespace fn;
+	using namespace fn::detail;
+    using namespace ea;
+	
+	/*
+	 | 0  | 1  | 2  | 3  | rng
+	 | 0i | 1i | 0o | 1o |
+	 t------------------------
+	 -1| 0    0  | 0    0   5
+	 0 | 0    1  | 0    0   11
+	 1 | 1    0  | 0    1   13
+	 2 | 1    1  | 0    1   2
+	 3 |         | 1    1
+	 
+	 0-in 1-in
+	 |   /
+	 4-HHH
+	 /    \
+	 2-out 3-out
+	 */
+	int data[64] = {
+		42, 255-42, // start
+		1, 8, // 2in, 2out (see hmm.cpp)
+		0, 1, // inputs from edge 0,1
+		2, 3, // outputs to edge 2,3
+		10, 0, 0, 0, // P table
+		0, 10, 0, 0,
+		0, 0, 10, 0,
+		0, 0, 0, 10, // 24
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0
+	};
+	
+	// test cases:
+	int tc0[4] = { 
+		0, 0, // inputs
+		0, 0 // expected outputs
+	};
+	int tc1[4] = {
+		0, 1,
+		0, 1
+	};
+	int tc2[4] = {
+		1, 0,
+		1, 1
+	};
+	int tc3[4] = {
+		1, 1,
+		0, 1
+	};
+	
+	int* in;
+	int out[2] = { 0, 0 };
+    
+    markov_network mkv(2, 2, 1, 42); //random numbers == 5,11,13,2,10
+    put<PROB_GATE_ALLOW_0>(false, mkv);
+    put<NODE_INPUT_FLOOR>(1, mkv);
+    put<NODE_INPUT_LIMIT>(8, mkv);
+    put<NODE_OUTPUT_FLOOR>(1, mkv);
+    put<NODE_OUTPUT_LIMIT>(8, mkv);
+    put<NODE_HISTORY_FLOOR>(1, mkv);
+    put<NODE_HISTORY_LIMIT>(8, mkv);
+    
+    build_markov_network(mkv, data, data+64);
+    
+    in=tc0;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+	
+	in=tc1;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+	
+	in=tc2;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+	
+	in=tc3;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+}
+
+
+/*!
+ */
+BOOST_AUTO_TEST_CASE(test_markov_network_update1) {
+    using namespace fn;
+	using namespace fn::detail;
+    using namespace ea;
+	
+	/*
+	 | 0  | 1  | 2  | 3  | 4  |
+	 | 0i | 1i | 0o | 1o | 0h |
+	 
+	 0h:
+	 o(2,5) = f(i(0,1)); o(2,5)==i(0,1)
+	 1h:
+	 o(3) = f(i(4,5,1)); o(3)==i(1)
+	 
+	 0-in 1-in
+	 |   /
+	 4-HHH
+	 /    \
+	 2-out 3-out
+	 */	
+	int data[64] = {
+		43, 255-43, // start
+		1, 1, // 2in, 2out
+		5, 1, // inputs from node 0,1 (mod 5)
+		2, 3, // outputs to node 2,3
+		0, // d table; echos input
+		1,
+		2,
+		3,
+		0, 0, 0, 0, //16
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0
+	};
+	
+    // test cases:
+	int tc0[4] = { 
+		0, 0, // inputs
+		0, 0 // expected outputs
+	};
+	int tc1[4] = {
+		0, 1,
+		0, 1
+	};
+	int tc2[4] = {
+		1, 0,
+		1, 0
+	};
+	int tc3[4] = {
+		1, 1,
+		1, 1
+	};
+    
+    markov_network mkv(2, 2, 1);
+    put<NODE_INPUT_FLOOR>(1, mkv);
+    put<NODE_INPUT_LIMIT>(8, mkv);
+    put<NODE_OUTPUT_FLOOR>(1, mkv);
+    put<NODE_OUTPUT_LIMIT>(8, mkv);
+    put<NODE_HISTORY_FLOOR>(1, mkv);
+    put<NODE_HISTORY_LIMIT>(8, mkv);
+    
+    build_markov_network(mkv, data, data+64);
+    BOOST_CHECK(mkv.size()==1);
+    BOOST_CHECK(mkv.svm_size()==5);
+    
+	
+	int* in;
+	int out[2] = { 0, 0 };
+	
+    {
+        deterministic_mkv_node& node = *dynamic_cast<deterministic_mkv_node*>(mkv.begin()->get());
+        BOOST_CHECK(node._in[0]==0);
+        BOOST_CHECK(node._in[1]==1);
+        BOOST_CHECK(node._out[0]==2);
+        BOOST_CHECK(node._out[1]==3);
+        BOOST_CHECK(node._table(0,0)==0);
+        BOOST_CHECK(node._table(1,0)==1);
+        BOOST_CHECK(node._table(2,0)==2);
+        BOOST_CHECK(node._table(3,0)==3);
+    }
+    
+	in=tc0;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+	
+	in=tc1;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+	
+	in=tc2;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+	
+	in=tc3;
+    update_n(1, mkv, in, in+2, out);
+	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+}
+
+
 /*!
  */
 BOOST_AUTO_TEST_CASE(test_probabilistic_mkv_node_ctor) {
@@ -42,14 +247,25 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_mkv_node_ctor) {
     
     index_list_type inputs(&data[4], &data[6]);
     index_list_type outputs(&data[6], &data[8]);
-    probabilistic_mkv_node node(inputs, outputs, &data[8]);
     
-	BOOST_CHECK(node._table(0,0)==10);
-	BOOST_CHECK(node._table(0,1)==0);
-	BOOST_CHECK(node._table(1,1)==10);
-	BOOST_CHECK(node._table(3,2)==0);
-	BOOST_CHECK(node._table(3,3)==10);
-    BOOST_CHECK(node._table(2,4)==10); // row sum
+    {
+        probabilistic_mkv_node node(inputs, outputs, &data[8], true);
+        BOOST_CHECK(node._table(0,0)==10);
+        BOOST_CHECK(node._table(0,1)==0);
+        BOOST_CHECK(node._table(1,1)==10);
+        BOOST_CHECK(node._table(3,2)==0);
+        BOOST_CHECK(node._table(3,3)==10);
+        BOOST_CHECK(node._table(2,4)==10); // row sum
+    }
+    {
+        probabilistic_mkv_node node(inputs, outputs, &data[8], false);
+        BOOST_CHECK(node._table(0,0)==10);
+        BOOST_CHECK(node._table(0,1)==1);
+        BOOST_CHECK(node._table(1,1)==10);
+        BOOST_CHECK(node._table(3,2)==1);
+        BOOST_CHECK(node._table(3,3)==10);
+        BOOST_CHECK(node._table(2,4)==13); // row sum
+    }
 }
 
 /*!
@@ -78,17 +294,32 @@ BOOST_AUTO_TEST_CASE(test_synprob_mkv_node_ctor) {
     weight_vector_type poswv(&data[11], &data[14]);
     weight_vector_type negwv(&data[14], &data[17]);
     
-    synprob_mkv_node node(data[4],
-                          data[5], poswv,
-                          data[6], negwv,
-                          inputs, outputs, &data[17]);
-    
-	BOOST_CHECK(node._table(0,0)==10);
-	BOOST_CHECK(node._table(0,1)==0);
-	BOOST_CHECK(node._table(1,1)==10);
-	BOOST_CHECK(node._table(3,2)==0);
-	BOOST_CHECK(node._table(3,3)==10);
-    BOOST_CHECK(node._table(2,4)==10); // row sum
+    {
+        synprob_mkv_node node(data[4],
+                              data[5], poswv,
+                              data[6], negwv,
+                              inputs, outputs, &data[17], true);
+        
+        BOOST_CHECK(node._table(0,0)==10);
+        BOOST_CHECK(node._table(0,1)==0);
+        BOOST_CHECK(node._table(1,1)==10);
+        BOOST_CHECK(node._table(3,2)==0);
+        BOOST_CHECK(node._table(3,3)==10);
+        BOOST_CHECK(node._table(2,4)==10); // row sum
+    }
+    {
+        synprob_mkv_node node(data[4],
+                              data[5], poswv,
+                              data[6], negwv,
+                              inputs, outputs, &data[17], false);
+        
+        BOOST_CHECK(node._table(0,0)==10);
+        BOOST_CHECK(node._table(0,1)==1);
+        BOOST_CHECK(node._table(1,1)==10);
+        BOOST_CHECK(node._table(3,2)==1);
+        BOOST_CHECK(node._table(3,3)==10);
+        BOOST_CHECK(node._table(2,4)==13); // row sum
+    }
 }
 
 /*!
@@ -173,6 +404,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor) {
 	};
     
     markov_network mkv(2, 2, 2);
+    put<PROB_GATE_ALLOW_0>(false, mkv);
     put<NODE_INPUT_FLOOR>(1, mkv);
     put<NODE_INPUT_LIMIT>(8, mkv);
     put<NODE_OUTPUT_FLOOR>(1, mkv);
@@ -182,12 +414,13 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor) {
     
     build_markov_network(mkv, data, data+105);
     BOOST_CHECK(mkv.size()==4);
+    BOOST_CHECK(mkv.svm_size()==6);
     
     {
         probabilistic_mkv_node& node = *dynamic_cast<probabilistic_mkv_node*>(mkv.begin()->get());
         BOOST_CHECK(node._table(0,0)==10);
-        BOOST_CHECK(node._table(0,1)==0);
-        BOOST_CHECK(node._table(2,4)==10);
+        BOOST_CHECK(node._table(0,1)==1);
+        BOOST_CHECK(node._table(2,4)==13);
     }
     {
         probabilistic_mkv_node& node = *dynamic_cast<probabilistic_mkv_node*>((mkv.begin()+1)->get());
@@ -204,8 +437,8 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor) {
     {
         synprob_mkv_node& node = *dynamic_cast<synprob_mkv_node*>((mkv.begin()+3)->get());
         BOOST_CHECK(node._table(0,0)==10);
-        BOOST_CHECK(node._table(0,1)==0);
-        BOOST_CHECK(node._table(2,4)==10);
+        BOOST_CHECK(node._table(0,1)==1);
+        BOOST_CHECK(node._table(2,4)==13);
     }
     
 }

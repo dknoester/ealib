@@ -26,7 +26,10 @@ namespace ea {
 
 	template <typename ForwardIterator>
     class circular_iterator {
-    
+        
+        // begin=vector begin
+        // end = vector begin + loop counter 1
+        // advance to end ++, increment loop counter
     };
     
     

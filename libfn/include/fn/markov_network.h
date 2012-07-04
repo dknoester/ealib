@@ -33,6 +33,7 @@
 #include <fn/update.h>
 
 // meta-data
+LIBEA_MD_DECL(PROB_GATE_ALLOW_0, "fn.markov_network.node.allow_zero", bool);
 LIBEA_MD_DECL(NODE_INPUT_LIMIT, "fn.markov_network.node.input.limit", int);
 LIBEA_MD_DECL(NODE_INPUT_FLOOR, "fn.markov_network.node.input.floor", int);
 LIBEA_MD_DECL(NODE_OUTPUT_LIMIT, "fn.markov_network.node.output.limit", int);
@@ -188,13 +189,16 @@ namespace fn {
         struct probabilistic_mkv_node : public abstract_markov_node {
             //! Constructor.
             template <typename ForwardIterator>
-            probabilistic_mkv_node(index_list_type inputs, index_list_type outputs, ForwardIterator f) 
+            probabilistic_mkv_node(index_list_type inputs, index_list_type outputs, ForwardIterator f, bool allow_zero) 
             : abstract_markov_node(inputs,outputs), _table(1<<inputs.size(), (1<<outputs.size())+1) {
                 for(std::size_t i=0; i<_table.size1(); ++i) {
                     int sum=0;
                     for(std::size_t j=0; j<(_table.size2()-1); ++j, ++f) {
                         _table(i,j) = *f;
-                        sum += *f;
+                        if((!allow_zero) && (_table(i,j)==0)) {
+                            ++_table(i,j);
+                        }
+                        sum += _table(i,j);
                     }
                     _table(i,_table.size2()-1) = sum;
                 }
@@ -225,8 +229,8 @@ namespace fn {
             synprob_mkv_node(std::size_t hn,
                              std::size_t posf, weight_vector_type poswv, 
                              std::size_t negf, weight_vector_type negwv,
-                             index_list_type inputs, index_list_type outputs, ForwardIterator ft) 
-            : probabilistic_mkv_node(inputs, outputs, ft), _hn(hn), _posf(posf), _poswv(poswv), _negf(negf), _negwv(negwv) {
+                             index_list_type inputs, index_list_type outputs, ForwardIterator ft, bool allow_zero) 
+            : probabilistic_mkv_node(inputs, outputs, ft, allow_zero), _hn(hn), _posf(posf), _poswv(poswv), _negf(negf), _negwv(negwv) {
             }
             
             //! Learn.
@@ -337,7 +341,7 @@ namespace fn {
                         std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
                         h+=nout;
                         
-                        markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h));
+                        markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<PROB_GATE_ALLOW_0>(net)));
                         net.append(p);
                         break;
                     }
@@ -381,7 +385,7 @@ namespace fn {
                         markov_network::nodeptr_type p(new synprob_mkv_node(nhistory,
                                                                             posf, poswv,
                                                                             negf, negwv,
-                                                                            inputs, outputs, h));
+                                                                            inputs, outputs, h, get<PROB_GATE_ALLOW_0>(net)));
                         net.append(p);
                         break;
                     }
