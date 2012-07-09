@@ -50,7 +50,7 @@ void add_std_meta_data(EA& ea) {
 	put<TOURNAMENT_SELECTION_K>(1,ea);	
 	put<STEADY_STATE_LAMBDA>(1,ea);
 	put<ELITISM_N>(2,ea);
-	put<REPLACEMENT_RATE_P>(1.0,ea);
+	put<REPLACEMENT_RATE_P>(0.5,ea);
 }
 
 

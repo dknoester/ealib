@@ -33,7 +33,8 @@
 #include <fn/update.h>
 
 // meta-data
-LIBEA_MD_DECL(PROB_GATE_ALLOW_0, "fn.markov_network.node.allow_zero", bool);
+LIBEA_MD_DECL(NODE_WV_EPSILON, "fn.markov_network.node.NODE_WV_EPSILON", double);
+LIBEA_MD_DECL(NODE_ALLOW_ZERO, "fn.markov_network.node.allow_zero", bool);
 LIBEA_MD_DECL(NODE_INPUT_LIMIT, "fn.markov_network.node.input.limit", int);
 LIBEA_MD_DECL(NODE_INPUT_FLOOR, "fn.markov_network.node.input.floor", int);
 LIBEA_MD_DECL(NODE_OUTPUT_LIMIT, "fn.markov_network.node.output.limit", int);
@@ -195,14 +196,26 @@ namespace fn {
                     int sum=0;
                     for(std::size_t j=0; j<(_table.size2()-1); ++j, ++f) {
                         _table(i,j) = *f;
-                        if((!allow_zero) && (_table(i,j)==0)) {
+                        if(!allow_zero && !_table(i,j)) {
                             ++_table(i,j);
                         }
                         sum += _table(i,j);
                     }
                     _table(i,_table.size2()-1) = sum;
+                    if(sum == 0) {
+                        fill_row(i, 1);
+                    }
                 }
             }
+
+            //! Fills row i of the table with v.
+            void fill_row(std::size_t i, int v) {
+                for(std::size_t j=0; j<(_table.size2()-1); ++j) {
+                    _table(i, j) = v;
+                }
+                _table(i, _table.size2()-1) = (_table.size2()-1) * v;
+            }
+            
             
             //! Update the Markov network from this probabilistic node.
             void update(markov_network& mkv) {
@@ -241,7 +254,7 @@ namespace fn {
                     for(std::size_t i=0; (i<_poswv.size()) && (i<_history.size()); ++i) {
                         int& cell = _table(_history[i].first, _history[i].second);
                         int last=cell;
-                        cell = static_cast<int>(static_cast<double>(last) / _poswv[i]);
+                        cell = static_cast<int>(static_cast<double>(cell) * (1.0 + _poswv[i]));
                         _table(_history[i].first, _table.size2()-1) += (cell-last);
                     }
                 }
@@ -249,9 +262,13 @@ namespace fn {
                     // negative feedback
                     for(std::size_t i=0; (i<_negwv.size()) && (i<_history.size()); ++i) {
                         int& cell = _table(_history[i].first, _history[i].second);
+                        int& sum = _table(_history[i].first, _table.size2()-1);
                         int last=cell;
-                        cell = static_cast<int>(static_cast<double>(last) * _negwv[i]);
-                        _table(_history[i].first, _table.size2()-1) -= (last-cell);
+                        cell = static_cast<int>(static_cast<double>(cell) * (1.0 - _negwv[i]));
+                        sum -= (last-cell);
+                        if(sum == 0) {
+                            fill_row(_history[i].first, 1);
+                        }
                     }
                 }
             }
@@ -341,7 +358,7 @@ namespace fn {
                         std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
                         h+=nout;
                         
-                        markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<PROB_GATE_ALLOW_0>(net)));
+                        markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<NODE_ALLOW_ZERO>(net)));
                         net.append(p);
                         break;
                     }
@@ -376,16 +393,18 @@ namespace fn {
                         std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
                         h+=nout;                        
                         weight_vector_type poswv(h, h+nhistory);
-                        std::transform(poswv.begin(), poswv.end(), poswv.begin(), std::bind2nd(std::divides<double>(), 32767.0));
+                        std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
+                                       std::bind2nd(std::multiplies<double>(), get<NODE_WV_EPSILON>(net)));
                         h+=nhistory;
                         weight_vector_type negwv(h, h+nhistory);
-                        std::transform(negwv.begin(), negwv.end(), negwv.begin(), std::bind2nd(std::divides<double>(), 32767.0));
+                        std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
+                                       std::bind2nd(std::multiplies<double>(), get<NODE_WV_EPSILON>(net)));
                         h+=nhistory;
                         
                         markov_network::nodeptr_type p(new synprob_mkv_node(nhistory,
                                                                             posf, poswv,
                                                                             negf, negwv,
-                                                                            inputs, outputs, h, get<PROB_GATE_ALLOW_0>(net)));
+                                                                            inputs, outputs, h, get<NODE_ALLOW_ZERO>(net)));
                         net.append(p);
                         break;
                     }

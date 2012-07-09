@@ -38,6 +38,7 @@
 		423CBE74157D10C80003A644 /* libboost_signals.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6E157D10C80003A644 /* libboost_signals.dylib */; };
 		423CBE75157D10C80003A644 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42841C1715A329B200AB18BE /* test_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C1615A329B200AB18BE /* test_markov_network.cpp */; };
+		42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_circular.cpp */; };
 		42F4B63315822A7B0075D6EF /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F4B63215822A7B0075D6EF /* attributes.h */; };
 		42F5BD2F1587668700EB6B14 /* libboost_iostreams.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6A157D10C80003A644 /* libboost_iostreams.dylib */; };
 		42F5BD301587668700EB6B14 /* libboost_program_options.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6B157D10C80003A644 /* libboost_program_options.dylib */; };
@@ -125,7 +126,7 @@
 		423CBDC4157D0E450003A644 /* task_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_library.h; sourceTree = "<group>"; };
 		423CBDC5157D0E450003A644 /* topology.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = topology.h; sourceTree = "<group>"; };
 		423CBDC6157D0E450003A644 /* checkpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkpoint.h; sourceTree = "<group>"; };
-		423CBDC7157D0E450003A644 /* circular_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = circular_vector.h; sourceTree = "<group>"; };
+		423CBDC7157D0E450003A644 /* cvector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cvector.h; sourceTree = "<group>"; };
 		423CBDC8157D0E450003A644 /* cmdline_interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cmdline_interface.h; sourceTree = "<group>"; };
 		423CBDC9157D0E450003A644 /* concepts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = concepts.h; sourceTree = "<group>"; };
 		423CBDCA157D0E450003A644 /* datafile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = datafile.h; sourceTree = "<group>"; };
@@ -232,6 +233,7 @@
 		42841C14159D50E900AB18BE /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
 		42841C1515A1F37800AB18BE /* update.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = update.h; sourceTree = "<group>"; };
 		42841C1615A329B200AB18BE /* test_markov_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_markov_network.cpp; sourceTree = "<group>"; };
+		42841C2915A5F4D800AB18BE /* test_circular.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_circular.cpp; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
@@ -362,11 +364,11 @@
 				423CBDBA157D0E450003A644 /* analysis.h */,
 				423CBDBB157D0E450003A644 /* artificial_life */,
 				423CBDC6157D0E450003A644 /* checkpoint.h */,
-				423CBDC7157D0E450003A644 /* circular_vector.h */,
 				42F4B63215822A7B0075D6EF /* attributes.h */,
 				423CBDC8157D0E450003A644 /* cmdline_interface.h */,
 				42F4B6191580EA0B0075D6EF /* comparators.h */,
 				423CBDC9157D0E450003A644 /* concepts.h */,
+				423CBDC7157D0E450003A644 /* cvector.h */,
 				423CBDCA157D0E450003A644 /* datafile.h */,
 				423CBDCB157D0E450003A644 /* datafiles */,
 				423CBDCD157D0E450003A644 /* events.h */,
@@ -491,6 +493,7 @@
 			children = (
 				423CBDF3157D0E450003A644 /* test.cpp */,
 				423CBDF4157D0E450003A644 /* test.h */,
+				42841C2915A5F4D800AB18BE /* test_circular.cpp */,
 				423CBDF5157D0E450003A644 /* test_analysis.cpp */,
 				423CBDF6157D0E450003A644 /* test_checkpoint.cpp */,
 				423CBDF7157D0E450003A644 /* test_ealife.cpp */,
@@ -915,6 +918,7 @@
 				423CBE67157D0FF50003A644 /* test_recombination.cpp in Sources */,
 				423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */,
 				423CBE69157D0FF50003A644 /* test_selection.cpp in Sources */,
+				42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

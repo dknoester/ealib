@@ -21,12 +21,12 @@
 #define _FN_HMM_HMM_H_
 
 #include <vector>
-#include <ea/circular_vector.h>
+#include <ea/cvector.h>
 
 namespace fn {
 	namespace hmm {
 
-		typedef ea::circular_vector<unsigned int> genome;
+		typedef ea::cvector<unsigned int> genome;
 		
         typedef std::vector<int> state_vector_type;
         

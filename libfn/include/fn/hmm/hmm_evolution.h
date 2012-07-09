@@ -92,8 +92,8 @@ namespace ea {
 			int i,j;
 			for(i=0; i<4; ++i) {
 				j=ea.rng()(repr.size()-100);
-				repr[j]=42;
-				repr[j+1]=(255-42);
+				repr[j]=43;
+				repr[j+1]=(255-43);
 				for(int k=2; k<20; ++k) {
 					repr[j+k]=ea.rng()(256);
 				}
