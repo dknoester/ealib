@@ -33,7 +33,12 @@
 #include <fn/update.h>
 
 // meta-data
-LIBEA_MD_DECL(NODE_WV_EPSILON, "fn.markov_network.node.NODE_WV_EPSILON", double);
+LIBEA_MD_DECL(MKV_INPUT_N, "fn.markov_network.input.n", int);
+LIBEA_MD_DECL(MKV_OUTPUT_N, "fn.markov_network.output.n", int);
+LIBEA_MD_DECL(MKV_HIDDEN_N, "fn.markov_network.hidden.n", int);
+LIBEA_MD_DECL(MKV_UPDATE_N, "fn.markov_network.update.n", int);
+LIBEA_MD_DECL(MKV_INITIAL_NODES, "fn.markov_network.initial_nodes", int);
+LIBEA_MD_DECL(NODE_WV_STEPS, "fn.markov_network.node.wv_steps", double);
 LIBEA_MD_DECL(NODE_ALLOW_ZERO, "fn.markov_network.node.allow_zero", bool);
 LIBEA_MD_DECL(NODE_INPUT_LIMIT, "fn.markov_network.node.input.limit", int);
 LIBEA_MD_DECL(NODE_INPUT_FLOOR, "fn.markov_network.node.input.floor", int);
@@ -76,6 +81,10 @@ namespace fn {
         //! Constructor.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=42)
         : _nin(nin), _nout(nout), _nhid(nhid), _svm(_nin+_nout+_nhid), _rng(seed) {
+        }
+        
+        markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, const rng_type& rng)
+        : _nin(nin), _nout(nout), _nhid(nhid), _svm(_nin+_nout+_nhid), _rng(rng) {
         }
         
         //! Append a node to this network.
@@ -327,12 +336,12 @@ namespace fn {
         
         enum node_type { PROB=42, DET=43, SYNPROB=44 };
     } // detail
-    
+
         
-    /*! Build a Markov network from the genome [f,l).
+    /*! Build a Markov network from the genome [f,l), with the given meta data.
      */
-    template <typename Network, typename ForwardIterator>
-    void build_markov_network(Network& net, ForwardIterator f, ForwardIterator l) {
+    template <typename Network, typename ForwardIterator, typename MetaData>
+    void build_markov_network(Network& net, ForwardIterator f, ForwardIterator l, MetaData& md) {
         using namespace detail;
         using namespace ea;
         using namespace ea::algorithm;
@@ -349,8 +358,8 @@ namespace fn {
                     case PROB: { // build a probabilistic node
                         ForwardIterator h=f;
                         ++h;
-                        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(net), get<NODE_INPUT_LIMIT>(net));
-                        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(net), get<NODE_OUTPUT_LIMIT>(net));
+                        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+                        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
                         index_list_type inputs(h, h+nin);
                         std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
                         h+=nin;
@@ -358,15 +367,15 @@ namespace fn {
                         std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
                         h+=nout;
                         
-                        markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<NODE_ALLOW_ZERO>(net)));
+                        markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
                         net.append(p);
                         break;
                     }
                     case DET: { // build a deterministic node
                         ForwardIterator h=f;
                         ++h;
-                        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(net), get<NODE_INPUT_LIMIT>(net));
-                        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(net), get<NODE_OUTPUT_LIMIT>(net));
+                        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+                        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
                         index_list_type inputs(h, h+nin);
                         std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
                         h+=nin;
@@ -381,9 +390,9 @@ namespace fn {
                     case SYNPROB: { // build a synaptically learning probabilistic node
                         ForwardIterator h=f;
                         ++h;
-                        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(net), get<NODE_INPUT_LIMIT>(net));
-                        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(net), get<NODE_OUTPUT_LIMIT>(net));
-                        int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(net), get<NODE_HISTORY_LIMIT>(net));
+                        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+                        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
+                        int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
                         int posf=*h++ % net.svm_size();
                         int negf=*h++ % net.svm_size();
                         index_list_type inputs(h, h+nin);
@@ -394,17 +403,17 @@ namespace fn {
                         h+=nout;                        
                         weight_vector_type poswv(h, h+nhistory);
                         std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
-                                       std::bind2nd(std::multiplies<double>(), get<NODE_WV_EPSILON>(net)));
+                                       std::bind2nd(std::multiplies<double>(), 1.0/get<NODE_WV_STEPS>(md)));
                         h+=nhistory;
                         weight_vector_type negwv(h, h+nhistory);
                         std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
-                                       std::bind2nd(std::multiplies<double>(), get<NODE_WV_EPSILON>(net)));
+                                       std::bind2nd(std::multiplies<double>(), 1.0/get<NODE_WV_STEPS>(md)));
                         h+=nhistory;
                         
                         markov_network::nodeptr_type p(new synprob_mkv_node(nhistory,
                                                                             posf, poswv,
                                                                             negf, negwv,
-                                                                            inputs, outputs, h, get<NODE_ALLOW_ZERO>(net)));
+                                                                            inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
                         net.append(p);
                         break;
                     }

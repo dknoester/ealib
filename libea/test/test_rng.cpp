@@ -32,6 +32,16 @@ BOOST_AUTO_TEST_CASE(rng_functional) {
 	for(int i=0; i<100; ++i) {
 		BOOST_CHECK_EQUAL(rng1.bit(), rng2.bit());
 	}
+    
+    default_rng_type rng3(rng1);
+	for(int i=0; i<100; ++i) {
+		BOOST_CHECK_EQUAL(rng1.bit(), rng3.bit());
+	}    
+    
+    rng2 = rng3;
+	for(int i=0; i<100; ++i) {
+		BOOST_CHECK_EQUAL(rng2.bit(), rng3.bit());
+	}    
 }
 
 

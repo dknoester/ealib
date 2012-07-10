@@ -17,26 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _FN_UPDATE_H_
+#define _FN_UPDATE_H_
 
-
-/*! Update a functional network n times.
- */
-template <typename Network, typename InputIterator, typename OutputIterator>
-void update_n(std::size_t n, Network& net, InputIterator f, InputIterator l, OutputIterator result) {
-    if(std::distance(f,l) != net.input_size()) {
-        //throw hmm_exception("number of inputs do not match this network");
-    }
+namespace fn {
     
-    for( ; n>0; --n) {
-        net.rotate();
-        std::copy(f, l, net.tminus1_inputs());
-        
-        net.top_half();
-        for(typename Network::nodelist_type::iterator i=net.begin(); i!=net.end(); ++i) {
-            (*i)->update(net);
+    /*! Update a functional network n times.
+     */
+    template <typename Network, typename InputIterator, typename OutputIterator>
+    void update_n(std::size_t n, Network& net, InputIterator f, InputIterator l, OutputIterator result) {
+        if(std::distance(f,l) != net.input_size()) {
+            //throw hmm_exception("number of inputs do not match this network");
         }
-        net.bottom_half();
+        
+        for( ; n>0; --n) {
+            net.rotate();
+            std::copy(f, l, net.tminus1_inputs());
+            
+            net.top_half();
+            for(typename Network::nodelist_type::iterator i=net.begin(); i!=net.end(); ++i) {
+                (*i)->update(net);
+            }
+            net.bottom_half();
+        }
+        
+        std::copy(net.t_outputs(), net.t_outputs()+net.output_size(), result);
     }
     
-    std::copy(net.t_outputs(), net.t_outputs()+net.output_size(), result);
-}
+} // fn
+
+#endif

@@ -234,6 +234,7 @@
 		42841C1515A1F37800AB18BE /* update.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = update.h; sourceTree = "<group>"; };
 		42841C1615A329B200AB18BE /* test_markov_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_markov_network.cpp; sourceTree = "<group>"; };
 		42841C2915A5F4D800AB18BE /* test_circular.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_circular.cpp; sourceTree = "<group>"; };
+		42841C3415AC6F6500AB18BE /* markov_network_ea.h */ = {isa = PBXFileReference; path = markov_network_ea.h; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
@@ -628,6 +629,7 @@
 				42841C13159CCDA900AB18BE /* svm.h */,
 				42841C1515A1F37800AB18BE /* update.h */,
 				42841C14159D50E900AB18BE /* markov_network.h */,
+				42841C3415AC6F6500AB18BE /* markov_network_ea.h */,
 			);
 			path = fn;
 			sourceTree = "<group>";

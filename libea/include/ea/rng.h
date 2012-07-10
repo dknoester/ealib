@@ -78,6 +78,22 @@ namespace ea {
 			reset(s);
 		}
 		
+        //! Copy constructor.
+		rng(const rng& that) : _eng(that._eng) {
+            _p.reset(new real_rng_type(_eng, uniform_real_dist(0.0,1.0)));
+			_bit.reset(new int_rng_type(_eng, uniform_int_dist(0,1)));
+        }
+        
+		//! Assignment operator.
+		rng& operator=(const rng& that) {
+            if(this != &that) {
+                _eng = that._eng;
+                _p.reset(new real_rng_type(_eng, uniform_real_dist(0.0,1.0)));
+                _bit.reset(new int_rng_type(_eng, uniform_int_dist(0,1)));
+            }
+            return *this;
+        }		
+
 		//! Reset this random number generator with the specified seed.
 		void reset(unsigned int s) {
 			if(s == 0) {
@@ -259,11 +275,6 @@ namespace ea {
 		}
 
 	private:
-		//! Disallowing copy construction.
-		rng(const rng&);
-		//! Disallowing assignment operator.
-		rng* operator=(const rng&);
-		
 		engine_type _eng; //!< Underlying generator of randomness.
 		boost::scoped_ptr<real_rng_type> _p; //!< Generator for probabilities.
 		boost::scoped_ptr<int_rng_type> _bit; //!< Generator for bits.

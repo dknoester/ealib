@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update3) {
     put<NODE_HISTORY_FLOOR>(1, mkv);
     put<NODE_HISTORY_LIMIT>(8, mkv);
     
-    build_markov_network(mkv, data, data+33);
+    build_markov_network(mkv, data, data+33, mkv);
     
     in=tc0;
     update_n(1, mkv, in, in+2, out);
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
     put<NODE_HISTORY_FLOOR>(1, mkv);
     put<NODE_HISTORY_LIMIT>(8, mkv);
     
-    build_markov_network(mkv, data, data+64);
+    build_markov_network(mkv, data, data+64, mkv);
     
     in=tc0;
     update_n(1, mkv, in, in+2, out);
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update1) {
     put<NODE_HISTORY_FLOOR>(1, mkv);
     put<NODE_HISTORY_LIMIT>(8, mkv);
     
-    build_markov_network(mkv, data, data+64);
+    build_markov_network(mkv, data, data+64, mkv);
     BOOST_CHECK(mkv.size()==1);
     BOOST_CHECK(mkv.svm_size()==5);
     
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
     put<NODE_HISTORY_LIMIT>(8, mkv);
     
     cvector<int> cv(data, data+109);
-    build_markov_network(mkv, cv.begin(), cv.end());
+    build_markov_network(mkv, cv.begin(), cv.end(), mkv);
     BOOST_CHECK(mkv.size()==4);
     BOOST_CHECK(mkv.svm_size()==6);
     
@@ -616,7 +616,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor1) {
     put<NODE_HISTORY_FLOOR>(1, mkv);
     put<NODE_HISTORY_LIMIT>(8, mkv);
     
-    build_markov_network(mkv, data, data+109);
+    build_markov_network(mkv, data, data+109, mkv);
     BOOST_CHECK(mkv.size()==4);
     BOOST_CHECK(mkv.svm_size()==6);
     
