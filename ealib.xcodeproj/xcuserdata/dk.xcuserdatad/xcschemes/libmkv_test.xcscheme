@@ -13,9 +13,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "42F5BD231587668700EB6B14"
-               BuildableName = "all_ones"
-               BlueprintName = "all_ones"
+               BlueprintIdentifier = "42841C5215ADA3F700AB18BE"
+               BuildableName = "libmkv_test"
+               BlueprintName = "libmkv_test"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -38,9 +38,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "42F5BD231587668700EB6B14"
-            BuildableName = "all_ones"
-            BlueprintName = "all_ones"
+            BlueprintIdentifier = "42841C5215ADA3F700AB18BE"
+            BuildableName = "libmkv_test"
+            BlueprintName = "libmkv_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -55,9 +55,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "42F5BD231587668700EB6B14"
-            BuildableName = "all_ones"
-            BlueprintName = "all_ones"
+            BlueprintIdentifier = "42841C5215ADA3F700AB18BE"
+            BuildableName = "libmkv_test"
+            BlueprintName = "libmkv_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
