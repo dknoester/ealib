@@ -210,6 +210,9 @@ namespace ea {
 
 	// ea.population.*
 	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
+
+	// ea.meta_population.*
+    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.meta_population.size", unsigned int);
     
     // ea.initialization.*
     LIBEA_MD_DECL(INITIALIZATION_UNIFORM_INT_MIN, "ea.initialization.uniform_integer.min", int);

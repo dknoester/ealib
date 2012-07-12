@@ -199,6 +199,17 @@ namespace ea {
             }
         };
         
+        /*! Initializes all subpopulations that are part of a meta-population EA.
+         */
+        struct all_subpopulations {
+            template <typename EA>
+            void operator()(EA& ea) {
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    generate_initial_population(*i);
+                }
+            }
+        };
+        
     } // initialization
 } // ea
 

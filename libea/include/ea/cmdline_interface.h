@@ -355,8 +355,7 @@ namespace ea {
         tool_registry _tools; //!< Registry for EA analysis tools.
         event_list _events; //!< List of all the events attached to an EA.
     };
-    
-  
+
 } // ea
 
 
