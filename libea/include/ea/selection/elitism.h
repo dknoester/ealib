@@ -44,7 +44,7 @@ namespace ea {
 
 			//! Initializing constructor.
 			template <typename Population, typename EA>
-			elitism(std::size_t n, Population& src, EA& ea) : _embedded(src,ea) {
+			elitism(std::size_t n, Population& src, EA& ea) : _embedded(n,src,ea) {
 			}
             
 			/*! Preserve the elite individuals from the src population.
