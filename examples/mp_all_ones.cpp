@@ -23,6 +23,7 @@
 #include <ea/representations/numeric_vector.h>
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/generation_fitness.h>
+#include <ea/adaptive_hfc.h>
 using namespace ea;
 
 
@@ -46,6 +47,7 @@ class ones : public cmdline_interface<EA> {
 public:
     virtual void gather_options() {
         // ea options
+        add_option<META_POPULATION_SIZE>(this);
         add_option<REPRESENTATION_SIZE>(this);
         add_option<POPULATION_SIZE>(this);
         add_option<REPLACEMENT_RATE_P>(this);
@@ -63,7 +65,8 @@ public:
     }
     
     virtual void gather_events(EA& ea) {
-        add_event<datafiles::generation_fitness>(this, ea);
+//        add_event<datafiles::generation_fitness>(this, ea);
+        add_event<adaptive_hfc>(this, ea);
     };
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, ones);

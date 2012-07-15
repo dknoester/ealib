@@ -57,6 +57,12 @@ namespace control {
             std::fill(_t->begin(), _t->end(), state_type());
         }
         
+        //! Clear the state vectors.
+        void clear() { 
+            std::fill(_tminus1->begin(), _tminus1->end(), state_type());
+            std::fill(_t->begin(), _t->end(), state_type());
+        }
+        
         //! Retrieve the state vector at time t.
         state_vector_type& t() { return *_t; }
         

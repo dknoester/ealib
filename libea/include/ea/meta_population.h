@@ -65,7 +65,7 @@ namespace ea {
         typedef boost::indirect_iterator<typename ea_container_type::const_iterator> const_iterator;
         
         //! Construct a meta-population EA.
-        meta_population() {
+        meta_population() : _update(0) {
         }
         
         //! Accessor for the random number generator.
@@ -73,6 +73,9 @@ namespace ea {
 
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }
+
+        //! Returns the event handler.
+        event_handler_type& events() { return _events; }
 
         //! Return the number of embedded EAs.
         std::size_t size() const {
@@ -109,7 +112,7 @@ namespace ea {
             for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
                 ea_type_ptr p(new ea_type());
                 p->md() = md();
-                p->rng().reset(rng()(std::numeric_limits<unsigned int>::max()));
+                p->rng().reset(rng()(std::numeric_limits<int>::max()));
                 p->initialize();
                 _eas.push_back(p);
             }
@@ -143,10 +146,17 @@ namespace ea {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->update();
             }
+            ++_update;
             _events.end_of_update(*this);
         }        
         
+        //! Returns the current update of this EA.
+        unsigned long current_update() {
+            return _update;
+        }
+
     protected:
+        unsigned long _update; //!< Meta-population update.
         rng_type _rng; //!< Random number generator.
         meta_data _md; //!< Meta-data for the meta-population.
         event_handler_type _events; //!< Event handler.        
@@ -157,6 +167,7 @@ namespace ea {
         
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
+            ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("meta_data", _md);
 
@@ -169,6 +180,7 @@ namespace ea {
 		
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("meta_data", _md);
 

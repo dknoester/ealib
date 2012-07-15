@@ -368,6 +368,7 @@
 		42841C8115AEFAE700AB18BE /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
 		42841C9515AFB1A100AB18BE /* mp_all_ones.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mp_all_ones.cpp; sourceTree = "<group>"; };
 		42841CA615AFB23200AB18BE /* mp_all_ones */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mp_all_ones; sourceTree = BUILT_PRODUCTS_DIR; };
+		42841D1515B2F35300AB18BE /* adaptive_hfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = adaptive_hfc.h; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
@@ -528,6 +529,7 @@
 		423CBDAD157D0E450003A644 /* ea */ = {
 			isa = PBXGroup;
 			children = (
+				42841D1515B2F35300AB18BE /* adaptive_hfc.h */,
 				423CBDAE157D0E450003A644 /* algorithm.h */,
 				423CBDAF157D0E450003A644 /* analysis */,
 				423CBDBA157D0E450003A644 /* analysis.h */,
@@ -1587,6 +1589,7 @@
 				42841C8615AFB14100AB18BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		42841CA315AFB23200AB18BE /* Build configuration list for PBXNativeTarget "mp_all_ones" */ = {
 			isa = XCConfigurationList;

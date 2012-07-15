@@ -105,6 +105,9 @@ namespace mkv {
         //! Rotate this network's states.
         void rotate() { _svm.rotate(); }
         
+        //! Clear the network.
+        void clear() { _svm.clear(); }
+        
         //! Called immediately before network nodes are updated.
         void top_half() { }
         
@@ -291,7 +294,7 @@ namespace mkv {
                 // set the output:
                 std::size_t row = get_input(mkv);
                 row_type r(_table, row);
-                int rnum = mkv.rng()(*r.rbegin()+1);
+                int rnum = mkv.rng()(*r.rbegin()+1); // this can overflow...
                 int col=0;
                 while(rnum > r[col]) {
                     rnum -= r[col];
