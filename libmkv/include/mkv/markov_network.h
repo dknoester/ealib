@@ -265,23 +265,37 @@ namespace mkv {
                 if(mkv.svm().state_tminus1(_posf)) {
                     // positive feedback
                     for(std::size_t i=0; (i<_poswv.size()) && (i<_history.size()); ++i) {
-                        int& cell = _table(_history[i].first, _history[i].second);
-                        int last=cell;
-                        cell = static_cast<int>(static_cast<double>(cell) * (1.0 + _poswv[i]));
-                        _table(_history[i].first, _table.size2()-1) += (cell-last);
+                        // calculate delta, divide through by sum/(sum+delta), re-sum
+                        double delta = _table(_history[i].first, _history[i].second) * _poswv[i];
+                        _table(_history[i].first, _history[i].second) += static_cast<int>(delta);
+
+                        double scale = static_cast<double>(_table(_history[i].first, _table.size2()-1));
+                        scale = scale / (scale + delta);                        
+
+                        int sum=0;
+                        for(std::size_t j=0; j<_table.size2(); ++j) {
+                            _table(_history[i].first, j) = static_cast<int>(scale*static_cast<double>(_table(_history[i].first, j)));
+                            sum += _table(_history[i].first, j);
+                        }
+                        _table(_history[i].first, _table.size2()-1) = sum;
                     }
                 }
                 if(mkv.svm().state_tminus1(_negf)) {
                     // negative feedback
                     for(std::size_t i=0; (i<_negwv.size()) && (i<_history.size()); ++i) {
-                        int& cell = _table(_history[i].first, _history[i].second);
-                        int& sum = _table(_history[i].first, _table.size2()-1);
-                        int last=cell;
-                        cell = static_cast<int>(static_cast<double>(cell) * (1.0 - _negwv[i]));
-                        sum -= (last-cell);
-                        if(sum == 0) {
-                            fill_row(_history[i].first, 1);
+                        // calculate delta, divide through by sum/(sum+delta), re-sum
+                        double delta = _table(_history[i].first, _history[i].second) * _negwv[i];
+                        _table(_history[i].first, _history[i].second) -= static_cast<int>(delta);
+                        
+                        double scale = static_cast<double>(_table(_history[i].first, _table.size2()-1));
+                        scale = scale / (scale - delta);                        
+                        
+                        int sum=0;
+                        for(std::size_t j=0; j<_table.size2(); ++j) {
+                            _table(_history[i].first, j) = static_cast<int>(scale*static_cast<double>(_table(_history[i].first, j)));
+                            sum += _table(_history[i].first, j);
                         }
+                        _table(_history[i].first, _table.size2()-1) = sum;
                     }
                 }
             }
@@ -294,6 +308,7 @@ namespace mkv {
                 // set the output:
                 std::size_t row = get_input(mkv);
                 row_type r(_table, row);
+                int s = *r.rbegin();
                 int rnum = mkv.rng()(*r.rbegin()+1); // this can overflow...
                 int col=0;
                 while(rnum > r[col]) {
