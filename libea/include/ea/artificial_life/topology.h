@@ -38,7 +38,7 @@ namespace ea {
         
         //! Location type.
         struct location_type {
-            std::size_t idx; //!< Location index.
+            location_type(individual_ptr_type ip) : p(ip) { }
             individual_ptr_type p; //!< Individual (if any) at this location.
         };
         
@@ -78,7 +78,7 @@ namespace ea {
         
         //! Initialize this topology.
         void initialize(ea_type& ea) {
-            _locs.resize(get<POPULATION_SIZE>(ea));
+            //_locs.resize(get<POPULATION_SIZE>(ea));
         }
         
         //!< Retrieve the neighborhood of the given individual.
@@ -88,7 +88,8 @@ namespace ea {
         
         //! Replace the organism (if any) living in location l with p.
         template <typename AL>
-        void replace(location_type& l, individual_ptr_type p, AL& al) {
+        void replace(iterator i, individual_ptr_type p, AL& al) {
+            location_type& l=(*i);
             // kill the occupant of l, if any
             if(l.p) {
                 l.p->alive() = false;
@@ -96,6 +97,11 @@ namespace ea {
             l.p = p;
         }
         
+        void place(individual_ptr_type p) {
+            _locs.push_back(p);
+        }
+        
+        int size() { return _locs.size(); }
         //! Serialize this topology.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {

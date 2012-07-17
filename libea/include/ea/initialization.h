@@ -199,6 +199,30 @@ namespace ea {
             }
         };
         
+        /*! Initialization method that generates a complete population.
+         */
+        template <typename IndividualGenerator>
+        struct alife_population {
+            template <typename EA>
+            void operator()(EA& ea) {
+                typename EA::population_type ancestral;
+                typename EA::individual_type a = typename EA::individual_type();
+                a.name() = next<INDIVIDUAL_COUNT>(ea);
+                a.generation() = -1.0;
+                a.update() = ea.current_update();
+                ancestral.append(make_population_entry(a,ea));
+                
+                IndividualGenerator ig;
+                ea.population().clear();
+                generate_individuals_n(ea.population(), ig, get<POPULATION_SIZE>(ea), ea);
+                
+                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+                    ea.events().inheritance(ancestral,ind(i,ea),ea);
+                    ea.topo().place(ptr(i,ea));
+                }
+            }
+        };
+        
         /*! Initializes all subpopulations that are part of a meta-population EA.
          */
         struct all_subpopulations {

@@ -41,7 +41,20 @@
 #include <ea/rng.h>
 
 
-namespace ea {    
+namespace ea {
+    
+    template <typename EA>
+	struct alife_event_handler : event_handler<EA> {
+		/* life history events */
+
+        //! 
+        boost::signal<void(typename EA::individual_type&, // individual
+                           double, // amount of resource consumed
+                           const std::string&, // task name
+                           EA&)> task_performed;
+
+    };
+
     
     /*! Artificial life top-level evolutionary algorithm.
      
@@ -75,12 +88,12 @@ namespace ea {
     typename ReplacementStrategy=first_neighbor,
     typename Scheduler=round_robin,
 	typename MutationOperator=mutation::per_site<mutation::uniform_integer>,
-	template <typename,typename,typename> class Environment=environment,
+	template <typename,typename> class Environment=environment,
     typename TaskLibrary=task_library,
     template <typename,typename,typename> class Individual=organism,
 	template <typename, typename> class Population=population,
-	typename Initializer=initialization::random_individual,
-	template <typename> class EventHandler=event_handler,
+	typename Initializer=initialization::alife_population<initialization::random_individual>,
+	template <typename> class EventHandler=alife_event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
     class artificial_life {
@@ -110,7 +123,7 @@ namespace ea {
         //! Replacment strategy type.
         typedef ReplacementStrategy replacement_type;
         //! Environment type.
-        typedef Environment<topology_type,replacement_type,scheduler_type> environment_type;
+        typedef Environment<replacement_type,scheduler_type> environment_type;
         //! Task library type.
         typedef TaskLibrary tasklib_type;
         //! Mutation operator type.
@@ -134,6 +147,7 @@ namespace ea {
         
         //! Initialize this EA.
         void initialize() {
+            _topo.initialize(*this);
             _env.initialize(*this);
             _scheduler.initialize(*this);
         }        
@@ -184,14 +198,14 @@ namespace ea {
         
     protected:
         rng_type _rng; //!< Random number generator.
+        topology_type _topo; //!< Topology.
         environment_type _env; //!< Environment object.
-        population_type _population; //!< Population instance.
         scheduler_type _scheduler; //!< Scheduler instance.
+        population_type _population; //!< Population instance.
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
         event_handler_type _events; //!< Event handler.
         isa_type _isa; //!< Instruction set architecture.
         tasklib_type _tasklib; //!< Task library.
-        topology_type _topo; //!< Topology.
         
     private:
         friend class boost::serialization::access;

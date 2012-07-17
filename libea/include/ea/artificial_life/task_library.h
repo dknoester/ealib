@@ -215,8 +215,9 @@ namespace ea {
                 for(tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
                     tasks::abstract_task& task=(**i);
                     if(task.check(inputs[0], inputs[1], outputs[0])) {
-                        org.phenotype()[task.name()] += task.consume();
-                        // add event here?
+                        double r = task.consume();
+                        org.phenotype()[task.name()] += r;
+                        ea.events().task_performed(org, r, task.name(), ea);
                     }
                 }
             }

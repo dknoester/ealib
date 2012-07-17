@@ -235,6 +235,7 @@ namespace ea {
 	LIBEA_MD_DECL(MUTATION_PER_SITE_P, "ea.mutation.site.p", double);
 	LIBEA_MD_DECL(MUTATION_DUPLICATION_P, "ea.mutation.duplication.p", double);
 	LIBEA_MD_DECL(MUTATION_DELETION_P, "ea.mutation.deletion.p", double);
+	LIBEA_MD_DECL(MUTATION_INSERTION_P, "ea.mutation.insertion.p", double);
     LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MIN, "ea.mutation.uniform_integer.min", int);
     LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MAX, "ea.mutation.uniform_integer.max", int);
     LIBEA_MD_DECL(MUTATION_UNIFORM_REAL_MIN, "ea.mutation.uniform_real.min", double);

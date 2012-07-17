@@ -22,36 +22,31 @@
 #define _EA_ARTIFICIAL_LIFE_ENVIRONMENT_H_
 
 #include <boost/serialization/nvp.hpp>
-
+#include <limits>
 
 namespace ea {
     
     /*! Abstract environment type.
      */
-    template <typename Topology, typename ReplacementStrategy, typename Scheduler>
+    template <typename ReplacementStrategy, typename Scheduler>
     class environment {
     public:
-        typedef Topology topology_type; //!< Type for this environment's topology.
-        
+
         //! Initialize this environment.
-        template <typename AL>
-        void initialize(AL& al) {
+        template <typename EA>
+        void initialize(EA& ea) {
         };
         
         //! Read from the environment.
-        template <typename Organism>
-        int read(Organism& org) {
-            return 0;
+        template <typename Organism, typename EA>
+        int read(Organism& org, EA& ea) {
+            return ea.rng()(std::numeric_limits<int>::max());
         }
 
-    protected:
-        topology_type _topo; //!< This environment's topology.
-        
     private:
         friend class boost::serialization::access;
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("topology", _topo);
         }
     };
 

@@ -119,6 +119,34 @@ namespace ea {
             mutation_type _mt;
         };
         
+
+        /*! Per-site mutation, with single insertion and deletion.
+         */
+        template <typename MutationType>
+        struct per_site_indel {            
+            typedef MutationType mutation_type;
+            
+            //! Iterate through all elements in the given representation, possibly mutating them.
+            template <typename Representation, typename EA>
+            void operator()(Representation& repr, EA& ea) {
+                const double per_site_p=get<MUTATION_PER_SITE_P>(ea);
+                for(typename Representation::iterator i=repr.begin(); i!=repr.end(); ++i){
+                    if(ea.rng().p(per_site_p)) {
+                        _mt(repr, i, ea);
+                    }
+                }
+                
+                if(ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
+                    _mt(repr, repr.insert(ea.rng().choice(repr.begin(),repr.end()), typename Representation::codon_type()), ea);
+                }
+                if(ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
+                    repr.erase(ea.rng().choice(repr.begin(),repr.end()));
+                }                
+            }
+            
+            mutation_type _mt;
+        };
+        
     } // mutation
 } // ea
 

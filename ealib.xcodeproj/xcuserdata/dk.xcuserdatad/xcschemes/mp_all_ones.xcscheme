@@ -33,8 +33,7 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.GDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/dk/Documents/repositories/research.hg/src/ealib/tmp"
+      useCustomWorkingDirectory = "NO"
       buildConfiguration = "Debug">
       <BuildableProductRunnable>
          <BuildableReference
@@ -45,16 +44,6 @@
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "--ea.meta_population.size 10"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-c ../examples/libea_defaults.cfg"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

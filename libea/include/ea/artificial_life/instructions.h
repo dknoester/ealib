@@ -222,7 +222,7 @@ namespace ea {
     struct inst_input : abstract_instruction<Hardware,AL> {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int reg=hw.modifyRegister();
-            hw.setRegValue(reg, al.env().read(*p));
+            hw.setRegValue(reg, al.env().read(*p, al));
             p->inputs().push_front(hw.getRegValue(reg));
             if(p->inputs().size() > 2) {
                 p->inputs().resize(2);
@@ -256,8 +256,10 @@ namespace ea {
     template <typename Hardware, typename AL>
     struct inst_repro : abstract_instruction<Hardware,AL> {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            replicate(p, hw.repr(), al);
-            hw.clearLabelStack();
+            if(hw.age() >= (0.8 * hw.repr().size())) {            
+                replicate(p, hw.repr(), al);
+                hw.initialize();
+            }
             return 1;
         }
     };

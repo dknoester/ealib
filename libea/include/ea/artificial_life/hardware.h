@@ -75,9 +75,10 @@ namespace ea {
                 bzero(_regfile, sizeof(_regfile));
                 _age = 0;
                 _mem_extended = false;
+                _label_stack.clear();
             }
             
-            /*! Step this hardware by one virtual CPU cycle.
+            /*! Step this hardware by n virtual CPU cycles.
              */
             template <typename AL>
             void execute(std::size_t n, typename AL::individual_ptr_type p, AL& al) {
@@ -92,6 +93,8 @@ namespace ea {
                     advanceHead(IP);
                 }
             }
+            
+            int age() { return _age; }
             
             //! Get the register to be modified
             int modifyRegister() { 

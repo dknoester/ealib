@@ -46,7 +46,7 @@ namespace ea {
             unsigned int t=get<SCHEDULER_TIME_SLICE>(al);
             std::random_shuffle(population.begin(), population.end(), al.rng());
             Population next;
-            
+            const int s=population.size();
             for(std::size_t i=0; i<population.size(); ++i) {
                 typename AL::individual_ptr_type p=ptr(population[i],al);                
                 if(p->alive()) {
@@ -56,9 +56,19 @@ namespace ea {
                     }
                     // all organisms that are alive get pushed into the next generation.
                     // note that they could still die before they get scheduled next!
-                    next.append(population[i]);
+                    next.append(p);
                 }
             }
+
+//            for(std::size_t i=0; i<population.size(); ++i) {
+//                typename AL::individual_ptr_type p=ptr(population[i],al);
+//                if(p->alive()) {
+//                    next.append(p);
+//                }
+//            }
+//            
+//            const int n=next.size();
+//            const int r=al.topo().size();
             std::swap(next, population);
         }
     };

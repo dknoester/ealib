@@ -36,8 +36,8 @@ namespace ea {
      */
     struct first_neighbor {
         template <typename EA>
-        std::pair<typename EA::topology_type::location_type, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
-            return std::make_pair(*ea.topo().neighborhood(parent,ea).first, true);
+        std::pair<typename EA::topology_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
+            return std::make_pair(ea.topo().neighborhood(parent,ea).first, true);
         }
     };
     
@@ -47,7 +47,7 @@ namespace ea {
     template <typename EA>
     void replace(typename EA::individual_ptr_type parent, typename EA::individual_ptr_type offspring, EA& ea) {
         typename EA::replacement_type r;
-        std::pair<typename EA::topology_type::location_type, bool> l=r(parent, ea);
+        std::pair<typename EA::topology_type::iterator, bool> l=r(parent, ea);
         
         if(l.second) {
             ea.topo().replace(l.first, offspring, ea);
