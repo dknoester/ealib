@@ -37,31 +37,41 @@ namespace ea {
         
         template <typename AL>
         void initialize(AL& al) {
+            _sum = 0.0;
         }
         
         template <typename Population, typename AL>
         void operator()(Population& population, AL& al) {
             // WARNING! The population is *unstable*.  it must be indexed (or, while loop w/ pop_front?):
             
-            unsigned int t=get<SCHEDULER_TIME_SLICE>(al);
+            double budget=get<SCHEDULER_TIME_SLICE>(al) * get<POPULATION_SIZE>(al);
+            if(_sum == 0.0) {
+                _sum = budget;
+            }
+            
             std::random_shuffle(population.begin(), population.end(), al.rng());
             Population next;
             const int s=population.size();
+            double nextsum=0.0;
             for(std::size_t i=0; i<population.size(); ++i) {
                 typename AL::individual_ptr_type p=ptr(population[i],al);                
                 if(p->alive()) {
                     // just born?  don't execute.
                     if(p->update() != current_update()) {
-                        p->execute(t*p->priority(),p,al);
+                        p->execute(budget*p->priority()/_sum,p,al);
                     }
                     // all organisms that are alive get pushed into the next generation.
                     // note that they could still die before they get scheduled next!
                     next.append(p);
+                    nextsum += p->priority();
                 }
             }
 
+            std::swap(nextsum, _sum);
             std::swap(next, population);
         }
+        
+        double _sum;
     };
     
 } // ea

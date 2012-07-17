@@ -162,7 +162,7 @@ namespace ea {
         //! "Pow" catalyst type.
         struct power {
             double operator()(double r, double p) {
-                return p * 2.0;//pow(2.0, r);
+                return p * pow(2.0, r);
             }
         };
     } // catalysts
@@ -189,7 +189,9 @@ namespace ea {
             
             for(tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
                 tasks::abstract_task& task=(**i);
-                p = task.catalyze(org.phenotype()[task.name()], p);
+                if(org.phenotype()[task.name()] > 0.0) {
+                    p = task.catalyze(org.phenotype()[task.name()], p);
+                }
             }
             
             org.priority() = p;
