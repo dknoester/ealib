@@ -52,7 +52,6 @@ namespace ea {
                            double, // amount of resource consumed
                            const std::string&, // task name
                            EA&)> task_performed;
-
     };
 
     

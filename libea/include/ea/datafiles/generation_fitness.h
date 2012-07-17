@@ -64,6 +64,39 @@ namespace ea {
             datafile _df;
         };
         
+        template <typename EA>
+        struct generation_priority : record_statistics_event<EA> {
+            generation_priority(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
+                _df.add_field("update")
+                .add_field("mean_generation")
+                .add_field("mean_priority")
+                .add_field("max_priority");
+            }
+            
+            virtual ~generation_priority() {
+            }
+            
+            virtual void operator()(EA& ea) {
+                using namespace boost::accumulators;
+                accumulator_set<double, stats<tag::mean> > gen;
+                accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                
+                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+                    gen(ind(i,ea).generation());                
+                    fit(static_cast<double>(ind(i,ea).priority()));
+                }
+                
+                _df.write(ea.current_update())
+                .write(mean(gen))
+                .write(mean(fit))
+                .write(max(fit))
+                .endl();
+            }
+            
+            datafile _df;
+        };
+
+        
     } // datafiles
 } // ea
 

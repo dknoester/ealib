@@ -219,6 +219,7 @@ namespace ea {
                 for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
                     ea.events().inheritance(ancestral,ind(i,ea),ea);
                     ea.topo().place(ptr(i,ea));
+                    ind(i,ea).priority() = 1.0;
                 }
             }
         };

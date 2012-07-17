@@ -162,7 +162,7 @@ namespace ea {
         //! "Pow" catalyst type.
         struct power {
             double operator()(double r, double p) {
-                return p * pow(2.0, r);
+                return p * 2.0;//pow(2.0, r);
             }
         };
     } // catalysts
@@ -203,10 +203,10 @@ namespace ea {
          tasks in the task library.  For every task performed, the individual's
          phenotype is annotated with the amount of resources consumed.
          */
-        template <typename Individual, typename EA>
-        void check_tasks(Individual& org, EA& ea) {
-            typedef typename Individual::io_type io_type;
-            typedef typename Individual::iobuffer_type iobuffer_type;
+        template <typename EA>
+        void check_tasks(typename EA::individual_type& org, EA& ea) {
+            typedef typename EA::individual_type::io_type io_type;
+            typedef typename EA::individual_type::iobuffer_type iobuffer_type;
             
             iobuffer_type& inputs = org.inputs();
             iobuffer_type& outputs = org.outputs();
