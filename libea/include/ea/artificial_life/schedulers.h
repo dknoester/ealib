@@ -22,56 +22,117 @@
 #define _EA_SCHEDULERS_H_
 
 #include <limits>
+#include <map>
 #include <ea/generational_model.h>
 #include <ea/fitness_function.h>
 
 namespace ea {    
     
-    // in all cases, random_walk the population?  check the sgi stl extension "random_sample"
-    
-    // fitness_proportionate; fitness_i/sum(priorities) cycles
     LIBEA_MD_DECL(SCHEDULER_TIME_SLICE, "ea.scheduler.time_slice", unsigned int);
 
+    /*! Weighted round-robin scheduler.
+     
+     Grants all organisms an amount of CPU time proportional to their priority.
+     
+     priority == multiple of cycles above an org that does no tasks
+     */
+    struct weighted_round_robin : generational_models::generational_model {
+        typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
+        
+        template <typename AL>
+        void initialize(AL& al) {
+        }
+               
+        template <typename Population, typename AL>
+        void operator()(Population& population, AL& al) {
+            typedef std::vector<std::size_t> exc_list;
+            exc_list live;
+            int last=population.size();
+            for(std::size_t i=0; i<population.size(); ++i) {
+                int r=static_cast<int>(population[i]->priority());
+                for(int j=0; j<r; ++j) {
+                    live.push_back(i);
+                }
+            }
+            
+            std::random_shuffle(live.begin(), live.end(), al.rng());
+            
+            long budget=get<SCHEDULER_TIME_SLICE>(al) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(al));
+            
+            std::size_t i=0;
+            int deadcount=0;
+            while((budget > 0) && (deadcount<last)) {
+                typename AL::individual_ptr_type p=ptr(population[live[i]],al);
+                i = (i+1) % live.size();
+                
+                if(p->alive()) {
+                    p->execute(1,p,al);
+                    --budget;
+                } else {
+                    ++deadcount;
+                }
+            }
+            
+            Population next;
+            for(std::size_t i=0; i<population.size(); ++i) {
+                typename AL::individual_ptr_type p=ptr(population[i],al);
+                if(p->alive()) {
+                    next.append(p);
+                }
+            }
+            std::swap(population, next);
+        }
+    };
+    
+    
+    /*! Round-robin scheduler.
+     
+     Grants all organisms an equal amount of CPU time, exactly time slice cycles
+     per update.
+     */
     struct round_robin : generational_models::generational_model {
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
         
         template <typename AL>
         void initialize(AL& al) {
-            _sum = 0.0;
         }
         
         template <typename Population, typename AL>
         void operator()(Population& population, AL& al) {
-            // WARNING! The population is *unstable*.  it must be indexed (or, while loop w/ pop_front?):
-            
-            double budget=get<SCHEDULER_TIME_SLICE>(al) * get<POPULATION_SIZE>(al);
-            if(_sum == 0.0) {
-                _sum = budget;
-            }
-            
+            // WARNING: Population is unstable!  Must use []-indexing.
             std::random_shuffle(population.begin(), population.end(), al.rng());
-            Population next;
-            const int s=population.size();
-            double nextsum=0.0;
-            for(std::size_t i=0; i<population.size(); ++i) {
-                typename AL::individual_ptr_type p=ptr(population[i],al);                
+
+            // these are the individuals in the population at the start of the update.
+            // they are the *only* ones that can execute during this update,
+            // and some of them are likely to be replaced.
+            // offspring are appended to population asynchronously, thus we're
+            // indexing population instead of iterating.
+            
+            long budget=get<SCHEDULER_TIME_SLICE>(al) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(al));
+            std::size_t last=population.size();
+            std::size_t i=0;
+            int deadcount=0;
+            while((budget > 0) && (deadcount<last)) {
+                typename AL::individual_ptr_type p=ptr(population[i],al);
+                i = (i+1) % last;
+                
                 if(p->alive()) {
-                    // just born?  don't execute.
-                    if(p->update() != current_update()) {
-                        p->execute(budget*p->priority()/_sum,p,al);
-                    }
-                    // all organisms that are alive get pushed into the next generation.
-                    // note that they could still die before they get scheduled next!
-                    next.append(p);
-                    nextsum += p->priority();
+                    p->execute(1,p,al);
+                    --budget;
+                } else {
+                    ++deadcount;
                 }
             }
-
-            std::swap(nextsum, _sum);
-            std::swap(next, population);
+            
+            Population next;
+            for(std::size_t i=0; i<population.size(); ++i) {
+                typename AL::individual_ptr_type p=ptr(population[i],al);
+                if(p->alive()) {
+                    next.append(p);
+                }
+            }
+            std::swap(population, next);
         }
-        
-        double _sum;
     };
     
 } // ea

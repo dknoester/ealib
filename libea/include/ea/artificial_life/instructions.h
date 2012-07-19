@@ -222,10 +222,14 @@ namespace ea {
     struct inst_input : abstract_instruction<Hardware,AL> {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int reg=hw.modifyRegister();
-            hw.setRegValue(reg, al.env().read(*p, al));
-            p->inputs().push_front(hw.getRegValue(reg));
-            if(p->inputs().size() > 2) {
-                p->inputs().resize(2);
+            
+            if(p->inputs().size() == 2) {
+                hw.setRegValue(reg, p->inputs().front());
+                p->inputs().push_back(p->inputs().front());
+                p->inputs().pop_front();
+            } else {
+                hw.setRegValue(reg, al.env().read(*p, al));
+                p->inputs().push_front(hw.getRegValue(reg));
             }
             hw.clearLabelStack();
             return 1;
@@ -242,7 +246,7 @@ namespace ea {
     template <typename Hardware, typename AL>
     struct inst_output : abstract_instruction<Hardware,AL> {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            p->outputs().push_front(hw.modifyRegister());
+            p->outputs().push_front(hw.getRegValue(hw.modifyRegister()));
             p->outputs().resize(1);
             al.tasklib().check_tasks(*p,al);
             hw.clearLabelStack();
@@ -286,14 +290,52 @@ namespace ea {
     template <typename Hardware, typename AL>
     struct inst_nand : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-//            int bxVal = hw.getRegValue(Hardware::BX);
-//            int cxVal = hw.getRegValue(Hardware::CX);
-//            int nandVal = ~(bxVal & cxVal);
-//            hw.setRegValue(hw.modifyRegister(), nandVal);
-//            hw.clearLabelStack();
+            int bxVal = hw.getRegValue(Hardware::BX);
+            int cxVal = hw.getRegValue(Hardware::CX);
+            int nandVal = ~(bxVal & cxVal);
+            hw.setRegValue(hw.modifyRegister(), nandVal);
+            hw.clearLabelStack();
             return 1;
         }
     };
+    
+    template <typename Hardware, typename AL>
+    struct inst_push : abstract_instruction<Hardware,AL> {
+        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            int bxVal = hw.getRegValue(hw.modifyRegister());
+            hw.push_stack(bxVal);
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+    
+    template <typename Hardware, typename AL>
+    struct inst_pop : abstract_instruction<Hardware,AL> {
+        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            if(!hw.empty_stack()) {
+                hw.setRegValue(hw.modifyRegister(), hw.pop_stack());
+                hw.clearLabelStack();
+            }
+            return 1;
+        }
+    };
+    
+    template <typename Hardware, typename AL>
+    struct inst_swap : abstract_instruction<Hardware,AL> {
+        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            int rbx = hw.modifyRegister();
+            int rcx = hw.modifyRegister();
+            
+            int bxVal = hw.getRegValue(rbx);
+            int cxVal = hw.getRegValue(rcx);
+
+            hw.setRegValue(rbx, cxVal);
+            hw.setRegValue(rcx, bxVal);
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
     
 } // ea
 

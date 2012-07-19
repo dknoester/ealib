@@ -159,10 +159,11 @@ namespace ea {
     } // resources
     
     namespace catalysts {
-        //! "Pow" catalyst type.
-        struct power {
+        //! "Additive" catalyst type.
+        template <int T>
+        struct additive {
             double operator()(double r, double p) {
-                return p * pow(2.0, r);
+                return p + T;
             }
         };
     } // catalysts

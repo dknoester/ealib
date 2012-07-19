@@ -47,6 +47,9 @@ namespace ea {
                 append<inst_if_label>();
                 append<inst_h_search>();
                 append<inst_nand>();
+                append<inst_push>();
+                append<inst_pop>();
+                append<inst_swap>();
                 append<inst_input>();
                 append<inst_output>();
                 append<inst_repro>();

@@ -243,6 +243,10 @@ namespace ea {
             //! Retrieve this hardware's representation (its genome).
             representation_type& repr() { return _representation; }
             
+            void push_stack(int x) { _stack.push_front(x); while(_stack.size() > 10) { _stack.pop_back(); } }
+            bool empty_stack() { return _stack.empty(); }
+            int pop_stack() { int x = _stack.front(); _stack.pop_front(); return x; }
+            
         protected:
             representation_type _representation; //!< This hardware's "program".
             int _head_position[NUM_HEADS]; //!< Positions of the various heads.
@@ -251,6 +255,7 @@ namespace ea {
             std::deque<int> _label_stack;
             int _age;
             bool _mem_extended; 
+            std::deque<int> _stack;
             
         private:
             friend class boost::serialization::access;

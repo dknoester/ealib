@@ -93,6 +93,9 @@ namespace ea {
             // kill the occupant of l, if any
             if(l.p) {
                 l.p->alive() = false;
+                if(l.p->priority() >= p->priority()) {
+                    l.p->alive() = false;
+                }
             }
             l.p = p;
         }
@@ -102,6 +105,7 @@ namespace ea {
         }
         
         int size() { return _locs.size(); }
+        
         //! Serialize this topology.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {

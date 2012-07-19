@@ -312,10 +312,10 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update1) {
         BOOST_CHECK(node._in[1]==1);
         BOOST_CHECK(node._out[0]==2);
         BOOST_CHECK(node._out[1]==3);
-        BOOST_CHECK(node._table(0,0)==0);
-        BOOST_CHECK(node._table(1,0)==1);
-        BOOST_CHECK(node._table(2,0)==2);
-        BOOST_CHECK(node._table(3,0)==3);
+        BOOST_CHECK(node._table[0]==0);
+        BOOST_CHECK(node._table[1]==1);
+        BOOST_CHECK(node._table[2]==2);
+        BOOST_CHECK(node._table[3]==3);
     }
     
 	in=tc0;
@@ -451,10 +451,10 @@ BOOST_AUTO_TEST_CASE(test_deterministic_mkv_node_ctor) {
     index_list_type outputs(&data[6], &data[8]);
     deterministic_mkv_node node(inputs, outputs, &data[8]);
     
-	BOOST_CHECK(node._table(0,0)==2);
-	BOOST_CHECK(node._table(1,0)==1);
-	BOOST_CHECK(node._table(2,0)==3);
-	BOOST_CHECK(node._table(3,0)==0);
+	BOOST_CHECK(node._table[0]==2);
+	BOOST_CHECK(node._table[1]==1);
+	BOOST_CHECK(node._table[2]==3);
+	BOOST_CHECK(node._table[3]==0);
 }
 
 /*! 
@@ -530,9 +530,9 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
 
     {
         deterministic_mkv_node& node = *dynamic_cast<deterministic_mkv_node*>((mkv.begin())->get());
-        BOOST_CHECK(node._table(0,0)==2);
-        BOOST_CHECK(node._table(1,0)==1);
-        BOOST_CHECK(node._table(2,0)==3);
+        BOOST_CHECK(node._table[0]==2);
+        BOOST_CHECK(node._table[1]==1);
+        BOOST_CHECK(node._table[2]==3);
     }
     {
         synprob_mkv_node& node = *dynamic_cast<synprob_mkv_node*>((mkv.begin()+1)->get());
@@ -637,9 +637,9 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor1) {
     }
     {
         deterministic_mkv_node& node = *dynamic_cast<deterministic_mkv_node*>((mkv.begin()+2)->get());
-        BOOST_CHECK(node._table(0,0)==2);
-        BOOST_CHECK(node._table(1,0)==1);
-        BOOST_CHECK(node._table(2,0)==3);
+        BOOST_CHECK(node._table[0]==2);
+        BOOST_CHECK(node._table[1]==1);
+        BOOST_CHECK(node._table[2]==3);
     }
     {
         synprob_mkv_node& node = *dynamic_cast<synprob_mkv_node*>((mkv.begin()+3)->get());

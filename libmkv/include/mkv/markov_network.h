@@ -160,7 +160,7 @@ namespace mkv {
     
     namespace detail {
         typedef std::vector<std::size_t> index_list_type; //!< Type for a list of indices.
-        typedef boost::numeric::ublas::matrix<int> matrix_type;
+        typedef boost::numeric::ublas::matrix<double> matrix_type;
         typedef boost::numeric::ublas::matrix_column<matrix_type> column_type;
         typedef boost::numeric::ublas::matrix_row<matrix_type> row_type;
         typedef std::vector<double> weight_vector_type; //!< Type for feedback weights vector.
@@ -197,6 +197,23 @@ namespace mkv {
             index_list_type _out; //!< Output state indices from this node.
         };
         
+        //! Normalize the range [f,l) to v in-place and return the sum (which may be slightly different than v owing to floating point precision).
+        template <typename ForwardIterator, typename OutputIterator>
+        ForwardIterator normalize(ForwardIterator f, ForwardIterator l, OutputIterator o, double v=1.0) {
+            typedef typename OutputIterator::value_type value_type;
+            
+            double s=std::accumulate(f,l,0.0);
+            double offset=0.0;
+            if(s == 0.0) {
+                s = 1.0;
+                offset = 1.0 / static_cast<double>(std::distance(f,l));
+            }
+            for( ; f!=l; ++f) {
+                *o++ = offset + static_cast<double>(*f) * v / s;
+            }
+            return f;
+        }
+        
         
         /*! Probabilistic Markov network node.
          */
@@ -204,42 +221,29 @@ namespace mkv {
             //! Constructor.
             template <typename ForwardIterator>
             probabilistic_mkv_node(index_list_type inputs, index_list_type outputs, ForwardIterator f, bool allow_zero) 
-            : abstract_markov_node(inputs,outputs), _table(1<<inputs.size(), (1<<outputs.size())+1) {
+            : abstract_markov_node(inputs,outputs), _table(1<<inputs.size(), 1<<outputs.size()) {
                 for(std::size_t i=0; i<_table.size1(); ++i) {
-                    int sum=0;
-                    for(std::size_t j=0; j<(_table.size2()-1); ++j, ++f) {
-                        _table(i,j) = *f;
-                        if(!allow_zero && !_table(i,j)) {
-                            ++_table(i,j);
-                        }
-                        sum += _table(i,j);
-                    }
-                    _table(i,_table.size2()-1) = sum;
-                    if(sum == 0) {
-                        fill_row(i, 1);
-                    }
+                    row_type row(_table, i);
+                    f = normalize(f, f+_table.size2(), row.begin());
                 }
             }
-
-            //! Fills row i of the table with v.
-            void fill_row(std::size_t i, int v) {
-                for(std::size_t j=0; j<(_table.size2()-1); ++j) {
-                    _table(i, j) = v;
-                }
-                _table(i, _table.size2()-1) = (_table.size2()-1) * v;
-            }
-            
             
             //! Update the Markov network from this probabilistic node.
             void update(markov_network& mkv) {
                 row_type row(_table, get_input(mkv));
-                int rnum = mkv.rng()(*row.rbegin()+1);
-                int col=0;
-                while(rnum > row[col]) {
-                    rnum -= row[col];
-                    ++col;
+                double p = mkv.rng().uniform_real(0.0,1.0);
+                
+                for(int i=0; i<_table.size2(); ++i) {
+                    if(p <= row[i]) {
+                        set_output(i, mkv);
+                        return;
+                    }
+                    p -= row[i];
                 }
-                set_output(col, mkv);
+
+                // if we get here, there was a floating point precision problem.
+                // default to the final column:
+                set_output(static_cast<int>(_table.size2()-1), mkv);
             }
             
             matrix_type _table; //!< Probability table.
@@ -265,63 +269,48 @@ namespace mkv {
                 if(mkv.svm().state_tminus1(_posf)) {
                     // positive feedback
                     for(std::size_t i=0; (i<_poswv.size()) && (i<_history.size()); ++i) {
-                        // calculate delta, divide through by sum/(sum+delta), re-sum
-                        double delta = _table(_history[i].first, _history[i].second) * _poswv[i];
-                        _table(_history[i].first, _history[i].second) += static_cast<int>(delta);
-
-                        double scale = static_cast<double>(_table(_history[i].first, _table.size2()-1));
-                        scale = scale / (scale + delta);                        
-
-                        int sum=0;
-                        for(std::size_t j=0; j<_table.size2(); ++j) {
-                            _table(_history[i].first, j) = static_cast<int>(scale*static_cast<double>(_table(_history[i].first, j)));
-                            sum += _table(_history[i].first, j);
-                        }
-                        _table(_history[i].first, _table.size2()-1) = sum;
+                        _table(_history[i].first, _history[i].second) *= 1.0 + _poswv[i];
+                        row_type row(_table, _history[i].first);
+                        normalize(row.begin(), row.end(), row.begin());
                     }
                 }
                 if(mkv.svm().state_tminus1(_negf)) {
                     // negative feedback
                     for(std::size_t i=0; (i<_negwv.size()) && (i<_history.size()); ++i) {
-                        // calculate delta, divide through by sum/(sum+delta), re-sum
-                        double delta = _table(_history[i].first, _history[i].second) * _negwv[i];
-                        _table(_history[i].first, _history[i].second) -= static_cast<int>(delta);
-                        
-                        double scale = static_cast<double>(_table(_history[i].first, _table.size2()-1));
-                        scale = scale / (scale - delta);                        
-                        
-                        int sum=0;
-                        for(std::size_t j=0; j<_table.size2(); ++j) {
-                            _table(_history[i].first, j) = static_cast<int>(scale*static_cast<double>(_table(_history[i].first, j)));
-                            sum += _table(_history[i].first, j);
-                        }
-                        _table(_history[i].first, _table.size2()-1) = sum;
+                        _table(_history[i].first, _history[i].second) *= 1.0 - _negwv[i];
+                        row_type row(_table, _history[i].first);
+                        normalize(row.begin(), row.end(), row.begin());
                     }
                 }
             }
             
             //! Update the Markov network from this probabilistic node.
             void update(markov_network& mkv) {
-                // perform learning:
-                learn(mkv);
-                
-                // set the output:
-                std::size_t row = get_input(mkv);
-                row_type r(_table, row);
-                int s = *r.rbegin();
-                int rnum = mkv.rng()(*r.rbegin()+1); // this can overflow...
-                int col=0;
-                while(rnum > r[col]) {
-                    rnum -= r[col];
-                    ++col;
-                }                
-                set_output(col, mkv);
-                
-                // track history:
-                _history.push_back(std::make_pair(row,col));
+                // prune history:
                 while(_history.size() > _hn) {
                     _history.pop_front();
                 }
+
+                // learning:
+                learn(mkv);
+                
+                // output:
+                std::size_t r = get_input(mkv);
+                row_type row(_table, r);
+                double p = mkv.rng().uniform_real(0.0,1.0);
+                
+                for(int i=0; i<_table.size2(); ++i) {
+                    if(p <= row[i]) {
+                        set_output(i, mkv);
+                        _history.push_back(std::make_pair(r,i));
+                        return;
+                    }
+                    p -= row[i];
+                }
+                
+                // if we get here, there was a floating point precision problem.
+                // default to the final column:
+                set_output(static_cast<int>(_table.size2()-1), mkv);
             }
             
             std::size_t _hn; //!< Size of history to keep.
@@ -339,18 +328,18 @@ namespace mkv {
             //! Constructor.
             template <typename ForwardIterator>
             deterministic_mkv_node(index_list_type inputs, index_list_type outputs, ForwardIterator f) 
-            : abstract_markov_node(inputs,outputs), _table(1<<_in.size(), 1) {
+            : abstract_markov_node(inputs,outputs), _table(1<<_in.size()) {
                 for(std::size_t i=0; i<static_cast<std::size_t>(1<<_in.size()); ++i, ++f) {
-                    _table(i,0) = *f;
+                    _table[i] = *f;
                 }
             }
             
             //! Update the Markov network from this deterministic node.
             void update(markov_network& mkv) {
-                set_output(_table(get_input(mkv),0), mkv);
+                set_output(_table[get_input(mkv)], mkv);
             }
             
-            matrix_type _table; //!< Deterministic table.
+            index_list_type _table; //!< Deterministic table.
         };
         
         enum node_type { PROB=42, DET=43, SYNPROB=44 };
@@ -422,9 +411,13 @@ namespace mkv {
                         h+=nout;                        
                         weight_vector_type poswv(h, h+nhistory);
                         std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
+                                       std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
+                        std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
                                        std::bind2nd(std::multiplies<double>(), 1.0/get<NODE_WV_STEPS>(md)));
                         h+=nhistory;
                         weight_vector_type negwv(h, h+nhistory);
+                        std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
+                                       std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
                         std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
                                        std::bind2nd(std::multiplies<double>(), 1.0/get<NODE_WV_STEPS>(md)));
                         h+=nhistory;

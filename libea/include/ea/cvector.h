@@ -60,6 +60,7 @@ namespace ea {
                 _end = that._end;
                 _cur = that._cur;
             }
+            return *this;
         }
 
     protected:

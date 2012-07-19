@@ -162,7 +162,56 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
 }
 
 BOOST_AUTO_TEST_CASE(test_al_type) {
-    al_type al;
-    // test initialization
-    // test serialization
+    al_type al;    
+    add_task<tasks::task_nand,resources::unlimited,catalysts::power>("nand", al); //1
+
+    put<POPULATION_SIZE>(1024,al);
+	put<REPRESENTATION_SIZE>(100,al);
+	put<MUTATION_PER_SITE_P>(0.0075,al);
+
+    put<MUTATION_UNIFORM_INT_MIN>(0,al);
+    put<MUTATION_UNIFORM_INT_MAX>(11,al);
+
+    
+    al_type::population_type ancestral;
+    al_type::individual_type a = al_type::individual_type();
+    a.name() = next<INDIVIDUAL_COUNT>(al);
+    a.generation() = -1.0;
+    a.update() = al.current_update();
+    ancestral.append(make_population_entry(a,al));
+    
+    al.population().clear();
+    
+    al_type::representation_type r; // is a circular genome...
+    r.resize(100);
+    std::fill(r.begin(), r.end(), 8); // fill it with inputs..
+    // input*90
+    // 91: nopc
+    // 92: input
+    // 93: nand
+    // 94: output
+    // 95: repro
+    
+    r[95] = 2; // cx, input
+    r[96] = 8; // input
+    r[97] = 7; // nand
+    r[98] = 9; // output
+    r[99] = 10; // repro
+    al.population().append(make_population_entry(r,al));
+    
+    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
+        al.events().inheritance(ancestral,ind(i,al),al);
+        al.topo().place(ptr(i,al));
+        ind(i,al).priority() = 1.0;
+    }
+    BOOST_CHECK(al.population().size()==1);
+    
+    put<SCHEDULER_TIME_SLICE>(100,al);
+    al.scheduler()(al.population(),al);
+    
+    BOOST_CHECK(al.population().size()==2);
+    
+    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
+        BOOST_CHECK(al.population()[0]->priority() == 2.0);
+    }
 }

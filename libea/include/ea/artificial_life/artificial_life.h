@@ -85,7 +85,7 @@ namespace ea {
     template <typename,typename,typename> class InstructionSet,
     template <typename> class Topology=well_mixed,
     typename ReplacementStrategy=first_neighbor,
-    typename Scheduler=round_robin,
+    typename Scheduler=weighted_round_robin,
 	typename MutationOperator=mutation::per_site<mutation::uniform_integer>,
 	template <typename,typename> class Environment=environment,
     typename TaskLibrary=task_library,

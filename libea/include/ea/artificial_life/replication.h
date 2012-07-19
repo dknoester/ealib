@@ -27,7 +27,7 @@
 #include <ea/interface.h>
 
 namespace ea {
-
+    
     /*! Selects the location of the first neighbor to the parent as the location
      for an offspring.
      
@@ -46,11 +46,21 @@ namespace ea {
      */
     template <typename EA>
     void replace(typename EA::individual_ptr_type parent, typename EA::individual_ptr_type offspring, EA& ea) {
-        typename EA::replacement_type r;
-        std::pair<typename EA::topology_type::iterator, bool> l=r(parent, ea);
-        
-        if(l.second) {
-            ea.topo().replace(l.first, offspring, ea);
+        // is the topology at capacity (meaning that we have to replace someone),
+        // or are we growing the population?
+        if(ea.topo().size() >= get<POPULATION_SIZE>(ea)) {
+            // replace
+            typename EA::replacement_type r;
+            std::pair<typename EA::topology_type::iterator, bool> l=r(parent, ea);
+            
+            if(l.second) {
+                ea.topo().replace(l.first, offspring, ea);
+                offspring->priority() = parent->priority();
+                ea.population().append(offspring);
+            }
+        } else {
+            // grow
+            ea.topo().place(offspring);
             offspring->priority() = parent->priority();
             ea.population().append(offspring);
         }
@@ -67,10 +77,10 @@ namespace ea {
         
         mutate(offspring.begin(), offspring.end(), ea);
         inherits(parents, offspring, ea);
-
+        
         // parent is always reprioritized...
         ea.tasklib().prioritize(*p,ea);
-
+        
         replace(*parents.begin(), *offspring.begin(), ea);
     }
     

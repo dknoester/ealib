@@ -66,8 +66,7 @@ namespace ea {
             
             rusage r;
             getrusage(RUSAGE_SELF, &r);
-            std::cerr << std::fixed << std::setprecision(4) << r.ru_maxrss/rss << " ";
-            std::cerr << ea.population().size() << std::endl;
+            std::cerr << std::fixed << std::setprecision(4) << r.ru_maxrss/rss << std::endl;
             
             _t.restart();
         }
