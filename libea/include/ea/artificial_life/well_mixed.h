@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_TOPOLOGY_H_
-#define _EA_TOPOLOGY_H_
+#ifndef _EA_WELL_MIXED_H_
+#define _EA_WELL_MIXED_H_
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -38,15 +38,13 @@ namespace ea {
         
         //! Location type.
         struct location_type {
-            location_type(individual_ptr_type ip) : p(ip) { }
             individual_ptr_type p; //!< Individual (if any) at this location.
+            meta_data md; //!< Meta-data specific to this location.
         };
-        
-        /*! Orientation type.
-         (Null, as there are no orientations in a well-mixed environment.)
-         */
+
+        //! Orientation type.
         struct orientation_type { };
-        
+
         typedef std::vector<location_type> location_list_type; //!< Container type for locations.
 
         /*! Well-mixed neighborhood iterator.
@@ -75,10 +73,14 @@ namespace ea {
             location_list_type& _locs; //!< list of all possible locations.
             ea_type& _ea; //!< EA (used for rngs, primarily).
         };                
+
+        //! Constructor.
+        well_mixed() : _occupied(0) {
+        }
         
         //! Initialize this topology.
         void initialize(ea_type& ea) {
-            //_locs.resize(get<POPULATION_SIZE>(ea));
+            _locs.resize(get<POPULATION_SIZE>(ea));
         }
         
         //!< Retrieve the neighborhood of the given individual.
@@ -87,30 +89,34 @@ namespace ea {
         }                
         
         //! Replace the organism (if any) living in location l with p.
-        template <typename AL>
-        void replace(iterator i, individual_ptr_type p, AL& al) {
+        void replace(iterator i, individual_ptr_type p, ea_type& ea) {
             location_type& l=(*i);
             // kill the occupant of l, if any
             if(l.p) {
                 l.p->alive() = false;
-                if(l.p->priority() >= p->priority()) {
-                    l.p->alive() = false;
-                }
+                ea.events().death(*l.p,ea);
             }
             l.p = p;
         }
-        
-        void place(individual_ptr_type p) {
-            _locs.push_back(p);
+                
+        void insert(individual_ptr_type p) {
+            _locs[_occupied++].p = p;
         }
         
         int size() { return _locs.size(); }
+        
+        //! Read from the environment.
+        template <typename Organism>
+        int read(Organism& org, ea_type& ea) {
+            return ea.rng()(std::numeric_limits<int>::max());
+        }
         
         //! Serialize this topology.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
         }
         
+        int _occupied; //!< How many locations are currently occupied?
         location_list_type _locs; //!< List of all locations in this topology.
     };
     

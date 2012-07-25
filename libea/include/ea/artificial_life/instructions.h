@@ -66,7 +66,7 @@ namespace ea {
     struct inst_nop_x : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             hw.clearLabelStack();
-            return 0;
+            return 1;
         }
     };
     
@@ -93,8 +93,8 @@ namespace ea {
     template <typename Hardware, typename AL>
     struct inst_h_copy : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            typename Hardware::representation_type repr = hw.representation();
-            repr[Hardware::WH] = repr[Hardware::RH];
+            typename Hardware::representation_type& r = hw.repr();
+            r[Hardware::WH] = r[Hardware::RH];
             hw.advanceHead(Hardware::WH);
             hw.advanceHead(Hardware::RH);            
             return 1;
@@ -200,19 +200,14 @@ namespace ea {
              org.__init__(org.eve, org.genome)
              org.advance_head(org.IP, -1)
              */
-            
-            //representation_type off_repr = 
-            
-            
-            // Create org...
-            //replicate(org, hw.repr(), al);
-
-            // Reinit parent?
-            // Back up IP by one instruction.
-            hw.advanceHead(Hardware::IP, -1);
-            hw.clearLabelStack();
+            if(hw.age() >= (0.8 * hw.repr().size())) {            
+                typename Hardware::representation_type& r=hw.repr();
+                typename Hardware::representation_type offr(&r[hw.getHeadLocation(Hardware::RH)],
+                                                            &r[hw.getHeadLocation(Hardware::WH)+1]);
+                replicate(p, offr, al);
+                hw.initialize();
+            }
             return 1;
-            
         }
     };
     
@@ -269,21 +264,6 @@ namespace ea {
     };
 
     
-    /*! Send a message to the currently-faced neighbor.
-     */
-    template <typename Hardware, typename AL>
-    struct inst_send_message : abstract_instruction<Hardware,AL> {
-        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-//            al.env().topo().faced_neighbor(org).hw().deposit_message();            
-//            int bxVal = hw.getRegValue(Hardware::BX);
-//            int cxVal = hw.getRegValue(Hardware::CX);
-//            int nandVal = ~(bxVal & cxVal);
-//            hw.setRegValue(hw.modifyRegister(), nandVal);
-//            hw.clearLabelStack();
-            return 1;
-        }
-    };
-
     /*! Store BX nand CX into the ?BX? register.
      For this operation, BX and CX are treated as integers.
      */
@@ -335,6 +315,110 @@ namespace ea {
             return 1;
         }
     };
+
+    /*! Set the color of the organism's location.
+     */
+    template <typename Hardware, typename AL>
+    struct inst_location_color : abstract_instruction<Hardware,AL> {
+        int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            int bxVal = hw.getRegValue(hw.modifyRegister());
+            put<LOCATION_COLOR>(bxVal,*p->location());
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+    
+    /*!
+     */
+    template <typename Hardware, typename AL>
+    struct inst_inc : abstract_instruction<Hardware,AL> {
+        int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            int rbx = hw.modifyRegister();
+            hw.setRegValue(rbx, hw.getRegValue(rbx)+1);
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    /*!
+     */
+    template <typename Hardware, typename AL>
+    struct inst_dec : abstract_instruction<Hardware,AL> {
+        int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            int rbx = hw.modifyRegister();
+            hw.setRegValue(rbx, hw.getRegValue(rbx)-1);
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    /*!
+     */
+    template <typename Hardware, typename AL>
+    struct inst_beacon : abstract_instruction<Hardware,AL> {
+        int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            int rbx = hw.modifyRegister();
+            int rcx = hw.modifyRegister();
+
+            if((p->location()->x==0) && (p->location()->y==0)) {
+                hw.setRegValue(rbx, 0);
+                hw.setRegValue(rcx, 0);
+            }
+            
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    /*! Send a message to the currently-faced neighbor.
+     */
+    template <typename Hardware, typename EA>
+    struct inst_tx_msg : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);
+            if(l.occupied()) {
+                
+            }
+            //            al.env().topo().faced_neighbor(org).hw().deposit_message();            
+            //            int bxVal = hw.getRegValue(Hardware::BX);
+            //            int cxVal = hw.getRegValue(Hardware::CX);
+            //            int nandVal = ~(bxVal & cxVal);
+            //            hw.setRegValue(hw.modifyRegister(), nandVal);
+            //            hw.clearLabelStack();
+            return 1;
+        }
+    };
+    
+    /*! Send a message to the currently-faced neighbor.
+     */
+    template <typename Hardware, typename AL>
+    struct inst_rx_msg : abstract_instruction<Hardware,AL> {
+        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            //            al.env().topo().faced_neighbor(org).hw().deposit_message();            
+            //            int bxVal = hw.getRegValue(Hardware::BX);
+            //            int cxVal = hw.getRegValue(Hardware::CX);
+            //            int nandVal = ~(bxVal & cxVal);
+            //            hw.setRegValue(hw.modifyRegister(), nandVal);
+            //            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    /*! Broadcast a message.
+     */
+    template <typename Hardware, typename AL>
+    struct inst_bc_msg : abstract_instruction<Hardware,AL> {
+        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
+            //            al.env().topo().faced_neighbor(org).hw().deposit_message();            
+            //            int bxVal = hw.getRegValue(Hardware::BX);
+            //            int cxVal = hw.getRegValue(Hardware::CX);
+            //            int nandVal = ~(bxVal & cxVal);
+            //            hw.setRegValue(hw.modifyRegister(), nandVal);
+            //            hw.clearLabelStack();
+            return 1;
+        }
+    };
+    
 
     
 } // ea

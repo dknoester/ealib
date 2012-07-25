@@ -17,31 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_DATAFILES_GENERATION_FITNESS_H_
-#define _EA_DATAFILES_GENERATION_FITNESS_H_
+#ifndef _EA_ARTIFICIAL_LIFE_DATAFILES_GENERATION_PRIORITY_H_
+#define _EA_ARTIFICIAL_LIFE_DATAFILES_GENERATION_PRIORITY_H_
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 #include <ea/datafile.h>
-#include <ea/interface.h>
+#include <ea/events.h>
 
 namespace ea {
     namespace datafiles {
         
-        /*! Datafile for mean generation, and mean & max fitness.
-         */
         template <typename EA>
-        struct generation_fitness : record_statistics_event<EA> {
-            generation_fitness(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
+        struct generation_priority : record_statistics_event<EA> {
+            generation_priority(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
                 _df.add_field("update")
                 .add_field("mean_generation")
-                .add_field("mean_fitness")
-                .add_field("max_fitness");
+                .add_field("mean_priority")
+                .add_field("max_priority");
             }
             
-            virtual ~generation_fitness() {
+            virtual ~generation_priority() {
             }
             
             virtual void operator()(EA& ea) {
@@ -51,7 +49,7 @@ namespace ea {
                 
                 for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
                     gen(ind(i,ea).generation());                
-                    fit(static_cast<double>(ind(i,ea).fitness()));
+                    fit(static_cast<double>(ind(i,ea).priority()));
                 }
                 
                 _df.write(ea.current_update())
@@ -63,7 +61,7 @@ namespace ea {
             
             datafile _df;
         };
-        
+
     } // datafiles
 } // ea
 

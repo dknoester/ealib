@@ -252,7 +252,7 @@ namespace ea {
             
             // conditionally reset all fitnesses
             if(vm.count("reset")) {
-                //nullify_fitness(ea.population().begin(), ea.population().end(), ea);
+                ea.reset();
             }
             
             ea.initialize();
@@ -277,7 +277,7 @@ namespace ea {
                 add_event<run_statistics>(this,ea);
             }
             
-            generate_initial_population(ea);
+            ea.generate_initial_population();
             execute(ea);
         }
         

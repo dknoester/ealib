@@ -156,6 +156,16 @@ namespace ea {
                 return 1.0;
             }
         };
+        struct limited {
+            limited(double c) : _cap(c) { }
+            double operator()() {
+                double consumed;
+                _cap -= consumed;
+                return consumed;
+            }
+            double _cap;
+        };
+
     } // resources
     
     namespace catalysts {

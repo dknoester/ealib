@@ -34,17 +34,18 @@ namespace ea {
      
      Grants all organisms an amount of CPU time proportional to their priority.
      
-     priority == multiple of cycles above an org that does no tasks
+     priority == multiple of cycles above an org that has priority 1.0.
      */
+    template <typename EA>
     struct weighted_round_robin : generational_models::generational_model {
+        typedef EA ea_type;
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
         
-        template <typename AL>
-        void initialize(AL& al) {
+        void initialize(ea_type& ea) {
         }
                
-        template <typename Population, typename AL>
-        void operator()(Population& population, AL& al) {
+        template <typename Population>
+        void operator()(Population& population, ea_type& ea) {
             typedef std::vector<std::size_t> exc_list;
             exc_list live;
             int last=population.size();
@@ -55,18 +56,18 @@ namespace ea {
                 }
             }
             
-            std::random_shuffle(live.begin(), live.end(), al.rng());
+            std::random_shuffle(live.begin(), live.end(), ea.rng());
             
-            long budget=get<SCHEDULER_TIME_SLICE>(al) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(al));
+            long budget=get<SCHEDULER_TIME_SLICE>(ea) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
             
             std::size_t i=0;
             int deadcount=0;
             while((budget > 0) && (deadcount<last)) {
-                typename AL::individual_ptr_type p=ptr(population[live[i]],al);
+                typename ea_type::individual_ptr_type p=ptr(population[live[i]],ea);
                 i = (i+1) % live.size();
                 
                 if(p->alive()) {
-                    p->execute(1,p,al);
+                    p->execute(1,p,ea);
                     --budget;
                 } else {
                     ++deadcount;
@@ -75,7 +76,7 @@ namespace ea {
             
             Population next;
             for(std::size_t i=0; i<population.size(); ++i) {
-                typename AL::individual_ptr_type p=ptr(population[i],al);
+                typename ea_type::individual_ptr_type p=ptr(population[i],ea);
                 if(p->alive()) {
                     next.append(p);
                 }
@@ -90,17 +91,18 @@ namespace ea {
      Grants all organisms an equal amount of CPU time, exactly time slice cycles
      per update.
      */
+    template <typename EA>
     struct round_robin : generational_models::generational_model {
+        typedef EA ea_type;
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
         
-        template <typename AL>
-        void initialize(AL& al) {
+        void initialize(ea_type& ea) {
         }
         
-        template <typename Population, typename AL>
-        void operator()(Population& population, AL& al) {
+        template <typename Population>
+        void operator()(Population& population, ea_type& ea) {
             // WARNING: Population is unstable!  Must use []-indexing.
-            std::random_shuffle(population.begin(), population.end(), al.rng());
+            std::random_shuffle(population.begin(), population.end(), ea.rng());
 
             // these are the individuals in the population at the start of the update.
             // they are the *only* ones that can execute during this update,
@@ -108,16 +110,16 @@ namespace ea {
             // offspring are appended to population asynchronously, thus we're
             // indexing population instead of iterating.
             
-            long budget=get<SCHEDULER_TIME_SLICE>(al) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(al));
+            long budget=get<SCHEDULER_TIME_SLICE>(ea) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
             std::size_t last=population.size();
             std::size_t i=0;
             int deadcount=0;
             while((budget > 0) && (deadcount<last)) {
-                typename AL::individual_ptr_type p=ptr(population[i],al);
+                typename ea_type::individual_ptr_type p=ptr(population[i],ea);
                 i = (i+1) % last;
                 
                 if(p->alive()) {
-                    p->execute(1,p,al);
+                    p->execute(1,p,ea);
                     --budget;
                 } else {
                     ++deadcount;
@@ -126,7 +128,7 @@ namespace ea {
             
             Population next;
             for(std::size_t i=0; i<population.size(); ++i) {
-                typename AL::individual_ptr_type p=ptr(population[i],al);
+                typename ea_type::individual_ptr_type p=ptr(population[i],ea);
                 if(p->alive()) {
                     next.append(p);
                 }

@@ -233,7 +233,7 @@ namespace mkv {
                 row_type row(_table, get_input(mkv));
                 double p = mkv.rng().uniform_real(0.0,1.0);
                 
-                for(int i=0; i<_table.size2(); ++i) {
+                for(int i=0; i<static_cast<int>(_table.size2()); ++i) {
                     if(p <= row[i]) {
                         set_output(i, mkv);
                         return;
@@ -299,7 +299,7 @@ namespace mkv {
                 row_type row(_table, r);
                 double p = mkv.rng().uniform_real(0.0,1.0);
                 
-                for(int i=0; i<_table.size2(); ++i) {
+                for(int i=0; i<static_cast<int>(_table.size2()); ++i) {
                     if(p <= row[i]) {
                         set_output(i, mkv);
                         _history.push_back(std::make_pair(r,i));

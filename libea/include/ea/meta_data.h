@@ -198,6 +198,9 @@ namespace ea {
 	LIBEA_MD_DECL(UINTSTRING_MEAN, "ea.representation.uintstring.mean", unsigned int);
 	LIBEA_MD_DECL(UINTSTRING_VARIANCE, "ea.representation.uintstring.variance", unsigned int);
 	
+    // ea.environment.*
+    LIBEA_MD_DECL(LOCATION_COLOR, "ea.environment.location.color", int);
+
     // ea.fitness_function.*
     LIBEA_MD_DECL(FF_RNG_SEED, "ea.fitness_function.rng_seed", int);
     LIBEA_MD_DECL(FF_N, "ea.fitness_function.n", int);
@@ -210,10 +213,12 @@ namespace ea {
 
 	// ea.population.*
 	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
+    LIBEA_MD_DECL(INITIAL_POPULATION_SIZE, "ea.population.initial_size", unsigned int);
 
 	// ea.meta_population.*
     LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.meta_population.size", unsigned int);
-    
+    LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.meta_population.competition_period", unsigned int);
+
     // ea.initialization.*
     LIBEA_MD_DECL(INITIALIZATION_UNIFORM_INT_MIN, "ea.initialization.uniform_integer.min", int);
     LIBEA_MD_DECL(INITIALIZATION_UNIFORM_INT_MAX, "ea.initialization.uniform_integer.max", int);

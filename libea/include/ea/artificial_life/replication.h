@@ -36,8 +36,8 @@ namespace ea {
      */
     struct first_neighbor {
         template <typename EA>
-        std::pair<typename EA::topology_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
-            return std::make_pair(ea.topo().neighborhood(parent,ea).first, true);
+        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
+            return std::make_pair(ea.env().neighborhood(parent,ea).first, true);
         }
     };
     
@@ -46,23 +46,14 @@ namespace ea {
      */
     template <typename EA>
     void replace(typename EA::individual_ptr_type parent, typename EA::individual_ptr_type offspring, EA& ea) {
-        // is the topology at capacity (meaning that we have to replace someone),
-        // or are we growing the population?
-        if(ea.topo().size() >= get<POPULATION_SIZE>(ea)) {
-            // replace
-            typename EA::replacement_type r;
-            std::pair<typename EA::topology_type::iterator, bool> l=r(parent, ea);
+        typename EA::replacement_type r;
+        std::pair<typename EA::environment_type::iterator, bool> l=r(parent, ea);
             
-            if(l.second) {
-                ea.topo().replace(l.first, offspring, ea);
-                offspring->priority() = parent->priority();
-                ea.population().append(offspring);
-            }
-        } else {
-            // grow
-            ea.topo().place(offspring);
+        if(l.second) {            
+            ea.env().replace(l.first, offspring, ea);
             offspring->priority() = parent->priority();
             ea.population().append(offspring);
+            ea.events().birth(*offspring,ea);
         }
     }
     

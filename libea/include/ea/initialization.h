@@ -25,6 +25,21 @@
 
 
 namespace ea {
+    
+	
+    /*! Generate n individuals into population p from generator ig.
+	 */
+	template <typename Population, typename IndividualGenerator, typename EA>
+	void generate_individuals_n(Population& p, IndividualGenerator &ig, std::size_t n, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		BOOST_CONCEPT_ASSERT((IndividualGeneratorConcept<IndividualGenerator,EA>));
+        std::insert_iterator<Population> ii(p, p.end());
+        for( ; n>0; --n) {
+            *ii++ = ig(ea);
+        }
+	}
+    
+
     namespace initialization {
         
         /*! Generates an individual from random bits.
@@ -198,32 +213,7 @@ namespace ea {
                 }
             }
         };
-        
-        /*! Initialization method that generates a complete population.
-         */
-        template <typename IndividualGenerator>
-        struct alife_population {
-            template <typename EA>
-            void operator()(EA& ea) {
-                typename EA::population_type ancestral;
-                typename EA::individual_type a = typename EA::individual_type();
-                a.name() = next<INDIVIDUAL_COUNT>(ea);
-                a.generation() = -1.0;
-                a.update() = ea.current_update();
-                ancestral.append(make_population_entry(a,ea));
                 
-                IndividualGenerator ig;
-                ea.population().clear();
-                generate_individuals_n(ea.population(), ig, get<POPULATION_SIZE>(ea), ea);
-                
-                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    ea.events().inheritance(ancestral,ind(i,ea),ea);
-                    ea.topo().place(ptr(i,ea));
-                    ind(i,ea).priority() = 1.0;
-                }
-            }
-        };
-        
         /*! Initializes all subpopulations that are part of a meta-population EA.
          */
         struct all_subpopulations {

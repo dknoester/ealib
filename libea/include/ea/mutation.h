@@ -26,6 +26,71 @@
 
 
 namespace ea {
+    
+	/*! Unconditionally mutate an individual.
+	 */	
+	template <typename Mutator, typename EA>
+	void mutate(typename EA::individual_type& ind, Mutator& mutator, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));	
+		mutator(ind.repr(), ea);
+	}
+	
+	
+	/*! Unconditionally mutate an individual using the EA's embedded types.
+	 */
+	template <typename EA>
+	void mutate(typename EA::individual_type& ind, EA& ea) {
+		typename EA::mutation_operator_type mutator;
+		mutate(ind, mutator, ea);
+	}
+    
+	
+	/*! Unconditionally mutate a range of individuals.
+	 */
+	template <typename ForwardIterator, typename Mutator, typename EA>
+	void mutate(ForwardIterator first, ForwardIterator last, Mutator& mutator, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
+		for( ; first!=last; ++first) {
+			mutate(ind(first,ea), mutator, ea);
+		}		
+	}
+    
+	
+	/*! Unconditionally mutate a range of individuals using the EA's embedded types.
+	 */
+	template <typename ForwardIterator, typename EA>
+	void mutate(ForwardIterator first, ForwardIterator last, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		typename EA::mutation_operator_type mutator;
+		mutate(first, last, mutator, ea);
+	}
+	
+	
+	/*! Probabilistically mutate a range of individuals.
+	 */	 
+	template <typename ForwardIterator, typename Mutator, typename EA>
+	void mutate_p(ForwardIterator first, ForwardIterator last, Mutator& mutator, const double prob, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
+		for( ; first!=last; ++first) {
+			if(ea.rng().p(prob)) {
+				mutate(ind(first,ea), mutator, ea);
+			}
+		}
+	}
+	
+	
+	/*! Probabilisitically mutate a range of individuals using the EA's embedded types.
+	 */
+	template <typename ForwardIterator, typename EA>
+	void mutate_p(ForwardIterator first, ForwardIterator last, const double prob, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		typename EA::mutation_operator_type mutator;
+		mutate_p(first, last, mutator, prob, ea);
+	}
+    
     namespace mutation {
         
         struct uniform_integer {

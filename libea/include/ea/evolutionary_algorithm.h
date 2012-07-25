@@ -32,6 +32,7 @@
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
+#include <ea/selection.h>
 #include <ea/population.h>
 #include <ea/recombination.h>
 #include <ea/events.h>
@@ -108,9 +109,20 @@ namespace ea {
             _fitness_function.initialize(*this);
         }        
         
+        //! Generates the initial population.
+        void generate_initial_population() {
+            initializer_type init;
+            init(*this);
+            calculate_fitness(_population.begin(), _population.end(), *this);
+        }
+
+        //! Reset the population.
+        void reset() {
+            nullify_fitness(_population.begin(), _population.end(), *this);
+        }
+        
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
-            calculate_fitness(_population.begin(), _population.end(), *this);
             for( ; n>0; --n) {
                 update();
             }
@@ -129,6 +141,11 @@ namespace ea {
         //! Returns the current update of this EA.
         unsigned long current_update() {
             return _generational_model.current_update();
+        }
+
+        //! Perform any needed preselection.
+        void preselect(population_type& src) {
+            relativize_fitness(src.begin(), src.end(), *this);
         }
         
         //! Calculate fitness (non-stochastic).

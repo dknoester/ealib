@@ -43,6 +43,15 @@ namespace ea {
             }
         };
         
+        //! Accessor for an individual's meta-data.
+        template <typename MDType>
+        struct meta_data {
+            template <typename Individual>
+            typename MDType::value_type operator()(Individual& x) {
+                return get<MDType>(x);
+            }
+        };
+
     } // comparators
 } // ea
 
