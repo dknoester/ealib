@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _FN_MARKOV_NETWORK_H_
-#define _FN_MARKOV_NETWORK_H_
+#ifndef _MKV_MARKOV_NETWORK_H_
+#define _MKV_MARKOV_NETWORK_H_
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>

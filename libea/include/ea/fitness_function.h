@@ -29,18 +29,18 @@
 #include <ea/meta_data.h>
 
 namespace ea {
+    //! Indicates that fitness is constant, and thus should be cached.
+    struct constantS { };
+    
+    //! Indicates that fitness may change between evalutions, and should not be cached.
+    struct nonstationaryS { };
+    
     //! Indicates that fitness of an individual is absolute.
     struct absoluteS { };
 
     //! Indicates that fitness of an individual is relative to the population.
     struct relativeS { };
     
-    //! Indicates that fitness is constant, and thus should be cached.
-    struct constantS { };
-
-    //! Indicates that fitness may change between evalutions, and should not be cached.
-    struct nonstationaryS { };
-
     //! Indicates that fitness is deterministic, and does not require its own RNG.
     struct deterministicS { };
 
