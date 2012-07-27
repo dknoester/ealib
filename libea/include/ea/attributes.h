@@ -20,8 +20,7 @@
 #ifndef _EA_ATTRIBUTES_H_
 #define _EA_ATTRIBUTES_H_
 
-#include <boost/serialization/nvp.hpp>
-
+#include <ea/meta_data.h>
 
 namespace ea {
 
@@ -48,7 +47,7 @@ namespace ea {
         struct meta_data {
             template <typename Individual>
             typename MDType::value_type operator()(Individual& x) {
-                return get<MDType>(x);
+                return ea::get<MDType>(x);
             }
         };
 

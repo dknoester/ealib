@@ -58,14 +58,19 @@ namespace ea {
         }
         
         template <typename T>
-        T modnorm(T x, T floor, T limit) {
-            using namespace ea;
-            T range = limit - floor;
-            if(range==0) {
-                return limit;
-            } else {
-                return (x % range) + floor;
+        T roll(T value, T min, T max) {
+            if(value>max) {
+                return min;
+            } else if(value<min) {
+                return max;
             }
+            return value;
+        }
+        
+        template <typename T>
+        T modnorm(T x, T floor, T limit) {
+            assert((limit-floor) > 0);
+            return (x%(limit-floor)) + floor;
         }
         
         //! Convert a sequence of values to a single string with the given separator.

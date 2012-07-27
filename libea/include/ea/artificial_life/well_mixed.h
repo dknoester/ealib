@@ -35,15 +35,33 @@ namespace ea {
     struct well_mixed {
         typedef EA ea_type; //<! EA type using this topology.        
         typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
-        
-        //! Location type.
+                
+        /*! Location type.
+         
+         While locations logically "live" inside organisms, they are interpreted 
+         by the specific topology being used.  So, the topology "owns" the various
+         locations, but organisms have pointers to the specific location at which
+         they reside.
+         
+         Locations also have a pointer to their organism, thus we can go betwixt
+         them with ease.
+         */
         struct location_type {
+            //! Location meta-data.
+            meta_data& md() { return _md; }
+            
+            //! Is this location occupied?
+            bool occupied() { return p != 0; }
+            
+            //! Return the inhabitant.
+            individual_ptr_type inhabitant() { return p; }
+            
             individual_ptr_type p; //!< Individual (if any) at this location.
-            meta_data md; //!< Meta-data specific to this location.
+            meta_data _md; //!< Meta-data container.
         };
-
-        //! Orientation type.
-        struct orientation_type { };
+        
+        //! Location type pointer (lives in organism).
+        typedef location_type* location_ptr_type;
 
         typedef std::vector<location_type> location_list_type; //!< Container type for locations.
 
@@ -88,6 +106,11 @@ namespace ea {
             return std::make_pair(iterator(0,_locs,ea), iterator(_locs.size(),_locs,ea));
         }                
         
+//        //! Retrieve the currently faced neighboring location of the given individual.
+//        iterator neighbor(individual_ptr_type p, ea_type& ea) {
+////            return iterator(*p->location(),p->location()->heading,_locs,ea);            
+//        }
+
         //! Replace the organism (if any) living in location l with p.
         void replace(iterator i, individual_ptr_type p, ea_type& ea) {
             location_type& l=(*i);

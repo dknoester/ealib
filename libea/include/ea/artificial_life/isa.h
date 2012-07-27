@@ -42,24 +42,28 @@ namespace ea {
             append<inst_nop_a>(); // 0
             append<inst_nop_b>();
             append<inst_nop_c>();
-            append<inst_nop_x>();
+            append<inst_nop_x>(); // 3
             append<inst_mov_head>();
             append<inst_if_label>();
             append<inst_h_search>();
-            append<inst_nand>();
+            append<inst_nand>(); // 7
             append<inst_push>();
             append<inst_pop>();
             append<inst_swap>();
-            append<inst_input>();
+            append<inst_input>(); // 11
             append<inst_output>();
             append<inst_location_color>();
-            append<inst_inc>();
+            append<inst_inc>(); // 14
             append<inst_dec>();
             append<inst_beacon>();
-            append<inst_tx_msg>();
+            append<inst_tx_msg>(); // 17
             append<inst_rx_msg>();
             append<inst_bc_msg>();
-            append<inst_repro>(); // 19
+            append<inst_rotate>(); // 20
+            append<inst_rotate_cw>();
+            append<inst_rotate_ccw>();
+            append<inst_if_less>();
+            append<inst_repro>(); // 24
         }
         
         template <template <typename,typename> class Instruction>

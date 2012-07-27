@@ -67,10 +67,10 @@ namespace ea {
             typedef typename EA::representation_type representation_type;
             typename EA::individual_type ind;
             ind.name() = next<INDIVIDUAL_COUNT>(ea);
-            ind.repr().resize(get<REPRESENTATION_SIZE>(ea));
-            representation_type& repr=ind.repr();
             
-            std::fill(ind.repr().begin(), ind.repr().end(), 3);
+            representation_type& repr=ind.repr();
+            repr.resize(get<REPRESENTATION_SIZE>(ea));
+            std::fill(repr.begin(), repr.end(), 3);
             return make_population_entry(ind, ea);
         }
     };

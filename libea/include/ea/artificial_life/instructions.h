@@ -133,8 +133,8 @@ namespace ea {
                 std::deque<int> label_comp = hw.getLabelComplement();
                 // check through label in reverse order...
                 // most recent label is on the back...
-                for (int i=(label_comp.size() - 1);  i>=0; --i) { 
-                    if (label_comp[i] != hw.repr()[wh]) {
+                for(int i=(label_comp.size() - 1);  i>=0; --i) { 
+                    if(label_comp[i] != static_cast<int>(hw.repr()[wh])) {
                         hw.advanceHead(Hardware::IP);
                         hw.clearLabelStack();
                         return 1;
@@ -304,7 +304,7 @@ namespace ea {
     struct inst_swap : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int rbx = hw.modifyRegister();
-            int rcx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
             
             int bxVal = hw.getRegValue(rbx);
             int cxVal = hw.getRegValue(rcx);
@@ -358,7 +358,7 @@ namespace ea {
     struct inst_beacon : abstract_instruction<Hardware,AL> {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int rbx = hw.modifyRegister();
-            int rcx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
 
             if((p->location()->x==0) && (p->location()->y==0)) {
                 hw.setRegValue(rbx, 0);
@@ -376,51 +376,113 @@ namespace ea {
     struct inst_tx_msg : abstract_instruction<Hardware,EA> {
         int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
             typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);
+            
             if(l.occupied()) {
-                
+                int rbx = hw.modifyRegister();
+                int rcx = hw.nextRegister(rbx);
+                l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
             }
-            //            al.env().topo().faced_neighbor(org).hw().deposit_message();            
-            //            int bxVal = hw.getRegValue(Hardware::BX);
-            //            int cxVal = hw.getRegValue(Hardware::CX);
-            //            int nandVal = ~(bxVal & cxVal);
-            //            hw.setRegValue(hw.modifyRegister(), nandVal);
-            //            hw.clearLabelStack();
+            hw.clearLabelStack();
             return 1;
         }
     };
     
     /*! Send a message to the currently-faced neighbor.
      */
-    template <typename Hardware, typename AL>
-    struct inst_rx_msg : abstract_instruction<Hardware,AL> {
-        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            //            al.env().topo().faced_neighbor(org).hw().deposit_message();            
-            //            int bxVal = hw.getRegValue(Hardware::BX);
-            //            int cxVal = hw.getRegValue(Hardware::CX);
-            //            int nandVal = ~(bxVal & cxVal);
-            //            hw.setRegValue(hw.modifyRegister(), nandVal);
-            //            hw.clearLabelStack();
+    template <typename Hardware, typename EA>
+    struct inst_rx_msg : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            if(hw.msgs_queued()) {
+                std::pair<int,int> msg = hw.pop_msg();
+                int rbx = hw.modifyRegister();
+                int rcx = hw.nextRegister(rbx);
+                hw.setRegValue(rbx,msg.first);
+                hw.setRegValue(rcx,msg.second);
+            }
+            hw.clearLabelStack();
             return 1;
         }
     };
 
     /*! Broadcast a message.
      */
-    template <typename Hardware, typename AL>
-    struct inst_bc_msg : abstract_instruction<Hardware,AL> {
-        int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            //            al.env().topo().faced_neighbor(org).hw().deposit_message();            
-            //            int bxVal = hw.getRegValue(Hardware::BX);
-            //            int cxVal = hw.getRegValue(Hardware::CX);
-            //            int nandVal = ~(bxVal & cxVal);
-            //            hw.setRegValue(hw.modifyRegister(), nandVal);
-            //            hw.clearLabelStack();
+    template <typename Hardware, typename EA>
+    struct inst_bc_msg : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            
+            typedef typename EA::environment_type::iterator iterator;
+            std::pair<iterator,iterator> ni=ea.env().neighborhood(p,ea);
+            for(; ni.first!=ni.second; ++ni.first) {
+                typename EA::environment_type::location_type& l=*ni.first;
+                if(l.occupied()) {
+                    l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
+                }
+            }
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    //! Rotate the organism to the heading in ?bx?.
+    template <typename Hardware, typename EA>
+    struct inst_rotate : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            p->location()->set_heading(hw.getRegValue(hw.modifyRegister()));
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+    
+    //! Rotate the organism clockwise once.
+    template <typename Hardware, typename EA>
+    struct inst_rotate_cw : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            p->location()->alter_heading(-1);
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    /*! Rotate the organism counter-clockwise once.
+     */
+    template <typename Hardware, typename EA>
+    struct inst_rotate_ccw : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            p->location()->alter_heading(1);
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    /*! Execute the next instruction if ?bx? < ?cx?.
+     */
+    template <typename Hardware, typename EA>
+    struct inst_if_less : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
+                hw.advanceHead(Hardware::IP);
+            }
+            hw.clearLabelStack();
+            return 1;
+        }
+    };
+
+    /*! Donate any accumulated resource to this organism's group.
+     */
+    template <typename Hardware, typename EA>
+    struct inst_donate_group : abstract_instruction<Hardware,EA> {
+        int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+            ea.env().group(p,ea).receive_donation(p,ea);
+            hw.clearLabelStack();
             return 1;
         }
     };
     
 
-    
 } // ea
 
 #endif

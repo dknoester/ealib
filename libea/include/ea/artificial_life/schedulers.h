@@ -113,7 +113,7 @@ namespace ea {
             long budget=get<SCHEDULER_TIME_SLICE>(ea) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
             std::size_t last=population.size();
             std::size_t i=0;
-            int deadcount=0;
+            std::size_t deadcount=0;
             while((budget > 0) && (deadcount<last)) {
                 typename ea_type::individual_ptr_type p=ptr(population[i],ea);
                 i = (i+1) % last;

@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(ealib_checkpoint) {
     all_ones_ea ea1, ea2;
     add_std_meta_data(ea1);
     ea1.initialize();
-    generate_initial_population(ea1);
+    ea1.generate_initial_population();
     
     // run and checkpoint ea1:
     ea1.advance_epoch(10);

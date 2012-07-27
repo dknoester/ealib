@@ -124,10 +124,10 @@ namespace ea {
 		const representation_type& repr() const { return _hw.repr(); }
         
         //! Retreive this organism's hardware.
-        hardware_type hw() { return _hw; }
+        hardware_type& hw() { return _hw; }
 
         //! Retreive this organism's hardware (const-qualified).
-        const hardware_type hw() const { return _hw; }
+        const hardware_type& hw() const { return _hw; }
         
         //! Retrieve this organism's meta data.
         meta_data& md() { return _md; }

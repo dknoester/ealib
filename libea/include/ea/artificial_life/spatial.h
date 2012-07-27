@@ -55,11 +55,28 @@ namespace ea {
          them with ease.
          */
         struct location_type {
+            //! Constructor.
+            location_type() : heading(0), x(0), y(0) {
+            }
+            
             //! Location meta-data.
             meta_data& md() { return _md; }
 
             //! Is this location occupied?
             bool occupied() { return p != 0; }
+            
+            //! Return the inhabitant.
+            individual_ptr_type inhabitant() { return p; }
+            
+            //! Set the heading of this location.
+            void set_heading(int h) {
+                heading = h % 8;
+            }
+            
+            //! Alter the heading of this location.
+            void alter_heading(int h) {
+                heading = algorithm::roll(heading+h, 0, 7);
+            }
             
             individual_ptr_type p; //!< Individual (if any) at this location.
             int heading; //!< Heading of organism, in degrees.
@@ -76,15 +93,17 @@ namespace ea {
          */
         struct iterator : boost::iterator_facade<iterator, location_type, boost::single_pass_traversal_tag> {
             //! Constructor.
-            iterator(location_type& origin, std::size_t incs, location_matrix_type& locs, ea_type& ea) 
-            : _origin(origin), _incs(incs), _head(0), _locs(locs), _ea(ea) {
+            iterator(location_type& origin, int h, location_matrix_type& locs, ea_type& ea) 
+            : _origin(origin), _heading(h), _locs(locs), _ea(ea) {
             }
             
             //! Increment operator.
-            void increment() { ++_incs; ++_head; }
+            void increment() { ++_heading; }
             
             //! Iterator equality comparison.
-            bool equal(iterator const& that) const { return (_origin==that._origin) && (_head==that._head) && (_incs==that._incs); }
+            bool equal(iterator const& that) const { 
+                return (_origin.y==that._origin.y) && (_origin.x==that._origin.x) && (_heading==that._heading); 
+            }
             
             /*! Dereference this iterator.
              
@@ -100,7 +119,7 @@ namespace ea {
                 int x=_origin.x;
                 int y=_origin.y;
                 
-                switch(_head%8) {
+                switch(_heading%8) {
                     case 0: ++x; break;
                     case 1: ++x; ++y; break;
                     case 2: ++y; break;
@@ -111,15 +130,14 @@ namespace ea {
                     case 7: ++x; --y; break;
                 }
 
-                x = algorithm::clip(x, 0, static_cast<int>(_locs.size2()-1));
-                y = algorithm::clip(y, 0, static_cast<int>(_locs.size1()-1));
+                x = algorithm::roll(x, 0, static_cast<int>(_locs.size2()-1));
+                y = algorithm::roll(y, 0, static_cast<int>(_locs.size1()-1));
 
                 return _locs(y,x); // correct: y==i, x==j.
             }
             
             location_type& _origin; //!< Origin of this iterator.
-            std::size_t _incs; //!< Origin and increments.
-            int _head; //!< Current heading for the iterator.
+            int _heading; //!< Current heading for the iterator.
             location_matrix_type& _locs; //!< list of all possible locations.
             ea_type& _ea; //!< EA (used for rngs, primarily).
         };                
@@ -157,8 +175,6 @@ namespace ea {
             if(l.p) {
                 l.p->alive() = false;
                 ea.events().death(*l.p,ea);
-                l.p->location() = 0;
-                assert(false);
             }
             l.p = p;
             p->location() = &l;
