@@ -377,7 +377,6 @@
 		42E133BA15C6BBA600FE9EAE /* det_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = det_node.h; sourceTree = "<group>"; };
 		42E133BB15C6BBA600FE9EAE /* prob_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = prob_node.h; sourceTree = "<group>"; };
 		42E133BD15C6BE8800FE9EAE /* instruments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = instruments.h; sourceTree = "<group>"; };
-		42E21F4B15C2EBF800370D55 /* developmental_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = developmental_markov_network.h; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
@@ -936,7 +935,6 @@
 				42E133B715C6BBA600FE9EAE /* detail */,
 				42841C3C15ADA06B00AB18BE /* markov_network.h */,
 				42E133BD15C6BE8800FE9EAE /* instruments.h */,
-				42E21F4B15C2EBF800370D55 /* developmental_markov_network.h */,
 			);
 			path = mkv;
 			sourceTree = "<group>";
