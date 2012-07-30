@@ -18,14 +18,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
 #ifndef _EA_ADAPTIVE_HFC_H_
 #define _EA_ADAPTIVE_HFC_H_
 
+
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
+#include <vector>
+#include <limits>
+#include <cmath>
 #include <ea/events.h>
+#include <ea/meta_data.h>
 
 namespace ea {
+    // ea.adaptive_hfc*
+    // Initialization period - time to calibrate all the levels 
+    // (called nCalibGen in paper)
+    LIBEA_MD_DECL(INITIALIZATION_PERIOD, "ea.adaptive_hfc.initialization_period", unsigned int);
+    // Period between times at which individuals are exchanged among subpops. 
+    // (called nExch in paper)
+    LIBEA_MD_DECL(EXCHANGE_INDIVIDUALS_PERIOD, "ea.adaptive_hfc.exchange_individuals_period", unsigned int);
+    // Period between when admission levels are recalculated
+    // (called nUpdateAdmissions in paper)
+    LIBEA_MD_DECL(ADMISSION_UPDATE_PERIOD, "ea.adaptive_hfc.admission_update_period", unsigned int);
+    // Minimum fraction of the population that is "left behind."
+    LIBEA_MD_DECL(MIN_REMAIN, "ea.adaptive_hfc.min_remain", double);
+    
+    
+    LIBEA_MD_DECL(ADMISSION_LEVEL, "ea.adaptive_hfc.admission_level", double);
+    
     
     /*! Adaptive HFC migration among populations in a meta-population EA.
+     Adapted from: Adaptive Hierarchical Fair Competition (AHFC) Model for Parallel 
+     Evolutionary Algorithms by Jianjun Hu, Erik Goodman, Kisung Seo, and Min Pei
      */
     template <typename EA>
     struct adaptive_hfc : end_of_update_event<EA> {
@@ -39,12 +69,96 @@ namespace ea {
         
         //! Perform A-HFC migration among populations.
         virtual void operator()(EA& ea) {
+            // Are we done with the initialization period? 
+            if (ea.current_update() < get<INITIALIZATION_PERIOD>(ea)) return;
+            // Are we in the initialization period?
+            if (ea.current_update() == get<INITIALIZATION_PERIOD>(ea)) {
+                setAdmissionLevels(ea);
+            } else {
+                if (ea.current_update() % get<ADMISSION_UPDATE_PERIOD>(ea) == 0) {
+                    resetAdmissionLevels(ea);
+                }
+                if (ea.current_update() % get<EXCHANGE_INDIVIDUALS_PERIOD>(ea) == 0) {
+                    exchangeIndividuals(ea);
+                }
+            }
+        }
+        
+        void setAdmissionLevels(EA& ea) { 
+            // Set up the admission levels. 
+            // Go through all individuals in all subpops, record mean, max, std (of pop containing max)            
+            using namespace boost::accumulators;
             
+            accumulator_set<double, stats<tag::mean> > fit; 
+            
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                for(typename EA::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
+                    fit(static_cast<double>(ind(j,*i).fitness()));
+                }
+            }
+            
+            put<ADMISSION_LEVEL>(-std::numeric_limits<double>::infinity(), ea[0]);
+            put<ADMISSION_LEVEL>(mean(fit), ea[1]);
+            
+            resetAdmissionLevels(ea);
+        }
+        
+        void resetAdmissionLevels(EA& ea) {
+            using namespace boost::accumulators;
+            accumulator_set<double, stats<tag::mean, tag::max, tag::variance> > fit; 
+            
+            for(typename EA::population_type::iterator j=ea.rbegin()->population().begin(); j!=ea.rbegin()->population().end(); ++j) {
+                fit(static_cast<double>(ind(j,*ea.rbegin()).fitness()));
+            }
+            
+            double mean_base_one_fit = get<ADMISSION_LEVEL>(ea[1]);
+            double max_fit = max(fit);
+            double stddev_fit = sqrt(variance(fit));
+            
+            // Highest admission level is set to max - standard deviation 
+            put<ADMISSION_LEVEL>(max_fit-stddev_fit, *ea.rbegin());
+            
+            // Other admission levels...
+            int number_levels = get<META_POPULATION_SIZE>(ea);
+            
+            double per_level=max_fit - stddev_fit - mean_base_one_fit;
+            assert(per_level > 0);
+            per_level = std::max(1.0,per_level);
+            
+            for (int k = 2; k < (number_levels - 1); ++k) {
+                put<ADMISSION_LEVEL>(mean_base_one_fit + static_cast<double>(k) * per_level / static_cast<double>(number_levels-2), ea[k]);
+            }
+        }
+        
+        // this should be recursive...
+        void exchangeIndividuals(EA& ea) {
             // "moving" an individual is insert/erase between populations
             // "copying" an individual is insert(make_population_entry(ind))
+            int number_levels = get<META_POPULATION_SIZE>(ea);
+            for (int i = 0; i < (number_levels - 1); ++i) {
+                double next_admission = get<ADMISSION_LEVEL>(ea[i+1]);
+                
+                // sort ascending by fitness:
+                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::fitness());
+
+                // find the first individual w/ fitness >= next_admission, but make sure to leave some behind
+                typename EA::population_type::iterator f=ea[i].population().begin();
+                std::advance(f, static_cast<std::size_t>(get<MIN_REMAIN>(ea)*get<POPULATION_SIZE>(ea)));
+                typename EA::population_type::iterator l=ea[i].population().end();
+                for( ; f!=l; ++f) {
+                    if(ind(f,ea[i]).fitness() > next_admission) {
+                        break;
+                    }
+                }
+                
+                // now, move all individuals w/ fitness >= next_admission to the next pop:
+                ea[i+1].population().append(f,l);
+                // and remove them from this one:
+                ea[i].population().erase(f,l);
+            }
         }
     };
-
+    
 } // ea
 
 #endif

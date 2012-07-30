@@ -63,6 +63,10 @@ namespace ea {
         typedef boost::indirect_iterator<typename ea_container_type::iterator> iterator;
         //! Const iterator for embedded EAs.
         typedef boost::indirect_iterator<typename ea_container_type::const_iterator> const_iterator;
+        //! Iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename ea_container_type::reverse_iterator> reverse_iterator;
+        //! Const iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename ea_container_type::const_reverse_iterator> const_reverse_iterator;
         
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
@@ -105,6 +109,26 @@ namespace ea {
         //! Returns an end iterator to the embedded EAs (const-qualified).
         const_iterator end() const {
             return const_iterator(_eas.end());
+        }
+        
+        //! Returns a reverse begin iterator to the embedded EAs.
+        reverse_iterator rbegin() {
+            return reverse_iterator(_eas.rbegin());
+        }
+        
+        //! Returns an reverse end iterator to the embedded EAs.
+        reverse_iterator rend() {
+            return reverse_iterator(_eas.rend());
+        }
+        
+        //! Returns a reverse begin iterator to the embedded EAs (const-qualified).
+        const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(_eas.rbegin());
+        }
+        
+        //! Returns an reverse end iterator to the embedded EAs (const-qualified).
+        const_reverse_iterator rend() const {
+            return const_reverse_iterator(_eas.rend());
         }
 
         //! Initialize all the embedded EAs.
