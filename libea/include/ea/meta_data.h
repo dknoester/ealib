@@ -51,6 +51,9 @@ namespace ea {
      in phenotype space between individuals.
      
      Use these with "getattr", "setattr", and "rmattr".
+     
+     ** NOT YET IMPLEMENTED.
+     
 	 */
 	class meta_data {
 	public:

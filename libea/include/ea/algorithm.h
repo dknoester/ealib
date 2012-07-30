@@ -22,11 +22,12 @@
 #define _EA_ALGORITHM_H_
 
 #include <algorithm>
+#include <numeric>
 #include <boost/lexical_cast.hpp>
 
 namespace ea {
 	namespace algorithm {
-        
+
         /*! Assign sequentially increasing values to a range.
 		 */
 		template <typename ForwardIterator, typename T>
@@ -52,6 +53,24 @@ namespace ea {
             return output_range * x / x_range;
         }
         
+        
+        //! Normalize the range [f,l) to v in-place and return an iterator to the end of the range.
+        template <typename ForwardIterator, typename OutputIterator>
+        ForwardIterator normalize(ForwardIterator f, ForwardIterator l, OutputIterator o, double v) {
+            typedef typename OutputIterator::value_type value_type;
+            
+            double s=std::accumulate(f,l,0.0);
+            double offset=0.0;
+            if(s == 0.0) {
+                s = 1.0;
+                offset = 1.0 / static_cast<double>(std::distance(f,l));
+            }
+            for( ; f!=l; ++f) {
+                *o++ = offset + static_cast<double>(*f) * v / s;
+            }
+            return f;
+        }
+
         template <typename T>
         T clip(T value, T min, T max) {
             return std::max(min, std::min(value, max));

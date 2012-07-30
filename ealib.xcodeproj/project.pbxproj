@@ -372,6 +372,11 @@
 		42841D3715BDF22200AB18BE /* reactions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reactions.h; sourceTree = "<group>"; };
 		42841D3815BDF31E00AB18BE /* generation_priority.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generation_priority.h; sourceTree = "<group>"; };
 		42841D3E15BEDF7700AB18BE /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
+		42E133B815C6BBA600FE9EAE /* abstract_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_node.h; sourceTree = "<group>"; };
+		42E133B915C6BBA600FE9EAE /* adaptive_prob_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = adaptive_prob_node.h; sourceTree = "<group>"; };
+		42E133BA15C6BBA600FE9EAE /* det_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = det_node.h; sourceTree = "<group>"; };
+		42E133BB15C6BBA600FE9EAE /* prob_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = prob_node.h; sourceTree = "<group>"; };
+		42E133BD15C6BE8800FE9EAE /* instruments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = instruments.h; sourceTree = "<group>"; };
 		42E21F4B15C2EBF800370D55 /* developmental_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = developmental_markov_network.h; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
@@ -928,7 +933,9 @@
 		42841C3B15ADA06B00AB18BE /* mkv */ = {
 			isa = PBXGroup;
 			children = (
+				42E133B715C6BBA600FE9EAE /* detail */,
 				42841C3C15ADA06B00AB18BE /* markov_network.h */,
+				42E133BD15C6BE8800FE9EAE /* instruments.h */,
 				42E21F4B15C2EBF800370D55 /* developmental_markov_network.h */,
 			);
 			path = mkv;
@@ -987,6 +994,17 @@
 				42841D3715BDF22200AB18BE /* reactions.h */,
 			);
 			path = datafiles;
+			sourceTree = "<group>";
+		};
+		42E133B715C6BBA600FE9EAE /* detail */ = {
+			isa = PBXGroup;
+			children = (
+				42E133B815C6BBA600FE9EAE /* abstract_node.h */,
+				42E133B915C6BBA600FE9EAE /* adaptive_prob_node.h */,
+				42E133BA15C6BBA600FE9EAE /* det_node.h */,
+				42E133BB15C6BBA600FE9EAE /* prob_node.h */,
+			);
+			path = detail;
 			sourceTree = "<group>";
 		};
 		42F5BD201587666E00EB6B14 /* examples */ = {
