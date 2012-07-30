@@ -112,7 +112,13 @@ namespace ea {
 		result_type operator()(argument_type n) {
 			return uniform_integer_rng(0,n)();
 		}
-		
+
+		/*! Returns a random number in the range [0,maxint).
+         */
+        result_type operator()() {
+			return uniform_integer_rng(0,std::numeric_limits<argument_type>::max())();
+		}
+
 		/*! Test a probability.
 		 
 		 Returns true if P < prob, false if P >= prob.  Prob must be in the range [0,1].

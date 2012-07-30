@@ -69,7 +69,9 @@ namespace ea {
         
         template <typename T>
         T modnorm(T x, T floor, T limit) {
-            assert((limit-floor) > 0);
+            if((limit-floor) == 0) {
+                return floor;
+            }
             return (x%(limit-floor)) + floor;
         }
         
