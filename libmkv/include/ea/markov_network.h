@@ -45,7 +45,7 @@ LIBEA_MD_DECL(NODE_HISTORY_LIMIT, "markov_network.node.history.limit", int);
 LIBEA_MD_DECL(NODE_HISTORY_FLOOR, "markov_network.node.history.floor", int);
 
 
-enum { PROB=42, DET=43, ADAPTIVE=44 };
+enum { PROB=42, DET=43, ADAPTIVE=44, PROB_HIST=45 };
 
 
 namespace ea {
@@ -107,6 +107,7 @@ namespace ea {
             if(gates.find("deterministic")!=std::string::npos) { supported.insert(DET); }
             if(gates.find("probabilistic")!=std::string::npos) { supported.insert(PROB); }
             if(gates.find("adaptive")!=std::string::npos) { supported.insert(ADAPTIVE); }
+            if(gates.find("probhistorical")!=std::string::npos) { supported.insert(PROB_HIST); }
             
 			int i,j;
 			for(i=0; i<get<MKV_INITIAL_NODES>(ea); ++i) {
@@ -125,16 +126,14 @@ namespace ea {
 } //ea
 
 
-namespace mkv {
-    enum { PROB=42, DET=43, ADAPTIVE=44 };
-    
+namespace mkv {    
 
     template <typename Network, typename ForwardIterator, typename MetaData>
     void build_prob(Network& net, ForwardIterator h, MetaData& md) {
         using namespace detail;
         using namespace ea;
         using namespace ea::algorithm;
-        ++h;
+
         int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
         int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
         index_list_type inputs(h, h+nin);
@@ -164,6 +163,27 @@ namespace mkv {
         h+=nout;
         
         markov_network::nodeptr_type p(new deterministic_mkv_node(inputs, outputs, h));
+        net.append(p);
+    }    
+    
+    template <typename Network, typename ForwardIterator, typename MetaData>
+    void build_prob_hist(Network& net, ForwardIterator h, MetaData& md) {
+        using namespace detail;
+        using namespace ea;
+        using namespace ea::algorithm;
+        
+        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
+        int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
+    
+        index_list_type inputs(h, h+nin);
+        std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+        h+=nin;
+        index_list_type outputs(h, h+nout);
+        std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+        h+=nout;
+        
+        markov_network::nodeptr_type p(new probabilistic_history_mkv_node(nhistory, inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
         net.append(p);
     }
     
@@ -221,6 +241,7 @@ namespace mkv {
         if(gates.find("deterministic")!=std::string::npos) { supported.insert(DET); }
         if(gates.find("probabilistic")!=std::string::npos) { supported.insert(PROB); }
         if(gates.find("adaptive")!=std::string::npos) { supported.insert(ADAPTIVE); }
+        if(gates.find("probhistorical")!=std::string::npos) { supported.insert(PROB_HIST); }
         
         ForwardIterator last=f;
         ++f;
@@ -231,17 +252,22 @@ namespace mkv {
                 switch(*last) {
                     case PROB: { // build a probabilistic node
                         if(!supported.count(PROB)) { break; }
-                        build_prob(net, f, md);
+                        build_prob(net, f+1, md);
                         break;
                     }
                     case DET: { // build a deterministic node
                         if(!supported.count(DET)) { break; }
-                        build_det(net, f, md);
+                        build_det(net, f+1, md);
                         break;
                     }
                     case ADAPTIVE: { // build a synaptically learning probabilistic node
                         if(!supported.count(ADAPTIVE)) { break; }
-                        build_adaptive(net, f, md);
+                        build_adaptive(net, f+1, md);
+                        break;
+                    }
+                    case PROB_HIST: {
+                        if(!supported.count(PROB_HIST)) { break; }
+                        build_prob_hist(net, f+1, md);
                         break;
                     }
                     default: { 

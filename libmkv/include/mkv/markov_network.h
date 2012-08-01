@@ -50,7 +50,7 @@ namespace mkv {
         std::copy(input.begin(), input.end(), mkv.input_begin());
         
         mkv.top_half();
-        for(typename MKV::nodelist_type::iterator i=mkv.begin(); i!=mkv.end(); ++i) {
+        for(typename MKV::iterator i=mkv.begin(); i!=mkv.end(); ++i) {
             (*i)->update(mkv);
         }
         mkv.bottom_half();
@@ -73,6 +73,8 @@ namespace mkv {
         typedef control::svm<state_type> svm_type; //!< State vector machine type.
         typedef boost::shared_ptr<detail::abstract_markov_node> nodeptr_type; //!< Pointer type for markov nodes.
         typedef std::vector<nodeptr_type> nodelist_type; //!< Type for a list of markov nodes.
+        typedef nodelist_type::iterator iterator; //!< Iterator type.
+        typedef nodelist_type::const_iterator const_iterator; //!< Const iterator type.
         typedef ea::default_rng_type rng_type; //!< Random number generator type.
         typedef ea::meta_data md_type; //!< Meta-data type.
         
@@ -118,16 +120,16 @@ namespace mkv {
         std::size_t size() const { return _nodes.size(); }
         
         //! Retrieve a begin iterator to the nodelist.
-        nodelist_type::iterator begin() { return _nodes.begin(); }
+        iterator begin() { return _nodes.begin(); }
         
         //! Retrieve an end iterator to the nodelist.
-        nodelist_type::iterator end() { return _nodes.end(); }
+        iterator end() { return _nodes.end(); }
         
         //! Retrieve a begin iterator to the nodelist (const-qualified).
-        nodelist_type::const_iterator begin() const { return _nodes.begin(); }
+        const_iterator begin() const { return _nodes.begin(); }
         
         //! Retrieve an end iterator to the nodelist (const-qualified).
-        nodelist_type::const_iterator end() const { return _nodes.end(); }
+        const_iterator end() const { return _nodes.end(); }
         
         //! Retrieve the backing state vector machine:
         svm_type& svm() { return _svm; }

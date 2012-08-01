@@ -277,6 +277,9 @@ namespace ea {
         friend class boost::serialization::access;
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("repr", _representation);
+//            ar & boost::serialization::make_nvp("heads", _head_position);
+//            ar & boost::serialization::make_nvp("regfile", _regfile);
             // fill-in
             //ar & boost::serialization::make_nvp("rng", _rng);
             

@@ -45,7 +45,13 @@ namespace mkv {
             
             //! Update the Markov network from this node.
             virtual void update(markov_network& mkv) = 0;
-            
+
+            //! Reinforce the given decision.
+            virtual void reinforce(std::size_t i, std::size_t j, double scale) { }
+
+            //! Reinforce all decisions by r.
+            virtual void reinforce(double r) { }
+
             //! Retrieve the input to this node from the Markov network's state machine at time t-1.
             int get_input(markov_network& mkv) {
                 int x=0;

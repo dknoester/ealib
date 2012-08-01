@@ -45,7 +45,7 @@ namespace mkv {
              The sign of the "scale" parameter determines if output (i,j) is reinforced (positive)
              or weakened (negative).
              */
-            void reinforce(std::size_t i, std::size_t j, double scale) {
+            virtual void reinforce(std::size_t i, std::size_t j, double scale) {
                 _table(i,j) *= 1.0 + scale;
                 row_type row(_table, i);
                 ea::algorithm::normalize(row.begin(), row.end(), row.begin(), 1.0);
@@ -88,6 +88,12 @@ namespace mkv {
             history_type::iterator begin() { return _history.begin(); }
             history_type::iterator end() { return _history.end(); }
             
+            //! Reinforce all previous decisions by the given learning rate r.
+            virtual void reinforce(double r) {
+                for(std::size_t i=0; i<_history.size(); ++i) {
+                    probabilistic_mkv_node::reinforce(_history[i].first, _history[i].second, r);
+                }
+            }
             
             //! Update the Markov network from this probabilistic node.
             void update(markov_network& mkv) {

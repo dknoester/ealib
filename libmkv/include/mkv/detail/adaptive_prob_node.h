@@ -45,13 +45,13 @@ namespace mkv {
                 if(mkv.svm().state_tminus1(_posf)) {
                     // positive feedback
                     for(std::size_t i=0; (i<_poswv.size()) && (i<_history.size()); ++i) {
-                        reinforce(_history[i].first, _history[i].second, _poswv[i]);
+                        probabilistic_mkv_node::reinforce(_history[i].first, _history[i].second, _poswv[i]);
                     }
                 }
                 if(mkv.svm().state_tminus1(_negf)) {
                     // negative feedback
                     for(std::size_t i=0; (i<_negwv.size()) && (i<_history.size()); ++i) {
-                        reinforce(_history[i].first, _history[i].second, _negwv[i]);
+                        probabilistic_mkv_node::reinforce(_history[i].first, _history[i].second, _negwv[i]);
                     }
                 }
             }
