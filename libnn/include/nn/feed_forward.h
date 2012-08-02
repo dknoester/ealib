@@ -23,6 +23,7 @@
 #include <limits>
 #include <boost/graph/adjacency_list.hpp>
 
+#include <nn/traits.h>
 #include <nn/neural_network.h>
 #include <nn/sigmoid.h>
 
@@ -71,14 +72,12 @@ namespace nn {
 		double weight; //!< Weight of this link.
 	};
 	
-	
-	//! Selector for feed-forward neural networks.
-	struct feed_forward { };
-	
+    //! Selector for feed-forward neural networks.
+	struct feed_forwardS { };
 	
 	//! Traits type for feed-forward neural networks.
 	template < >
-	struct neural_network_traits<feed_forward> {
+	struct neural_network_traits<feed_forwardS> {
 		typedef hyperbolic_tangent sigmoid_type;
 		typedef feed_forward_neuron<sigmoid_type> neuron_type;
 		typedef feed_forward_link link_type;
@@ -92,11 +91,6 @@ namespace nn {
 		static neuron_type make_inactive_neuron() { return neuron_type(neuron_base::INACTIVE); }
 		static link_type make_link(double weight) { return link_type(weight); }
 	};
-	
-	
-	//! Convenience typedef for feed-forward neural networks.
-	typedef neural_network<feed_forward> feed_forward_neural_network;
-
 }	// nn
 
 #endif

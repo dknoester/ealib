@@ -22,6 +22,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 
+#include <nn/traits.h>
 #include <nn/neural_network.h>
 #include <nn/sigmoid.h>
 
@@ -142,12 +143,12 @@ namespace nn {
 	
 	
 	//! Selector for CTRNNs.
-	struct ctrnn_s { };
+	struct continuous_time_recurrentS { };
 	
 	
 	//! Traits type for recurrent neural networks.
 	template < >
-	struct neural_network_traits<ctrnn_s> {
+	struct neural_network_traits<continuous_time_recurrentS> {
 		typedef hyperbolic_tangent sigmoid_type;
 		typedef ctrnn_neuron<sigmoid_type> neuron_type;
 		typedef ctrnn_link link_type;
@@ -166,10 +167,6 @@ namespace nn {
 		double stepsize() const { return _stepsize; }
 		double _stepsize; //!< Stepsize for this ctrnn.
 	};
-	
-	
-	//! Convenience typedef for CTRNNs.
-	typedef neural_network<ctrnn_s> ctrnn;
 	
 } // nn
 

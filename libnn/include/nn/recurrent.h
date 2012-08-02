@@ -22,6 +22,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 
+#include <nn/traits.h>
 #include <nn/neural_network.h>
 #include <nn/sigmoid.h>
 
@@ -107,12 +108,11 @@ namespace nn {
 	
 	
 	//! Selector for recurrent neural networks.
-	struct recurrent_s { };
-	
-	
+	struct recurrentS { };
+		
 	//! Traits type for recurrent neural networks.
 	template < >
-	struct neural_network_traits<recurrent_s> {
+	struct neural_network_traits<recurrentS> {
 		typedef hyperbolic_tangent sigmoid_type;	
 		typedef recurrent_neuron<sigmoid_type> neuron_type;
 		typedef recurrent_link link_type;
@@ -124,11 +124,7 @@ namespace nn {
 		static neuron_type make_inactive_neuron() { return neuron_type(neuron_base::INACTIVE); }
 		static link_type make_link(double weight) { return link_type(weight); }
 	};
-	
-	
-	//! Convenience typedef for recurrent neural networks.
-	typedef neural_network<recurrent_S> rnn;
-	
+
 } // nn
 
 #endif

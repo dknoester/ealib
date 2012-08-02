@@ -24,16 +24,12 @@
 #include <map>
 
 #include <nn/activation.h>
+#include <nn/feed_forward.h>
+#include <nn/recurrent.h>
+#include <nn/ctrnn.h>
 
 
 namespace nn {
-	
-	/*! Default traits for neural networks; must be specialized by the activation type.
-	 */
-	template <typename ActivationType>
-	struct neural_network_traits {
-	};
-	
 	
 	/*! Neural network.
 	 
