@@ -22,6 +22,7 @@
 #define _EA_HARDWARE_H_
 
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/deque.hpp>
 #include <deque>
 #include <strings.h>
 
@@ -67,6 +68,18 @@ namespace ea {
         
         //! Destructor.
         ~hardware() {
+        }
+        
+        //! Returns true if hardware(s) are equivalent.
+        bool operator==(const hardware& that) {
+            return (_representation == that._representation)
+            && std::equal(_head_position, _head_position+NUM_HEADS, that._head_position)
+            && std::equal(_regfile, _regfile+NUM_REGISTERS, that._regfile)
+            && (_label_stack == that._label_stack)
+            && (_age == that._age)
+            && (_mem_extended == that._mem_extended)
+            && (_stack == that._stack)
+            && (_msgs == that._msgs);
         }
         
         //! (Re-) Initialize this hardware.
@@ -277,12 +290,14 @@ namespace ea {
         friend class boost::serialization::access;
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("repr", _representation);
-//            ar & boost::serialization::make_nvp("heads", _head_position);
-//            ar & boost::serialization::make_nvp("regfile", _regfile);
-            // fill-in
-            //ar & boost::serialization::make_nvp("rng", _rng);
-            
+            ar & boost::serialization::make_nvp("representation", _representation);
+            ar & boost::serialization::make_nvp("head_positions", _head_position);
+            ar & boost::serialization::make_nvp("register_file", _regfile);
+            ar & boost::serialization::make_nvp("labels", _label_stack);
+            ar & boost::serialization::make_nvp("age", _age);
+            ar & boost::serialization::make_nvp("extended", _mem_extended);
+            ar & boost::serialization::make_nvp("stack", _stack);
+            ar & boost::serialization::make_nvp("messages", _msgs);
         }
     };
     
