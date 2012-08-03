@@ -27,12 +27,13 @@
 #include <vector>
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
+#include <ea/events.h>
 
 namespace ea {
     //! Indicates that fitness is constant, and thus should be cached.
     struct constantS { };
     
-    //! Indicates that fitness may change between evalutions, and should not be cached.
+    //! Indicates that fitness may change between evaluations, and should not be cached.
     struct nonstationaryS { };
     
     //! Indicates that fitness of an individual is absolute.
@@ -168,15 +169,39 @@ namespace ea {
         //! Serialize this fitness value.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) { 
-//            ar & boost::serialization::make_nvp("f", _f);
+            ar & boost::serialization::make_nvp("f", _f);
         }
         
         value_type _f; //!< Fitness value.
     };
 
+    namespace detail {
 
-    /*! Convenience struct to define the needed typedefs for a unary fitness
-     function object.
+        //! Deterministic initialization (no RNG needed).
+        template <typename FitnessFunction, typename EA>
+        void initialize_fitness_function(FitnessFunction& ff, deterministicS, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            ff.initialize(ea);
+        }
+
+        //! Stochastic initialization (RNG needed).
+        template <typename FitnessFunction, typename EA>
+        void initialize_fitness_function(FitnessFunction& ff, stochasticS, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            next<FF_INITIAL_RNG_SEED>(ea);
+            typename EA::rng_type rng(get<FF_INITIAL_RNG_SEED>(ea)+1); // +1 to avoid clock
+            ff.initialize(rng, ea);
+        }
+        
+    } // detail
+    
+    template <typename FitnessFunction, typename EA>
+    void initialize_fitness_function(FitnessFunction& ff, EA& ea) {
+        detail::initialize_fitness_function(ff, typename FitnessFunction::stability_tag(), ea);
+    }
+
+    /*! Convenience struct to define typedefs and empty initialization and serialization
+     methods.
      */
     template <typename T, 
     typename ConstantTag=constantS,
@@ -189,10 +214,17 @@ namespace ea {
         typedef RelativeTag relative_tag;
         typedef StabilityTag stability_tag;
         
+        //! Initialize this (deterministic) fitness function.
         template <typename EA>
         void initialize(EA& ea) {
         }
         
+        //! Initialize this (stochastic) fitness function.
+        template <typename RNG, typename EA>
+        void initialize(RNG& rng, EA& ea) {
+        }
+        
+        //! Serialize this fitness function.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) { 
         }
@@ -273,6 +305,18 @@ namespace ea {
 			ind(first,ea).fitness().nullify();
 		}
 	}
+
+    /*! Unconditionally recalculate fitness for the range [f,l).
+     */
+	template <typename ForwardIterator, typename EA>
+	void recalculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		for(; first!=last; ++first) {
+			ind(first,ea).fitness().nullify();
+			calculate_fitness(ind(first,ea),ea);
+		}
+    }    
     
     /*! Calculate relative fitness for the range [f,l).
 	 */
@@ -295,34 +339,28 @@ namespace ea {
         return sum;
     }
     
-//    /*! Adaptor for stochastic fitness functions.
-//     */
-//    template <typename FitnessFunction>
-//    struct stochastic : fitness_function<typename FitnessFunction::value_type> {
-//        typedef FitnessFunction fitness_function_type;
-//        typedef typename fitness_function_type::value_type value_type;
-//        
-//        template <typename EA>
-//        void initialize(EA& ea) {
-//            next<FF_RNG_SEED>(ea);
-//            typename EA::rng_type rng(get<FF_RNG_SEED>(ea)+1); // +1 to avoid clock
-//            _ff.initialize(rng, ea);
-//        }
-//
-//        template <typename EA>
-//        void reinitialize(EA& ea) {
-//            initialize(ea);
-//        }
-//
-//        template <typename Individual, typename EA>
-//        value_type operator()(Individual& ind, EA& ea) {
-//            return _ff(ind,ea);
-//        }
-//        
-//        fitness_function_type _ff; //!< Fitness function.
-//    };
-////    
-//    
+    
+    /*! This event periodically (re-)initializes the fitness function for the 
+     entire population.
+     
+     Note that this triggers a fitness reevaluation for all individuals in
+     the population.
+     
+     Also note that it is the fitness function's responsibility to store whatever
+     information is needed to recreate the correct landscape for serialization.
+     */
+    template <typename EA>
+    struct reinitialize_fitness_function : periodic_event<FF_INITIALIZATION_PERIOD, EA> {
+        reinitialize_fitness_function(EA& ea) : periodic_event<FF_INITIALIZATION_PERIOD, EA>(ea) {
+        }
+        
+        virtual void operator()(EA& ea) {
+            initialize_fitness_function(ea.fitness_function(), ea);
+            recalculate_fitness(ea.population().begin(), ea.population().end(), ea);
+        }
+    };
+
+    
 //    /*! Adaptor for alternating among a series of fitness functions.
 //     */
 //    template <typename FitnessFunction>

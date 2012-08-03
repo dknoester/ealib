@@ -222,7 +222,6 @@
 		423CBDDB157D0E450003A644 /* individual.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = individual.h; sourceTree = "<group>"; };
 		423CBDDC157D0E450003A644 /* initialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = initialization.h; sourceTree = "<group>"; };
 		423CBDDD157D0E450003A644 /* interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = interface.h; sourceTree = "<group>"; };
-		423CBDDE157D0E450003A644 /* landscape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = landscape.h; sourceTree = "<group>"; };
 		423CBDDF157D0E450003A644 /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
 		423CBDE0157D0E450003A644 /* meta_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_data.h; sourceTree = "<group>"; };
 		423CBDE1157D0E450003A644 /* mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutation.h; sourceTree = "<group>"; };
@@ -483,7 +482,6 @@
 				423CBDDB157D0E450003A644 /* individual.h */,
 				423CBDDC157D0E450003A644 /* initialization.h */,
 				423CBDDD157D0E450003A644 /* interface.h */,
-				423CBDDE157D0E450003A644 /* landscape.h */,
 				423CBDDF157D0E450003A644 /* line_of_descent.h */,
 				423CBDE0157D0E450003A644 /* meta_data.h */,
 				42841C8015AEEC3A00AB18BE /* meta_population.h */,

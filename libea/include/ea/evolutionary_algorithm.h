@@ -106,7 +106,7 @@ namespace ea {
                 
         //! Initialize this EA.
         void initialize() {
-            _fitness_function.initialize(*this);
+            initialize_fitness_function(_fitness_function, *this);
         }        
         
         //! Generates the initial population.
