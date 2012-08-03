@@ -22,14 +22,17 @@
 #include <ea/artificial_life/artificial_life.h>
 #include <ea/artificial_life/hardware.h>
 #include <ea/artificial_life/isa.h>
-#include <ea/artificial_life/topology.h>
+#include <ea/artificial_life/spatial.h>
 
 typedef artificial_life<
 hardware,
-isa
+isa,
+spatial
 > al_type;
 
 
+/*!
+ */
 BOOST_AUTO_TEST_CASE(test_avida_hardware) {
     hardware::representation_type r; // is a circular genome...
     r.push_back(0);
@@ -88,7 +91,6 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     r.push_back(7); // 11
     
     hardware hw(r);
-
     
     // Check if mov-head does in fact move the IP head to the position
     // before the FH (counting on the advance mechanism to put them
@@ -114,16 +116,8 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     // and the flow head is set to the instruction immediately 
     // following the complement.  
     BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::FH), 7);    
-        
-    
-
 }
 
-
-BOOST_AUTO_TEST_CASE(test_well_mixed_topo) {
-    //well_mixed topo;
-    // test topo
-}
 
 BOOST_AUTO_TEST_CASE(test_logic9_environment) {
     // test input/output
@@ -154,15 +148,162 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
     BOOST_CHECK(txor(x, y, 3)); 
     BOOST_CHECK(tequals(x, y, 4294967292)); 
     
-
-    
-    
-    
     // test resources
 }
 
+
 BOOST_AUTO_TEST_CASE(test_al_type) {
-    al_type al;
-    // test initialization
-    // test serialization
+    al_type al;    
+    add_task<tasks::task_nand,resources::unlimited,catalysts::additive<1> >("nand", al); //1
+
+    put<POPULATION_SIZE>(100,al);
+	put<REPRESENTATION_SIZE>(100,al);
+	put<MUTATION_PER_SITE_P>(0.0,al);
+    put<SPATIAL_X>(10,al);
+    put<SPATIAL_Y>(10,al);
+    put<MUTATION_UNIFORM_INT_MIN>(0,al);
+    put<MUTATION_UNIFORM_INT_MAX>(25,al);
+
+    al.initialize();
+    
+    al_type::population_type ancestral;
+    al_type::individual_type a = al_type::individual_type();
+    a.name() = next<INDIVIDUAL_COUNT>(al);
+    a.generation() = -1.0;
+    a.update() = al.current_update();
+    ancestral.append(make_population_entry(a,al));
+    
+    al.population().clear();
+   
+    al_type::representation_type r; // is a circular genome...
+    r.resize(100);
+    std::fill(r.begin(), r.end(), 11); // fill it with inputs..
+    // input*90
+    // 91: nopc
+    // 92: input
+    // 93: nand
+    // 94: output
+    // 95: repro
+    
+    r[95] = 2; // cx, input
+    r[96] = 11; // input
+    r[97] = 7; // nand
+    r[98] = 12; // output
+    r[99] = 24; // repro
+    al.population().append(make_population_entry(r,al));
+    
+    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
+        al.events().inheritance(ancestral,ind(i,al),al);
+        al.env().insert(ptr(i,al));
+        ind(i,al).priority() = 1.0;
+    }
+    BOOST_CHECK(al.population().size()==1);
+    
+    put<SCHEDULER_TIME_SLICE>(100,al);
+    al.scheduler()(al.population(),al);
+    
+    BOOST_CHECK(al.population().size()==2);
+    
+    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
+        BOOST_CHECK(al.population()[0]->priority() == 2.0);
+    }
+    
+    // now let's check serialization...
+    std::ostringstream out;
+    checkpoint_save(al, out);
+    
+    al_type al2;
+    std::istringstream in(out.str());
+    checkpoint_load(al2, in);
+    
+    al_type::individual_type& i1=*al.population()[0];
+    al_type::individual_type& i2=*al2.population()[0];
+    
+    BOOST_CHECK(i1.repr() == i2.repr());
+    BOOST_CHECK(i1.hw() == i2.hw());
+//    
+//    
+//    /*! Test for alife serialization correctness.
+//     */
+//    BOOST_AUTO_TEST_CASE(test_ealife_checkpoint) {
+//        all_ones_ea ea1, ea2;
+//        add_std_meta_data(ea1);
+//        ea1.initialize();
+//        ea1.generate_initial_population();
+//        
+//        // run and checkpoint ea1:
+//        ea1.advance_epoch(10);
+//        std::ostringstream out;
+//        checkpoint_save(ea1, out);
+//        
+//        // load the saved state into ea2:
+//        std::istringstream in(out.str());
+//        checkpoint_load(ea2, in);
+//        
+//        // run each a little longer:
+//        ea1.advance_epoch(10);
+//        //	BOOST_CHECK_NE(ea1, ea2);
+//        ea2.advance_epoch(10);
+//        
+//        // and check them for equality:
+//        //	BOOST_CHECK(eq);
+//        
+//    }
+//    
+//
+    
+    
+}
+
+BOOST_AUTO_TEST_CASE(test_al_messaging) {
+    al_type al;    
+    
+    put<POPULATION_SIZE>(100,al);
+	put<REPRESENTATION_SIZE>(100,al);
+	put<MUTATION_PER_SITE_P>(0.0075,al);
+    put<SPATIAL_X>(10,al);
+    put<SPATIAL_Y>(10,al);
+    put<MUTATION_UNIFORM_INT_MIN>(0,al);
+    put<MUTATION_UNIFORM_INT_MAX>(20,al);
+    
+    al.initialize();
+    
+    al_type::population_type ancestral;
+    al_type::individual_type a = al_type::individual_type();
+    a.name() = next<INDIVIDUAL_COUNT>(al);
+    a.generation() = -1.0;
+    a.update() = al.current_update();
+    ancestral.append(make_population_entry(a,al));
+    
+    al.population().clear();
+    
+    al_type::representation_type r; // is a circular genome...
+    r.resize(100);
+    std::fill(r.begin(), r.end(), 11); // fill it with inputs..
+    // input*90
+    // 91: nopc
+    // 92: input
+    // 93: nand
+    // 94: tx-msg
+    // 95: nopx
+    
+    r[95] = 2; // cx, input
+    r[96] = 11; // input
+    r[97] = 7; // nand
+    r[98] = 17; // tx-msg
+    r[99] = 3; // nopx
+    al.population().append(make_population_entry(r,al));
+    al.population().append(make_population_entry(r,al));
+    
+    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
+        al.events().inheritance(ancestral,ind(i,al),al);
+        al.env().insert(ptr(i,al));
+        ind(i,al).priority() = 1.0;
+    }
+    BOOST_CHECK(al.population().size()==2);
+    
+    put<SCHEDULER_TIME_SLICE>(100,al);
+    al.scheduler()(al.population(),al);
+    
+    BOOST_CHECK(al.population()[1]->hw().msgs_queued()==1);    
 }

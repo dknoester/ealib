@@ -22,7 +22,7 @@
 
 #include <ea/attributes.h>
 #include <ea/interface.h>
-
+#include <ea/selection.h>
 
 namespace ea {
 	namespace selection {
@@ -81,7 +81,7 @@ namespace ea {
                     
                     // ok, running fitness is >= random number; select the p'th
                     // individual for replication:
-                    dst.append(p);
+                    dst.push_back(*p);
                 }
             }
             

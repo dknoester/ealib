@@ -156,13 +156,24 @@ namespace ea {
                 return 1.0;
             }
         };
+        struct limited {
+            limited(double c) : _cap(c) { }
+            double operator()() {
+                double consumed;
+                _cap -= consumed;
+                return consumed;
+            }
+            double _cap;
+        };
+
     } // resources
     
     namespace catalysts {
-        //! "Pow" catalyst type.
-        struct power {
+        //! "Additive" catalyst type.
+        template <int T>
+        struct additive {
             double operator()(double r, double p) {
-                return p * pow(2.0, r);
+                return p + T;
             }
         };
     } // catalysts
@@ -189,7 +200,9 @@ namespace ea {
             
             for(tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
                 tasks::abstract_task& task=(**i);
-                p = task.catalyze(org.phenotype()[task.name()], p);
+                if(org.phenotype()[task.name()] > 0.0) {
+                    p = task.catalyze(org.phenotype()[task.name()], p);
+                }
             }
             
             org.priority() = p;
@@ -203,10 +216,10 @@ namespace ea {
          tasks in the task library.  For every task performed, the individual's
          phenotype is annotated with the amount of resources consumed.
          */
-        template <typename Individual, typename EA>
-        void check_tasks(Individual& org, EA& ea) {
-            typedef typename Individual::io_type io_type;
-            typedef typename Individual::iobuffer_type iobuffer_type;
+        template <typename EA>
+        void check_tasks(typename EA::individual_type& org, EA& ea) {
+            typedef typename EA::individual_type::io_type io_type;
+            typedef typename EA::individual_type::iobuffer_type iobuffer_type;
             
             iobuffer_type& inputs = org.inputs();
             iobuffer_type& outputs = org.outputs();
@@ -215,8 +228,9 @@ namespace ea {
                 for(tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
                     tasks::abstract_task& task=(**i);
                     if(task.check(inputs[0], inputs[1], outputs[0])) {
-                        org.phenotype()[task.name()] += task.consume();
-                        // add event here?
+                        double r = task.consume();
+                        org.phenotype()[task.name()] += r;
+                        ea.events().task_performed(org, r, task.name(), ea);
                     }
                 }
             }

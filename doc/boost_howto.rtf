@@ -1,6 +1,6 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf470
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;\f2\fmodern\fcharset0 Courier-Oblique;
-}
+\f3\froman\fcharset0 Times-Roman;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue255;}
 \margl1440\margr1440\vieww12560\viewh16600\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
@@ -161,8 +161,102 @@ You should see a large list scroll by, and then something like "\'85 updated X t
 \f2\i prefix
 \f1\i0 /share/boost-build
 \f0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720
+
+\f3 \cf0 \
+
+\f0\b ========
+\f3\b0 \
+
+\f0\b INSTALL METHODOLOGY #2 \'96 Using Ubuntu's Software Center.
+\f3\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720
+
+\f0 \cf0 **This requires hacking together the boost.jam file from a downloaded Boost package and the package downloaded using the Software Center**
+\f3 \
 \
+
+\f0 1) Search for the most recent version of Boost at the Software Center, which would also include the development files. An example of the expected search result is: \'93libboost1.48-all-dev\'94. Install the package using the software center.\uc0\u8232 \u8232 2) Download a version of boost from the website: \cf2 http://www.boost.org/users/download. \cf0 This will be needed to get the boost.jam file.
+\f3 \
+
+\f0 \uc0\u8232 3) Extract the downloaded boost package.\u8232 
+\f3 \
+
+\f0 4) CD into the extracted package and issue the following command:\uc0\u8232 	
+\f1 $ find . -name 'boost.jam' $\uc0\u8232 \u8232 
+\f0 5) This should output a line similar to the following: \uc0\u8232 	
+\f2\i extracted_directory
+\f1\i0 /tools/build/v2/contrib/boost.jam\uc0\u8232 \u8232 
+\f0 6) Now that the location of the boost.jam file is known, you need to find where the Ubuntu software center installed boost to get the common prefix. Note that if the Software Center's package name was something similar to libboost1.48-all-dev, the command to be issued will be (Note the '-all-' substring is excluded):\uc0\u8232 	
+\f1 $ dpkg-query -L libboost1.48-dev $
+\f0 \uc0\u8232 
+\f3 \
+
+\f0 7) There should be a lengthy output; what must be noted, however, is that there is a common prefix to all of the output. In a possible case, the common prefix to all the output is /usr/. This is followed by include/, share/, bin/, etc/... Once the that prefix is known (/usr/ in this case), the boost.jam file from step 5 must be copied to a specific directory:
+\f3 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720
+
+\f0\b \cf0 	
+\f1\b0 $ sudo cp 
+\f2\i extracted_directory
+\f1\i0 /tools/build/v2/contrib/boost.jam 
+\f2\i prefix
+\f1\i0 /share/boost-build/build $
+\f3 \
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720
+
+\f0 \cf0 8) Create a site-config.jam file.
+\f3 \
+
+\f0 	Put this:
+\f3 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720
+
+\f1 \cf0 		using 
+\f2\i toolset
+\f1\i0  ;
+\f3 \
+
+\f1 		import boost ;
+\f3 \
+
+\f1 		boost.use-project ;
+\f3 \
+
+\f1           project site-config ;
+\f3 \
+
+\f1           lib z ;
+\f3 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720
+
+\f0 \cf0 	in a file named 
+\f2\i prefix
+\f1\i0 /share/boost-build/site-config.jam
+\f3 \
+
+\f0 	Replace "toolset" above with 
+\f1 darwin
+\f0  if you're using OS X, or 
+\f1 gcc
+\f0  if you're using Ubuntu.
+\f3 \
+\
+
+\f0 9) Add 
+\f2\i prefix
+\f1\i0 /bin
+\f0  to your PATH environment variable. 
+\f3 \
+\
+
+\f0 10) Add an environment variable BOOST_BUILD_PATH that points to 
+\f2\i prefix
+\f1\i0 /share/boost-build 
+\f0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
 
 \b ========\
 USING BOOST\

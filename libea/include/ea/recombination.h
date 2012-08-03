@@ -25,6 +25,51 @@
 #include <ea/interface.h>
 
 namespace ea {
+    
+    /*! Common inheritance details.
+     */
+    template <typename EA>
+    void inherits_from(typename EA::individual_type& parent, typename EA::individual_type& offspring, EA& ea) {
+        offspring.name() = next<INDIVIDUAL_COUNT>(ea);
+        offspring.generation() = parent.generation() + 1.0;
+        offspring.update() = ea.current_update();
+    }        
+    
+    
+    /*! Common inheritance details.
+     */
+    template <typename Population, typename EA>
+    void inherits(Population& parents, Population& offspring, EA& ea) {
+        for(typename Population::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
+            inherits_from(ind(parents.begin(),ea), ind(i,ea), ea);
+            ea.events().inheritance(parents, ind(i,ea), ea);
+        }
+    }
+    
+    
+    /*! Recombine parents to generate offspring via the given recombination operator.
+     */
+    template <typename Population, typename Recombinator, typename EA>
+    void recombine(Population& parents, Population& offspring, Recombinator rec, EA& ea) {
+        rec(parents, offspring, ea);
+        inherits(parents, offspring, ea);
+    }
+    
+    
+    /*! Recombine parents selected from the given population to generate n offspring.
+     */
+    template <typename Population, typename Selector, typename Recombinator, typename EA>
+    void recombine_n(Population& population, Population& offspring, Selector sel, Recombinator rec, std::size_t n, EA& ea) {
+        while(offspring.size() < n) {
+            Population p, o; // parents, offspring
+            sel(population, p, rec.capacity(), ea); // select parents
+            rec(p, o, ea); // recombine parents to produce offspring
+            inherits(p, o, ea);
+            offspring.append(o.begin(), o.end());
+        }
+        offspring.resize(n); // in case extra were generated...
+    }    
+
     namespace recombination {
         
         /*! Asexual reproduction.

@@ -21,6 +21,7 @@
 #define _EA_SELECTION_RANDOM_H_
 
 #include <iterator>
+#include <ea/selection.h>
 
 namespace ea {	
 	namespace selection {

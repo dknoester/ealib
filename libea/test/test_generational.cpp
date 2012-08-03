@@ -41,7 +41,7 @@ void test_generational_model() {
 		put<POPULATION_SIZE>(10,ea);
 		
         ea.initialize();
-        generate_initial_population(ea);        
+        ea.generate_initial_population();
         ea.update();
 
 		BOOST_CHECK(ea.population().size()==10);

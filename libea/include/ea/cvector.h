@@ -60,6 +60,7 @@ namespace ea {
                 _end = that._end;
                 _cur = that._cur;
             }
+            return *this;
         }
 
     protected:
@@ -235,7 +236,7 @@ namespace ea {
 
         //! Erases the element at position pos.
         iterator erase(iterator pos) {
-            typename base_type::iterator i=base_type::erase(pos);
+            typename base_type::iterator i=base_type::erase(pos._cur);
             return iterator(0, base_type::begin(), base_type::end(), i);
         }
         

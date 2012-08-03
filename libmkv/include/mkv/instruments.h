@@ -1,4 +1,4 @@
-/* update.h
+/* instruments.h
  * 
  * This file is part of EALib.
  * 
@@ -17,23 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _CONTROL_UPDATE_H_
-#define _CONTROL_UPDATE_H_
+#ifndef _MKV_INSTRUMENTS_H_
+#define _MKV_INSTRUMENTS_H_
 
-#include <stdexcept>
+#include <mkv/markov_network.h>
 
-namespace control {
+namespace mkv {
     
-    /*! Update a system-under-control (SOC) n times with inputs [f,l), and place
-     all output in result.
-     */
-    template <typename SOC, typename StateVector>
-    void update_n(std::size_t n, SOC& soc, const StateVector& input, StateVector& output) {
-        for(; n>0; --n) {
-            update(soc, input, output);
-        }
-    }    
+    //! Base class for markov network instruments.
+    class mkv_instrument {
+    public:
+        mkv_instrument() { }
+        virtual ~mkv_instrument() { }
+        virtual void top_half(markov_network& mkv) { }
+        virtual void bottom_half(markov_network& mkv) { }
+        virtual void clear() { }
+        virtual std::ostream& operator<<(std::ostream& out) { return out; }
+    };
     
-} // fn
+} // mkv
 
 #endif

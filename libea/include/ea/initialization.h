@@ -25,6 +25,21 @@
 
 
 namespace ea {
+    
+	
+    /*! Generate n individuals into population p from generator ig.
+	 */
+	template <typename Population, typename IndividualGenerator, typename EA>
+	void generate_individuals_n(Population& p, IndividualGenerator &ig, std::size_t n, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		BOOST_CONCEPT_ASSERT((IndividualGeneratorConcept<IndividualGenerator,EA>));
+        std::insert_iterator<Population> ii(p, p.end());
+        for( ; n>0; --n) {
+            *ii++ = ig(ea);
+        }
+	}
+    
+
     namespace initialization {
         
         /*! Generates an individual from random bits.
@@ -198,7 +213,7 @@ namespace ea {
                 }
             }
         };
-        
+                
         /*! Initializes all subpopulations that are part of a meta-population EA.
          */
         struct all_subpopulations {

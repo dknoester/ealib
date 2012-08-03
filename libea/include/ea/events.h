@@ -103,7 +103,7 @@ namespace ea {
         virtual ~periodic_event() { }
         
         virtual void end_of_update(EA& ea) {
-            unsigned long g = current_update(ea);
+            unsigned long g = ea.current_update();
             if((g % static_cast<unsigned long>(get<MDType>(ea))) == 0) {
                 operator()(ea);
             }

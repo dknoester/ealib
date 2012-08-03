@@ -42,14 +42,15 @@ namespace ea {
 	 3) A container for a priority
 	 4) A container for meta data
 	 */
-	template <typename Representation, typename Hardware, typename Scheduler>
+	template <typename EA>
 	class organism {
 	public:
-		typedef Representation representation_type;
-        typedef Hardware hardware_type;
-		typedef Scheduler scheduler_type;
-		typedef typename scheduler_type::priority_type priority_type;
-        typedef organism<representation_type, hardware_type, scheduler_type> individual_type;
+        typedef EA ea_type;
+		typedef typename ea_type::representation_type representation_type;
+        typedef typename ea_type::hardware_type hardware_type;
+		typedef typename ea_type::scheduler_type::priority_type priority_type;
+        typedef typename ea_type::environment_type::location_ptr_type location_ptr_type;
+
         typedef int io_type; //!< Type for input and output values.
         typedef std::deque<io_type> iobuffer_type; //!< Type for buffering inputs and outputs.
 		typedef std::map<std::string, double> phenotype_map_type; //!< Type for storing phenotype information.
@@ -123,10 +124,10 @@ namespace ea {
 		const representation_type& repr() const { return _hw.repr(); }
         
         //! Retreive this organism's hardware.
-        hardware_type hw() { return _hw; }
+        hardware_type& hw() { return _hw; }
 
         //! Retreive this organism's hardware (const-qualified).
-        const hardware_type hw() const { return _hw; }
+        const hardware_type& hw() const { return _hw; }
         
         //! Retrieve this organism's meta data.
         meta_data& md() { return _md; }
@@ -146,6 +147,9 @@ namespace ea {
         //! Retrieve this organism's phenotype.
         phenotype_map_type& phenotype() { return _phenotype; }
         
+        //! Retrieve a pointer to this organism's location.
+        location_ptr_type& location() { return _location; }
+
         //! Execute this organism for n cycles.
         template <typename AL>
         void execute(std::size_t n, typename AL::individual_ptr_type p, AL& al) {
@@ -162,8 +166,9 @@ namespace ea {
         meta_data _md; //!< This organism's meta data.
         iobuffer_type _inputs; //!< This organism's inputs.
         iobuffer_type _outputs; //!< This organism's outputs.
-        phenotype_map_type _phenotype; //!< This organism's phenotyp.
-        
+        phenotype_map_type _phenotype; //!< This organism's phenotype.
+        location_ptr_type _location; //!< This organism's location.
+
 	private:
 		/* These enable serialization and de-serialization of organisms.
 		 This would be easy, except for the fact that we can't round-trip NaNs.  So,
@@ -206,13 +211,6 @@ namespace ea {
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};	
     
-	/*! Compare organisms by their priority.
-	 */
-	template <typename Representation, typename Hardware, typename priorityFunction>
-	bool operator<(const organism<Representation,Hardware,priorityFunction>& a, const organism<Representation,Hardware,priorityFunction>& b) {
-		return a.priority() < b.priority();
-	}
-
 } // ea
 
 #endif

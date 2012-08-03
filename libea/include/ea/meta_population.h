@@ -41,12 +41,12 @@ namespace ea {
 	typename RandomNumberGenerator=ea::default_rng_type>
     class meta_population {
     public:
-        //! Embedded EA type.
-        typedef EA ea_type;
-        //! Type of individual held by subpopulations.
-        typedef typename ea_type::individual_type individual_type;
-        //! Type of population used by subpopulations.
-        typedef typename ea_type::population_type population_type;        
+        //! Type of individual held by this metapopulation.
+        typedef EA individual_type;
+        //! Individual pointer type.
+        typedef boost::shared_ptr<individual_type> individual_ptr_type;
+        //! Type of population container.
+        typedef std::vector<individual_ptr_type> population_type;
         //! Meta-population initializer type.
         typedef Initializer initializer_type;
         //! Event handler.
@@ -55,18 +55,16 @@ namespace ea {
         typedef MetaData md_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;        
-        //! Pointer to embedded EA type.
-        typedef boost::shared_ptr<ea_type> ea_type_ptr;
-        //! Container type for EAs.
-        typedef std::vector<ea_type_ptr> ea_container_type;
         //! Iterator for embedded EAs.
-        typedef boost::indirect_iterator<typename ea_container_type::iterator> iterator;
+        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator for embedded EAs.
         typedef boost::indirect_iterator<typename ea_container_type::const_iterator> const_iterator;
         //! Iterator for embedded EAs.
         typedef boost::indirect_iterator<typename ea_container_type::reverse_iterator> reverse_iterator;
         //! Const iterator for embedded EAs.
-        typedef boost::indirect_iterator<typename ea_container_type::const_reverse_iterator> const_reverse_iterator;
+       typedef boost::indirect_iterator<typename ea_container_type::const_reverse_iterator> const_reverse_iterator;
+
+        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
         
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
@@ -83,32 +81,37 @@ namespace ea {
 
         //! Return the number of embedded EAs.
         std::size_t size() const {
-            return _eas.size();
+            return _population.size();
+        }
+
+        //! Return the population.
+        population_type& population() {
+            return _population;
         }
         
         //! Return the n'th embedded EAs.
-        ea_type& operator[](std::size_t n) {
-            return *_eas[n];
+        individual_type& operator[](std::size_t n) {
+            return *_population[n];
         }
         
         //! Returns a begin iterator to the embedded EAs.
         iterator begin() {
-            return iterator(_eas.begin());
+            return iterator(_population.begin());
         }
         
         //! Returns an end iterator to the embedded EAs.
         iterator end() {
-            return iterator(_eas.end());
+            return iterator(_population.end());
         }
 
         //! Returns a begin iterator to the embedded EAs (const-qualified).
         const_iterator begin() const {
-            return const_iterator(_eas.begin());
+            return const_iterator(_population.begin());
         }
         
         //! Returns an end iterator to the embedded EAs (const-qualified).
         const_iterator end() const {
-            return const_iterator(_eas.end());
+            return const_iterator(_population.end());
         }
         
         //! Returns a reverse begin iterator to the embedded EAs.
@@ -134,21 +137,30 @@ namespace ea {
         //! Initialize all the embedded EAs.
         void initialize() {
             for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
-                ea_type_ptr p(new ea_type());
+                individual_ptr_type p(new individual_type());
                 p->md() = md();
                 p->rng().reset(rng()(std::numeric_limits<int>::max()));
                 p->initialize();
-                _eas.push_back(p);
+                _population.push_back(p);
             }
         }        
         
+        //! Generates the initial population.
+        void generate_initial_population() {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->generate_initial_population();
+            }
+        }
+        
+        //! Reset all populations.
+        void reset() {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->reset();
+            }
+        }
+        
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
-            // calculate initial fitness for all of our embedded EAs:
-            for(iterator i=begin(); i!=end(); ++i) {
-                calculate_fitness(i->population().begin(), i->population().end(), *i);
-            }
-
             // update all the EAs:
             for( ; n>0; --n) {
                 update();
@@ -179,12 +191,16 @@ namespace ea {
             return _update;
         }
 
+        //! Perform any needed preselection.
+        void preselect(population_type& src) {
+        }
+
     protected:
         unsigned long _update; //!< Meta-population update.
         rng_type _rng; //!< Random number generator.
         meta_data _md; //!< Meta-data for the meta-population.
         event_handler_type _events; //!< Event handler.        
-        ea_container_type _eas; //!< List of EAs in this meta-population.
+        population_type _population; //!< List of EAs in this meta-population.
 
     private:
         friend class boost::serialization::access;
@@ -211,9 +227,9 @@ namespace ea {
             std::size_t s;
             ar & boost::serialization::make_nvp("meta_population_size", s);
             for(std::size_t i=0; i<s; ++i) {
-                ea_type_ptr p(new ea_type());
+                individual_ptr_type p(new individual_type());
                 ar & boost::serialization::make_nvp("subpopulation", *p);
-                _eas.push_back(p);
+                _population.push_back(p);
             }
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();

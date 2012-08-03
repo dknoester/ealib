@@ -51,6 +51,9 @@ namespace ea {
      in phenotype space between individuals.
      
      Use these with "getattr", "setattr", and "rmattr".
+     
+     ** NOT YET IMPLEMENTED.
+     
 	 */
 	class meta_data {
 	public:
@@ -198,6 +201,9 @@ namespace ea {
 	LIBEA_MD_DECL(UINTSTRING_MEAN, "ea.representation.uintstring.mean", unsigned int);
 	LIBEA_MD_DECL(UINTSTRING_VARIANCE, "ea.representation.uintstring.variance", unsigned int);
 	
+    // ea.environment.*
+    LIBEA_MD_DECL(LOCATION_COLOR, "ea.environment.location.color", int);
+
     // ea.fitness_function.*
     LIBEA_MD_DECL(FF_RNG_SEED, "ea.fitness_function.rng_seed", int);
     LIBEA_MD_DECL(FF_N, "ea.fitness_function.n", int);
@@ -210,10 +216,12 @@ namespace ea {
 
 	// ea.population.*
 	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
+    LIBEA_MD_DECL(INITIAL_POPULATION_SIZE, "ea.population.initial_size", unsigned int);
 
 	// ea.meta_population.*
     LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.meta_population.size", unsigned int);
-    
+    LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.meta_population.competition_period", unsigned int);
+
     // ea.initialization.*
     LIBEA_MD_DECL(INITIALIZATION_UNIFORM_INT_MIN, "ea.initialization.uniform_integer.min", int);
     LIBEA_MD_DECL(INITIALIZATION_UNIFORM_INT_MAX, "ea.initialization.uniform_integer.max", int);
@@ -235,6 +243,7 @@ namespace ea {
 	LIBEA_MD_DECL(MUTATION_PER_SITE_P, "ea.mutation.site.p", double);
 	LIBEA_MD_DECL(MUTATION_DUPLICATION_P, "ea.mutation.duplication.p", double);
 	LIBEA_MD_DECL(MUTATION_DELETION_P, "ea.mutation.deletion.p", double);
+	LIBEA_MD_DECL(MUTATION_INSERTION_P, "ea.mutation.insertion.p", double);
     LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MIN, "ea.mutation.uniform_integer.min", int);
     LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MAX, "ea.mutation.uniform_integer.max", int);
     LIBEA_MD_DECL(MUTATION_UNIFORM_REAL_MIN, "ea.mutation.uniform_real.min", double);

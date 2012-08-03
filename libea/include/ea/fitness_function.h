@@ -29,6 +29,11 @@
 #include <ea/meta_data.h>
 
 namespace ea {
+    //! Indicates that fitness is constant, and thus should be cached.
+    struct constantS { };
+    
+    //! Indicates that fitness may change between evalutions, and should not be cached.
+    struct nonstationaryS { };
     
     //! Indicates that fitness of an individual is absolute.
     struct absoluteS { };
@@ -36,18 +41,12 @@ namespace ea {
     //! Indicates that fitness of an individual is relative to the population.
     struct relativeS { };
     
-    //! Indicates that fitness is constant, and thus should be cached.
-    struct constantS { };
-
-    //! Indicates that fitness may change between evalutions, and should not be cached.
-    struct nonstationaryS { };
-
     //! Indicates that fitness is deterministic, and does not require its own RNG.
     struct deterministicS { };
 
     //! Indicates that fitness is stochastic, and requires its own RNG.
     struct stochasticS { };
-
+    
     /*! Unary fitness value.
      */
     template <typename T>
@@ -246,7 +245,7 @@ namespace ea {
             ea.relativize(first, last);
         }
     }
-    
+
     /*! Calculate the fitness of an individual, respecting various fitness function tags.
      */
     template <typename EA>
@@ -265,6 +264,16 @@ namespace ea {
 		}
 	}
 
+    /*! Nullify fitness for the range [f,l).
+	 */
+	template <typename ForwardIterator, typename EA>
+	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+		for(; first!=last; ++first) {
+			ind(first,ea).fitness().nullify();
+		}
+	}
+    
     /*! Calculate relative fitness for the range [f,l).
 	 */
 	template <typename ForwardIterator, typename EA>

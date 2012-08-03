@@ -13,9 +13,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "42841C9615AFB23200AB18BE"
-               BuildableName = "mp_all_ones"
-               BlueprintName = "mp_all_ones"
+               BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
+               BuildableName = "libnn_test"
+               BlueprintName = "libnn_test"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -38,9 +38,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "42841C9615AFB23200AB18BE"
-            BuildableName = "mp_all_ones"
-            BlueprintName = "mp_all_ones"
+            BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
+            BuildableName = "libnn_test"
+            BlueprintName = "libnn_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -55,9 +55,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "42841C9615AFB23200AB18BE"
-            BuildableName = "mp_all_ones"
-            BlueprintName = "mp_all_ones"
+            BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
+            BuildableName = "libnn_test"
+            BlueprintName = "libnn_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
