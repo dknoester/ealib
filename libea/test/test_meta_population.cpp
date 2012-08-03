@@ -28,3 +28,9 @@ BOOST_AUTO_TEST_CASE(test_meta_population) {
     
     ea_type ea;
 }
+
+
+BOOST_AUTO_TEST_CASE(test_adaptive_hfc) {
+    
+    
+}

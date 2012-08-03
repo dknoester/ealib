@@ -59,6 +59,11 @@ public:
         add_option<CHECKPOINT_PREFIX>(this);
         add_option<RNG_SEED>(this);
         add_option<RECORDING_PERIOD>(this);
+        
+        add_option<INITIALIZATION_PERIOD>(this);
+        add_option<EXCHANGE_INDIVIDUALS_PERIOD>(this);
+        add_option<ADMISSION_UPDATE_PERIOD>(this);
+        add_option<MIN_REMAIN>(this);
     }
     
     virtual void gather_tools() {

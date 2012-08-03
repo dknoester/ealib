@@ -15,3 +15,5 @@ bin
 libea/bin
 libfn/bin
 tmp
+DerivedData
+build
