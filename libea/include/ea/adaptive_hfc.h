@@ -92,7 +92,7 @@ namespace ea {
             accumulator_set<double, stats<tag::mean> > fit; 
             
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                for(typename EA::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
+                for(typename EA::individual_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
                     fit(static_cast<double>(ind(j,*i).fitness()));
                 }
             }
@@ -107,7 +107,7 @@ namespace ea {
             using namespace boost::accumulators;
             accumulator_set<double, stats<tag::mean, tag::max, tag::variance> > fit; 
             
-            for(typename EA::population_type::iterator j=ea.rbegin()->population().begin(); j!=ea.rbegin()->population().end(); ++j) {
+            for(typename EA::individual_type::population_type::iterator j=ea.rbegin()->population().begin(); j!=ea.rbegin()->population().end(); ++j) {
                 fit(static_cast<double>(ind(j,*ea.rbegin()).fitness()));
             }
             
@@ -142,9 +142,9 @@ namespace ea {
                 std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::fitness());
 
                 // find the first individual w/ fitness >= next_admission, but make sure to leave some behind
-                typename EA::population_type::iterator f=ea[i].population().begin();
+                typename EA::individual_type::population_type::iterator f=ea[i].population().begin();
                 std::advance(f, static_cast<std::size_t>(get<MIN_REMAIN>(ea)*get<POPULATION_SIZE>(ea)));
-                typename EA::population_type::iterator l=ea[i].population().end();
+                typename EA::individual_type::population_type::iterator l=ea[i].population().end();
                 for( ; f!=l; ++f) {
                     if(ind(f,ea[i]).fitness() > next_admission) {
                         break;

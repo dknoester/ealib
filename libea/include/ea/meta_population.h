@@ -58,13 +58,11 @@ namespace ea {
         //! Iterator for embedded EAs.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator for embedded EAs.
-        typedef boost::indirect_iterator<typename ea_container_type::const_iterator> const_iterator;
-        //! Iterator for embedded EAs.
-        typedef boost::indirect_iterator<typename ea_container_type::reverse_iterator> reverse_iterator;
-        //! Const iterator for embedded EAs.
-       typedef boost::indirect_iterator<typename ea_container_type::const_reverse_iterator> const_reverse_iterator;
-
         typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
+        //! Reverse iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
+        //! Const reverse iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
         
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
@@ -72,18 +70,18 @@ namespace ea {
         
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
-
+        
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }
-
+        
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
-
+        
         //! Return the number of embedded EAs.
         std::size_t size() const {
             return _population.size();
         }
-
+        
         //! Return the population.
         population_type& population() {
             return _population;
@@ -103,7 +101,7 @@ namespace ea {
         iterator end() {
             return iterator(_population.end());
         }
-
+        
         //! Returns a begin iterator to the embedded EAs (const-qualified).
         const_iterator begin() const {
             return const_iterator(_population.begin());
@@ -116,24 +114,24 @@ namespace ea {
         
         //! Returns a reverse begin iterator to the embedded EAs.
         reverse_iterator rbegin() {
-            return reverse_iterator(_eas.rbegin());
+            return reverse_iterator(_population.rbegin());
         }
         
         //! Returns an reverse end iterator to the embedded EAs.
         reverse_iterator rend() {
-            return reverse_iterator(_eas.rend());
+            return reverse_iterator(_population.rend());
         }
         
         //! Returns a reverse begin iterator to the embedded EAs (const-qualified).
         const_reverse_iterator rbegin() const {
-            return const_reverse_iterator(_eas.rbegin());
+            return const_reverse_iterator(_population.rbegin());
         }
         
         //! Returns an reverse end iterator to the embedded EAs (const-qualified).
         const_reverse_iterator rend() const {
-            return const_reverse_iterator(_eas.rend());
+            return const_reverse_iterator(_population.rend());
         }
-
+        
         //! Initialize all the embedded EAs.
         void initialize() {
             for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
@@ -171,7 +169,7 @@ namespace ea {
                 i->events().record_statistics(*i);
                 i->events().end_of_epoch(*i); // don't checkpoint!
             }
-
+            
             _events.record_statistics(*this);
             _events.end_of_epoch(*this); // checkpoint!
         }
@@ -190,18 +188,18 @@ namespace ea {
         unsigned long current_update() {
             return _update;
         }
-
+        
         //! Perform any needed preselection.
         void preselect(population_type& src) {
         }
-
+        
     protected:
         unsigned long _update; //!< Meta-population update.
         rng_type _rng; //!< Random number generator.
         meta_data _md; //!< Meta-data for the meta-population.
         event_handler_type _events; //!< Event handler.        
         population_type _population; //!< List of EAs in this meta-population.
-
+        
     private:
         friend class boost::serialization::access;
         
@@ -210,7 +208,7 @@ namespace ea {
             ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("meta_data", _md);
-
+            
             std::size_t s = size();
             ar & boost::serialization::make_nvp("meta_population_size", s);
             for(const_iterator i=begin(); i!=end(); ++i) {
@@ -223,7 +221,7 @@ namespace ea {
             ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("meta_data", _md);
-
+            
             std::size_t s;
             ar & boost::serialization::make_nvp("meta_population_size", s);
             for(std::size_t i=0; i<s; ++i) {
@@ -234,7 +232,7 @@ namespace ea {
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
-
+    
 }
 
 #endif
