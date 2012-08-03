@@ -953,6 +953,7 @@
 		423CBC72157D0D440003A644 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Michigan State University";
 			};
 			buildConfigurationList = 423CBC75157D0D440003A644 /* Build configuration list for PBXProject "ealib" */;
