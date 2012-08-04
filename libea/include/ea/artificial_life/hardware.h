@@ -62,7 +62,7 @@ namespace ea {
         }
         
         //! Constructor.
-        hardware(const representation_type& repr) : _representation(repr) {
+        hardware(const representation_type& repr) : _repr(repr) {
             initialize();
         }
         
@@ -72,7 +72,7 @@ namespace ea {
         
         //! Returns true if hardware(s) are equivalent.
         bool operator==(const hardware& that) {
-            return (_representation == that._representation)
+            return (_repr == that._repr)
             && std::equal(_head_position, _head_position+NUM_HEADS, that._head_position)
             && std::equal(_regfile, _regfile+NUM_REGISTERS, that._regfile)
             && (_label_stack == that._label_stack)
@@ -84,26 +84,39 @@ namespace ea {
         
         //! (Re-) Initialize this hardware.
         void initialize() {
-            bzero(_head_position, sizeof(_head_position));
-            bzero(_regfile, sizeof(_regfile));
+            bzero(_head_position, sizeof(int)*NUM_HEADS);
+            bzero(_regfile, sizeof(int)*NUM_REGISTERS);
             _age = 0;
             _mem_extended = false;
             _label_stack.clear();
+            _orig_size = _repr.size();
+            _stack.clear();
+            _msgs.clear();
         }
         
         /*! Step this hardware by n virtual CPU cycles.
          */
         template <typename AL>
         void execute(std::size_t n, typename AL::individual_ptr_type p, AL& al) {
+            
             typename AL::isa_type& isa=al.isa();
             int cycle_cost = 0;
             while (n > 0) {
-                int cur_inst = _representation[_head_position[IP]];
+                int cur_inst = _repr[_head_position[IP]];
                 cycle_cost = isa(cur_inst, *this, p, al);
                 n-=cycle_cost;
-                _age+=cycle_cost; 
+                _age+=cycle_cost;
+                if(cycle_cost > 0) {
+                    clearLabelStack();
+                }
                 advanceHead(IP);
             }
+        }
+        
+        void replicated() {
+            initialize();
+            advanceHead(IP, -1);
+            --_age;
         }
         
         int age() { return _age; }
@@ -163,7 +176,7 @@ namespace ea {
         //! Set the location of head h to position pos
         void setHeadLocation(int h, int pos){
             assert (h < NUM_HEADS); 
-            assert (pos < _representation.size());
+            assert (pos < _repr.size());
             _head_position[h] = pos;
         } 
         
@@ -181,7 +194,11 @@ namespace ea {
         
         //! Advance the head and return the new position.
         int advance (int hp, int x=1)  {
-            int pos = (hp + x) % _representation.size();
+            int pos = hp + x;
+            if(pos < 0) {
+                pos = _repr.size() + pos;
+            } 
+            pos %= _repr.size();
             return pos;
         }
         
@@ -210,7 +227,7 @@ namespace ea {
                     exited = true;
                     for(std::size_t j=0; j<label.size(); ++j) {
                         int k = advance(i, j); 
-                        if(static_cast<int>(_representation[k]) != label[j]) { 
+                        if(static_cast<int>(_repr[k]) != label[j]) { 
                             exited = false;
                             break; 
                         } 
@@ -251,15 +268,16 @@ namespace ea {
          allocated space.  This instruction only has effect once per lifetime.
          */
         void extendMemory() { 
-            _mem_extended = true;
-            int orig_size = _representation.size();
-            // Filling in the new genome space with NOP-X
-            _representation.resize(orig_size * 1.5, NOP_X);
-            setHeadLocation(WH, orig_size);
+            if(!_mem_extended) {
+                _mem_extended = true;
+                _repr.resize(static_cast<std::size_t>(_orig_size * 2.5), NOP_X);
+//                setHeadLocation(RH, 0);
+//                setHeadLocation(WH, _orig_size);
+            }
         }
         
         //! Retrieve this hardware's representation (its genome).
-        representation_type& repr() { return _representation; }
+        representation_type& repr() { return _repr; }
         
         void push_stack(int x) { _stack.push_front(x); while(_stack.size() > 10) { _stack.pop_back(); } }
         bool empty_stack() { return _stack.empty(); }
@@ -275,14 +293,16 @@ namespace ea {
         
         std::pair<int,int> pop_msg() { std::pair<int,int> msg=_msgs.front(); _msgs.pop_front(); return msg; }
         
+        std::size_t original_size() { return _orig_size; }
     protected:
-        representation_type _representation; //!< This hardware's "program".
+        representation_type _repr; //!< This hardware's "program".
         int _head_position[NUM_HEADS]; //!< Positions of the various heads.
         int _regfile[NUM_REGISTERS]; //!< ...
         
         std::deque<int> _label_stack;
         int _age;
         bool _mem_extended; 
+        std::size_t _orig_size;
         std::deque<int> _stack;
         std::deque<std::pair<int,int> > _msgs;            
         
@@ -290,12 +310,13 @@ namespace ea {
         friend class boost::serialization::access;
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("representation", _representation);
+            ar & boost::serialization::make_nvp("representation", _repr);
             ar & boost::serialization::make_nvp("head_positions", _head_position);
             ar & boost::serialization::make_nvp("register_file", _regfile);
             ar & boost::serialization::make_nvp("labels", _label_stack);
             ar & boost::serialization::make_nvp("age", _age);
             ar & boost::serialization::make_nvp("extended", _mem_extended);
+            ar & boost::serialization::make_nvp("original_size", _orig_size);
             ar & boost::serialization::make_nvp("stack", _stack);
             ar & boost::serialization::make_nvp("messages", _msgs);
         }

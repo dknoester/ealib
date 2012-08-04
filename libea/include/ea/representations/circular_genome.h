@@ -44,6 +44,11 @@ namespace ea {
 		circular_genome() : base_type() {
 		}
         
+        //! Another constructor.
+        template <typename InputIterator>
+		circular_genome(InputIterator f, InputIterator l) : base_type(f, l) {
+		}
+        
         //! Assignment operator.
         representation_type& operator=(const representation_type& that) {
             if(this != &that) {

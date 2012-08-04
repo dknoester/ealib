@@ -64,6 +64,10 @@ namespace ea {
             append<inst_rotate_ccw>();
             append<inst_if_less>();
             append<inst_repro>(); // 24
+            append<inst_h_alloc>(); 
+            append<inst_h_copy>(); 
+            append<inst_h_divide>(); 
+
         }
         
         template <template <typename,typename> class Instruction>
