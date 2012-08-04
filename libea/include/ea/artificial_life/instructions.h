@@ -65,7 +65,7 @@ namespace ea {
     template <typename Hardware, typename AL>
     struct inst_nop_x : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -80,6 +80,7 @@ namespace ea {
     struct inst_h_alloc : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             hw.extendMemory();
+            
             return 1;
         }
     };
@@ -94,9 +95,10 @@ namespace ea {
     struct inst_h_copy : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             typename Hardware::representation_type& r = hw.repr();
-            r[Hardware::WH] = r[Hardware::RH];
+            r[hw.getHeadLocation(Hardware::WH)] = r[hw.getHeadLocation(Hardware::RH)];
             hw.advanceHead(Hardware::WH);
-            hw.advanceHead(Hardware::RH);            
+            hw.advanceHead(Hardware::RH);
+            
             return 1;
         }
     };
@@ -114,7 +116,7 @@ namespace ea {
             if (h == Hardware::IP) {
                 hw.advanceHead(h, -1);
             }
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -127,24 +129,24 @@ namespace ea {
     template <typename Hardware, typename AL>
     struct inst_if_label : abstract_instruction<Hardware,AL> {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            if (!hw.isLabelStackEmpty()) {
+            if(!hw.isLabelStackEmpty()) {
                 // what immediately preceeds the write head...
-                int wh = hw.advance(Hardware::WH, -1);
+                int wh = hw.advance(hw.getHeadLocation(Hardware::WH), -1);
                 std::deque<int> label_comp = hw.getLabelComplement();
                 // check through label in reverse order...
                 // most recent label is on the back...
                 for(int i=(label_comp.size() - 1);  i>=0; --i) { 
                     if(label_comp[i] != static_cast<int>(hw.repr()[wh])) {
                         hw.advanceHead(Hardware::IP);
-                        hw.clearLabelStack();
+                        
                         return 1;
                     }
-                    int wh = hw.advance(wh, -1);
+                    wh = hw.advance(wh, -1);
                 }
             } else {
                 hw.advanceHead(Hardware::IP);
             }
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -174,7 +176,7 @@ namespace ea {
                 dist = 1;
             }
             hw.advanceHead(Hardware::FH, dist + comp_label.second);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -188,25 +190,18 @@ namespace ea {
      offspring's genome; the offspring is then ``born.''
      */
     template <typename Hardware, typename AL>
-    struct h_divide : abstract_instruction<Hardware,AL> {
+    struct inst_h_divide : abstract_instruction<Hardware,AL> {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            /* 
-             sequence = org.memory[org.heads[org.RH]:org.heads[org.WH]]
-             if org.check_divide(sequence):
-             sequence = org.eve.variation.indel_mutation(sequence)
-             org.genome.make_organism(sequence, org)
-             # Now do the parent reset.
-             # In an interesting twist, we need to back up the IP by one instruction.
-             org.__init__(org.eve, org.genome)
-             org.advance_head(org.IP, -1)
-             */
-            if(hw.age() >= (0.8 * hw.repr().size())) {            
+            if(hw.age() >= (0.8 * hw.original_size())) {            
                 typename Hardware::representation_type& r=hw.repr();
                 typename Hardware::representation_type offr(&r[hw.getHeadLocation(Hardware::RH)],
-                                                            &r[hw.getHeadLocation(Hardware::WH)+1]);
+                                                            &r[hw.getHeadLocation(Hardware::WH)]);
+                r.resize(hw.original_size());
+                
                 replicate(p, offr, al);
-                hw.initialize();
+                hw.replicated();
             }
+            
             return 1;
         }
     };
@@ -226,7 +221,7 @@ namespace ea {
                 hw.setRegValue(reg, al.env().read(*p, al));
                 p->inputs().push_front(hw.getRegValue(reg));
             }
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -244,7 +239,7 @@ namespace ea {
             p->outputs().push_front(hw.getRegValue(hw.modifyRegister()));
             p->outputs().resize(1);
             al.tasklib().check_tasks(*p,al);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -255,10 +250,11 @@ namespace ea {
     template <typename Hardware, typename AL>
     struct inst_repro : abstract_instruction<Hardware,AL> {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
-            if(hw.age() >= (0.8 * hw.repr().size())) {            
+            if(hw.age() >= (0.8 * hw.original_size())) {            
                 replicate(p, hw.repr(), al);
-                hw.initialize();
+                hw.replicated();
             }
+            
             return 1;
         }
     };
@@ -274,7 +270,7 @@ namespace ea {
             int cxVal = hw.getRegValue(Hardware::CX);
             int nandVal = ~(bxVal & cxVal);
             hw.setRegValue(hw.modifyRegister(), nandVal);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -284,7 +280,7 @@ namespace ea {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             hw.push_stack(bxVal);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -294,7 +290,7 @@ namespace ea {
         int operator() (Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             if(!hw.empty_stack()) {
                 hw.setRegValue(hw.modifyRegister(), hw.pop_stack());
-                hw.clearLabelStack();
+                
             }
             return 1;
         }
@@ -311,7 +307,7 @@ namespace ea {
 
             hw.setRegValue(rbx, cxVal);
             hw.setRegValue(rcx, bxVal);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -323,7 +319,7 @@ namespace ea {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             put<LOCATION_COLOR>(bxVal,*p->location());
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -335,7 +331,7 @@ namespace ea {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int rbx = hw.modifyRegister();
             hw.setRegValue(rbx, hw.getRegValue(rbx)+1);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -347,7 +343,7 @@ namespace ea {
         int operator()(Hardware& hw, typename AL::individual_ptr_type p, AL& al) {
             int rbx = hw.modifyRegister();
             hw.setRegValue(rbx, hw.getRegValue(rbx)-1);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -365,7 +361,7 @@ namespace ea {
                 hw.setRegValue(rcx, 0);
             }
             
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -382,7 +378,7 @@ namespace ea {
                 int rcx = hw.nextRegister(rbx);
                 l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
             }
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -399,7 +395,7 @@ namespace ea {
                 hw.setRegValue(rbx,msg.first);
                 hw.setRegValue(rcx,msg.second);
             }
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -420,7 +416,7 @@ namespace ea {
                     l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
                 }
             }
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -430,7 +426,7 @@ namespace ea {
     struct inst_rotate : abstract_instruction<Hardware,EA> {
         int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
             p->location()->set_heading(hw.getRegValue(hw.modifyRegister()));
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -440,7 +436,7 @@ namespace ea {
     struct inst_rotate_cw : abstract_instruction<Hardware,EA> {
         int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
             p->location()->alter_heading(-1);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -451,7 +447,7 @@ namespace ea {
     struct inst_rotate_ccw : abstract_instruction<Hardware,EA> {
         int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
             p->location()->alter_heading(1);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -466,7 +462,7 @@ namespace ea {
             if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
                 hw.advanceHead(Hardware::IP);
             }
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
@@ -477,7 +473,7 @@ namespace ea {
     struct inst_donate_group : abstract_instruction<Hardware,EA> {
         int operator() (Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
             ea.env().group(p,ea).receive_donation(p,ea);
-            hw.clearLabelStack();
+            
             return 1;
         }
     };
