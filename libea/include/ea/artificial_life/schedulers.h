@@ -29,12 +29,15 @@
 namespace ea {    
     
     LIBEA_MD_DECL(SCHEDULER_TIME_SLICE, "ea.scheduler.time_slice", unsigned int);
-
+    
     /*! Weighted round-robin scheduler.
      
      Grants all organisms an amount of CPU time proportional to their priority.
      
      priority == multiple of cycles above an org that has priority 1.0.
+     
+     Fractional updates: There is a fractional update that occurs time-slice times
+     per update (once every population-size cpu cycles).
      */
     template <typename EA>
     struct weighted_round_robin : generational_models::generational_model {
@@ -58,14 +61,20 @@ namespace ea {
             
             std::random_shuffle(live.begin(), live.end(), ea.rng());
             
-            long budget=get<SCHEDULER_TIME_SLICE>(ea) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
+            unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
+            long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
+            double delta_t = 1.0/get<SCHEDULER_TIME_SLICE>(ea);
             
             std::size_t i=0;
             int deadcount=0;
             while((budget > 0) && (deadcount<last)) {
+                if((budget % eff_population_size) == 0) {
+                    ea.env().partial_update(delta_t, ea);
+                }
+                
                 typename ea_type::individual_ptr_type p=ptr(population[live[i]],ea);
                 i = (i+1) % live.size();
-                
+
                 if(p->alive()) {
                     p->execute(1,p,ea);
                     --budget;
@@ -110,11 +119,17 @@ namespace ea {
             // offspring are appended to population asynchronously, thus we're
             // indexing population instead of iterating.
             
-            long budget=get<SCHEDULER_TIME_SLICE>(ea) * std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
+            unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
+            long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
+            double delta_t = 1.0/get<SCHEDULER_TIME_SLICE>(ea);
+            
             std::size_t last=population.size();
             std::size_t i=0;
             std::size_t deadcount=0;
             while((budget > 0) && (deadcount<last)) {
+                if((budget % eff_population_size) == 0) {
+                    ea.env().partial_update(delta_t, ea);
+                }
                 typename ea_type::individual_ptr_type p=ptr(population[i],ea);
                 i = (i+1) % last;
                 

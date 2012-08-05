@@ -176,6 +176,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4220F31115CD940E005750F1 /* island_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = island_model.h; sourceTree = "<group>"; };
 		423CBC83157D0D910003A644 /* boost_howto.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = boost_howto.rtf; sourceTree = "<group>"; };
 		423CBC85157D0D910003A644 /* ealib.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ealib.xcconfig; sourceTree = "<group>"; };
 		423CBC86157D0D910003A644 /* Jamroot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Jamroot; sourceTree = "<group>"; };
@@ -459,6 +460,7 @@
 			isa = PBXGroup;
 			children = (
 				42841D1515B2F35300AB18BE /* adaptive_hfc.h */,
+				4220F31115CD940E005750F1 /* island_model.h */,
 				423CBDAE157D0E450003A644 /* algorithm.h */,
 				423CBDAF157D0E450003A644 /* analysis */,
 				423CBDBA157D0E450003A644 /* analysis.h */,

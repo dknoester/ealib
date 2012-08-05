@@ -37,12 +37,80 @@ namespace ea {
     LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", unsigned int);
     
     
+    namespace resources {
+        //! Abstract resource type.
+        struct abstract_resource {
+            abstract_resource(const std::string& name) : _name(name) { }
+            //! Update resource levels, if needed, based on elapsed time since last update (as a fraction of update length).
+            virtual void update(double delta_t) = 0;
+            //! Consume resources.
+            virtual double consume() = 0;
+            
+            std::string _name;
+        };
+        
+        //! Unlimited resource type.
+        struct unlimited : abstract_resource {
+            unlimited(const std::string& name) : abstract_resource(name) { }
+            void update(double) { }
+            double consume() { return 1.0; }
+        };
+        
+        //! Limited resource type.
+        struct limited : abstract_resource {
+            limited(const std::string& name, double initial, double inflow, double outflow, double consume)
+            : abstract_resource(name), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
+            }
+            
+            void update(double delta_t) {
+                _level += delta_t * (_inflow - _outflow * _level);
+                _level = std::max(0.0, _level);
+            }
+            
+            double consume() {
+                double r = std::max(0.0, _level*_consume);
+                _level = std::min(0.0, _level-r);
+                return r;
+            }
+
+            double _level; //!< Current resource level.
+            double _inflow; //!< Amount of resource flowing in per update.
+            double _outflow; //!< Rate at which resource flows out per update.
+            double _consume; //!< Fraction of resource consumed.
+        };
+        
+    } // resources
+
+    //! Helper method that builds an unlimited resource and adds it to the environment.
+    template <typename EA>
+    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, EA& ea) {
+        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+        resource_ptr_type p(new resources::unlimited(name));
+        ea.env().add_resource(p);
+        return p;
+    }
+    
+    //! Helper method that builds a limited resource and adds it to the environment.
+    template <typename EA>
+    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
+        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+        resource_ptr_type p(new resources::limited(name, initial, inflow, outflow, consume));
+        ea.env().add_resource(p);
+        return p;
+    }
+
+    
     /*! Spatial topology.
      */
     template <typename EA>
     struct spatial {
         typedef EA ea_type; //<! EA type using this topology.        
         typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
+        typedef typename ea_type::individual_type individual_type; //!< Pointer to individual type.
+        
+        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type;
+        typedef std::vector<resource_ptr_type> resource_list_type;
+        resource_list_type _resources;
         
         /*! Location type.
          
@@ -192,6 +260,27 @@ namespace ea {
             return ea.rng()(std::numeric_limits<int>::max());
         }
         
+        /*! Consume resources.
+         
+         Although conceptually simple, we pass in a few extra parameters to support
+         eventual spatial resources.
+         */
+        double reaction(resource_ptr_type r, individual_type org, ea_type& ea) {
+            return r->consume();
+        }
+        
+        //! Add a resource to this environment.
+        void add_resource(resource_ptr_type r) {
+            _resources.push_back(r);
+        }
+        
+        //! Fractional update.
+        void partial_update(double delta_t, ea_type& ea) {
+            for(resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->update(delta_t);
+            }
+        }
+        
         //! Serialize this topology.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
@@ -200,7 +289,9 @@ namespace ea {
         int _occupied; //!< How many locations are currently occupied?
         location_matrix_type _locs; //!< List of all locations in this topology.
     };
-    
+
+
+
 } // ea
 
 #endif

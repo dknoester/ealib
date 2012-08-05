@@ -227,7 +227,15 @@ namespace ea {
         //! Configure the EA; called immediately after construction.
         virtual void configure(EA& ea) {
         }
-                
+
+        //! Called immediately before EA initialization.
+        virtual void preinitialization(EA& ea) {
+        }
+
+        //! Called immediately after EA initialization.
+        virtual void postinitialization(EA& ea) {
+        }
+
         //! Analyze an EA instance.
 		virtual void analyze(boost::program_options::variables_map& vm) {
 			ea_type ea;
@@ -270,7 +278,9 @@ namespace ea {
                 ea.rng().reset(get<RNG_SEED>(ea));
             }
             
+            preinitialization(ea);
             ea.initialize();
+            postinitialization(ea);
             gather_events(ea);
             
             if(vm.count("with-time")) {

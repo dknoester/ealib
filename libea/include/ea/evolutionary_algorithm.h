@@ -133,7 +133,9 @@ namespace ea {
         //! Advance this EA by one update.
         void update() {
             _events.record_statistics(*this);
-            _generational_model(_population, *this);
+            if(_population.size() > 0) {
+                _generational_model(_population, *this);
+            }
             _generational_model.next_update();
             _events.end_of_update(*this);
         }

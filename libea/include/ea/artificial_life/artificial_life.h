@@ -154,7 +154,7 @@ namespace ea {
     typename ReplacementStrategy=first_neighbor,
     template <typename> class Scheduler=weighted_round_robin,
 	typename MutationOperator=mutation::per_site<mutation::uniform_integer>,
-    typename TaskLibrary=task_library,
+    template <typename> class TaskLibrary=task_library,
     template <typename> class Individual=organism,
 	template <typename, typename> class Population=population,
 	typename Initializer=alife_population<repro_ancestor>,
@@ -182,7 +182,7 @@ namespace ea {
         //! Environment type.
         typedef Environment<artificial_life> environment_type;
         //! Task library type.
-        typedef TaskLibrary tasklib_type;
+        typedef TaskLibrary<artificial_life> tasklib_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Population type.

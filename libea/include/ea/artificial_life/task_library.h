@@ -26,56 +26,154 @@
 #include <vector>
 
 namespace ea {
+    
+    /*! Abstract base class for all task types.
+     
+     Tasks depend on the type of resource that they consume/produce.
+     */
+    template <typename EA>
+    struct abstract_task {
+        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type; //!< Pointer to resource for this task.
+        
+        //! Returns the name of this task.
+        virtual const std::string& name() = 0;
+        
+        //! Returns true if this task was performed, false otherwise.
+        virtual bool check(int in0, int in1, int out0) = 0;
+
+        //! Configure this task to consume resource r.
+        virtual void consumes(resource_ptr_type r) = 0;
+        
+        //! Return the resource consumed by this task.
+        virtual resource_ptr_type consumed_resource() = 0;
+        
+        //! Catalyze consumed resources r, adjusting current priority p, returns new priority.
+        virtual double catalyze(double r, double p) = 0;
+    };
+    
+
+    /*! Task object, which is parameterized on predicate and catalyst types.
+     
+     When the predicate is true, a "reaction" is said to occur -- The reaction 
+     consumes, and possibly produces, resources.
+     */
+    template <typename Predicate, typename Catalyst, typename EA>
+    struct task : abstract_task<EA> {
+        typedef typename abstract_task<EA>::resource_ptr_type resource_ptr_type; //!< Resource pointer type.
+        typedef Predicate predicate_type; //!< Task predicate type.
+        typedef Catalyst catalyst_type; //!< Task catalyst type.
+        
+        //! Constructor.
+        task(const std::string& name) : _name(name) {
+        }
+        
+        //! Returns the name of this task.
+        virtual const std::string& name() {
+            return _name;
+        }
+        
+        //! Returns true if this task was performed, false otherwise.
+        virtual bool check(int in0, int in1, int out0) {
+            return _pred(in0, in1, out0);
+        }
+        
+        //! Catalyze consumed resources into priority
+        virtual double catalyze(double r, double p) {
+            return _cat(r, p);
+        }
+        
+        //! Configure this task to consume resource r.
+        void consumes(resource_ptr_type r) { 
+            _consumed = r; 
+        }
+        
+        //! Return the resource consumed by this task.
+        virtual resource_ptr_type consumed_resource() { 
+            return _consumed;
+        }
+        
+        const std::string _name; //!< Name of this task.
+        predicate_type _pred; //!< Predicate that calculates if a task has been performed.
+        catalyst_type _cat; //!< Catalyst that converts consumed resources to fitness.
+        resource_ptr_type _consumed; //!< Resource consumed when this task is performed.
+    };
+
+    
+    /*! Contains the tasks that are active for the current EA.
+     */
+    template <typename EA>
+    class task_library {
+    public:
+        typedef typename EA::individual_type individual_type;
+        typedef abstract_task<EA> abstract_task_type;
+        typedef boost::shared_ptr<abstract_task_type> task_ptr_type;
+        typedef std::vector<task_ptr_type> tasklist_type;
+        
+        //! Append a task to the task library.
+        void append(task_ptr_type p) {
+            _tasklist.push_back(p);
+        }
+        
+        /*! Updates the priority for the given individual.
+         */
+        void prioritize(individual_type& org, EA& ea) {
+            typename EA::priority_type p=1.0;
+            
+            for(typename tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
+                abstract_task_type& task=(**i);
+                if(org.phenotype()[task.name()] > 0.0) {
+                    p = task.catalyze(org.phenotype()[task.name()], p);
+                }
+            }
+            
+            org.priority() = p;
+            org.phenotype().clear();
+        }
+        
+        /*! Check to see what, if any, tasks the given individual has performed,
+         and record their performance in the individual's phenotype.
+         
+         This works by testing the latest iobuffer entries against all
+         tasks in the task library.  For every task performed, the individual's
+         phenotype is annotated with the amount of resources consumed.
+         */
+        void check_tasks(individual_type& org, EA& ea) {
+            typedef typename EA::individual_type::io_type io_type;
+            typedef typename EA::individual_type::iobuffer_type iobuffer_type;
+            
+            iobuffer_type& inputs = org.inputs();
+            iobuffer_type& outputs = org.outputs();
+            
+            if((inputs.size() >= 2) && (!outputs.empty())) {
+                for(typename tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
+                    abstract_task_type& task=(**i);
+                    if(task.check(inputs[0], inputs[1], outputs[0])) {
+                        // ok, task was performed, trigger the reaction consumption:
+                        double r = ea.env().reaction(task.consumed_resource(), org, ea);
+                        
+                        org.phenotype()[task.name()] += r;
+                        ea.events().task_performed(org, r, task.name(), ea);
+                    }
+                }
+            }
+        }
+        
+    protected:
+        tasklist_type _tasklist; //!< Active tasks.
+    };
+    
+    //! Helper method that builds tasks and adds them to the task library.
+    template <typename Predicate, typename Catalyst, typename EA>
+    typename EA::tasklib_type::task_ptr_type make_task(const std::string& name, EA& ea) {
+        typedef typename EA::tasklib_type::task_ptr_type task_ptr_type;
+        task_ptr_type p(new task<Predicate,Catalyst,EA>(name));
+        ea.tasklib().append(p);
+        return p;
+    }
+        
+    
     namespace tasks {
         
-        //! Abstract base class for all task types.
-        struct abstract_task {
-            //! Returns the name of this task.
-            virtual const std::string& name() = 0;
-            //! Returns true if this task was performed, false otherwise.
-            virtual bool check(int in0, int in1, int out0) = 0;
-            //! Consumes resources associated with this task, returns amount consumed.
-            virtual double consume() = 0;
-            //! Catalyze consumed resources r, adjusting current priority p, returns new priority.
-            virtual double catalyze(double r, double p) = 0;
-        };
-        
-        //! Task object, which is parameterized on predicate, resource, and catalyst types.
-        template <typename Predicate, typename Resource, typename Catalyst>
-        struct task : abstract_task {
-            typedef Predicate predicate_type; //!< Task predicate type.
-            typedef Resource resource_type; //!< Task resource type.
-            typedef Catalyst catalyst_type; //!< Task catalyst type.
-            
-            //! Constructor.
-            task(const std::string& name) : _name(name) {
-            }
-
-            //! Returns the name of this task.
-            virtual const std::string& name() {
-                return _name;
-            }
-
-            //! Returns true if this task was performed, false otherwise.
-            virtual bool check(int in0, int in1, int out0) {
-                return _pred(in0, in1, out0);
-            }
-            
-            //! Consumes resources associated with this task, returns amount consumed.
-            virtual double consume() {
-                return _res();
-            }
-            
-            //! Catalyze consumed resources into priority
-            virtual double catalyze(double r, double p) {
-                return _cat(r, p);
-            }
-                        
-            const std::string _name; //!< Name of this task.
-            predicate_type _pred; //!< Predicate that calculates if a task has been performed.
-            resource_type _res; //!< Resource that is consumed when a task has been performed.
-            catalyst_type _cat; //!< Catalyst that converts consumed resources to fitness.
-        };
 
         //! Not: returns true if z == !x or z == !y. 
         struct task_not{
@@ -148,25 +246,6 @@ namespace ea {
         };
         
     } // tasks
-
-    namespace resources {
-        //! Unlimited resource type.
-        struct unlimited {
-            double operator()() {
-                return 1.0;
-            }
-        };
-        struct limited {
-            limited(double c) : _cap(c) { }
-            double operator()() {
-                double consumed;
-                _cap -= consumed;
-                return consumed;
-            }
-            double _cap;
-        };
-
-    } // resources
     
     namespace catalysts {
         //! "Additive" catalyst type.
@@ -179,73 +258,7 @@ namespace ea {
     } // catalysts
     
     
-    /*! Contains the tasks (and their associated resource & catalyst types) that are
-     active for the current EA.
-     */
-    class task_library {
-    public:
-        typedef boost::shared_ptr<tasks::abstract_task> task_ptr_type;
-        typedef std::vector<task_ptr_type> tasklist_type;
 
-        //! Append a task to the task library.
-        void append(task_ptr_type p) {
-            _tasklist.push_back(p);
-        }
-        
-        /*! Updates the priority for the given individual.
-         */
-        template <typename Individual, typename EA>
-        void prioritize(Individual& org, EA& ea) {
-            typename EA::priority_type p=1.0;
-            
-            for(tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
-                tasks::abstract_task& task=(**i);
-                if(org.phenotype()[task.name()] > 0.0) {
-                    p = task.catalyze(org.phenotype()[task.name()], p);
-                }
-            }
-            
-            org.priority() = p;
-            org.phenotype().clear();
-        }
-        
-        /*! Check to see what, if any, tasks the given individual has performed,
-         and record their performance in the individual's phenotype.
-         
-         This works by testing the latest iobuffer entries against all
-         tasks in the task library.  For every task performed, the individual's
-         phenotype is annotated with the amount of resources consumed.
-         */
-        template <typename EA>
-        void check_tasks(typename EA::individual_type& org, EA& ea) {
-            typedef typename EA::individual_type::io_type io_type;
-            typedef typename EA::individual_type::iobuffer_type iobuffer_type;
-            
-            iobuffer_type& inputs = org.inputs();
-            iobuffer_type& outputs = org.outputs();
-            
-            if((inputs.size() >= 2) && (!outputs.empty())) {
-                for(tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
-                    tasks::abstract_task& task=(**i);
-                    if(task.check(inputs[0], inputs[1], outputs[0])) {
-                        double r = task.consume();
-                        org.phenotype()[task.name()] += r;
-                        ea.events().task_performed(org, r, task.name(), ea);
-                    }
-                }
-            }
-        }
-        
-    protected:
-        tasklist_type _tasklist; //!< Active tasks.
-    };
-
-    //! Helper method to add tasks to the task library.
-    template <typename Predicate, typename Resource, typename Catalyst, typename EA>
-    void add_task(const std::string& name, EA& ea) {
-        boost::shared_ptr<tasks::abstract_task> p(new tasks::task<Predicate,Resource,Catalyst>(name));
-        ea.tasklib().append(p);
-    }
 
 } // ea
 

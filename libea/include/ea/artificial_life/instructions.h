@@ -239,7 +239,6 @@ namespace ea {
             p->outputs().push_front(hw.getRegValue(hw.modifyRegister()));
             p->outputs().resize(1);
             al.tasklib().check_tasks(*p,al);
-            
             return 1;
         }
     };
