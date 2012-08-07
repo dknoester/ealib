@@ -202,7 +202,7 @@ namespace ea {
 	LIBEA_MD_DECL(UINTSTRING_VARIANCE, "ea.representation.uintstring.variance", unsigned int);
 	
     // ea.environment.*
-    LIBEA_MD_DECL(LOCATION_COLOR, "ea.environment.location.color", int);
+    LIBEA_MD_DECL(LOCATION_DATA, "ea.environment.location.color", int);
 
     // ea.fitness_function.*
     LIBEA_MD_DECL(FF_RNG_SEED, "ea.fitness_function.rng_seed", int);

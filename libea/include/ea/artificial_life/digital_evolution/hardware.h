@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_ARTIFICIAL_LIFE_HARDWARE_H_
-#define _EA_HARDWARE_H_
+#ifndef _EA_ARTIFICIAL_LIFE_DIGITAL_EVOLUTION_HARDWARE_H_
+#define _EA_ARTIFICIAL_LIFE_DIGITAL_EVOLUTION_HARDWARE_H_
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/deque.hpp>
@@ -27,7 +27,7 @@
 #include <strings.h>
 
 #include <ea/representations/circular_genome.h>
-#include <ea/artificial_life/instructions.h>
+
 
 namespace ea {
     

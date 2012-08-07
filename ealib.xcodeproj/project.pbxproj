@@ -177,6 +177,9 @@
 
 /* Begin PBXFileReference section */
 		4220F31115CD940E005750F1 /* island_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = island_model.h; sourceTree = "<group>"; };
+		4220F32815D01F8F005750F1 /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
+		4220F32A15D01F8F005750F1 /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
+		4220F32B15D02992005750F1 /* digital_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_evolution.h; sourceTree = "<group>"; };
 		423CBC83157D0D910003A644 /* boost_howto.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = boost_howto.rtf; sourceTree = "<group>"; };
 		423CBC85157D0D910003A644 /* ealib.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ealib.xcconfig; sourceTree = "<group>"; };
 		423CBC86157D0D910003A644 /* Jamroot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Jamroot; sourceTree = "<group>"; };
@@ -194,9 +197,6 @@
 		423CBDB9157D0E450003A644 /* tool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tool.h; sourceTree = "<group>"; };
 		423CBDBA157D0E450003A644 /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		423CBDBC157D0E450003A644 /* artificial_life.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = artificial_life.h; sourceTree = "<group>"; };
-		423CBDBE157D0E450003A644 /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
-		423CBDBF157D0E450003A644 /* instructions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = instructions.h; sourceTree = "<group>"; };
-		423CBDC0157D0E450003A644 /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
 		423CBDC1157D0E450003A644 /* organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = organism.h; sourceTree = "<group>"; };
 		423CBDC2157D0E450003A644 /* replication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = replication.h; sourceTree = "<group>"; };
 		423CBDC3157D0E450003A644 /* schedulers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schedulers.h; sourceTree = "<group>"; };
@@ -388,6 +388,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4220F32715D01F8F005750F1 /* digital_evolution */ = {
+			isa = PBXGroup;
+			children = (
+				4220F32815D01F8F005750F1 /* hardware.h */,
+				4220F32A15D01F8F005750F1 /* isa.h */,
+			);
+			path = digital_evolution;
+			sourceTree = "<group>";
+		};
 		423CBC70157D0D440003A644 = {
 			isa = PBXGroup;
 			children = (
@@ -521,9 +530,8 @@
 			children = (
 				423CBDBC157D0E450003A644 /* artificial_life.h */,
 				42841D3615BDF22000AB18BE /* datafiles */,
-				423CBDBE157D0E450003A644 /* hardware.h */,
-				423CBDBF157D0E450003A644 /* instructions.h */,
-				423CBDC0157D0E450003A644 /* isa.h */,
+				4220F32B15D02992005750F1 /* digital_evolution.h */,
+				4220F32715D01F8F005750F1 /* digital_evolution */,
 				423CBDC1157D0E450003A644 /* organism.h */,
 				423CBDC2157D0E450003A644 /* replication.h */,
 				423CBDC3157D0E450003A644 /* schedulers.h */,

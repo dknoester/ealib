@@ -281,6 +281,8 @@ namespace ea {
             }
         }
         
+        location_matrix_type& locations() { return _locs; }
+        
         //! Serialize this topology.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
