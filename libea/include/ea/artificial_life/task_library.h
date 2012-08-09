@@ -256,9 +256,6 @@ namespace ea {
             }
         };
     } // catalysts
-    
-    
-
 
 } // ea
 

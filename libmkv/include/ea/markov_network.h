@@ -32,7 +32,7 @@
 LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", int);
 LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", int);
 LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", int);
-LIBEA_MD_DECL(MKV_HOLD_TIME, "markov_network.hold_time", int);
+LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
 LIBEA_MD_DECL(MKV_NODE_TYPES, "markov_network.node_types", std::string);
 LIBEA_MD_DECL(MKV_INITIAL_NODES, "markov_network.initial_nodes", int);
 LIBEA_MD_DECL(NODE_WV_STEPS, "markov_network.node.wv_steps", double);
