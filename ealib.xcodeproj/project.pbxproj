@@ -27,6 +27,7 @@
 
 /* Begin PBXBuildFile section */
 		4220F33215D2D563005750F1 /* graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4220F32E15D2D176005750F1 /* graph.cpp */; };
+		42279CB315D55F4700DD63BB /* markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42279CB215D55F4700DD63BB /* markov_network.cpp */; };
 		423CBE41157D0ECF0003A644 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF0157D0E450003A644 /* main.cpp */; };
 		423CBE42157D0ECF0003A644 /* runner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF1157D0E450003A644 /* runner.cpp */; };
 		423CBE61157D0FF50003A644 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF3157D0E450003A644 /* test.cpp */; };
@@ -187,6 +188,7 @@
 		42279CA815D52E3700DD63BB /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
 		42279CA915D5309E00DD63BB /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
 		42279CAB15D5534300DD63BB /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
+		42279CB215D55F4700DD63BB /* markov_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = markov_network.cpp; sourceTree = "<group>"; };
 		423CBC83157D0D910003A644 /* boost_howto.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = boost_howto.rtf; sourceTree = "<group>"; };
 		423CBC85157D0D910003A644 /* ealib.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ealib.xcconfig; sourceTree = "<group>"; };
 		423CBC86157D0D910003A644 /* Jamroot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Jamroot; sourceTree = "<group>"; };
@@ -396,6 +398,7 @@
 			isa = PBXGroup;
 			children = (
 				4220F32E15D2D176005750F1 /* graph.cpp */,
+				42279CB215D55F4700DD63BB /* markov_network.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1045,6 +1048,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4220F33215D2D563005750F1 /* graph.cpp in Sources */,
+				42279CB315D55F4700DD63BB /* markov_network.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

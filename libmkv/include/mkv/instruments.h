@@ -35,6 +35,22 @@ namespace mkv {
         virtual std::ostream& operator<<(std::ostream& out) { return out; }
     };
     
+    namespace instruments {
+     
+        struct pin_state : mkv_instrument {
+            pin_state(std::size_t s, int v) : _state(s), _value(v) {
+            }
+            
+            virtual void top_half(markov_network& mkv) { 
+                mkv.svm().state_tminus1(_state) = _value;
+            }
+            
+            std::size_t _state;
+            int _value;
+        };
+        
+    }
+    
 } // mkv
 
 #endif
