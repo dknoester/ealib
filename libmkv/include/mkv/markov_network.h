@@ -111,6 +111,9 @@ namespace mkv {
         //! Retrieve the output size for this network.
         std::size_t output_size() const { return _nout; }
         
+        //! Retrieve the number of hidden states for this network.
+        std::size_t hidden_size() const { return _nhid; }
+        
         //! Append a node to this network.
         void append(nodeptr_type node) {
             _nodes.push_back(node);
@@ -130,6 +133,9 @@ namespace mkv {
         
         //! Retrieve an end iterator to the nodelist (const-qualified).
         const_iterator end() const { return _nodes.end(); }
+        
+        //! Retrieve a pointer to node i.
+        nodeptr_type operator[](std::size_t i) { return _nodes[i]; }
         
         //! Retrieve the backing state vector machine:
         svm_type& svm() { return _svm; }

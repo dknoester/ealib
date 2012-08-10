@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _FN_MARKOV_NETWORK_EA_H_
-#define _FN_MARKOV_NETWORK_EA_H_
+#ifndef _EA_MARKOV_NETWORK_H_
+#define _EA_MARKOV_NETWORK_H_
 
 #include <ea/interface.h>
 #include <ea/meta_data.h>
@@ -27,6 +27,7 @@
 #include <mkv/detail/det_node.h>
 #include <mkv/detail/prob_node.h>
 #include <mkv/detail/adaptive_prob_node.h>
+#include <mkv/graph.h>
 
 // meta-data
 LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", int);
@@ -127,13 +128,13 @@ namespace ea {
 
 
 namespace mkv {    
-
+    
     template <typename Network, typename ForwardIterator, typename MetaData>
     void build_prob(Network& net, ForwardIterator h, MetaData& md) {
         using namespace detail;
         using namespace ea;
         using namespace ea::algorithm;
-
+        
         int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
         int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
         index_list_type inputs(h, h+nin);
@@ -175,7 +176,7 @@ namespace mkv {
         int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
         int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
         int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
-    
+        
         index_list_type inputs(h, h+nin);
         std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
         h+=nin;
@@ -192,7 +193,7 @@ namespace mkv {
         using namespace detail;
         using namespace ea;
         using namespace ea::algorithm;
-     
+        
         int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
         int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
         int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
@@ -217,14 +218,14 @@ namespace mkv {
                        std::bind2nd(std::multiplies<double>(), -1.0/get<NODE_WV_STEPS>(md)));
         h+=nhistory;
         
-        markov_network::nodeptr_type p(new synprob_mkv_node(nhistory,
+        markov_network::nodeptr_type p(new adaptive_mkv_node(nhistory,
                                                             posf, poswv,
                                                             negf, negwv,
                                                             inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
         net.append(p);
     }
     
-
+    
     /*! Build a Markov network from the genome [f,l), with the given meta data.
      */
     template <typename Network, typename ForwardIterator, typename MetaData>
@@ -306,6 +307,87 @@ namespace mkv {
             net.append(p);
         }
     }
+    
+    /*! Save the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct mkv_genetic_graph : public ea::analysis::unary_function<EA> {
+        static const char* name() { return "mkv_genetic_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ea;
+            using namespace ea::analysis;
+            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+            
+            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+
+            datafile df(get<ANALYSIS_OUTPUT>(ea));
+            std::ostringstream title;
+            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+            mkv::write_graphviz(title.str(), df, mkv::as_genetic_graph(net));
+        }
+    };
+    
+    
+    /*! Save the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct mkv_reduced_graph : public ea::analysis::unary_function<EA> {
+        static const char* name() { return "mkv_reduced_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ea;
+            using namespace ea::analysis;
+            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+            datafile df(get<ANALYSIS_OUTPUT>(ea));
+            std::ostringstream title;
+            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
+        }
+    };
+    
+    
+    /*! Save the detailed graph of the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct mkv_detailed_graph : public ea::analysis::unary_function<EA> {
+        static const char* name() { return "mkv_detailed_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ea;
+            using namespace ea::analysis;
+            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+            datafile df(get<ANALYSIS_OUTPUT>(ea));
+            std::ostringstream title;
+            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net), true);
+        }
+    };
+    
+    
+    /*! Save the causal graph of the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct mkv_causal_graph : public ea::analysis::unary_function<EA> {
+        static const char* name() { return "mkv_causal_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ea;
+            using namespace ea::analysis;
+            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+            datafile df(get<ANALYSIS_OUTPUT>(ea));
+            std::ostringstream title;
+            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+            mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
+        }
+    };
     
 } // mkv
 

@@ -37,7 +37,10 @@ namespace mkv {
                     _table[i] = *f;
                 }
             }
-            
+
+            //! Return a string suitable for graphviz output.
+            virtual std::string graphviz();
+
             //! Update the Markov network from this deterministic node.
             void update(markov_network& mkv) {
                 set_output(_table[get_input(mkv)], mkv);

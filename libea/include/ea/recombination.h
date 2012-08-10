@@ -65,7 +65,7 @@ namespace ea {
             sel(population, p, rec.capacity(), ea); // select parents
             rec(p, o, ea); // recombine parents to produce offspring
             inherits(p, o, ea);
-            offspring.append(o.begin(), o.end());
+            offspring.insert(offspring.end(), o.begin(), o.end());
         }
         offspring.resize(n); // in case extra were generated...
     }    
@@ -80,7 +80,7 @@ namespace ea {
             //! Asexual reproduction (copies a single parent).
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
-                offspring.append(make_population_entry(ind(parents.begin(),ea).repr(),ea));
+            offspring.insert(offspring.end(), make_population_entry(ind(parents.begin(),ea).repr(),ea));
             }
         };
         
