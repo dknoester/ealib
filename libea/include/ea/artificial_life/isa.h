@@ -366,6 +366,12 @@ namespace ea {
         isa() {
         }
         
+        //! Initialize the ISA.
+        void initialize(EA& ea) {
+            put<MUTATION_UNIFORM_INT_MIN>(0, ea);
+            put<MUTATION_UNIFORM_INT_MAX>(_isa.size(), ea);
+        }
+        
         //! Append the given instruction to the ISA.
         template <template <typename,typename> class Instruction>
         void append(std::size_t cost) {
@@ -388,7 +394,7 @@ namespace ea {
         std::size_t operator[](const std::string& inst) {
             name_map_type::iterator i=_name.find(inst);
             if(i ==_name.end()) {
-                throw std::invalid_argument("could not find instruction: " + inst " in the current ISA.");
+                throw std::invalid_argument("could not find instruction: " + inst + " in the current ISA.");
             }
             
             return i->second;

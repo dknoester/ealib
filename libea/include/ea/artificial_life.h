@@ -177,6 +177,7 @@ namespace ea {
         void initialize() {
             _env.initialize(*this);
             _scheduler.initialize(*this);
+            _isa.initialize(*this);
             _configurator.initialize(*this);
         } 
         
