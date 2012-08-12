@@ -131,7 +131,7 @@ namespace ea {
             meta_data& md() { return _md; }
 
             //! Is this location occupied?
-            bool occupied() { return p != 0; }
+            bool occupied() { return ((p != 0) && (p->alive())); }
             
             //! Return the inhabitant.
             individual_ptr_type inhabitant() { return p; }

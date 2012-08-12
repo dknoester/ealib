@@ -220,6 +220,8 @@ namespace ea {
             if(pos < 0) {
                 pos = _repr.size() + pos;
             } 
+            
+            int q = _repr.size();
             pos %= _repr.size();
             return pos;
         }

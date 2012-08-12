@@ -45,7 +45,7 @@
 
 
 namespace ea {
-
+        
     /*! Initialization method that generates a complete population.
      */
     template <typename IndividualGenerator>
@@ -91,6 +91,38 @@ namespace ea {
                            EA&)> death;
     };
 
+
+    template <typename EA>
+    struct task_performed_event : event {
+        task_performed_event(EA& ea) {
+            conn = ea.events().task_performed.connect(boost::bind(&task_performed_event::operator(), this, _1, _2, _3, _4));
+        }
+        virtual ~task_performed_event() { }
+        virtual void operator()(typename EA::individual_type&, // individual
+                                double, // amount of resource consumed
+                                const std::string&, // task name
+                                EA&) = 0;
+    };
+    
+    template <typename EA>
+    struct birth_event : event {
+        birth_event(EA& ea) {
+            conn = ea.events().birth.connect(boost::bind(&birth_event::operator(), this, _1, _2));
+        }
+        virtual ~birth_event() { }
+        virtual void operator()(typename EA::individual_type&, // individual
+                                EA&) = 0;
+    };
+    
+    template <typename EA>
+    struct death_event : event {
+        death_event(EA& ea) {
+            conn = ea.events().death.connect(boost::bind(&death_event::operator(), this, _1, _2));
+        }
+        virtual ~death_event() { }
+        virtual void operator()(typename EA::individual_type&, // individual
+                                EA&) = 0;
+    };
     
     /*! Artificial life top-level evolutionary algorithm.
      
