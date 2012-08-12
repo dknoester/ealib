@@ -75,7 +75,76 @@ namespace ea {
         }
     };
 
+    /*! Generates the self-replicator ancestor.
+     */
+    struct selfrep_ancestor {
+        template <typename EA>
+        typename EA::population_entry_type operator()(EA& ea) {
+            typedef typename EA::representation_type representation_type;
+            typename EA::individual_type ind;
+            ind.name() = next<INDIVIDUAL_COUNT>(ea);
+            
+            representation_type& repr=ind.repr();
+            repr.resize(get<REPRESENTATION_SIZE>(ea));
+            std::fill(repr.begin(), repr.end(), 3);
+            
+            // Must use representation size of 100.
+            assert(repr.size() == 100);
+                    
+            /* ISA:
+             append_isa<nop_a>(ea); // 0
+             append_isa<nop_b>(ea);
+             append_isa<nop_c>(ea);
+             append_isa<nop_x>(ea);
+             append_isa<mov_head>(ea);
+             append_isa<if_label>(ea);	// 5
+             append_isa<h_search>(ea);
+             append_isa<nand>(ea);
+             append_isa<push>(ea);
+             append_isa<pop>(ea);
+             append_isa<swap>(ea);	//10
+             append_isa<latch_ldata>(ea);
+             append_isa<inc>(ea);
+             append_isa<dec>(ea);
+             append_isa<tx_msg>(ea);
+             append_isa<rx_msg>(ea);//15
+             append_isa<bc_msg>(ea);
+             append_isa<rotate>(ea);
+             append_isa<rotate_cw>(ea);
+             append_isa<rotate_ccw>(ea);
+             append_isa<if_less>(ea);  //20
+             append_isa<h_alloc>(ea);
+             append_isa<h_copy>(ea);
+             append_isa<h_divide>(ea);
+             append_isa<input>(ea);
+             append_isa<output>(ea); //25 
+             */
+            
+            
+            repr[0] = 21; // h_alloc
+            repr[1] = 2; // nopc
+            repr[2] = 0; // nopa
+            repr[3] = 6; // hsearch
+            repr[4] = 2; // nopc
+            repr[5] = 4; // movhead
+            
+            repr[91] = 6; // hsearch
+            repr[92] = 22; // hcopy
+            repr[93] = 2; // nopc
+            repr[94] = 0; // nopa
+            repr[95] = 5; // iflabel
+            repr[96] = 23; // hdivide
+            repr[97] = 4; // movhead
+            repr[98] = 0; // nopa
+            repr[99] = 1; // nopb
+            
+            ind.hw().initialize();
+                        
+            return make_population_entry(ind, ea);
+        }
+    };
 
+        
     /*! Initialization method that generates a complete population.
      */
     template <typename IndividualGenerator>
