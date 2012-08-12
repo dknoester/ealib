@@ -1,1 +1,6 @@
-alias libmkv : /libcontrol//libcontrol : : : <include>./include ;
+lib libmkv :
+    src/graph.cpp
+    /libea//libea
+    /libcontrol//libcontrol 
+    : <include>./include 
+;

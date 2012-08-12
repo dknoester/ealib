@@ -25,6 +25,10 @@
 #include <boost/shared_ptr.hpp>
 
 #include <ea/concepts.h>
+#include <ea/configuration.h>
+#include <ea/artificial_life/ancestors.h>
+#include <ea/artificial_life/hardware.h>
+#include <ea/artificial_life/isa.h>
 #include <ea/artificial_life/organism.h>
 #include <ea/artificial_life/schedulers.h>
 #include <ea/artificial_life/replication.h>
@@ -41,109 +45,6 @@
 
 
 namespace ea {
-    
-    /*! Generates the default ancestor.
-     */
-    struct repro_ancestor {
-        template <typename EA>
-        typename EA::population_entry_type operator()(EA& ea) {
-            typedef typename EA::representation_type representation_type;
-            typename EA::individual_type ind;
-            ind.name() = next<INDIVIDUAL_COUNT>(ea);
-            ind.repr().resize(get<REPRESENTATION_SIZE>(ea));
-            representation_type& repr=ind.repr();
-            
-            std::fill(ind.repr().begin(), ind.repr().end(), 3);
-            *ind.repr().rbegin() = 13;
-            return make_population_entry(ind, ea);
-        }
-    };
-    
-    /*! Generates the nop-x ancestor.
-     */
-    struct nopx_ancestor {
-        template <typename EA>
-        typename EA::population_entry_type operator()(EA& ea) {
-            typedef typename EA::representation_type representation_type;
-            typename EA::individual_type ind;
-            ind.name() = next<INDIVIDUAL_COUNT>(ea);
-            
-            representation_type& repr=ind.repr();
-            repr.resize(get<REPRESENTATION_SIZE>(ea));
-            std::fill(repr.begin(), repr.end(), 3);
-            return make_population_entry(ind, ea);
-        }
-    };
-
-    /*! Generates the self-replicator ancestor.
-     */
-    struct selfrep_ancestor {
-        template <typename EA>
-        typename EA::population_entry_type operator()(EA& ea) {
-            typedef typename EA::representation_type representation_type;
-            typename EA::individual_type ind;
-            ind.name() = next<INDIVIDUAL_COUNT>(ea);
-            
-            representation_type& repr=ind.repr();
-            repr.resize(get<REPRESENTATION_SIZE>(ea));
-            std::fill(repr.begin(), repr.end(), 3);
-            
-            // Must use representation size of 100.
-            assert(repr.size() == 100);
-                    
-            /* ISA:
-             append_isa<nop_a>(ea); // 0
-             append_isa<nop_b>(ea);
-             append_isa<nop_c>(ea);
-             append_isa<nop_x>(ea);
-             append_isa<mov_head>(ea);
-             append_isa<if_label>(ea);	// 5
-             append_isa<h_search>(ea);
-             append_isa<nand>(ea);
-             append_isa<push>(ea);
-             append_isa<pop>(ea);
-             append_isa<swap>(ea);	//10
-             append_isa<latch_ldata>(ea);
-             append_isa<inc>(ea);
-             append_isa<dec>(ea);
-             append_isa<tx_msg>(ea);
-             append_isa<rx_msg>(ea);//15
-             append_isa<bc_msg>(ea);
-             append_isa<rotate>(ea);
-             append_isa<rotate_cw>(ea);
-             append_isa<rotate_ccw>(ea);
-             append_isa<if_less>(ea);  //20
-             append_isa<h_alloc>(ea);
-             append_isa<h_copy>(ea);
-             append_isa<h_divide>(ea);
-             append_isa<input>(ea);
-             append_isa<output>(ea); //25 
-             */
-            
-            
-            repr[0] = 21; // h_alloc
-            repr[1] = 2; // nopc
-            repr[2] = 0; // nopa
-            repr[3] = 6; // hsearch
-            repr[4] = 2; // nopc
-            repr[5] = 4; // movhead
-            
-            repr[91] = 6; // hsearch
-            repr[92] = 22; // hcopy
-            repr[93] = 2; // nopc
-            repr[94] = 0; // nopa
-            repr[95] = 5; // iflabel
-            repr[96] = 23; // hdivide
-            repr[97] = 4; // movhead
-            repr[98] = 0; // nopa
-            repr[99] = 1; // nopb
-            
-            ind.hw().initialize();
-                        
-            return make_population_entry(ind, ea);
-        }
-    };
-
         
     /*! Initialization method that generates a complete population.
      */
@@ -171,11 +72,11 @@ namespace ea {
     };
     
 
+    /*! Alife event handler.
+     */
     template <typename EA>
 	struct alife_event_handler : event_handler<EA> {
-		/* life history events */
-
-        //! 
+        //! Called when an individual performs a task.
         boost::signal<void(typename EA::individual_type&, // individual
                            double, // amount of resource consumed
                            const std::string&, // task name
@@ -249,21 +150,23 @@ namespace ea {
      the "organisms" in AL are referred to as "individuals."
      */
 	template <
-    typename Hardware,
-    template <typename> class InstructionSet,
+    template <typename> class ConfigurationStrategy,
     template <typename> class Environment=well_mixed,
     typename ReplacementStrategy=first_neighbor,
     template <typename> class Scheduler=weighted_round_robin,
-	typename MutationOperator=mutation::per_site<mutation::uniform_integer>,
     template <typename> class TaskLibrary=task_library,
+    typename Hardware=hardware,
+    template <typename> class InstructionSetArchitecture=isa,
+	typename MutationOperator=mutation::per_site<mutation::uniform_integer>,
     template <typename> class Individual=organism,
 	template <typename, typename> class Population=population,
-	typename Initializer=alife_population<repro_ancestor>,
 	template <typename> class EventHandler=alife_event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
     class artificial_life {
     public:
+        //! Configuration object type.
+        typedef ConfigurationStrategy<artificial_life> configuration_type;
         //! Hardware type.
         typedef Hardware hardware_type;
         //! Representation type.
@@ -277,7 +180,7 @@ namespace ea {
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! ISA type.
-        typedef InstructionSet<artificial_life> isa_type;
+        typedef InstructionSetArchitecture<artificial_life> isa_type;
         //! Replacment strategy type.
         typedef ReplacementStrategy replacement_type;
         //! Environment type.
@@ -292,8 +195,6 @@ namespace ea {
         typedef typename population_type::value_type population_entry_type;
         //! Meta-data type.
         typedef MetaData md_type;
-        //! Population initializer type.
-        typedef Initializer initializer_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
         //! Event handler.
@@ -301,22 +202,20 @@ namespace ea {
         
         //! Default constructor.
         artificial_life() {
+            _configurator.construct(*this);
         }
         
         //! Initialize this EA.
         void initialize() {
             _env.initialize(*this);
             _scheduler.initialize(*this);
+            _isa.initialize(*this);
+            _configurator.initialize(*this);
         } 
         
         //! Generates the initial population.
         void generate_initial_population() {
-            initializer_type init;
-            init(*this);
-        }
-
-        //! Reset the population.
-        void reset() {
+            _configurator.initial_population(*this);
         }
 
         //! Advance the epoch of this EA by n updates.
@@ -340,11 +239,23 @@ namespace ea {
         unsigned long current_update() {
             return _scheduler.current_update();
         }
-
-        //! Perform any needed preselection.
-        void preselect(population_type& src) {
+        
+        //! Reset this EA.
+        void reset() {
         }
 
+        //! Make a new individual from the given representation.
+        individual_ptr_type make_individual(const representation_type& repr) {
+            individual_ptr_type p(new individual_type(repr));
+            return p;
+        }
+        
+        //! Append the given individual to this EA.
+        void append(individual_ptr_type p) {
+            _population.push_back(p);
+            _env.insert(p);
+        }
+        
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
         
@@ -378,7 +289,8 @@ namespace ea {
         event_handler_type _events; //!< Event handler.
         isa_type _isa; //!< Instruction set architecture.
         tasklib_type _tasklib; //!< Task library.
-        
+        configuration_type _configurator; //!< Configuration object.
+
     private:
         friend class boost::serialization::access;
         template<class Archive>

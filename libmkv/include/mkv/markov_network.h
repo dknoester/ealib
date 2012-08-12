@@ -62,7 +62,9 @@ namespace mkv {
     // pre-decs
     namespace detail { struct abstract_markov_node; }
 
-
+    class mkv_instrument;
+    
+    
     /*! Markov network.
      
      SVM layout: | INPUTS... | OUTPUTS... | HIDDEN STATES... |
@@ -73,6 +75,7 @@ namespace mkv {
         typedef control::svm<state_type> svm_type; //!< State vector machine type.
         typedef boost::shared_ptr<detail::abstract_markov_node> nodeptr_type; //!< Pointer type for markov nodes.
         typedef std::vector<nodeptr_type> nodelist_type; //!< Type for a list of markov nodes.
+        typedef std::vector<mkv_instrument*> instrument_list_type; //!< Type for a list of instruments.
         typedef nodelist_type::iterator iterator; //!< Iterator type.
         typedef nodelist_type::const_iterator const_iterator; //!< Const iterator type.
         typedef ea::default_rng_type rng_type; //!< Random number generator type.
@@ -111,9 +114,17 @@ namespace mkv {
         //! Retrieve the output size for this network.
         std::size_t output_size() const { return _nout; }
         
+        //! Retrieve the number of hidden states for this network.
+        std::size_t hidden_size() const { return _nhid; }
+        
         //! Append a node to this network.
         void append(nodeptr_type node) {
             _nodes.push_back(node);
+        }
+        
+        //! Add an instrument to this markov network.
+        void add_instrument(mkv_instrument* instr) {
+            _instr.push_back(instr);
         }
         
         //! Retrieve the size of this network, in number of nodes.
@@ -131,6 +142,9 @@ namespace mkv {
         //! Retrieve an end iterator to the nodelist (const-qualified).
         const_iterator end() const { return _nodes.end(); }
         
+        //! Retrieve a pointer to node i.
+        nodeptr_type operator[](std::size_t i) { return _nodes[i]; }
+        
         //! Retrieve the backing state vector machine:
         svm_type& svm() { return _svm; }
         
@@ -145,10 +159,10 @@ namespace mkv {
         void rotate() { _svm.rotate(); }
         
         //! Called immediately before network nodes are updated.
-        void top_half() { }
+        void top_half();
         
         //! Called immediately after network nodes are updated.
-        void bottom_half() { }
+        void bottom_half();
         
         //! Return an iterator to the beginning of the svm inputs at time t-1.
         svm_type::state_vector_type::iterator input_begin() { return _svm.tminus1().begin(); }
@@ -165,6 +179,7 @@ namespace mkv {
         std::size_t _nhid; //!< Number of hidden states.
         svm_type _svm; //!< SVM backing this markov network.
         nodelist_type _nodes; //!< List of nodes in this markov network.
+        instrument_list_type _instr; //!< List of active instruments.
         rng_type _rng; //<! Random number generator.
         md_type _md; //!< Meta-data type.
     };

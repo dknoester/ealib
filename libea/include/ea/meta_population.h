@@ -33,6 +33,13 @@
 #include <ea/rng.h>
 
 namespace ea {
+
+    struct no_mp_mutation {
+        template <typename Representation, typename EA>
+        void operator()(Representation& repr, EA& ea) {
+        }
+    };
+            
     
     template <typename EA,
     typename Initializer=initialization::all_subpopulations,
@@ -63,7 +70,7 @@ namespace ea {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator for embedded EAs.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-        
+
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
         }
@@ -117,7 +124,7 @@ namespace ea {
             return reverse_iterator(_population.rbegin());
         }
         
-        //! Returns an reverse end iterator to the embedded EAs.
+        //! Returns a reverse end iterator to the embedded EAs.
         reverse_iterator rend() {
             return reverse_iterator(_population.rend());
         }
@@ -127,19 +134,25 @@ namespace ea {
             return const_reverse_iterator(_population.rbegin());
         }
         
-        //! Returns an reverse end iterator to the embedded EAs (const-qualified).
+        //! Returns a reverse end iterator to the embedded EAs (const-qualified).
         const_reverse_iterator rend() const {
             return const_reverse_iterator(_population.rend());
+        }
+        
+        //! Called to build a new (empty) subpopulation.
+        individual_ptr_type make_individual() {
+            individual_ptr_type p(new individual_type());
+            p->md() = md();
+            put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
+            p->rng().reset(get<RNG_SEED>(*p));
+            p->initialize();
+            return p;
         }
         
         //! Initialize all the embedded EAs.
         void initialize() {
             for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
-                individual_ptr_type p(new individual_type());
-                p->md() = md();
-                p->rng().reset(rng()(std::numeric_limits<int>::max()));
-                p->initialize();
-                _population.push_back(p);
+                _population.push_back(make_individual());
             }
         }        
         
@@ -188,11 +201,11 @@ namespace ea {
         unsigned long current_update() {
             return _update;
         }
-        
+                
         //! Perform any needed preselection.
         void preselect(population_type& src) {
         }
-        
+
     protected:
         unsigned long _update; //!< Meta-population update.
         rng_type _rng; //!< Random number generator.

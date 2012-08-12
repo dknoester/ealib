@@ -87,7 +87,7 @@ namespace ea {
             for(std::size_t i=0; i<population.size(); ++i) {
                 typename ea_type::individual_ptr_type p=ptr(population[i],ea);
                 if(p->alive()) {
-                    next.append(p);
+                    next.push_back(p);
                 }
             }
             std::swap(population, next);

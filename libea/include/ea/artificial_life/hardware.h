@@ -31,9 +31,10 @@
 
 namespace ea {
     
-    /*! Avida Basic CPU hardware.
+    /*! Digital evolution hardware.
      
-     <more goes here>
+     This class defines the representation and hardware for digital evolution, a
+     form of artificial life.
      */
     class hardware {
     public:            
@@ -88,6 +89,7 @@ namespace ea {
             bzero(_regfile, sizeof(int)*NUM_REGISTERS);
             _age = 0;
             _mem_extended = false;
+            _cost = 0;
             _label_stack.clear();
             _orig_size = _repr.size();
             _stack.clear();
@@ -96,20 +98,39 @@ namespace ea {
         
         /*! Step this hardware by n virtual CPU cycles.
          */
-        template <typename AL>
-        void execute(std::size_t n, typename AL::individual_ptr_type p, AL& al) {
-            
-            typename AL::isa_type& isa=al.isa();
-            int cycle_cost = 0;
-            while (n > 0) {
-                int cur_inst = _repr[_head_position[IP]];
-                cycle_cost = isa(cur_inst, *this, p, al);
-                n-=cycle_cost;
-                _age+=cycle_cost;
-                if(cycle_cost > 0) {
-                    clearLabelStack();
+        template <typename EA>
+        void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
+            // while we have cycles to spend:
+            while(n > 0) {
+                // get a pointer to the function object for the current instruction:
+                typename EA::isa_type::inst_ptr_type inst=ea.isa()[_repr[_head_position[IP]]];
+
+                // if cost is zero, we're on a new instruction.  figure out its cost:
+                if(_cost == 0) {
+                    _cost = inst->cost(*this, p, ea);
                 }
-                advanceHead(IP);
+
+                // if there's now a cost to be paid, we can spend up to min(n,_cost) cycles.
+                int spent=0;
+                if(_cost > 0) {
+                    spent = std::min(n, _cost);
+                    n -= spent;
+                    _cost -= spent;
+                    _age += spent;
+                }
+
+                // if cost is again 0, everything's been paid and we should execute the instruction:
+                if(_cost == 0) {
+                    (*inst)(*this, p, ea);
+                    
+                    // if we spent any cycles on this instruction, clear the label stack:
+                    if(spent > 0) {
+                        clearLabelStack();
+                    }
+                    
+                    // unconditionally advance the IP:
+                    advanceHead(IP);
+                }
             }
         }
         
@@ -167,16 +188,17 @@ namespace ea {
         
         //! Get the head to be modified
         int modifyHead() { 
-            if (_label_stack.size() == 0) 
+            if (_label_stack.size() == 0) {
                 return IP;
-            else 
+            } else {
                 return popLabelStack();
+            }
         }
         
         //! Set the location of head h to position pos
         void setHeadLocation(int h, int pos){
             assert (h < NUM_HEADS); 
-            assert (pos < _repr.size());
+            assert (pos < static_cast<int>(_repr.size()));
             _head_position[h] = pos;
         } 
         
@@ -263,18 +285,11 @@ namespace ea {
             return retVal;
         }
         
-        /*! Allocate memory for this organism's offspring.
-         
-         Extend the organism's memory by 150%, set the read head to the beginning
-         of its memory, and set the write head to the beginning of the newly-
-         allocated space.  This instruction only has effect once per lifetime.
-         */
+        //! Allocate memory for this organism's offspring (once per-lifetime).
         void extendMemory() { 
             if(!_mem_extended) {
                 _mem_extended = true;
                 _repr.resize(static_cast<std::size_t>(_orig_size * 2.5), NOP_X);
-//                setHeadLocation(RH, 0);
-//                setHeadLocation(WH, _orig_size);
             }
         }
         
@@ -303,7 +318,8 @@ namespace ea {
         
         std::deque<int> _label_stack;
         int _age;
-        bool _mem_extended; 
+        bool _mem_extended;
+        std::size_t _cost;
         std::size_t _orig_size;
         std::deque<int> _stack;
         std::deque<std::pair<int,int> > _msgs;            
@@ -318,6 +334,7 @@ namespace ea {
             ar & boost::serialization::make_nvp("labels", _label_stack);
             ar & boost::serialization::make_nvp("age", _age);
             ar & boost::serialization::make_nvp("extended", _mem_extended);
+            ar & boost::serialization::make_nvp("cost", _cost);
             ar & boost::serialization::make_nvp("original_size", _orig_size);
             ar & boost::serialization::make_nvp("stack", _stack);
             ar & boost::serialization::make_nvp("messages", _msgs);

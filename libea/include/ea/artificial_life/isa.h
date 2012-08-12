@@ -22,14 +22,15 @@
 #define _EA_ARTIFICIAL_LIFE_DIGITAL_EVOLUTION_ISA_H_
 
 #include <boost/shared_ptr.hpp>
+#include <stdexcept>
 #include <vector>
 
 #define DIGEVO_INSTRUCTION_DECL(name) \
 template <typename Hardware, typename EA> \
 struct name : ea::instructions::abstract_instruction<Hardware,EA> { \
-name() : ea::instructions::abstract_instruction<Hardware,EA>(#name) { } \
-virtual int operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea); }; \
-template<typename Hardware,typename EA> int name<Hardware,EA>::operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea)
+name(std::size_t cost) : ea::instructions::abstract_instruction<Hardware,EA>(#name,cost) { } \
+virtual void operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea); }; \
+template<typename Hardware,typename EA> void name<Hardware,EA>::operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea)
 
 
 namespace ea {
@@ -41,39 +42,41 @@ namespace ea {
         template <typename Hardware, typename EA>
         struct abstract_instruction {
             //! Constructor.
-            abstract_instruction(const std::string& name) : _name(name) {
+            abstract_instruction(const std::string& name, std::size_t cost) : _name(name), _cost(cost) {
             }
             
             //! Retrieve the human-readable name of this instruction.
             virtual const std::string& name() { return _name; }
             
-            //! Execute this instruction, returning its cost in number of cycles.
-            virtual int operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea) = 0;
+            //! Return the cost of this instruction in cycles.
+            virtual std::size_t cost(Hardware& hw, typename EA::individual_ptr_type p, EA& ea) {
+                return _cost;
+            }
+
+            //! Execute this instruction.
+            virtual void operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea) = 0;
             
             std::string _name; //!< Name of this instruction.
+            std::size_t _cost; //!< Cost of executing this instruction.
         };
         
         //! Push nop-a onto the label stack        
         DIGEVO_INSTRUCTION_DECL(nop_a) {
             hw.pushLabelStack(Hardware::NOP_A);
-            return 0;
         }
         
         //! Push nop-b onto the label stack
         DIGEVO_INSTRUCTION_DECL(nop_b) {
             hw.pushLabelStack(Hardware::NOP_B);
-            return 0;
         }
         
         //! Push nop-c onto the label stack
         DIGEVO_INSTRUCTION_DECL(nop_c) {
             hw.pushLabelStack(Hardware::NOP_C);
-            return 0;
         }
         
-        //! Do nothing.
+        //! Spend a cycle doing nothing.
         DIGEVO_INSTRUCTION_DECL(nop_x) {
-            return 1;
         }
         
         /*! Allocate memory for this organism's offspring.
@@ -84,7 +87,6 @@ namespace ea {
          */
         DIGEVO_INSTRUCTION_DECL(h_alloc) {
             hw.extendMemory();
-            return 1;
         }
         
         /*! Copy an instruction from the read head to the write head.
@@ -98,7 +100,6 @@ namespace ea {
             r[hw.getHeadLocation(Hardware::WH)] = r[hw.getHeadLocation(Hardware::RH)];
             hw.advanceHead(Hardware::WH);
             hw.advanceHead(Hardware::RH);
-            return 1;
         }
         
         //! Move the ?IP? head to the same position as the flow control head
@@ -111,7 +112,6 @@ namespace ea {
             if (h == Hardware::IP) {
                 hw.advanceHead(h, -1);
             }
-            return 1;
         }
         
         /*! Execute the next instruction if the complement was just copied.
@@ -128,15 +128,13 @@ namespace ea {
                 for(int i=(label_comp.size() - 1);  i>=0; --i) { 
                     if(label_comp[i] != static_cast<int>(hw.repr()[wh])) {
                         hw.advanceHead(Hardware::IP);
-                        
-                        return 1;
+                        return;
                     }
                     wh = hw.advance(wh, -1);
                 }
             } else {
                 hw.advanceHead(Hardware::IP);
             }
-            return 1;
         }
         
         /*! Search forward until the first complement to the label is found.
@@ -162,8 +160,6 @@ namespace ea {
                 dist = 1;
             }
             hw.advanceHead(Hardware::FH, dist + comp_label.second);
-            
-            return 1;
         }
         
         /*! Divide this organism's memory between parent and offspring.
@@ -194,10 +190,9 @@ namespace ea {
                     (offr.size() < (hw.original_size()*2))) {
                     replicate(p, offr, ea);
                 }
+                replicate(p, offr, ea);
                 hw.replicated();
             }
-            
-            return 1;
         }
         
         /*! Read a new input into ?BX?.
@@ -213,8 +208,6 @@ namespace ea {
                 hw.setRegValue(reg, ea.env().read(*p, ea));
                 p->inputs().push_front(hw.getRegValue(reg));
             }
-            
-            return 1;
         }
         
         /*! Output ?BX?.
@@ -227,7 +220,6 @@ namespace ea {
             p->outputs().push_front(hw.getRegValue(hw.modifyRegister()));
             p->outputs().resize(1);
             ea.tasklib().check_tasks(*p,ea);
-            return 1;
         }
         
         /*! Reproduce this organism.
@@ -237,8 +229,6 @@ namespace ea {
                 replicate(p, hw.repr(), ea);
                 hw.replicated();
             }
-            
-            return 1;
         }
         
         /*! Store BX nand CX into the ?BX? register.
@@ -249,16 +239,12 @@ namespace ea {
             int cxVal = hw.getRegValue(Hardware::CX);
             int nandVal = ~(bxVal & cxVal);
             hw.setRegValue(hw.modifyRegister(), nandVal);
-            
-            return 1;
         }
         
         //! Push the value in ?bx? on to the stack.
         DIGEVO_INSTRUCTION_DECL(push) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             hw.push_stack(bxVal);
-            
-            return 1;
         }
         
         //! Pop the value from the stack into ?bx?.
@@ -266,7 +252,6 @@ namespace ea {
             if(!hw.empty_stack()) {
                 hw.setRegValue(hw.modifyRegister(), hw.pop_stack());
             }
-            return 1;
         }
         
         //! Swap the contents of ?bx? and ?cx?.
@@ -279,32 +264,34 @@ namespace ea {
             
             hw.setRegValue(rbx, cxVal);
             hw.setRegValue(rcx, bxVal);
-            
-            return 1;
         }
         
-        /*! Set the data contents of the organism's location.
+        /*! Latch the data contents of the organism's location.
          */
         DIGEVO_INSTRUCTION_DECL(latch_ldata) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             if(!exists<LOCATION_DATA>(*p->location())) {
                 put<LOCATION_DATA>(bxVal,*p->location());
             }
-            return 1;
         }
-        
+
+        /*! Set the data contents of the organism's location.
+         */
+        DIGEVO_INSTRUCTION_DECL(set_ldata) {
+            int bxVal = hw.getRegValue(hw.modifyRegister());
+            put<LOCATION_DATA>(bxVal,*p->location());
+        }
+
         //! Increment the value in ?bx?.
         DIGEVO_INSTRUCTION_DECL(inc) {
             int rbx = hw.modifyRegister();
             hw.setRegValue(rbx, hw.getRegValue(rbx)+1);                
-            return 1;
         }
         
         //! Decrement the value in ?bx?.
         DIGEVO_INSTRUCTION_DECL(dec) {
             int rbx = hw.modifyRegister();
             hw.setRegValue(rbx, hw.getRegValue(rbx)-1);
-            return 1;
         }
         
         //! Send a message to the currently-faced neighbor.
@@ -315,7 +302,6 @@ namespace ea {
                 int rcx = hw.nextRegister(rbx);
                 l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
             }                
-            return 1;
         }
         
         //! Retrieve a message from the caller's message buffer.
@@ -327,8 +313,6 @@ namespace ea {
                 hw.setRegValue(rbx,msg.first);
                 hw.setRegValue(rcx,msg.second);
             }
-            
-            return 1;
         }
         
         /*! Broadcast a message.
@@ -345,26 +329,21 @@ namespace ea {
                     l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
                 }
             }
-            
-            return 1;
         }
         
         //! Rotate the organism to the heading in ?bx?.
         DIGEVO_INSTRUCTION_DECL(rotate) {
             p->location()->set_heading(hw.getRegValue(hw.modifyRegister()));
-            return 1;
         }
         
         //! Rotate the organism clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_cw) {
             p->location()->alter_heading(-1);
-            return 1;
         }
         
         //! Rotate the organism counter-clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_ccw) {
             p->location()->alter_heading(1);
-            return 1;
         }
         
         //! Execute the next instruction if ?bx? < ?cx?.
@@ -374,14 +353,11 @@ namespace ea {
                 if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
                     hw.advanceHead(Hardware::IP);
                 }
-                
-                return 1;
             }
         
         //! Donate any accumulated resource to this organism's group.
         DIGEVO_INSTRUCTION_DECL(donate_group) {
             ea.env().group(p,ea).receive_donation(p,ea);
-            return 1;
         }
     } // instructions
     
@@ -396,7 +372,8 @@ namespace ea {
         typedef typename ea_type::individual_ptr_type individual_ptr_type;
         
         typedef instructions::abstract_instruction<hardware_type,ea_type> inst_type;
-        typedef std::vector<boost::shared_ptr<inst_type> > isa_type;
+        typedef boost::shared_ptr<inst_type> inst_ptr_type;
+        typedef std::vector<inst_ptr_type> isa_type;
         
         typedef std::map<std::string, std::size_t> name_map_type;
         
@@ -404,31 +381,60 @@ namespace ea {
         isa() {
         }
         
+        //! Initialize the ISA.
+        void initialize(EA& ea) {
+            put<MUTATION_UNIFORM_INT_MIN>(0, ea);
+            put<MUTATION_UNIFORM_INT_MAX>(_isa.size(), ea);
+        }
+        
+        //! Append the given instruction to the ISA.
         template <template <typename,typename> class Instruction>
-        void append() {
-            boost::shared_ptr<inst_type> p(new Instruction<hardware_type,ea_type>());
+        void append(std::size_t cost) {
+            boost::shared_ptr<inst_type> p(new Instruction<hardware_type,ea_type>(cost));
             _isa.push_back(p);
             _name[p->name()] = _isa.size() - 1;
         }            
         
-        bool operator()(std::size_t inst, hardware_type& hw, individual_ptr_type p, ea_type& ea) {
-            return (*_isa[inst])(hw,p,ea);
+        //! Execute instruction i.
+        void operator()(std::size_t i, hardware_type& hw, individual_ptr_type p, ea_type& ea) {
+            (*_isa[i])(hw,p,ea);
         }
         
-        bool is_nop(std::size_t inst) {
-            return _isa[inst]->is_nop();
+        //! Retrieve a pointer to instruction i.
+        inst_ptr_type operator[](std::size_t i) {
+            return _isa[i];
         }
+        
+        //! Retrieve the index of instruction inst.
+        std::size_t operator[](const std::string& inst) {
+            name_map_type::iterator i=_name.find(inst);
+            if(i ==_name.end()) {
+                throw std::invalid_argument("could not find instruction: " + inst + " in the current ISA.");
+            }
+            
+            return i->second;
+        }
+        
+        //! Return the number of instructions available in the ISA.
+        std::size_t size() const { return _isa.size(); }
         
     protected:
         isa_type _isa; //!< List of available instructions.
         name_map_type _name; //<! Map of human-readable instruction names to their index in the ISA.
     };        
     
+    //! Helper method to add an instruction to the ISA with the given cost.
+    template <template <typename,typename> class Instruction, typename EA>
+    void append_isa(std::size_t cost, EA& ea) {
+        ea.isa().template append<Instruction>(cost);
+    }
+
+    //! Helper method to add an instruction to the ISA with a cost of 1.
     template <template <typename,typename> class Instruction, typename EA>
     void append_isa(EA& ea) {
-        ea.isa().template append<Instruction>();
+        ea.isa().template append<Instruction>(1);
     }
-    
+
 } // ea
 
 #endif

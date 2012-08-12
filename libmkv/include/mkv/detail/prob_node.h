@@ -51,6 +51,9 @@ namespace mkv {
                 ea::algorithm::normalize(row.begin(), row.end(), row.begin(), 1.0);
             }
             
+            //! Return a string suitable for graphviz output.
+            virtual std::string graphviz();
+            
             //! Update the Markov network from this probabilistic node.
             void update(markov_network& mkv) {
                 row_type row(_table, get_input(mkv));

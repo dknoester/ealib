@@ -29,15 +29,18 @@ namespace mkv {
         
         /*! Synaptically-learning probabilistic Markov network node.
          */
-        struct synprob_mkv_node : public probabilistic_history_mkv_node {
+        struct adaptive_mkv_node : public probabilistic_history_mkv_node {
             //! Constructor.
             template <typename ForwardIterator>
-            synprob_mkv_node(std::size_t hn,
+            adaptive_mkv_node(std::size_t hn,
                              std::size_t posf, weight_vector_type poswv, 
                              std::size_t negf, weight_vector_type negwv,
                              index_list_type inputs, index_list_type outputs, ForwardIterator ft, bool allow_zero) 
             : probabilistic_history_mkv_node(hn, inputs, outputs, ft, allow_zero), _posf(posf), _poswv(poswv), _negf(negf), _negwv(negwv) {
             }
+
+            //! Return a string suitable for graphviz output.
+            virtual std::string graphviz();
             
             //! Learn.
             void learn(markov_network& mkv) {

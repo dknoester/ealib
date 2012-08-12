@@ -41,7 +41,9 @@ namespace ea {
          
          \warning Fitness can not be negative.
 		 */
+        template <typename SurvivorSelectionStrategy=selection::proportionate< > >
 		struct death_birth_process : public generational_model {
+            typedef SurvivorSelectionStrategy survivor_selection_type;
             
 			//! Apply this generational model to the EA to produce a single new generation.
 			template <typename Population, typename EA>
@@ -62,7 +64,7 @@ namespace ea {
                 // recombine the survivors to produce offspring:
                 Population offspring;
                 recombine_n(survivors, offspring,
-                            selection::proportionate< >(n,survivors,ea),
+                            survivor_selection_type(n,survivors,ea),
                             typename EA::recombination_operator_type(),
                             n, ea);
                 
@@ -73,7 +75,7 @@ namespace ea {
                 calculate_fitness(offspring.begin(), offspring.end(), ea);
                 
 				// add the offspring to the list of survivors:
-				survivors.append(offspring.begin(), offspring.end());
+				survivors.insert(survivors.end(), offspring.begin(), offspring.end());
                 
 				// and swap 'em in for the current population:
                 std::swap(population, survivors);

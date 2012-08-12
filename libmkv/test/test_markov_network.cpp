@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update3) {
 
     // before learning:
     {
-        synprob_mkv_node& node = *dynamic_cast<synprob_mkv_node*>(mkv.begin()->get());
+        adaptive_mkv_node& node = *dynamic_cast<adaptive_mkv_node*>(mkv.begin()->get());
         BOOST_CHECK(node._table(1,1)==10);
         BOOST_CHECK(node._table(1,4)==13);
         BOOST_CHECK((node._history.begin()->first==1) && (node._history.begin()->second==1));
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update3) {
     
     // after learning:
     {
-        synprob_mkv_node& node = *dynamic_cast<synprob_mkv_node*>(mkv.begin()->get());
+        adaptive_mkv_node& node = *dynamic_cast<adaptive_mkv_node*>(mkv.begin()->get());
         BOOST_CHECK(node._table(1,1)==20);
         BOOST_CHECK(node._table(1,4)==23);
         BOOST_CHECK((node._history.begin()->first==1) && (node._history.begin()->second==2));
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_mkv_node_ctor) {
 
 /*!
  */
-BOOST_AUTO_TEST_CASE(test_synprob_mkv_node_ctor) {
+BOOST_AUTO_TEST_CASE(test_adaptive_mkv_node_ctor) {
     using namespace mkv;
 	using namespace mkv::detail;
     
@@ -403,7 +403,7 @@ BOOST_AUTO_TEST_CASE(test_synprob_mkv_node_ctor) {
     weight_vector_type negwv(&data[14], &data[17]);
     
     {
-        synprob_mkv_node node(data[4],
+        adaptive_mkv_node node(data[4],
                               data[5], poswv,
                               data[6], negwv,
                               inputs, outputs, &data[17], true);
@@ -416,7 +416,7 @@ BOOST_AUTO_TEST_CASE(test_synprob_mkv_node_ctor) {
         BOOST_CHECK(node._table(2,4)==10); // row sum
     }
     {
-        synprob_mkv_node node(data[4],
+        adaptive_mkv_node node(data[4],
                               data[5], poswv,
                               data[6], negwv,
                               inputs, outputs, &data[17], false);
@@ -535,7 +535,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
         BOOST_CHECK(node._table[2]==3);
     }
     {
-        synprob_mkv_node& node = *dynamic_cast<synprob_mkv_node*>((mkv.begin()+1)->get());
+        adaptive_mkv_node& node = *dynamic_cast<adaptive_mkv_node*>((mkv.begin()+1)->get());
         BOOST_CHECK(node._table(0,0)==10);
         BOOST_CHECK(node._table(0,1)==1);
         BOOST_CHECK(node._table(2,4)==13);
@@ -642,7 +642,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor1) {
         BOOST_CHECK(node._table[2]==3);
     }
     {
-        synprob_mkv_node& node = *dynamic_cast<synprob_mkv_node*>((mkv.begin()+3)->get());
+        adaptive_mkv_node& node = *dynamic_cast<adaptive_mkv_node*>((mkv.begin()+3)->get());
         BOOST_CHECK(node._table(0,0)==10);
         BOOST_CHECK(node._table(0,1)==1);
         BOOST_CHECK(node._table(2,4)==13);

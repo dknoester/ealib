@@ -223,23 +223,10 @@ namespace ea {
         
         //! Gather the events that occur during a trial of this EA.
         virtual void gather_events(EA& ea) = 0;
-        
-        //! Configure the EA; called immediately after construction.
-        virtual void configure(EA& ea) {
-        }
-
-        //! Called immediately before EA initialization.
-        virtual void preinitialization(EA& ea) {
-        }
-
-        //! Called immediately after EA initialization.
-        virtual void postinitialization(EA& ea) {
-        }
 
         //! Analyze an EA instance.
 		virtual void analyze(boost::program_options::variables_map& vm) {
 			ea_type ea;
-            configure(ea);
             load_if(vm, ea);
             apply(vm, ea);
             ea.initialize();
@@ -250,7 +237,6 @@ namespace ea {
         //! Continue a previously-checkpointed EA.
 		virtual void continue_checkpoint(boost::program_options::variables_map& vm) {
             ea_type ea;
-            configure(ea);
             load(vm, ea);
             
             // conditionally apply command-line and/or file parameters:
@@ -271,16 +257,13 @@ namespace ea {
 		//! Run the EA.
 		virtual void run(boost::program_options::variables_map& vm) {
 			ea_type ea;
-            configure(ea);
             apply(vm, ea);
             
             if(exists<RNG_SEED>(ea)) {
                 ea.rng().reset(get<RNG_SEED>(ea));
             }
             
-            preinitialization(ea);
             ea.initialize();
-            postinitialization(ea);
             gather_events(ea);
             
             if(vm.count("with-time")) {

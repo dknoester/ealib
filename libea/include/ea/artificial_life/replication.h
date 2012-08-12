@@ -96,6 +96,26 @@ namespace ea {
         replace(*parents.begin(), *offspring.begin(), ea);
     }
     
+    
+    /*! This group replication method fills the offspring group with copies of a
+     single mutated individual from the parent group.
+     
+     This works best when groups are assumed to be genetically homogeneous.
+     */
+    template <typename EA>
+    void germline_replication(typename EA::individual_type& parent, typename EA::individual_type& offspring, EA& ea) {
+        // grab a copy of the first individual:
+        typename EA::individual_type::individual_type germ(**parent.population().begin());
+        
+        // mutate it:
+        mutate(germ, offspring);
+        
+        // and now fill up the offspring population with copies of the germ:
+        for(std::size_t j=0; j<get<POPULATION_SIZE>(offspring); ++j) {
+            offspring.append(offspring.make_individual(germ.repr()));
+        }        
+    } 
+    
 } // ea
 
 #endif

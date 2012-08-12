@@ -23,6 +23,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <vector>
+#include <string>
 #include <mkv/markov_network.h>
 
 namespace mkv {
@@ -52,6 +53,9 @@ namespace mkv {
             //! Reinforce all decisions by r.
             virtual void reinforce(double r) { }
 
+            //! Return a string suitable for graphviz output.
+            virtual std::string graphviz() = 0;
+            
             //! Retrieve the input to this node from the Markov network's state machine at time t-1.
             int get_input(markov_network& mkv) {
                 int x=0;
@@ -67,6 +71,11 @@ namespace mkv {
                     mkv.svm().state_t(_out[i]) |= (x >> (_out.size()-1-i)) & 0x01;
                 }
             }
+            
+            std::size_t input_size() const { return _in.size(); }
+            std::size_t output_size() const { return _out.size(); }
+            std::size_t input(std::size_t i) const { return _in[i]; }
+            std::size_t output(std::size_t i) const { return _out[i]; }
             
             index_list_type _in; //!< Input state indices to this node.
             index_list_type _out; //!< Output state indices from this node.
