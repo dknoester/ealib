@@ -19,12 +19,12 @@
  */
 #include "test.h"
 
-#include <ea/artificial_life/artificial_life.h>
-#include <ea/artificial_life/hardware.h>
-#include <ea/artificial_life/isa.h>
-#include <ea/artificial_life/spatial.h>
+#include <ea/digital_evolution/digital_evolution.h>
+#include <ea/digital_evolution/hardware.h>
+#include <ea/digital_evolution/isa.h>
+#include <ea/digital_evolution/spatial.h>
 
-typedef artificial_life<
+typedef digital_evolution<
 hardware,
 isa,
 spatial

@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_ARTIFICIAL_LIFE_DATAFILES_GENERATION_PRIORITY_H_
-#define _EA_ARTIFICIAL_LIFE_DATAFILES_GENERATION_PRIORITY_H_
+#ifndef _EA_digital_evolution_DATAFILES_GENERATION_PRIORITY_H_
+#define _EA_digital_evolution_DATAFILES_GENERATION_PRIORITY_H_
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>

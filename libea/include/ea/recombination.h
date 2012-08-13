@@ -80,7 +80,8 @@ namespace ea {
             //! Asexual reproduction (copies a single parent).
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
-            offspring.insert(offspring.end(), make_population_entry(ind(parents.begin(),ea).repr(),ea));
+            offspring.insert(offspring.end(), 
+                             ea.make_individual(parents.front()->repr()));
             }
         };
         

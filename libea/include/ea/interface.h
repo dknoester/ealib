@@ -95,24 +95,24 @@ namespace ea {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         return ea.population().ptr(i);
     }
-
-    template <typename EA>
-    typename EA::individual_ptr_type make_individual_ptr(const typename EA::individual_type& i, EA& ea) {
-        typename EA::individual_ptr_type p(new typename EA::individual_type(i));
-        return p;
-    }
-    
-    template <typename EA>
-    typename EA::population_entry_type make_population_entry(const typename EA::individual_type& i, EA& ea) {
-        typename EA::individual_ptr_type p(new typename EA::individual_type(i));
-        return ea.population().make_population_entry(p,ea);
-    }
-    
-    template <typename EA>
-    typename EA::population_entry_type make_population_entry(const typename EA::representation_type& r, EA& ea) {
-        typename EA::individual_ptr_type p(new typename EA::individual_type(r));
-        return ea.population().make_population_entry(p,ea);
-    }    
+//
+//    template <typename EA>
+//    typename EA::individual_ptr_type make_individual_ptr(const typename EA::individual_type& i, EA& ea) {
+//        typename EA::individual_ptr_type p(new typename EA::individual_type(i));
+//        return p;
+//    }
+//    
+//    template <typename EA>
+//    typename EA::population_entry_type make_population_entry(const typename EA::individual_type& i, EA& ea) {
+//        typename EA::individual_ptr_type p(new typename EA::individual_type(i));
+//        return ea.population().make_population_entry(p,ea);
+//    }
+//    
+//    template <typename EA>
+//    typename EA::population_entry_type make_population_entry(const typename EA::representation_type& r, EA& ea) {
+//        typename EA::individual_ptr_type p(new typename EA::individual_type(r));
+//        return ea.population().make_population_entry(p,ea);
+//    }    
     	    
 } // ea
 

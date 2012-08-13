@@ -178,16 +178,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		42015A8215D6BEDC0020F594 /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
+		42015A8415D6BEDC0020F594 /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
+		42015A8515D6BEDC0020F594 /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
+		42015A8615D6BEDC0020F594 /* organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = organism.h; sourceTree = "<group>"; };
+		42015A8715D6BEDC0020F594 /* replication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = replication.h; sourceTree = "<group>"; };
+		42015A8815D6BEDC0020F594 /* schedulers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schedulers.h; sourceTree = "<group>"; };
+		42015A8915D6BEDC0020F594 /* spatial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spatial.h; sourceTree = "<group>"; };
+		42015A8A15D6BEDC0020F594 /* task_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_library.h; sourceTree = "<group>"; };
+		42015A8B15D6BEDC0020F594 /* well_mixed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = well_mixed.h; sourceTree = "<group>"; };
 		4220F31115CD940E005750F1 /* island_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = island_model.h; sourceTree = "<group>"; };
 		4220F32C15D2C95F005750F1 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		4220F32E15D2D176005750F1 /* graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
-		42279CA315D52E0500DD63BB /* artificial_life.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = artificial_life.h; sourceTree = "<group>"; };
+		42279CA315D52E0500DD63BB /* digital_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_evolution.h; sourceTree = "<group>"; };
 		42279CA515D52E2A00DD63BB /* generation_priority.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generation_priority.h; sourceTree = "<group>"; };
 		42279CA615D52E2A00DD63BB /* reactions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reactions.h; sourceTree = "<group>"; };
-		42279CA715D52E3700DD63BB /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
-		42279CA815D52E3700DD63BB /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
 		42279CA915D5309E00DD63BB /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
-		42279CAB15D5534300DD63BB /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
 		42279CB215D55F4700DD63BB /* markov_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = markov_network.cpp; sourceTree = "<group>"; };
 		423CBC83157D0D910003A644 /* boost_howto.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = boost_howto.rtf; sourceTree = "<group>"; };
 		423CBC85157D0D910003A644 /* ealib.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ealib.xcconfig; sourceTree = "<group>"; };
@@ -205,11 +211,6 @@
 		423CBDB8157D0E450003A644 /* population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population.h; sourceTree = "<group>"; };
 		423CBDB9157D0E450003A644 /* tool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tool.h; sourceTree = "<group>"; };
 		423CBDBA157D0E450003A644 /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
-		423CBDC1157D0E450003A644 /* organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = organism.h; sourceTree = "<group>"; };
-		423CBDC2157D0E450003A644 /* replication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = replication.h; sourceTree = "<group>"; };
-		423CBDC3157D0E450003A644 /* schedulers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schedulers.h; sourceTree = "<group>"; };
-		423CBDC4157D0E450003A644 /* task_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_library.h; sourceTree = "<group>"; };
-		423CBDC5157D0E450003A644 /* well_mixed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = well_mixed.h; sourceTree = "<group>"; };
 		423CBDC6157D0E450003A644 /* checkpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkpoint.h; sourceTree = "<group>"; };
 		423CBDC7157D0E450003A644 /* cvector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cvector.h; sourceTree = "<group>"; };
 		423CBDC8157D0E450003A644 /* cmdline_interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cmdline_interface.h; sourceTree = "<group>"; };
@@ -229,7 +230,7 @@
 		423CBDD9157D0E450003A644 /* synchronous.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = synchronous.h; sourceTree = "<group>"; };
 		423CBDDA157D0E450003A644 /* generators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generators.h; sourceTree = "<group>"; };
 		423CBDDB157D0E450003A644 /* individual.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = individual.h; sourceTree = "<group>"; };
-		423CBDDC157D0E450003A644 /* initialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = initialization.h; sourceTree = "<group>"; };
+		423CBDDC157D0E450003A644 /* ancestors.h */ = {isa = PBXFileReference; path = ancestors.h; sourceTree = "<group>"; };
 		423CBDDD157D0E450003A644 /* interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = interface.h; sourceTree = "<group>"; };
 		423CBDDF157D0E450003A644 /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
 		423CBDE0157D0E450003A644 /* meta_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_data.h; sourceTree = "<group>"; };
@@ -299,7 +300,6 @@
 		42841C9515AFB1A100AB18BE /* mp_all_ones.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mp_all_ones.cpp; sourceTree = "<group>"; };
 		42841CA615AFB23200AB18BE /* mp_all_ones */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mp_all_ones; sourceTree = BUILT_PRODUCTS_DIR; };
 		42841D1515B2F35300AB18BE /* adaptive_hfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = adaptive_hfc.h; sourceTree = "<group>"; };
-		42841D3515BDA91200AB18BE /* spatial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spatial.h; sourceTree = "<group>"; };
 		42841D3E15BEDF7700AB18BE /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
 		42E133B815C6BBA600FE9EAE /* abstract_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_node.h; sourceTree = "<group>"; };
 		42E133B915C6BBA600FE9EAE /* adaptive_prob_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = adaptive_prob_node.h; sourceTree = "<group>"; };
@@ -394,6 +394,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		42015A8115D6BEDC0020F594 /* digital_evolution */ = {
+			isa = PBXGroup;
+			children = (
+				42015A8215D6BEDC0020F594 /* ancestors.h */,
+				42015A8415D6BEDC0020F594 /* hardware.h */,
+				42015A8515D6BEDC0020F594 /* isa.h */,
+				42015A8615D6BEDC0020F594 /* organism.h */,
+				42015A8715D6BEDC0020F594 /* replication.h */,
+				42015A8815D6BEDC0020F594 /* schedulers.h */,
+				42015A8915D6BEDC0020F594 /* spatial.h */,
+				42015A8A15D6BEDC0020F594 /* task_library.h */,
+				42015A8B15D6BEDC0020F594 /* well_mixed.h */,
+			);
+			path = digital_evolution;
+			sourceTree = "<group>";
+		};
 		4220F32D15D2D176005750F1 /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -478,8 +494,9 @@
 				423CBDAE157D0E450003A644 /* algorithm.h */,
 				423CBDBA157D0E450003A644 /* analysis.h */,
 				423CBDAF157D0E450003A644 /* analysis */,
-				42279CA315D52E0500DD63BB /* artificial_life.h */,
-				423CBDBB157D0E450003A644 /* artificial_life */,
+				423CBDDC157D0E450003A644 /* ancestors.h */,
+				42279CA315D52E0500DD63BB /* digital_evolution.h */,
+				42015A8115D6BEDC0020F594 /* digital_evolution */,
 				42F4B63215822A7B0075D6EF /* attributes.h */,
 				423CBDC6157D0E450003A644 /* checkpoint.h */,
 				423CBDC8157D0E450003A644 /* cmdline_interface.h */,
@@ -498,7 +515,6 @@
 				423CBDD6157D0E450003A644 /* generational_models */,
 				423CBDDA157D0E450003A644 /* generators.h */,
 				423CBDDB157D0E450003A644 /* individual.h */,
-				423CBDDC157D0E450003A644 /* initialization.h */,
 				423CBDDD157D0E450003A644 /* interface.h */,
 				423CBDDF157D0E450003A644 /* line_of_descent.h */,
 				4220F31115CD940E005750F1 /* island_model.h */,
@@ -531,22 +547,6 @@
 				423CBDB9157D0E450003A644 /* tool.h */,
 			);
 			path = analysis;
-			sourceTree = "<group>";
-		};
-		423CBDBB157D0E450003A644 /* artificial_life */ = {
-			isa = PBXGroup;
-			children = (
-				42279CAB15D5534300DD63BB /* ancestors.h */,
-				42279CA715D52E3700DD63BB /* hardware.h */,
-				42279CA815D52E3700DD63BB /* isa.h */,
-				423CBDC1157D0E450003A644 /* organism.h */,
-				423CBDC2157D0E450003A644 /* replication.h */,
-				423CBDC3157D0E450003A644 /* schedulers.h */,
-				42841D3515BDA91200AB18BE /* spatial.h */,
-				423CBDC4157D0E450003A644 /* task_library.h */,
-				423CBDC5157D0E450003A644 /* well_mixed.h */,
-			);
-			path = artificial_life;
 			sourceTree = "<group>";
 		};
 		423CBDCB157D0E450003A644 /* datafiles */ = {

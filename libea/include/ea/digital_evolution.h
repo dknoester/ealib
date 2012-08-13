@@ -1,4 +1,4 @@
-/* artificial_life/artificial_life.h 
+/* digital_evolution/digital_evolution.h 
  * 
  * This file is part of EALib.
  * 
@@ -18,23 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_ARTIFICIAL_LIFE_ARTIFICIAL_LIFE_H_
-#define _EA_ARTIFICIAL_LIFE_ARTIFICIAL_LIFE_H_
+#ifndef _EA_DIGITAL_EVOLUTION_H_
+#define _EA_DIGITAL_EVOLUTION_H_
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <ea/concepts.h>
 #include <ea/configuration.h>
-#include <ea/artificial_life/ancestors.h>
-#include <ea/artificial_life/hardware.h>
-#include <ea/artificial_life/isa.h>
-#include <ea/artificial_life/organism.h>
-#include <ea/artificial_life/schedulers.h>
-#include <ea/artificial_life/replication.h>
-#include <ea/artificial_life/well_mixed.h>
-#include <ea/artificial_life/task_library.h>
-#include <ea/initialization.h>
+#include <ea/digital_evolution/ancestors.h>
+#include <ea/digital_evolution/hardware.h>
+#include <ea/digital_evolution/isa.h>
+#include <ea/digital_evolution/organism.h>
+#include <ea/digital_evolution/schedulers.h>
+#include <ea/digital_evolution/replication.h>
+#include <ea/digital_evolution/well_mixed.h>
+#include <ea/digital_evolution/task_library.h>
+#include <ea/ancestors.h>
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
@@ -108,7 +108,7 @@ namespace ea {
      
      While these differences *could* be incorporated into a traditional evolutionary
      algorithm, this could not be done without bastardizing many of the concepts
-     that are typically found in an EA.  Thus, the artificial_life class found
+     that are typically found in an EA.  Thus, the digital_evolution class found
      here.
      
      In general, the design of this class is based on concepts from the Avida 
@@ -131,30 +131,30 @@ namespace ea {
 	template <typename> class EventHandler=alife_event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
-    class artificial_life {
+    class digital_evolution {
     public:
         //! Configuration object type.
-        typedef ConfigurationStrategy<artificial_life> configuration_type;
+        typedef ConfigurationStrategy<digital_evolution> configuration_type;
         //! Hardware type.
         typedef Hardware hardware_type;
         //! Representation type.
         typedef typename hardware_type::representation_type representation_type;
         //! Scheduler type.
-        typedef Scheduler<artificial_life> scheduler_type;
+        typedef Scheduler<digital_evolution> scheduler_type;
         //! Scheduler fitness type.
         typedef typename scheduler_type::priority_type priority_type;
         //! Individual type.
-        typedef Individual<artificial_life> individual_type;
+        typedef Individual<digital_evolution> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! ISA type.
-        typedef InstructionSetArchitecture<artificial_life> isa_type;
+        typedef InstructionSetArchitecture<digital_evolution> isa_type;
         //! Replacment strategy type.
         typedef ReplacementStrategy replacement_type;
         //! Environment type.
-        typedef Environment<artificial_life> environment_type;
+        typedef Environment<digital_evolution> environment_type;
         //! Task library type.
-        typedef TaskLibrary<artificial_life> tasklib_type;
+        typedef TaskLibrary<digital_evolution> tasklib_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Population type.
@@ -166,10 +166,10 @@ namespace ea {
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
         //! Event handler.
-        typedef EventHandler<artificial_life> event_handler_type;
+        typedef EventHandler<digital_evolution> event_handler_type;
         
         //! Default constructor.
-        artificial_life() {
+        digital_evolution() {
             _configurator.construct(*this);
         }
         
@@ -203,25 +203,32 @@ namespace ea {
             _events.end_of_update(*this);
         }
         
-        //! Returns the current update of this EA.
-        unsigned long current_update() {
-            return _scheduler.current_update();
-        }
-        
-        //! Reset this EA.
-        void reset() {
-        }
-
-        //! Make a new individual from the given representation.
-        individual_ptr_type make_individual(const representation_type& repr) {
-            individual_ptr_type p(new individual_type(repr));
+        //! Build an individual from the given representation.
+        individual_ptr_type make_individual(const representation_type& r) {
+            individual_ptr_type p(new individual_type(r));
             return p;
         }
         
-        //! Append the given individual to this EA.
+        //! Append individual x to the population and environment.
         void append(individual_ptr_type p) {
-            _population.push_back(p);
-            _env.insert(p);
+            _population.insert(_population.end(), p);
+            _env.append(p);
+        }
+        
+        //! Append the range of individuals [f,l) to the population and environment.
+        template <typename ForwardIterator>
+        void append(ForwardIterator f, ForwardIterator l) {
+            _population.insert(_population.end(), f, l);
+            _env.append(f, l);
+        }
+
+        //! Reset this EA.
+        void reset() {
+        }
+        
+        //! Returns the current update of this EA.
+        unsigned long current_update() {
+            return _scheduler.current_update();
         }
         
         //! Accessor for the random number generator.

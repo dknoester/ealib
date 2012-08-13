@@ -25,10 +25,11 @@
 
 #include <ea/attributes.h>
 #include <ea/concepts.h>
+#include <ea/configuration.h>
 #include <ea/generational_models/synchronous.h>
 #include <ea/individual.h>
 #include <ea/fitness_function.h>
-#include <ea/initialization.h>
+#include <ea/ancestors.h>
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
@@ -52,9 +53,9 @@ namespace ea {
 	typename Representation,
 	typename MutationOperator,
 	typename FitnessFunction,
+    template <typename> class ConfigurationStrategy,
 	typename RecombinationOperator=recombination::two_point_crossover,
 	typename GenerationalModel=generational_models::synchronous<selection::proportionate< >, selection::tournament< > >,
-	typename Initializer=initialization::complete_population<initialization::random_individual>,
     template <typename> class IndividualAttrs=individual_attributes,
     template <typename,typename,typename> class Individual=individual,
 	template <typename,typename> class Population=population,
@@ -62,13 +63,9 @@ namespace ea {
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
 	class evolutionary_algorithm {
-    public:
-        //! This evolutionary_algorithm's type.
-        typedef evolutionary_algorithm<Representation, MutationOperator, FitnessFunction,
-        RecombinationOperator, GenerationalModel, Initializer, IndividualAttrs,
-        Individual, Population, EventHandler, MetaData, RandomNumberGenerator
-        > ea_type;
-        
+    public:        
+        //! Configuration object type.
+        typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
         //! Representation type.
         typedef Representation representation_type;
         //! Fitness function type.
@@ -76,7 +73,7 @@ namespace ea {
         //! Fitness type.
         typedef typename fitness_function_type::fitness_type fitness_type;
         //! Attributes attached to individuals.
-        typedef IndividualAttrs<ea_type> individual_attr_type;
+        typedef IndividualAttrs<evolutionary_algorithm> individual_attr_type;
         //! Individual type.
         typedef Individual<representation_type,fitness_type,individual_attr_type> individual_type;
         //! Individual pointer type.
@@ -93,34 +90,28 @@ namespace ea {
         typedef typename population_type::value_type population_entry_type;
         //! Meta-data type.
         typedef MetaData md_type;
-        //! Population initializer type.
-        typedef Initializer initializer_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
         //! Event handler.
-        typedef EventHandler<ea_type> event_handler_type;
+        typedef EventHandler<evolutionary_algorithm> event_handler_type;
         
         //! Default constructor.
         evolutionary_algorithm() {
+            _configurator.construct(*this);
         }
                 
         //! Initialize this EA.
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
+            _configurator.initialize(*this);
         }        
         
         //! Generates the initial population.
         void generate_initial_population() {
-            initializer_type init;
-            init(*this);
+            _configurator.initial_population(*this);
             calculate_fitness(_population.begin(), _population.end(), *this);
         }
 
-        //! Reset the population.
-        void reset() {
-            nullify_fitness(_population.begin(), _population.end(), *this);
-        }
-        
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
             for( ; n>0; --n) {
@@ -140,11 +131,23 @@ namespace ea {
             _events.end_of_update(*this);
         }
         
-        //! Returns the current update of this EA.
-        unsigned long current_update() {
-            return _generational_model.current_update();
+        //! Build an individual from the given representation.
+        individual_ptr_type make_individual(const representation_type& r) {
+            individual_ptr_type p(new individual_type(r));
+            return p;
         }
-
+        
+        //! Insert individual x into the population.
+        void append(individual_ptr_type x) {
+            _population.insert(_population.end(), x);
+        }
+        
+        //! Insert the range of individuals [f,l) into the population.
+        template <typename ForwardIterator>
+        void append(ForwardIterator f, ForwardIterator l) {
+            _population.insert(_population.end(), f, l);
+        }
+        
         //! Perform any needed preselection.
         void preselect(population_type& src) {
             relativize_fitness(src.begin(), src.end(), *this);
@@ -158,6 +161,16 @@ namespace ea {
         //! Calculate fitness (stochastic).
         void evaluate_fitness(individual_type& indi, rng_type& rng) {
             indi.fitness() = _fitness_function(indi, rng, *this);
+        }
+        
+        //! Reset the population.
+        void reset() {
+            nullify_fitness(_population.begin(), _population.end(), *this);
+        }
+        
+        //! Returns the current update of this EA.
+        unsigned long current_update() { 
+            return _generational_model.current_update();
         }
         
         //! Accessor for the random number generator.
@@ -177,7 +190,7 @@ namespace ea {
         
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
-        
+      
     protected:
         rng_type _rng; //!< Random number generator.
         fitness_function_type _fitness_function; //!< Fitness function object.
@@ -185,7 +198,8 @@ namespace ea {
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
-        
+        configuration_type _configurator; //!< Configuration object.
+
     private:
         friend class boost::serialization::access;
         template<class Archive>

@@ -22,45 +22,97 @@
 
 #include <ea/interface.h>
 #include <ea/meta_data.h>
+#include <ea/generators.h>
 
 
 namespace ea {
     
-	
-    /*! Generate n individuals into population p from generator ig.
-	 */
-	template <typename Population, typename IndividualGenerator, typename EA>
-	void generate_individuals_n(Population& p, IndividualGenerator &ig, std::size_t n, EA& ea) {
+    /*! Generates an ancestral population of size n into the given EA.
+     
+     Ancestral populations are a litle strange, in that even the ancestors must
+     themselves have ancestors in order to provide for line-of-descent tracking.
+     Individuals in the ancestral population also need the "inherits_from" method
+     called on them (as well as the inheritance signal), each of which require
+     a parent population.  We handle all of this here, and at the very end, add
+     the ancestors to the EA.
+     
+     We aren't concerned terribly with efficiency here, as it is expected that this
+     method is called relatively infrequently.
+     */
+	template <typename RepresentationGenerator, typename EA>
+	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-		BOOST_CONCEPT_ASSERT((IndividualGeneratorConcept<IndividualGenerator,EA>));
-        std::insert_iterator<Population> ii(p, p.end());
-        for( ; n>0; --n) {
-            *ii++ = ig(ea);
-        }
-	}
-    
 
-    namespace initialization {
+        // build the placeholder ancestor:
+        typename EA::individual_ptr_type ap = ea.make_individual(typename EA::representation_type());
+        ap->name() = next<INDIVIDUAL_COUNT>(ea);
+        ap->generation() = -1.0;
+        ap->update() = ea.current_update();
+     
+        // wrap it in a population:
+        typename EA::population_type parents;
+        parents.push_back(ap);
+        
+        // now, build the real ancestral population:
+        typename EA::population_type ancestral;
+        for( ; n>0; --n) {
+            ancestral.push_back(ea.make_individual(g(ea)));
+        }
+
+        // trigger inheritance:
+        inherits(parents, ancestral, ea);
+        
+        // and add all the ancestors to the EA:
+        ea.append(ancestral.begin(), ancestral.end());
+    }
+
+
+    /*! Fill the EA with individuals constructed from the given representation.
+     
+     As opposed to the above method, where we generate ancestors, the individuals
+     generated here are simply copied from the given representation -- there is no
+     attempt made to configure them into an lineage.
+     */
+    template <typename EA>
+    void fill_population(const typename EA::representation_type& r, std::size_t n, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+
+        // build the population:
+        typename EA::population_type population;
+        for( ; n>0; --n) {
+            typename EA::individual_ptr_type p = ea.make_individual(r);
+            p->name() = next<INDIVIDUAL_COUNT>(ea);
+            p->generation() = -1.0;
+            p->update() = ea.current_update();
+            population.push_back(p);
+        }
+
+        // and add them all to the EA:
+        ea.append(population.begin(), population.end());
+    }
+    
+    
+    namespace ancestors {
         
         /*! Generates an individual from random bits.
          */
-        struct random_bit {            
+        struct random_bitstring {            
             //! Generate an individual.
             template <typename EA>
-            typename EA::population_entry_type operator()(EA& ea) {
-                typedef typename EA::representation_type representation_type;
-                typename EA::individual_type ind;
-                ind.name() = next<INDIVIDUAL_COUNT>(ea);
-                ind.repr().resize(get<REPRESENTATION_SIZE>(ea));
-                representation_type& repr=ind.repr();
+            typename EA::representation_type operator()(EA& ea) {
+                typename EA::representation_type r;
+                r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
+                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().bit();
                 }
-                return make_population_entry(ind,ea);
+                return r;
             }
         };
         
+    } // ancestors
+    
+    namespace initialization {
         /*! Generates an individual from a uniform distribution of integers.
          */
         struct uniform_integer {            
@@ -80,7 +132,7 @@ namespace ea {
             }
         };
         
-
+        
         /*! Generates an individual from a uniform distribution of reals.
          */
         struct uniform_real {
@@ -98,7 +150,7 @@ namespace ea {
                 return make_population_entry(ind,ea);
             }
         };
-
+        
         
         /*! Generates a random individual.
          */
@@ -129,7 +181,7 @@ namespace ea {
                 typename EA::population_type population;
                 random_individual ig;
                 fitness_type(population, ig, get<POPULATION_SIZE>(ea), ea);
-
+                
                 // and find the one with the worst fitness:
                 typename EA::individual_type mini=ind(population.begin(),ea);
                 for(typename EA::population_type::iterator i=population.begin(); i!=population.end(); ++i) {
@@ -161,10 +213,10 @@ namespace ea {
                 mutate(ind,ea);
                 return make_population_entry(ind, ea);
             }
-          
+            
             IndividualType _i;
         };
-            
+        
         
         /*! Initialization method that generates a complete population.
          */
@@ -202,7 +254,7 @@ namespace ea {
                 IndividualGenerator ig;
                 fitness_type(ancestral, ig, 1, ea);
                 individual_type& a = ind(ancestral.begin(),ea);
-
+                
                 // replicate this ancestor to fill up our population:
                 ea.population().clear();
                 replicate_with_mutation<individual_type> rg(a);
@@ -213,7 +265,7 @@ namespace ea {
                 }
             }
         };
-                
+        
         /*! Initializes all subpopulations that are part of a meta-population EA.
          */
         struct all_subpopulations {

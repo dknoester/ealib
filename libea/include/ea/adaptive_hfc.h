@@ -152,7 +152,7 @@ namespace ea {
                 }
                 
                 // now, move all individuals w/ fitness >= next_admission to the next pop:
-                ea[i+1].population().append(f,l);
+                ea[i+1].population().insert(ea[i+1].population().end(), f,l);
                 // and remove them from this one:
                 ea[i].population().erase(f,l);
             }

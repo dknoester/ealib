@@ -55,19 +55,6 @@ namespace ea {
         virtual ~population() {
         }
         
-        void append(value_type i) {
-            base_type::push_back(i);
-        }
-
-        void append(iterator i) {
-            base_type::push_back(*i);
-        }
-
-        template <typename ForwardIterator>
-        void append(ForwardIterator f, ForwardIterator l) {
-            base_type::insert(base_type::end(), f, l);
-        }
-
         individual_type& ind(iterator i) {
             return **i;
         }
