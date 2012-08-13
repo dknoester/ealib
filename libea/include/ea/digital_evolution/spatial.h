@@ -26,6 +26,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <utility>
 #include <vector>
+#include <stdexcept>
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
 
@@ -251,7 +252,9 @@ namespace ea {
             if(_append_count >= (_locs.size1()*_locs.size2())) {
                 throw std::out_of_range("spatial::append(individual_ptr_type x)");
             }
-            _locs.data()[_append_count++].p = p;
+            _locs.data()[_append_count].p = p;
+            p->location() = &_locs.data()[_append_count];
+            ++_append_count;
         }
         
         //! Append the range of individuals [f,l) to the environment.
