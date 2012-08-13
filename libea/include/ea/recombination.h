@@ -109,8 +109,8 @@ namespace ea {
                 std::swap_ranges(o1.begin(), o1.begin()+xover, o2.begin());
                 
                 // output the individuals:
-                offspring.append(make_population_entry(typename EA::individual_type(o1),ea));
-                offspring.append(make_population_entry(typename EA::individual_type(o2),ea));
+                offspring.insert(offspring.end(), ea.make_individual(o1));
+                offspring.insert(offspring.end(), ea.make_individual(o2));
             }
         };
         
@@ -138,8 +138,8 @@ namespace ea {
                 std::swap_ranges(o1.begin()+xover.first, o1.begin()+xover.second, o2.begin()+xover.first);
                 
                 // output the individuals:
-                offspring.append(make_population_entry(typename EA::individual_type(o1),ea));
-                offspring.append(make_population_entry(typename EA::individual_type(o2),ea));
+                offspring.insert(offspring.end(), ea.make_individual(o1));
+                offspring.insert(offspring.end(), ea.make_individual(o2));
             }
         };
         

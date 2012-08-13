@@ -19,14 +19,12 @@
  */
 #include "test.h"
 
-#include <ea/digital_evolution/digital_evolution.h>
-#include <ea/digital_evolution/hardware.h>
-#include <ea/digital_evolution/isa.h>
+#include <ea/digital_evolution.h>
 #include <ea/digital_evolution/spatial.h>
 
+
 typedef digital_evolution<
-hardware,
-isa,
+abstract_configuration,
 spatial
 > al_type;
 
@@ -74,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
 
 BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     al_type al;    
-    al_type::individual_ptr_type p = make_individual_ptr(al_type::individual_type(),al);    
+    al_type::individual_ptr_type p = al.make_individual(al_type::representation_type());
     al_type::isa_type& hw_isa=al.isa();
     hardware::representation_type r; // is a circular genome...
     r.push_back(7); // 0
