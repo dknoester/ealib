@@ -35,6 +35,13 @@ namespace ea {
      
      This class defines the representation and hardware for digital evolution, a
      form of artificial life.
+     
+     \todo There are good odds that much can be gained by splitting out status information
+     into its own struct, and then have instructions manipulate that directly, instead
+     of this strange hybrid approach that we have now.  For that matter, why couldn't
+     we simply keep a list of member pointers to methods in the hardware?  That is,
+     why the artificial distinction between isa and hardware?  That would certainly
+     save on method calls...
      */
     class hardware {
     public:            
