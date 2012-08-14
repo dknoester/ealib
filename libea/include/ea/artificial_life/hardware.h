@@ -100,7 +100,7 @@ namespace ea {
          */
         template <typename EA>
         void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
-            // while we have cycles to spend:
+           // while we have cycles to spend:
             while(n > 0) {
                 // get a pointer to the function object for the current instruction:
                 typename EA::isa_type::inst_ptr_type inst=ea.isa()[_repr[_head_position[IP]]];

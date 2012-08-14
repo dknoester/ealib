@@ -45,6 +45,7 @@ namespace ea {
             virtual void update(double delta_t) = 0;
             //! Consume resources.
             virtual double consume() = 0;
+            virtual void reset() = 0;
             
             std::string _name;
         };
@@ -54,26 +55,32 @@ namespace ea {
             unlimited(const std::string& name) : abstract_resource(name) { }
             void update(double) { }
             double consume() { return 1.0; }
+            void reset() { }
         };
         
         //! Limited resource type.
         struct limited : abstract_resource {
             limited(const std::string& name, double initial, double inflow, double outflow, double consume)
-            : abstract_resource(name), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
+            : abstract_resource(name), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
             }
             
             void update(double delta_t) {
-                _level += delta_t * (_inflow - _outflow * _level);
+                _level += delta_t * (_inflow - (_outflow * _level));
                 _level = std::max(0.0, _level);
             }
             
             double consume() {
                 double r = std::max(0.0, _level*_consume);
-                _level = std::min(0.0, _level-r);
+                _level = std::max (0.0, _level-r);
                 return r;
+            }
+            
+            void reset() {
+                _level = _initial; 
             }
 
             double _level; //!< Current resource level.
+            double _initial; //!< Initial resource level
             double _inflow; //!< Amount of resource flowing in per update.
             double _outflow; //!< Rate at which resource flows out per update.
             double _consume; //!< Fraction of resource consumed.
@@ -278,6 +285,14 @@ namespace ea {
         void partial_update(double delta_t, ea_type& ea) {
             for(resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
                 (*i)->update(delta_t);
+            }
+        }
+        
+        /*! Reset resources -- may occur on successful group event 
+         */
+        void reset_resources() {
+            for(resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->reset();
             }
         }
         
