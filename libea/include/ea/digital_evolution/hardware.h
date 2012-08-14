@@ -107,8 +107,9 @@ namespace ea {
          */
         template <typename EA>
         void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
+            std::size_t attempts=0;
             // while we have cycles to spend:
-            while(n > 0) {
+            while((n > 0) && (attempts++ < _repr.size())) {
                 // get a pointer to the function object for the current instruction:
                 typename EA::isa_type::inst_ptr_type inst=ea.isa()[_repr[_head_position[IP]]];
 
@@ -138,6 +139,11 @@ namespace ea {
                     // unconditionally advance the IP:
                     advanceHead(IP);
                 }
+            }
+            
+            // if we actually looped around the genome, we should probably die:
+            if(attempts == _repr.size()) {
+                p->alive() = false;
             }
         }
         
