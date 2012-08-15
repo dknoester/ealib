@@ -203,6 +203,11 @@ namespace ea {
         //! Default constructor.
         artificial_life() {
             _configurator.construct(*this);
+            ++alife_allocated;
+        }
+        
+        ~artificial_life() {
+            ++alife_deallocated;
         }
         
         //! Initialize this EA.
@@ -279,6 +284,10 @@ namespace ea {
         
         //! Retrieves this AL's scheduler.
         scheduler_type& scheduler() { return _scheduler; }
+        
+    public:
+        static int alife_allocated; 
+        static int alife_deallocated; 
         
     protected:
         rng_type _rng; //!< Random number generator.

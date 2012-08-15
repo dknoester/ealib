@@ -57,11 +57,13 @@ namespace ea {
         
 		//! Constructor.
 		organism() : _name(0), _generation(0.0), _update(0), _alive(true) {
+            ++org_allocated;
 		}
         
 		//! Constructor that builds an organism from a representation.
 		organism(const representation_type& r) 
         : _name(0), _generation(0.0), _update(0), _alive(true), _hw(r) {
+            ++org_allocated;
 		}
         
         //! Copy constructor.
@@ -73,6 +75,7 @@ namespace ea {
             _priority = that._priority;
             _hw = that._hw;
             _md = that._md;
+            ++org_allocated;
         }
         
         //! Assignment operator.
@@ -91,6 +94,7 @@ namespace ea {
         
         //! Destructor.
         virtual ~organism() {
+            ++org_deallocated;
         }
         
         //! Retrieve this organism's name.
@@ -155,6 +159,10 @@ namespace ea {
         void execute(std::size_t n, typename AL::individual_ptr_type p, AL& al) {
             _hw.execute(n,p,al);
         }
+        
+    public:
+        static int org_allocated; 
+        static int org_deallocated; 
         
 	protected:
         long _name; //!< Name (id number) of this organism.
