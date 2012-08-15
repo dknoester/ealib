@@ -173,23 +173,31 @@ namespace ea {
             if(hw.age() >= (0.8 * hw.original_size())) {            
                 typename Hardware::representation_type& r=hw.repr();
                 
+                // Check to see if the offspring would be a good length. 
+                int divide_pos = hw.getHeadLocation(Hardware::RH);  
+                int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH); 
+                
+                int child_size = r.size() - divide_pos - extra_lines; 
+                int parent_size = r.size() - child_size - extra_lines;
+                double ratio = 2.0;
+                
+                if ((child_size < (hw.original_size()/ratio)) || 
+                    (child_size > (hw.original_size()*ratio)) || 
+                    (parent_size < (hw.original_size()/ratio)) ||
+                    (parent_size > (hw.original_size()*ratio))){
+                    // fail and die a miserable death!
+                    hw.replicated();
+                    return;
+                }
+                
+                
                 typename Hardware::representation_type::iterator f=r.begin(),l=r.begin();
                 std::advance(f, hw.getHeadLocation(Hardware::RH));
-                int wh_advance = hw.getHeadLocation(Hardware::WH); 
-                if (wh_advance <= hw.getHeadLocation(Hardware::RH)) {
-                    wh_advance += r.size();
-                }
-                std::advance(l, wh_advance);                
-                
+                std::advance(l, hw.getHeadLocation(Hardware::WH));                             
                 typename Hardware::representation_type offr(f, l);
-                r.resize(hw.original_size());
                 
-                // This clause prevents crazily sized offspring from 
-                // entering the population
-                if ((offr.size() > (hw.original_size()/2)) && 
-                    (offr.size() < (hw.original_size()*2))) {
-                    replicate(p, offr, ea);
-                }
+                
+                r.resize(parent_size);
                 replicate(p, offr, ea);
                 hw.replicated();
             }
