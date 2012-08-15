@@ -89,10 +89,6 @@ namespace ea {
             return *this;
         }
         
-        //! Destructor.
-        virtual ~organism() {
-        }
-        
         //! Retrieve this organism's name.
         long& name() { return _name; }
 		

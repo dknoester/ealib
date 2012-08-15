@@ -88,6 +88,9 @@ namespace ea {
     
     template <typename EA>
     struct end_of_update_event : event {
+        end_of_update_event(int order, EA& ea) {
+            conn = ea.events().end_of_update.connect(order, boost::bind(&end_of_update_event::operator(), this, _1));
+        }
         end_of_update_event(EA& ea) {
             conn = ea.events().end_of_update.connect(boost::bind(&end_of_update_event::operator(), this, _1));
         }
@@ -97,6 +100,9 @@ namespace ea {
     
     template <typename MDType, typename EA>
     struct periodic_event : event {
+        periodic_event(int order, EA& ea) : _n(0) {
+            conn = ea.events().end_of_update.connect(order, boost::bind(&periodic_event::end_of_update, this, _1));
+        }
         periodic_event(EA& ea) : _n(0) {
             conn = ea.events().end_of_update.connect(boost::bind(&periodic_event::end_of_update, this, _1));
         }

@@ -155,6 +155,7 @@ namespace ea {
             for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
                 _population.push_back(make_individual());
             }
+            _configurator.initialize(*this);
         }        
         
         //! Generates the initial population.
@@ -162,6 +163,7 @@ namespace ea {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->generate_initial_population();
             }
+            _configurator.initial_population(*this);
         }
         
         //! Reset all populations.
@@ -169,6 +171,7 @@ namespace ea {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->reset();
             }
+            _configurator.reset(*this);
         }
         
         //! Advance the epoch of this EA by n updates.
@@ -213,7 +216,8 @@ namespace ea {
         meta_data _md; //!< Meta-data for the meta-population.
         event_handler_type _events; //!< Event handler.        
         population_type _population; //!< List of EAs in this meta-population.
-        
+        configuration_type _configurator; //!< Configuration object.
+
     private:
         friend class boost::serialization::access;
         

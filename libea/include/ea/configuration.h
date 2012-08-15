@@ -39,11 +39,14 @@ namespace ea {
         //! Called as the final step of EA initialization.
         virtual void initialize(EA& ea) {
         }
-        
+
+        //! Called to reset the state of this population (usually during meta-population experiments).
+        virtual void reset(EA& ea) {
+        }
+
         //! Called to generate the initial EA population.
         virtual void initial_population(EA& ea) {
         }
-        
     };
 
 }

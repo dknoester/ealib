@@ -37,11 +37,7 @@ namespace ea {
      form of artificial life.
      
      \todo There are good odds that much can be gained by splitting out status information
-     into its own struct, and then have instructions manipulate that directly, instead
-     of this strange hybrid approach that we have now.  For that matter, why couldn't
-     we simply keep a list of member pointers to methods in the hardware?  That is,
-     why the artificial distinction between isa and hardware?  That would certainly
-     save on method calls...
+     into its own struct, and then have instructions manipulate that directly.
      */
     class hardware {
     public:            
@@ -64,6 +60,7 @@ namespace ea {
         const static int BX = 1; 
         const static int CX = 2;
         
+
         //! Constructor.
         hardware() {
             initialize();
@@ -104,11 +101,17 @@ namespace ea {
         }
         
         /*! Step this hardware by n virtual CPU cycles.
+         
+         There are some subleties here:
+         1) It's possible that a genome contains no instructions with non-zero cost.
+         In this case, after attempting genome-size instruction executions, we mark
+         the organism as dead.
          */
         template <typename EA>
         void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
             std::size_t attempts=0;
-            // while we have cycles to spend:
+            // while we have cycles to spend and we haven't exhausted our attempts 
+            // at executing an instruction:
             while((n > 0) && (attempts++ < _repr.size())) {
                 // get a pointer to the function object for the current instruction:
                 typename EA::isa_type::inst_ptr_type inst=ea.isa()[_repr[_head_position[IP]]];
@@ -147,13 +150,17 @@ namespace ea {
             }
         }
         
+        //! Mark this hardware as having replicated (reinitialize).
         void replicated() {
             initialize();
             advanceHead(IP, -1);
             --_age;
         }
         
-        int age() { return _age; }
+        //! Return the age of this hardware in virtual CPU cycles.
+        int age() { 
+            return _age;
+        }
         
         //! Get the register to be modified
         int modifyRegister() { 

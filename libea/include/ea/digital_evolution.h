@@ -172,7 +172,7 @@ namespace ea {
         digital_evolution() {
             _configurator.construct(*this);
         }
-        
+                
         //! Initialize this EA.
         void initialize() {
             _env.initialize(*this);
@@ -224,6 +224,7 @@ namespace ea {
 
         //! Reset this EA.
         void reset() {
+            _configurator.reset(*this);
         }
         
         //! Returns the current update of this EA.

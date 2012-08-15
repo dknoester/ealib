@@ -165,6 +165,7 @@ namespace ea {
         
         //! Reset the population.
         void reset() {
+            _configurator.reset(*this);
             nullify_fitness(_population.begin(), _population.end(), *this);
         }
         
