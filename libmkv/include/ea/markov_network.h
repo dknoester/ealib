@@ -114,7 +114,7 @@ namespace ea {
                 int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
                 repr[j] = gate;
                 repr[j+1] = 255-gate;
-				for(int k=2; k<20; ++k) {
+				for(int k=2; k<97; ++k) {
 					repr[j+k]=ea.rng()(256);
 				}
 			}

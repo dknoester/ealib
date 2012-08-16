@@ -251,8 +251,7 @@ namespace ea {
             hw.setRegValue(rcx, bxVal);
         }
         
-        /*! Latch the data contents of the organism's location.
-         */
+        //! Latch the data contents of the organism's location.
         DIGEVO_INSTRUCTION_DECL(latch_ldata) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             if(!exists<LOCATION_DATA>(*p->location())) {
@@ -260,11 +259,17 @@ namespace ea {
             }
         }
 
-        /*! Set the data contents of the organism's location.
-         */
+        //! Set the data contents of the organism's location.
         DIGEVO_INSTRUCTION_DECL(set_ldata) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             put<LOCATION_DATA>(bxVal,*p->location());
+        }
+
+        //! Get the data contents of the organism's location, if it exists.
+        DIGEVO_INSTRUCTION_DECL(get_ldata) {
+            if(exists<LOCATION_DATA>(*p->location())) {
+                hw.setRegValue(hw.modifyRegister(), get<LOCATION_DATA>(*p->location()));
+            }
         }
 
         //! Increment the value in ?bx?.
@@ -300,8 +305,7 @@ namespace ea {
             }
         }
         
-        /*! Broadcast a message.
-         */
+        //! Broadcast a message.
         DIGEVO_INSTRUCTION_DECL(bc_msg) {
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
@@ -333,12 +337,12 @@ namespace ea {
         
         //! Execute the next instruction if ?bx? < ?cx?.
         DIGEVO_INSTRUCTION_DECL(if_less) {
-                int rbx = hw.modifyRegister();
-                int rcx = hw.nextRegister(rbx);
-                if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
-                    hw.advanceHead(Hardware::IP);
-                }
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
+                hw.advanceHead(Hardware::IP);
             }
+        }
         
         //! Donate any accumulated resource to this organism's group.
         DIGEVO_INSTRUCTION_DECL(donate_group) {
