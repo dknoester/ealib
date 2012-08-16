@@ -361,11 +361,15 @@ namespace ea {
                 if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
                     hw.advanceHead(Hardware::IP);
                 }
-            }
+        }
         
-        //! Donate any accumulated resource to this organism's group.
-        DIGEVO_INSTRUCTION_DECL(donate_group) {
-            ea.env().group(p,ea).receive_donation(p,ea);
+        //! Get the organism's current position
+        DIGEVO_INSTRUCTION_DECL(get_xy) {
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx); 
+                        
+            hw.setRegValue(rbx,p->location()->x);
+            hw.setRegValue(rcx,p->location()->y);
         }
     } // instructions
     
