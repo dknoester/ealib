@@ -64,6 +64,41 @@ namespace ea {
             datafile _df;
         };
         
+        /*! Datafile for mean generation, and mean & max fitness.
+         */
+        template <typename EA>
+        struct generation_normalized : record_statistics_event<EA> {
+            generation_normalized(EA& ea) : record_statistics_event<EA>(ea), _df("normalized.dat") {
+                _df.add_field("update")
+                .add_field("mean_generation")
+                .add_field("mean_normalized")
+                .add_field("max_normalized");
+            }
+            
+            virtual ~generation_normalized() {
+            }
+            
+            virtual void operator()(EA& ea) {
+                using namespace boost::accumulators;
+                accumulator_set<double, stats<tag::mean> > gen;
+                accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                
+                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+                    gen(ind(i,ea).generation());                
+                    fit(static_cast<double>(ea.fitness_function().normalize((*i)->fitness(), ea)));
+                }
+                
+                _df.write(ea.current_update())
+                .write(mean(gen))
+                .write(mean(fit))
+                .write(max(fit))
+                .endl();
+            }
+            
+            datafile _df;
+        };
+
+        
     } // datafiles
 } // ea
 

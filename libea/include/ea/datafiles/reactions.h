@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_ARTIFICIAL_LIFE_DATAFILES_REACTIONS_H_
-#define _EA_ARTIFICIAL_LIFE_DATAFILES_REACTIONS_H_
+#ifndef _EA_digital_evolution_DATAFILES_REACTIONS_H_
+#define _EA_digital_evolution_DATAFILES_REACTIONS_H_
 
 #include <ea/datafile.h>
 #include <ea/events.h>

@@ -213,11 +213,13 @@ void mkv::write_graphviz(const std::string& title, std::ostream& out, const mkv_
 }
 
 
-
+//! Return a string suitable for graphviz output.
 std::string mkv::detail::adaptive_mkv_node::graphviz() {
     return "";
 }
 
+
+//! Return a string suitable for graphviz output.
 std::string mkv::detail::deterministic_mkv_node::graphviz() {
     std::ostringstream out;
     out << "[shape=record,label=\"{inputs | ";
@@ -244,47 +246,36 @@ std::string mkv::detail::deterministic_mkv_node::graphviz() {
     return out.str();
 }
 
-std::string mkv::detail::probabilistic_mkv_node::graphviz() {
-    return "";
-}
 
-//
-///*! Return a string suitable for graphviz output.
-// */
-//std::string fn::hmm::detail::deterministic_node::graphviz() {
-//}
-//
-//
-///*! Return a string suitable for graphviz output.
-// */
-//std::string fn::hmm::detail::probabilistic_node::graphviz() {
-//    std::ostringstream out;
-//    out << "[shape=record,label=\"{inputs | ";
-//    
-//    for(int i=0; i<num_inputs(); ++i) {
-//        out << xinput(i) << " ";
-//    }
-//    
-//    for(int i=0; i<(1<<num_inputs()); ++i) {
-//        out << "| " << std::bitset<4>(i) << " ";
-//    }
-//    
-//    out << "} | { outputs | ";
-//    for(int i=0; i<num_outputs(); ++i) {
-//        out << xoutput(i) << " ";
-//    }
-//    
-//    for(int i=0; i<(1<<num_inputs()); ++i) {
-//        out << "| ";
-//        for(int j=0; j<(1<<num_outputs()); ++j) {
-//            double f = static_cast<double>(ptable(i,j))/static_cast<double>(ptable(i,_ndr->ncol-1));
-//            if(f > 0.05) {
-//                out << std::bitset<4>(j) << "(" << std::fixed << std::setprecision(2) << f << ") ";
-//            }
-//        }
-//    }
-//    
-//    out << "}\"];";
-//    
-//    return out.str();
-//}
+//! Return a string suitable for graphviz output.
+std::string mkv::detail::probabilistic_mkv_node::graphviz() {
+    std::ostringstream out;
+    out << "[shape=record,label=\"{inputs | ";
+    
+    for(std::size_t i=0; i<input_size(); ++i) {
+        out << input(i) << " ";
+    }
+    
+    for(int i=0; i<(1<<input_size()); ++i) {
+        out << "| " << std::bitset<4>(i) << " ";
+    }
+    
+    out << "} | { outputs | ";
+    for(std::size_t i=0; i<output_size(); ++i) {
+        out << output(i) << " ";
+    }
+    
+    for(int i=0; i<(1<<input_size()); ++i) {
+        out << "| ";
+        for(int j=0; j<(1<<output_size()); ++j) {
+            double f = _table(i,j);
+            if(f > 0.05) {
+                out << std::bitset<4>(j) << "(" << std::fixed << std::setprecision(2) << f << ") ";
+            }
+        }
+    }
+    
+    out << "}\"];";
+    
+    return out.str();
+}

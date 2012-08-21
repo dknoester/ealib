@@ -57,7 +57,7 @@ namespace ea {
                     typename Population::reverse_iterator rl=tourney.rbegin();
                     std::size_t copy_size = std::min(n,K);
                     std::advance(rl, copy_size);
-                    dst.append(tourney.rbegin(), rl);
+                    dst.insert(dst.end(), tourney.rbegin(), rl);
 					n -= copy_size;
 				}
 			}

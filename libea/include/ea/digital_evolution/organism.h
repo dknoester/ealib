@@ -1,4 +1,4 @@
-/* artificial_life/artificial_life.h 
+/* digital_evolution/digital_evolution.h 
  * 
  * This file is part of EALib.
  * 
@@ -91,12 +91,7 @@ namespace ea {
             }
             return *this;
         }
-        
-        //! Destructor.
-        virtual ~organism() {
-            ++org_deallocated;
-        }
-        
+
         //! Retrieve this organism's name.
         long& name() { return _name; }
 		

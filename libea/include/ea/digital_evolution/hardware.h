@@ -1,4 +1,4 @@
-/* artificial_life/hardware.h 
+/* digital_evolution/hardware.h 
  * 
  * This file is part of EALib.
  * 
@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_ARTIFICIAL_LIFE_DIGITAL_EVOLUTION_HARDWARE_H_
-#define _EA_ARTIFICIAL_LIFE_DIGITAL_EVOLUTION_HARDWARE_H_
+#ifndef _EA_digital_evolution_DIGITAL_EVOLUTION_HARDWARE_H_
+#define _EA_digital_evolution_DIGITAL_EVOLUTION_HARDWARE_H_
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/deque.hpp>
@@ -35,6 +35,9 @@ namespace ea {
      
      This class defines the representation and hardware for digital evolution, a
      form of artificial life.
+     
+     \todo There are good odds that much can be gained by splitting out status information
+     into its own struct, and then have instructions manipulate that directly.
      */
     class hardware {
     public:            
@@ -57,6 +60,7 @@ namespace ea {
         const static int BX = 1; 
         const static int CX = 2;
         
+
         //! Constructor.
         hardware() {
             initialize();
@@ -97,11 +101,19 @@ namespace ea {
         }
         
         /*! Step this hardware by n virtual CPU cycles.
+         
+         There are some subleties here:
+         1) It's possible that a genome contains no instructions with non-zero cost.
+         In this case, after attempting genome-size instruction executions, we mark
+         the organism as dead.
          */
         template <typename EA>
         void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
-           // while we have cycles to spend:
-            while(n > 0) {
+
+            std::size_t attempts=0;
+            // while we have cycles to spend and we haven't exhausted our attempts 
+            // at executing an instruction:
+            while((n > 0) && (attempts++ < _repr.size())) {
                 // get a pointer to the function object for the current instruction:
                 typename EA::isa_type::inst_ptr_type inst=ea.isa()[_repr[_head_position[IP]]];
 
@@ -132,15 +144,24 @@ namespace ea {
                     advanceHead(IP);
                 }
             }
+            
+            // if we actually looped around the genome, we should probably die:
+            if(attempts == _repr.size()) {
+                p->alive() = false;
+            }
         }
         
+        //! Mark this hardware as having replicated (reinitialize).
         void replicated() {
             initialize();
             advanceHead(IP, -1);
             --_age;
         }
         
-        int age() { return _age; }
+        //! Return the age of this hardware in virtual CPU cycles.
+        int age() { 
+            return _age;
+        }
         
         //! Get the register to be modified
         int modifyRegister() { 

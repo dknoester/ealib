@@ -69,7 +69,7 @@ namespace ea {
                 calculate_fitness(offspring.begin(), offspring.end(), ea);
 
 				// add the offspring to the current population:
-				population.append(offspring.begin(), offspring.end());
+				population.insert(population.end(), offspring.begin(), offspring.end());
                 
 				// select individuals for survival:
 				Population next_gen;

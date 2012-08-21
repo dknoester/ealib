@@ -1,4 +1,4 @@
-/* artificial_life/spatial.h 
+/* digital_evolution/spatial.h 
  * 
  * This file is part of EALib.
  * 
@@ -26,6 +26,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <utility>
 #include <vector>
+#include <stdexcept>
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
 
@@ -79,6 +80,7 @@ namespace ea {
                 _level = _initial; 
             }
 
+
             double _level; //!< Current resource level.
             double _initial; //!< Initial resource level
             double _inflow; //!< Amount of resource flowing in per update.
@@ -87,7 +89,7 @@ namespace ea {
         };
         
     } // resources
-
+    
     //! Helper method that builds an unlimited resource and adds it to the environment.
     template <typename EA>
     typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, EA& ea) {
@@ -105,7 +107,7 @@ namespace ea {
         ea.env().add_resource(p);
         return p;
     }
-
+    
     
     /*! Spatial topology.
      */
@@ -136,7 +138,7 @@ namespace ea {
             
             //! Location meta-data.
             meta_data& md() { return _md; }
-
+            
             //! Is this location occupied?
             bool occupied() { return ((p != 0) && (p->alive())); }
             
@@ -159,9 +161,7 @@ namespace ea {
             meta_data _md; //!< Meta-data container.
         };
         
-        //! Location type pointer (lives in organism).
-        typedef location_type* location_ptr_type;
-                
+        typedef location_type* location_ptr_type; //! Location type pointer.
         typedef boost::numeric::ublas::matrix<location_type> location_matrix_type; //! Container type for locations.
         
         /*! Spatial neighborhood iterator.
@@ -204,10 +204,10 @@ namespace ea {
                     case 6: --y; break;
                     case 7: ++x; --y; break;
                 }
-
+                
                 x = algorithm::roll(x, 0, static_cast<int>(_locs.size2()-1));
                 y = algorithm::roll(y, 0, static_cast<int>(_locs.size1()-1));
-
+                
                 return _locs(y,x); // correct: y==i, x==j.
             }
             
@@ -218,7 +218,7 @@ namespace ea {
         };                
         
         //! Constructor.
-        spatial() : _occupied(0) {
+        spatial() : _append_count(0) {
         }
         
         //! Initialize this topology.
@@ -254,11 +254,23 @@ namespace ea {
             l.p = p;
             p->location() = &l;
         }
+
+        //! Append individual x to the environment.
+        void append(individual_ptr_type p) {
+            if(_append_count >= (_locs.size1()*_locs.size2())) {
+                throw std::out_of_range("spatial::append(individual_ptr_type x)");
+            }
+            _locs.data()[_append_count].p = p;
+            p->location() = &_locs.data()[_append_count];
+            ++_append_count;
+        }
         
-        void insert(individual_ptr_type p) {
-            _locs.data()[_occupied].p = p;
-            p->location() = &_locs.data()[_occupied];
-            ++_occupied;
+        //! Append the range of individuals [f,l) to the environment.
+        template <typename ForwardIterator>
+        void append(ForwardIterator f, ForwardIterator l) {
+            for( ; f!=l; ++f) {
+                append(*f);
+            }
         }
         
         //! Read from the environment.
@@ -303,12 +315,13 @@ namespace ea {
         void serialize(Archive& ar, const unsigned int version) {
         }
         
-        int _occupied; //!< How many locations are currently occupied?
-        location_matrix_type _locs; //!< List of all locations in this topology.
+             
+        std::size_t _append_count; //!< Number of locations that have been appended to.
+        location_matrix_type _locs; //!< Matrix of all locations in this topology.
     };
-
-
-
+    
+    
+    
 } // ea
 
 #endif

@@ -1,4 +1,4 @@
-/* artificial_life/artificial_life.h 
+/* digital_evolution/digital_evolution.h 
  * 
  * This file is part of EALib.
  * 

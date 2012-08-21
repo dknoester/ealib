@@ -93,14 +93,12 @@ namespace ea {
 	
 	/*! Generates random Markov network-based individuals.
 	 */
+
 	struct mkv_random_individual {
         template <typename EA>
-        typename EA::population_entry_type operator()(EA& ea) {
-            typedef typename EA::representation_type representation_type;
-            typename EA::individual_type ind;
-            ind.name() = next<INDIVIDUAL_COUNT>(ea);
-            ind.repr().resize(get<REPRESENTATION_SIZE>(ea), 127);            
-            representation_type& repr=ind.repr();
+        typename EA::representation_type operator()(EA& ea) {
+            typename EA::representation_type repr;
+            repr.resize(get<REPRESENTATION_SIZE>(ea), 127);            
 			
             // which gate types are supported?
             std::set<unsigned int> supported;
@@ -116,11 +114,11 @@ namespace ea {
                 int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
                 repr[j] = gate;
                 repr[j+1] = 255-gate;
-				for(int k=2; k<20; ++k) {
+				for(int k=2; k<97; ++k) {
 					repr[j+k]=ea.rng()(256);
 				}
 			}
-			return make_population_entry(ind,ea);
+			return repr;
 		}
 	};
     

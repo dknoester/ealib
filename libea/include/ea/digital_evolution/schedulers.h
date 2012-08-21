@@ -1,4 +1,4 @@
-/* artificial_life/artificial_life.h 
+/* digital_evolution/digital_evolution.h 
  * 
  * This file is part of EALib.
  * 
@@ -145,7 +145,7 @@ namespace ea {
             for(std::size_t i=0; i<population.size(); ++i) {
                 typename ea_type::individual_ptr_type p=ptr(population[i],ea);
                 if(p->alive()) {
-                    next.append(p);
+                    next.push_back(p);
                 }
             }
             std::swap(population, next);

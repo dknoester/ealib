@@ -1,4 +1,4 @@
-/* artificial_life/artificial_life.h 
+/* digital_evolution/digital_evolution.h 
  * 
  * This file is part of EALib.
  * 
@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_ARTIFICIAL_LIFE_DIGITAL_EVOLUTION_ISA_H_
-#define _EA_ARTIFICIAL_LIFE_DIGITAL_EVOLUTION_ISA_H_
+#ifndef _EA_digital_evolution_DIGITAL_EVOLUTION_ISA_H_
+#define _EA_digital_evolution_DIGITAL_EVOLUTION_ISA_H_
 
 #include <boost/shared_ptr.hpp>
 #include <stdexcept>
@@ -274,8 +274,7 @@ namespace ea {
             hw.setRegValue(rcx, bxVal);
         }
         
-        /*! Latch the data contents of the organism's location.
-         */
+        //! Latch the data contents of the organism's location.
         DIGEVO_INSTRUCTION_DECL(latch_ldata) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             if(!exists<LOCATION_DATA>(*p->location())) {
@@ -283,11 +282,25 @@ namespace ea {
             }
         }
 
-        /*! Set the data contents of the organism's location.
-         */
+        //! Set the data contents of the organism's location.
         DIGEVO_INSTRUCTION_DECL(set_ldata) {
             int bxVal = hw.getRegValue(hw.modifyRegister());
             put<LOCATION_DATA>(bxVal,*p->location());
+        }
+
+        //! Get the data contents of the organism's location, if it exists.
+        DIGEVO_INSTRUCTION_DECL(get_ldata) {
+            if(exists<LOCATION_DATA>(*p->location())) {
+                hw.setRegValue(hw.modifyRegister(), get<LOCATION_DATA>(*p->location()));
+            }
+        }
+
+        //! Get the data contents of a neighboring location, if it exists.
+        DIGEVO_INSTRUCTION_DECL(sense_ldata) {            
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);            
+            if(exists<LOCATION_DATA>(l)) {
+                hw.setRegValue(hw.modifyRegister(), get<LOCATION_DATA>(l));
+            }
         }
 
         //! Increment the value in ?bx?.
@@ -323,8 +336,7 @@ namespace ea {
             }
         }
         
-        /*! Broadcast a message.
-         */
+        //! Broadcast a message.
         DIGEVO_INSTRUCTION_DECL(bc_msg) {
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
@@ -356,11 +368,12 @@ namespace ea {
         
         //! Execute the next instruction if ?bx? < ?cx?.
         DIGEVO_INSTRUCTION_DECL(if_less) {
-                int rbx = hw.modifyRegister();
-                int rcx = hw.nextRegister(rbx);
-                if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
-                    hw.advanceHead(Hardware::IP);
-                }
+
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
+                hw.advanceHead(Hardware::IP);
+            }
         }
         
         //! Get the organism's current position

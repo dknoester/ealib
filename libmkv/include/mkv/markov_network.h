@@ -58,6 +58,13 @@ namespace mkv {
         std::copy(mkv.output_begin(), mkv.output_end(), output.begin());
     }
 
+    //! Reinforce all nodes in a (Markov) network.
+    template <typename Network>
+    void reinforce(Network& net, double lr) {
+        for(typename Network::iterator i=net.begin(); i!=net.end(); ++i) {
+            (*i)->reinforce(lr);
+        }
+    }
     
     // pre-decs
     namespace detail { struct abstract_markov_node; }

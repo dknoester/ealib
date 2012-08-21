@@ -27,18 +27,37 @@
 using namespace ea;
 
 
+
+template <typename EA>
+struct configuration : public abstract_configuration<EA> {
+    
+    //! Called to generate the initial EA population.
+    void initial_population(EA& ea) {
+        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea), ea);
+    }
+};
+
+
 //! Evolutionary algorithm definition.
 typedef evolutionary_algorithm<
 bitstring,
 mutation::per_site<mutation::bitflip>,
 all_ones,
+configuration,
 recombination::asexual,
-generational_models::synchronous<selection::proportionate< >, selection::tournament< > >,
-initialization::complete_population<initialization::random_bit>
+generational_models::synchronous<selection::proportionate< >, selection::tournament< > >
 > ea_type;
 
-typedef meta_population<
-ea_type> mea_type;
+
+template <typename EA>
+struct mp_configuration : public abstract_configuration<EA> {
+    //! Called to generate the initial EA population.
+    void initial_population(EA& ea) {
+    }
+};
+
+
+typedef meta_population<ea_type, mp_configuration> mea_type;
 
 /*! Define the EA's command-line interface.
  */

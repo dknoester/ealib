@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_META_DATA_H_
-#define _EA_META_DATA_H_
+#ifndef _EA_strings_H_
+#define _EA_strings_H_
 
 #include <boost/any.hpp>
 #include <boost/lexical_cast.hpp>
@@ -30,35 +30,66 @@
 #include <ea/exceptions.h>
 
 namespace ea {
-	
-	/*! This class provides objects with a way to store arbitrary meta-data.
+    
+    //! ABC for attribute types.
+    struct abstract_attribute {
+        //! Convert this attribute's value to a string.
+        virtual std::string to_string() = 0;
+        
+        //! Convert this attribute's value from a string.
+        virtual void from_string(const std::string& v) = 0;
+    };
+    
+    /*! This is the only specialization of abstract_attribute, and it provides
+     the data-type specific components needed for string / value conversion.
      
-     It supports two distinct concepts:
+     The other part that's needed is that attributes must provide a static key()
+     method (so that we don't need an instance everytime we want to manipulate an
+     attribute).  For now, this is handled via a macro, LIBEA_MD_DECL, which is
+     down below a ways.
+     */
+    template <typename T>
+    struct attribute : abstract_attribute {
+        typedef T value_type; //!< Type of value stored in this attribute.
+        typedef value_type& reference_type; //!< Reference type to the value.
 
-     1) Arbitrary string-convertible meta-data, which is serialized.
+        //! Constructor.
+        attribute() {
+        }
+        
+        //! Convert this attribute's value to a string.
+        virtual std::string to_string() { return boost::lexical_cast<std::string>(_value); }
+        
+        //! Convert this attribute's value from a string.
+        virtual void from_string(const std::string& v) { _value = boost::lexical_cast<value_type>(v); }
+
+        //! Return this attribute's value.
+        reference_type value() { return _value; }
+        
+        value_type _value; //!< This attribute's value.
+    };
+    
+	/*! Meta-data is a collection of string covertible key-value pairs (attributes).
+
 	 The idea here is that meta-data is fundamentally a map of strings->strings, and
 	 then we convert between the strings and the actual value_type on demand.  Doing
 	 it this way makes serialization much easier, but more importantly, it lets us
 	 define new pieces of meta-data without requiring nasty linking tricks (ie, exporting
 	 each meta-data class to the serialization library).
+
+     At serialization time, all extant attributes are converted into their string 
+     form and serialized.
      
-     Use these with "get", "put", "next", and "exists".
-     
-     2) Arbitrary attributes, which are not serialized.
-     This enables us to temporarily attach attributes to meta-data supporting objects.
-     These attributes are not serialized, thus they do not need to be string convertible.
-     For example, one such attribute might be the parent of an individual, or the distance
-     in phenotype space between individuals.
-     
-     Use these with "getattr", "setattr", and "rmattr".
-     
-     ** NOT YET IMPLEMENTED.
-     
-	 */
+     At runtime, the string versions of attribuates are lazily converted to their
+     native representation.
+
+	 Meta-data is used with the free functions hasattr, getattr, and setattr.
+     */
 	class meta_data {
 	public:
-		typedef std::map<std::string,std::string> meta_data_container; //!< Container for meta-data elements.
-		typedef std::map<std::string,boost::any> meta_data_cache; //!< Cache for meta-data to prevent extra string conversions.
+		typedef std::map<std::string,std::string> md_string_type; //!< Container for the string versions of attributes
+        typedef boost::shared_ptr<abstract_attribute> attr_ptr_type; //!< Type for pointer to attributes.
+		typedef std::map<std::string,attr_ptr_type> md_value_type; //!< Container for the native versions of attributes.
 		
 		//! Constructor.
 		meta_data() { }
@@ -68,48 +99,86 @@ namespace ea {
 		
 		//! Copy-constructor.
 		meta_data(const meta_data& that) {
-			_meta_data = that._meta_data;
-            _cache.clear();
+			_strings = that._strings;
+            _values = that._values;
 		}
 		
 		//! Assignment operator.
 		meta_data& operator=(const meta_data& that) {
 			if(this != &that) {
-				_meta_data = that._meta_data;
-                _cache.clear();
+				_strings = that._strings;
+                _values = that._values;
 			}
 			return *this;
 		}
 		
-		//! Bypass type conversions, and store meta-data directly.
-		template <typename V>
-		void put(const std::string& k, const V& v) {
-			_meta_data[k] = boost::lexical_cast<std::string>(v);
-            _cache.erase(k);
-		}
-		
-		//! Retrieve meta-data.
-		template <typename V>
-		V get(const std::string& k) {
-			meta_data_cache::iterator i=_cache.find(k);
-			if(i == _cache.end()) {
+		//! Returns a reference to an attribute's value.
+        template <typename Attribute>
+        typename Attribute::reference_type getattr(const std::string& k) {
+			md_value_type::iterator i=_values.find(k);
+			if(i == _values.end()) {
 				// cache miss:
-				meta_data_container::iterator j=_meta_data.find(k);
-				if(j == _meta_data.end()) {
+				md_string_type::iterator j=_strings.find(k);
+				if(j == _strings.end()) {
 					throw uninitialized_meta_data_exception(k);
 				}
-				i = _cache.insert(std::make_pair(k, boost::lexical_cast<V>(j->second))).first;
+                // convert the attr:
+                attr_ptr_type p(new Attribute());
+                p->from_string(j->second);
+				i = _values.insert(std::make_pair(k,p)).first;
 			}
-			return boost::any_cast<V>(i->second);
+			return static_cast<Attribute*>(i->second.get())->value();
 		}
-		
+
+        //! Returns a reference to an attribute's value.
+        template <typename Attribute>
+        typename Attribute::reference_type getattr(const std::string& k, const typename Attribute::value_type v) {
+			md_value_type::iterator i=_values.find(k);
+			if(i == _values.end()) {
+				// cache miss:
+                attr_ptr_type p(new Attribute());
+				md_string_type::iterator j=_strings.find(k);
+                if(j == _strings.end()) {
+                    static_cast<Attribute*>(p.get())->value() = v;
+                } else {
+                    p->from_string(j->second);
+                }
+                i = _values.insert(std::make_pair(k,p)).first;
+			}
+			return static_cast<Attribute*>(i->second.get())->value();
+		}
+
+        //! Sets an attributes value.
+        template <typename Attribute>
+        typename Attribute::reference_type setattr(const std::string& k, const typename Attribute::value_type v) {
+            md_value_type::iterator i=_values.find(k);
+			if(i == _values.end()) {
+                // build the attr:
+                attr_ptr_type p(new Attribute());
+				i = _values.insert(std::make_pair(k,p)).first;
+			}
+            Attribute* attr = static_cast<Attribute*>(i->second.get());
+            attr->value() = v;
+            return attr->value();
+		}
+        
+        /*! Bypass type conversions, and store the string version of an attribute directly.
+
+         This causes a string conversion on the first getattr call with this key, but is
+         necessary because we don't actually know the type in question here.
+         */
+		void set(const std::string& k, const std::string& v) {
+			_strings[k] = v;
+            _values.erase(k);
+		}
+
 		//! Check to see if meta-data with key k exists.
 		bool exists(const std::string& k) {
-			meta_data_cache::iterator i=_cache.find(k);
-			if(i == _cache.end()) {
+			md_value_type::iterator i=_values.find(k);
+			if(i == _values.end()) {
 				// cache miss:
-				meta_data_container::iterator j=_meta_data.find(k);
-				if(j == _meta_data.end()) {
+				md_string_type::iterator j=_strings.find(k);
+				if(j == _strings.end()) {
 					return false;
 				}
 			}
@@ -118,71 +187,75 @@ namespace ea {
 		
 		//! Clear all meta data.
 		void clear() {
-			_meta_data.clear();
-			_cache.clear();
+			_strings.clear();
+			_values.clear();
 		}
 		
 	private:			
-		meta_data_container _meta_data; //!< Container for meta-data.
-		meta_data_cache _cache; //!< Cache for meta-data (not ever serialized).
+		md_string_type _strings; //!< Container for meta-data.
+		md_value_type _values; //!< Cache for meta-data (not ever serialized).
 		
+        //! Convert all values to strings.
+        void flush() {
+            for(md_value_type::iterator i=_values.begin(); i!=_values.end(); ++i) {
+                _strings[i->first] = i->second->to_string();
+            }
+        }
+        
 		friend class boost::serialization::access;
 		template <class Archive>
 		void serialize(Archive& ar, const unsigned int version) {
-			ar & boost::serialization::make_nvp("meta_data", _meta_data);
+            flush();
+			ar & boost::serialization::make_nvp("meta_data", _strings);
 		}		
 	};
     
-	//! Free function to put meta-data (used in command-line options processing).
-	template <typename V, typename MetaData>
-	void put(const std::string& k, const V& v, MetaData& md) {
-		md.template put<V>(k, v);
-	}	
-
-	//! Store meta-data in an EA.
-	template <typename MDType, typename HasMetaData>
-	void put(const typename MDType::value_type& v, HasMetaData& hmd) {
-        hmd.md().put<typename MDType::value_type>(MDType::key(), v);
-	}
-	
-	//! Retrieve meta-data from an EA.
-	template <typename MDType, typename HasMetaData>
-	typename MDType::value_type get(HasMetaData& hmd) {
-        return hmd.md().get<typename MDType::value_type>(MDType::key());
-	}
-
-	//! Returns true if the given meta-data exists.
-	template <typename MDType, typename HasMetaData>
-	bool exists(HasMetaData& hmd) {
-		return hmd.md().exists(MDType::key());
-	}
-    
-    //! Increment and set meta-data.
-    template <typename MDType, typename HasMetaData>
-    typename MDType::value_type next(HasMetaData& hmd) {
-        if(exists<MDType>(hmd)) {
-            put<MDType>(get<MDType>(hmd)+1,hmd);
-        } else {
-            put<MDType>(0,hmd);
-        }        
-        return get<MDType>(hmd);
+    //! Returns true if the attribute exists, false otherwise.
+    template <typename Attribute, typename HasMetaData>
+    bool exists(HasMetaData& hmd) {
+        return hmd.md().exists(Attribute::key());
     }
     
-    //! Scale (multiply) meta-data by the given value.
-    template <typename MDType, typename HasMetaData>
-    void scale(const typename MDType::value_type& v, HasMetaData& hmd) {
-        put<MDType>(get<MDType>(hmd)*v,hmd);
+    //! Returns a reference to the given attribute's value.
+    template <typename Attribute, typename HasMetaData>
+    typename Attribute::reference_type get(HasMetaData& hmd) {
+        return hmd.md().template getattr<Attribute>(Attribute::key());
+    }
+    
+    //! Sets the value of the given attribute, and returns a reference to it.
+    template <typename Attribute, typename HasMetaData>
+    typename Attribute::reference_type put(const typename Attribute::value_type v, HasMetaData& hmd) {
+        return hmd.md().template setattr<Attribute>(Attribute::key(), v);
+    }
+    
+    //! Sets the string for the given value.
+    template <typename HasMetaData>
+    void put(const std::string& k, const std::string& v, HasMetaData& hmd) {
+        hmd.set(k,v);
+    }    
+    
+    //! Returns a reference to the given attribute, setting it a default value if it is not present.
+    template <typename Attribute, typename HasMetaData>
+    typename Attribute::reference_type get(HasMetaData& hmd, const typename Attribute::value_type def) {
+        return hmd.md().template getattr<Attribute>(Attribute::key(),def);
+    }
+
+    //! Increment and set an attribute.
+    template <typename Attribute, typename HasMetaData>
+    typename Attribute::reference_type next(HasMetaData& hmd) {
+        typename Attribute::reference_type v = get<Attribute>(hmd,-1);
+        ++v;
+        return v;
     }
     
 } // ea
 
-/* This macro defines a new meta-data item. */
+/* This macro defines a new attribute. */
 #define LIBEA_MD_DECL( name, key_string, type ) \
-struct name { \
-typedef type value_type; \
-inline static const char* key() { return key_string; } \
+struct name : ea::attribute<type> { \
+    inline static const char* key() { return key_string; } \
 }
-    
+
 namespace ea {
     // ea.novelty_search.*
     LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);

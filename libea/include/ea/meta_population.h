@@ -26,7 +26,7 @@
 #include <boost/iterator/indirect_iterator.hpp>
 #include <limits>
 
-#include <ea/initialization.h>
+#include <ea/ancestors.h>
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
@@ -41,21 +41,22 @@ namespace ea {
     };
             
     
-    template <typename EA,
-    typename Initializer=initialization::all_subpopulations,
+    template <
+    typename EA,
+    template <typename> class ConfigurationStrategy,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
     class meta_population {
     public:
+        //! Configuration object type.
+        typedef ConfigurationStrategy<meta_population> configuration_type;
         //! Type of individual held by this metapopulation.
         typedef EA individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
         typedef std::vector<individual_ptr_type> population_type;
-        //! Meta-population initializer type.
-        typedef Initializer initializer_type;
         //! Event handler.
         typedef EventHandler<meta_population> event_handler_type;
         //! Meta-data type.
@@ -154,6 +155,7 @@ namespace ea {
             for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
                 _population.push_back(make_individual());
             }
+            _configurator.initialize(*this);
         }        
         
         //! Generates the initial population.
@@ -161,6 +163,7 @@ namespace ea {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->generate_initial_population();
             }
+            _configurator.initial_population(*this);
         }
         
         //! Reset all populations.
@@ -168,6 +171,7 @@ namespace ea {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->reset();
             }
+            _configurator.reset(*this);
         }
         
         //! Advance the epoch of this EA by n updates.
@@ -212,7 +216,8 @@ namespace ea {
         meta_data _md; //!< Meta-data for the meta-population.
         event_handler_type _events; //!< Event handler.        
         population_type _population; //!< List of EAs in this meta-population.
-        
+        configuration_type _configurator; //!< Configuration object.
+
     private:
         friend class boost::serialization::access;
         
