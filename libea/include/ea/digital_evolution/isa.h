@@ -272,6 +272,14 @@ namespace ea {
             }
         }
 
+        //! Get the data contents of a neighboring location, if it exists.
+        DIGEVO_INSTRUCTION_DECL(sense_ldata) {            
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);            
+            if(exists<LOCATION_DATA>(l)) {
+                hw.setRegValue(hw.modifyRegister(), get<LOCATION_DATA>(l));
+            }
+        }
+
         //! Increment the value in ?bx?.
         DIGEVO_INSTRUCTION_DECL(inc) {
             int rbx = hw.modifyRegister();
