@@ -221,7 +221,20 @@ namespace ea {
             _population.insert(_population.end(), f, l);
             _env.append(f, l);
         }
-
+        
+        //! (Re-)Place an offspring in the population, if possible.
+        void replace(individual_ptr_type parent, individual_ptr_type offspring) {
+            replacement_type r;
+            std::pair<typename environment_type::iterator, bool> l=r(parent, *this);
+            
+            if(l.second) {
+                _env.replace(l.first, offspring, *this);
+                offspring->priority() = parent->priority();
+                _population.insert(_population.end(), offspring);
+                _events.birth(*offspring, *this);
+            }
+        }
+        
         //! Reset this EA.
         void reset() {
             _configurator.reset(*this);
