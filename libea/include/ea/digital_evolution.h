@@ -78,8 +78,8 @@ namespace ea {
 	struct alife_event_handler : event_handler<EA> {
         //! Called when an individual performs a task.
         boost::signal<void(typename EA::individual_type&, // individual
+                           typename EA::tasklib_type::task_ptr_type, // task pointer
                            double, // amount of resource consumed
-                           const std::string&, // task name
                            EA&)> task_performed;
 
         //! Called when an individual is "born" (immediately after it is placed in the population).
@@ -99,8 +99,8 @@ namespace ea {
         }
         virtual ~task_performed_event() { }
         virtual void operator()(typename EA::individual_type&, // individual
-                                double, // amount of resource consumed
-                                const std::string&, // task name
+                                typename EA::tasklib_type::task_ptr_type, // task pointer
+                                double r, // resources consumed
                                 EA&) = 0;
     };
     
@@ -203,12 +203,8 @@ namespace ea {
         //! Default constructor.
         digital_evolution() {
             _configurator.construct(*this);
-            ++alife_allocated;
         }
         
-        ~artificial_life() {
-            ++alife_deallocated;
-        }
                 
         //! Initialize this EA.
         void initialize() {
@@ -258,7 +254,20 @@ namespace ea {
             _population.insert(_population.end(), f, l);
             _env.append(f, l);
         }
-
+        
+        //! (Re-)Place an offspring in the population, if possible.
+        void replace(individual_ptr_type parent, individual_ptr_type offspring) {
+            replacement_type r;
+            std::pair<typename environment_type::iterator, bool> l=r(parent, *this);
+            
+            if(l.second) {
+                _env.replace(l.first, offspring, *this);
+                offspring->priority() = parent->priority();
+                _population.insert(_population.end(), offspring);
+                _events.birth(*offspring, *this);
+            }
+        }
+        
         //! Reset this EA.
         void reset() {
             _configurator.reset(*this);
@@ -292,10 +301,6 @@ namespace ea {
         
         //! Retrieves this AL's scheduler.
         scheduler_type& scheduler() { return _scheduler; }
-        
-    public:
-        static int alife_allocated; 
-        static int alife_deallocated; 
         
     protected:
         rng_type _rng; //!< Random number generator.

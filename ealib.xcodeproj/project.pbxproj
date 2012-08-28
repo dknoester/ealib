@@ -178,6 +178,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3EB3CA9415E6F83700B82B07 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		3EB3CA9615E6F83700B82B07 /* gls_ramped.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = gls_ramped.1; sourceTree = "<group>"; };
 		42015A8215D6BEDC0020F594 /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
 		42015A8415D6BEDC0020F594 /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
 		42015A8515D6BEDC0020F594 /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
@@ -396,6 +398,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3EB3CA9315E6F83700B82B07 /* gls_ramped */ = {
+			isa = PBXGroup;
+			children = (
+				3EB3CA9415E6F83700B82B07 /* main.cpp */,
+				3EB3CA9615E6F83700B82B07 /* gls_ramped.1 */,
+			);
+			path = gls_ramped;
+			sourceTree = "<group>";
+		};
 		42015A8115D6BEDC0020F594 /* digital_evolution */ = {
 			isa = PBXGroup;
 			children = (
@@ -436,6 +447,7 @@
 				423CBC82157D0D910003A644 /* doc */,
 				423CBC84157D0D910003A644 /* etc */,
 				423CBC86157D0D910003A644 /* Jamroot */,
+				3EB3CA9315E6F83700B82B07 /* gls_ramped */,
 				423CBC7C157D0D440003A644 /* Products */,
 			);
 			sourceTree = "<group>";

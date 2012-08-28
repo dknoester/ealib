@@ -24,6 +24,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
+#include <ea/meta_data.h>
 
 namespace ea {
     
@@ -49,6 +50,9 @@ namespace ea {
         
         //! Catalyze consumed resources r, adjusting current priority p, returns new priority.
         virtual double catalyze(double r, double p) = 0;
+        
+        //! Retrieve the meta-data associated with this task.
+        virtual meta_data& md() = 0;        
     };
     
 
@@ -92,10 +96,14 @@ namespace ea {
             return _consumed;
         }
         
+        //! Retrieve the meta-data associated with this task.
+        meta_data& md() { return _md; }
+        
         const std::string _name; //!< Name of this task.
         predicate_type _pred; //!< Predicate that calculates if a task has been performed.
         catalyst_type _cat; //!< Catalyst that converts consumed resources to fitness.
         resource_ptr_type _consumed; //!< Resource consumed when this task is performed.
+        meta_data _md; //!< Meta data associated with this task, if any.
     };
 
     
@@ -152,7 +160,7 @@ namespace ea {
                         double r = ea.env().reaction(task.consumed_resource(), org, ea);
                         
                         org.phenotype()[task.name()] += r;
-                        ea.events().task_performed(org, r, task.name(), ea);
+                        ea.events().task_performed(org, *i, r, ea);
                     }
                 }
             }
