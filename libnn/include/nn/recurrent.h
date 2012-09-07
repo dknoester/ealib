@@ -71,22 +71,42 @@ namespace nn {
 		 */
 		template <typename Vertex, typename Graph>
 		void activate(Vertex v, Graph& g) {
-			// for all incoming edges of this neuron, sum the link weights * link value(t-1):
-			typename Graph::in_edge_iterator ei, ei_end;
-			input = 0.0;
-			for(boost::tie(ei,ei_end)=boost::in_edges(v,g); ei!=ei_end; ++ei) {
-				input += g[*ei].weight * g[*ei].t_minus1;
-				g[*ei].t_minus1 = g[*ei].t; // rotate present->past once it's been used.
-			}
-			
-			// the output of this vertex is the sigmoid of all the inputs:
-			output = sigmoid(input);
-			
-			// update the outgoing edges:
-			typename Graph::out_edge_iterator oi, oi_end;
-			for(boost::tie(oi,oi_end)=boost::out_edges(v,g); oi!=oi_end; ++oi) {
-				g[*oi].t = output;
-			}
+            switch(_type) {
+                case INPUT: {
+                    output = input;
+
+                    // update the outgoing edges:
+                    typename Graph::out_edge_iterator oi, oi_end;
+                    for(boost::tie(oi,oi_end)=boost::out_edges(v,g); oi!=oi_end; ++oi) {
+                        g[*oi].t = output;
+                    }
+                    break;
+                }
+                case HIDDEN: // fall-through
+                case OUTPUT: {
+                    // for all incoming edges of this neuron, sum the link weights * link value(t-1):
+                    typename Graph::in_edge_iterator ei, ei_end;
+                    input = 0.0;
+                    for(boost::tie(ei,ei_end)=boost::in_edges(v,g); ei!=ei_end; ++ei) {
+                        input += g[*ei].weight * g[*ei].t_minus1;
+                        g[*ei].t_minus1 = g[*ei].t; // rotate present->past once it's been used.
+                    }
+                    
+                    // the output of this vertex is the sigmoid of all the inputs:
+                    output = sigmoid(input);
+                    
+                    // update the outgoing edges:
+                    typename Graph::out_edge_iterator oi, oi_end;
+                    for(boost::tie(oi,oi_end)=boost::out_edges(v,g); oi!=oi_end; ++oi) {
+                        g[*oi].t = output;
+                    }
+                    break;
+                }
+                case INACTIVE: {
+                    break;
+                };
+                default: break;
+            }
 		}
 		
 		sigmoid_type sigmoid; //<! Sigmoid for this neuron.
@@ -109,7 +129,7 @@ namespace nn {
 	
 	//! Selector for recurrent neural networks.
 	struct recurrentS { };
-		
+    
 	//! Traits type for recurrent neural networks.
 	template < >
 	struct neural_network_traits<recurrentS> {
@@ -124,7 +144,7 @@ namespace nn {
 		static neuron_type make_inactive_neuron() { return neuron_type(neuron_base::INACTIVE); }
 		static link_type make_link(double weight) { return link_type(weight); }
 	};
-
+    
 } // nn
 
 #endif

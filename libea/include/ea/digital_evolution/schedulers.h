@@ -116,7 +116,7 @@ namespace ea {
             // these are the individuals in the population at the start of the update.
             // they are the *only* ones that can execute during this update,
             // and some of them are likely to be replaced.
-            // offspring are appended to population asynchronously, thus we're
+            // offspring are appended to population asteady_stately, thus we're
             // indexing population instead of iterating.
             
             unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));

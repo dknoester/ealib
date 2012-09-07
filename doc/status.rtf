@@ -36,15 +36,14 @@ Known issues:\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 \cf0 \
 \
-\
-\
-\
 
 \b ========\
 Upcoming features / changes:
 \b0 \
 \pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
 \ls3\ilvl0\cf0 {\listtext	\'95	}Remove last vestiges of interface.h (ptr, ind functions).\
+{\listtext	\'95	}Add concept checking\
+{\listtext	\'95	}Wrapper for evolutionary_algorithm that enables it to be treated like an individual in meta_population treatments.  Will this let us remove meta_population?\
 {\listtext	\'95	}Transparent MPI support for meta-populations.\
 {\listtext	\'95	}Task tracking at individual and subpopulation levels.\
 \pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
@@ -54,6 +53,8 @@ Upcoming features / changes:
 \pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
 \ls3\ilvl1\cf0 {\listtext	\uc0\u8259 	}E.g.:
 \f1  add_datafile<current_update, mean_fitness, max_fitness>("fitness.dat", ea);  
-\f0 The key to this is that there be some magic behind the scenes that prevents multiple linear scans through the population.
-\f1 \
+\f0 The key to this is that there be some magic behind the scenes that prevents multiple linear scans through the population.\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls3\ilvl0
+\f1 \cf0 {\listtext	\'95	}\
 }

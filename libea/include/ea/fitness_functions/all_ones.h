@@ -36,6 +36,19 @@ namespace ea {
 		}
 	};
 
+    struct multi_all_ones : public fitness_function<multivalued_fitness<double> > {
+        double range(std::size_t m) {
+            return 1.0;
+        }
+        
+		template <typename Individual, typename EA>
+        value_type operator()(Individual& ind, EA& ea) {
+            value_type f;
+            std::copy(ind.repr().begin(), ind.repr().end(), std::back_inserter(f));
+            return f;
+		}
+	};
+
 }
 
 #endif

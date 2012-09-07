@@ -17,29 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _NN_SIGMOID_H_
-#define _NN_SIGMOID_H_
+#ifndef _ANN_SIGMOID_H_
+#define _ANN_SIGMOID_H_
 
 #include <cmath>
 
-namespace nn {
-	
-    
-    double heaviside(double x, double zero=1.0) {
+namespace ann {
+
+	double step(double x, double lv=0.0, double uv=1.0) {
         if(x > 0.0) {
-            return 1.0;
-        } else if(x < 0.0) {
-            return 0.0;
-        } else {
-            return zero;
-        }
+            return uv;
+        } 
+        return lv;
     }
 	
-	/*! Heaviside function, a binary activation function.
+	/*! Heaviside function (aka unit step), a binary activation sigmoid type.
      
-     Also known as the unit step function.
-     
-     \warning The definition of H(0) can be significant; this one was not selected
+     \warning The definition of H(0) can be significant; this was not selected
      with care.
 	 */
 	struct heaviside {
@@ -49,13 +43,12 @@ namespace nn {
 		
 		//! Calculate the heaviside function of x.
 		double operator()(double x) {
-			return (x < 0.0) ? 0.0 : 1.0;
+			return (x <= 0.0) ? 0.0 : 1.0;
 		}
-		
+
+		// it's not clear what the derivative is here...
         //		//! Calculate the derivative of the logistic sigmoid of x.
         //		double derivative(double x) {
-        //			double s = operator()(x);
-        //			return s * (1 - s);
         //		}	
 	};
 

@@ -26,7 +26,7 @@
 #include <ea/attributes.h>
 #include <ea/concepts.h>
 #include <ea/configuration.h>
-#include <ea/generational_models/synchronous.h>
+#include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
 #include <ea/fitness_function.h>
 #include <ea/ancestors.h>
@@ -55,7 +55,7 @@ namespace ea {
 	typename FitnessFunction,
     template <typename> class ConfigurationStrategy,
 	typename RecombinationOperator=recombination::two_point_crossover,
-	typename GenerationalModel=generational_models::synchronous<selection::proportionate< >, selection::tournament< > >,
+	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
     template <typename> class IndividualAttrs=individual_attributes,
     template <typename,typename,typename> class Individual=individual,
 	template <typename,typename> class Population=population,

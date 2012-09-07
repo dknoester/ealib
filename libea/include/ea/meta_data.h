@@ -80,10 +80,11 @@ namespace ea {
      At serialization time, all extant attributes are converted into their string 
      form and serialized.
      
-     At runtime, the string versions of attribuates are lazily converted to their
+     At runtime, the string versions of attributes are lazily converted to their
      native representation.
 
-	 Meta-data is used with the free functions hasattr, getattr, and setattr.
+	 Meta-data is used with the free functions get, put, exists, and next (which
+     is a convenient test-and-inc).
      */
 	class meta_data {
 	public:
@@ -210,16 +211,16 @@ namespace ea {
 		}		
 	};
     
-    //! Returns true if the attribute exists, false otherwise.
-    template <typename Attribute, typename HasMetaData>
-    bool exists(HasMetaData& hmd) {
-        return hmd.md().exists(Attribute::key());
-    }
-    
     //! Returns a reference to the given attribute's value.
     template <typename Attribute, typename HasMetaData>
     typename Attribute::reference_type get(HasMetaData& hmd) {
         return hmd.md().template getattr<Attribute>(Attribute::key());
+    }
+    
+    //! Returns a reference to the given attribute, setting it a default value if it is not present.
+    template <typename Attribute, typename HasMetaData>
+    typename Attribute::reference_type get(HasMetaData& hmd, const typename Attribute::value_type def) {
+        return hmd.md().template getattr<Attribute>(Attribute::key(),def);
     }
     
     //! Sets the value of the given attribute, and returns a reference to it.
@@ -234,12 +235,12 @@ namespace ea {
         hmd.set(k,v);
     }    
     
-    //! Returns a reference to the given attribute, setting it a default value if it is not present.
+    //! Returns true if the attribute exists, false otherwise.
     template <typename Attribute, typename HasMetaData>
-    typename Attribute::reference_type get(HasMetaData& hmd, const typename Attribute::value_type def) {
-        return hmd.md().template getattr<Attribute>(Attribute::key(),def);
+    bool exists(HasMetaData& hmd) {
+        return hmd.md().exists(Attribute::key());
     }
-
+    
     //! Increment and set an attribute.
     template <typename Attribute, typename HasMetaData>
     typename Attribute::reference_type next(HasMetaData& hmd) {
