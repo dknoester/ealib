@@ -22,7 +22,7 @@
 #include <mkv/markov_network.h>
 #include <ea/cvector.h>
 
-#include "test.h"
+#include "test_libea.h"
 
 /*!
  */

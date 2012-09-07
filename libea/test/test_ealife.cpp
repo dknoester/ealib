@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test.h"
+#include "test_libea.h"
 
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/spatial.h>
@@ -138,6 +138,8 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     a.name() = next<INDIVIDUAL_COUNT>(al);
     a.generation() = -1.0;
     a.update() = al.current_update();
+    
+    
     ancestral.append(make_population_entry(a,al));
     
     al.population().clear();

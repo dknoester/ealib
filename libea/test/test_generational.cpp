@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test.h"
+#include "test_libea.h"
 #include <ea/generational_models/death_birth_process.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/generational_models/nsga2.h>
