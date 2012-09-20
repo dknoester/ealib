@@ -333,7 +333,9 @@ namespace ea {
 			// and run it!
 			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
                 ea.advance_epoch(get<RUN_UPDATES>(ea));
-				checkpoint(ea);
+                if(get<CHECKPOINT_ON>(ea)) {
+                    checkpoint(ea);
+                }
 			}
 		}
         

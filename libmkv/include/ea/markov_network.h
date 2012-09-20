@@ -20,6 +20,7 @@
 #ifndef _EA_MARKOV_NETWORK_H_
 #define _EA_MARKOV_NETWORK_H_
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/analysis.h>
@@ -46,8 +47,24 @@ LIBEA_MD_DECL(NODE_HISTORY_LIMIT, "markov_network.node.history.limit", int);
 LIBEA_MD_DECL(NODE_HISTORY_FLOOR, "markov_network.node.history.floor", int);
 
 
-enum { PROB=42, DET=43, ADAPTIVE=44, PROB_HIST=45 };
-
+namespace mkv {
+    
+    enum mkv_gates { PROB=42, DET=43, ADAPTIVE=44, PROB_HIST=45 };
+    
+    /*! Returns a set of supported gate types.
+     */
+    template <typename EA>
+    std::set<mkv_gates> supported_gates(EA& ea) {
+        std::set<mkv_gates> supported;
+        std::string gates = get<MKV_NODE_TYPES>(ea);
+        if(boost::icontains(gates,"deterministic")) { supported.insert(DET); }
+        if(boost::icontains(gates,"probabilistic")) { supported.insert(PROB); }
+        if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
+        if(boost::icontains(gates,"probhistorical")) { supported.insert(PROB_HIST); }
+        return supported;
+    }
+    
+}
 
 namespace ea {
 	
@@ -93,20 +110,17 @@ namespace ea {
 	
 	/*! Generates random Markov network-based individuals.
 	 */
-
+    
 	struct mkv_random_individual {
         template <typename EA>
         typename EA::representation_type operator()(EA& ea) {
+            using namespace mkv;
+            
             typename EA::representation_type repr;
             repr.resize(get<REPRESENTATION_SIZE>(ea), 127);            
 			
             // which gate types are supported?
-            std::set<unsigned int> supported;
-            std::string gates = get<MKV_NODE_TYPES>(ea);
-            if(gates.find("deterministic")!=std::string::npos) { supported.insert(DET); }
-            if(gates.find("probabilistic")!=std::string::npos) { supported.insert(PROB); }
-            if(gates.find("adaptive")!=std::string::npos) { supported.insert(ADAPTIVE); }
-            if(gates.find("probhistorical")!=std::string::npos) { supported.insert(PROB_HIST); }
+            std::set<mkv_gates> supported = supported_gates(ea);
             
 			int i,j;
 			for(i=0; i<get<MKV_INITIAL_NODES>(ea); ++i) {
@@ -217,9 +231,9 @@ namespace mkv {
         h+=nhistory;
         
         markov_network::nodeptr_type p(new adaptive_mkv_node(nhistory,
-                                                            posf, poswv,
-                                                            negf, negwv,
-                                                            inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
+                                                             posf, poswv,
+                                                             negf, negwv,
+                                                             inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
         net.append(p);
     }
     
@@ -231,16 +245,12 @@ namespace mkv {
         using namespace detail;
         using namespace ea;
         using namespace ea::algorithm;
+        using namespace mkv;
         
         if(f == l) { return; }
         
         // which gate types are supported?
-        std::set<unsigned int> supported;
-        std::string gates = get<MKV_NODE_TYPES>(md);
-        if(gates.find("deterministic")!=std::string::npos) { supported.insert(DET); }
-        if(gates.find("probabilistic")!=std::string::npos) { supported.insert(PROB); }
-        if(gates.find("adaptive")!=std::string::npos) { supported.insert(ADAPTIVE); }
-        if(gates.find("probhistorical")!=std::string::npos) { supported.insert(PROB_HIST); }
+        std::set<mkv_gates> supported = supported_gates(md);
         
         ForwardIterator last=f;
         ++f;
@@ -319,7 +329,7 @@ namespace mkv {
             
             markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
             build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
-
+            
             datafile df(get<ANALYSIS_OUTPUT>(ea));
             std::ostringstream title;
             //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());

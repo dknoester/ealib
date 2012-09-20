@@ -30,7 +30,7 @@ Known issues:\
 \ls2\ilvl0
 \b0 \cf0 {\listtext	\'95	}Checkpointing meta-populations works, but the state of serialized populations is stale.  Specifically, we aren't saving the state of a population as it was at the beginning of a group competition period, but rather at the 
 \i end
-\i0  of a group competition.\
+\i0  of a group competition.  This means that anything that happened in the EA cannot be recreated.\
 {\listtext	\'95	}Make sure population size can't exceed environment size.\
 {\listtext	\'95	}Why does analysis of dig evo runs require 5x updates?\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
@@ -55,6 +55,7 @@ Upcoming features / changes:
 \f1  add_datafile<current_update, mean_fitness, max_fitness>("fitness.dat", ea);  
 \f0 The key to this is that there be some magic behind the scenes that prevents multiple linear scans through the population.\
 \pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
-\ls3\ilvl0
-\f1 \cf0 {\listtext	\'95	}\
+\ls3\ilvl0\cf0 {\listtext	\'95	}Standardize the genome representation into a circular vector of integers, and provide a way to easily define genes within that genome.  This effectively turns the whole EA into a genetic algorithm, which is fine.  Yes, we should not eliminate the possibility of other representations, but really, this is all we need.\
+{\listtext	\'95	}Enable an EA to be configured / controlled via python.\
+{\listtext	\'95	}Develop a Boost::Parameter interface to ea::evolutionary_algorithm (and the other EAs: digital_evolution, novelty_search\'85).\
 }

@@ -20,6 +20,7 @@
 #ifndef _EA_strings_H_
 #define _EA_strings_H_
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/any.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/serialization/map.hpp>
@@ -39,6 +40,7 @@ namespace ea {
         //! Convert this attribute's value from a string.
         virtual void from_string(const std::string& v) = 0;
     };
+    
     
     /*! This is the only specialization of abstract_attribute, and it provides
      the data-type specific components needed for string / value conversion.
@@ -68,6 +70,7 @@ namespace ea {
         
         value_type _value; //!< This attribute's value.
     };
+
     
 	/*! Meta-data is a collection of string covertible key-value pairs (attributes).
 
@@ -332,6 +335,7 @@ namespace ea {
 	// ea.run.*
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
+    LIBEA_MD_DECL(CHECKPOINT_ON, "ea.run.checkpoint_on", int);
 	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
 	LIBEA_MD_DECL(COMMAND_LINE, "ea.run.command_line", std::string);
 
