@@ -218,6 +218,25 @@ namespace ea {
             }
         }
         
+        /*! Read a new input into ?BX?, where there are only 2 possible inputs
+         shared by all organisms.
+         */
+        DIGEVO_INSTRUCTION_DECL(fixed_input) {
+            int reg=hw.modifyRegister();
+            
+            if(p->inputs().size() == 2) {
+                hw.setRegValue(reg, p->inputs().front());
+                p->inputs().push_back(p->inputs().front());
+                p->inputs().pop_front();
+            } else {
+                //  0x0f13149f 0x3308e53e 0x556241eb
+                // 252908703 856220990 1432502763
+                hw.setRegValue(reg, 252908703); 
+                p->inputs().push_front(hw.getRegValue(reg));
+                p->inputs().push_front(856220990);
+            }
+        }
+        
         /*! Output ?BX?.
          
          Executing this instruction triggers task evaluation on this output value
