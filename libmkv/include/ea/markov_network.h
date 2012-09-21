@@ -55,6 +55,7 @@ namespace mkv {
      */
     template <typename EA>
     std::set<mkv_gates> supported_gates(EA& ea) {
+        using namespace ea;
         std::set<mkv_gates> supported;
         std::string gates = get<MKV_NODE_TYPES>(ea);
         if(boost::icontains(gates,"deterministic")) { supported.insert(DET); }
