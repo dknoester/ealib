@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test.h"
-#include <ea/initialization.h>
+#include "test_libea.h"
 #include <ea/generational_models/death_birth_process.h>
-#include <ea/generational_models/synchronous.h>
+#include <ea/generational_models/steady_state.h>
+#include <ea/generational_models/nsga2.h>
 
 
 //! Helper function to test generational models.
@@ -32,6 +32,7 @@ void test_generational_model() {
     bitstring,
     mutation::per_site<mutation::bit>,
     all_ones,
+    configuration,
     recombination::asexual,
 	GenerationalModel> test_ea;
     
@@ -52,9 +53,38 @@ void test_generational_model() {
 }
 
 
-/*! Recombination operator unit tests.
+/*!
  */
 BOOST_AUTO_TEST_CASE(generational_functional) {
-	test_generational_model<ea::generational_models::synchronous< > >();
-    test_generational_model<ea::generational_models::death_birth_process>();
+	test_generational_model<ea::generational_models::steady_state< > >();
+    test_generational_model<ea::generational_models::death_birth_process< > >();
+}
+
+/*!
+ */
+BOOST_AUTO_TEST_CASE(test_nsga2) {
+	using namespace ea;
+    
+    typedef evolutionary_algorithm<
+    bitstring,
+    mutation::per_site<mutation::bit>,
+    multi_all_ones,
+    configuration,
+    recombination::asexual,
+    generational_models::nsga2, nsga2_attrs> test_ea;
+    
+	try {
+		test_ea ea;
+		add_std_meta_data(ea);
+		put<POPULATION_SIZE>(10,ea);
+		
+        ea.initialize();
+        ea.generate_initial_population();
+        ea.update();
+        
+		BOOST_CHECK(ea.population().size()==10);
+        BOOST_CHECK(ea.current_update()==1ul);
+	} catch(ealib_exception& ex) {
+		throw ex.msg;
+	}	
 }

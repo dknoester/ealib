@@ -1,4 +1,4 @@
-/* synchronous.h
+/* steady_state.h
  * 
  * This file is part of EALib.
  * 
@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_GENERATIONAL_MODELS_SYNCHRONOUS_H_
-#define _EA_GENERATIONAL_MODELS_SYNCHRONOUS_H_
+#ifndef _EA_GENERATIONAL_MODELS_STEADY_STATE_H_
+#define _EA_GENERATIONAL_MODELS_STEADY_STATE_H_
 
 #include <algorithm>
 #include <ea/interface.h>
@@ -30,7 +30,7 @@
 namespace ea {
 	namespace generational_models {
 		
-		/*! Synchronous generational model.
+		/*! Steady-state generational model.
 		 
 		 This generational model defines the traditional genetic algorithm
 		 crossover/mutate/select loop~\cite{eiben2007introduction}.
@@ -43,7 +43,7 @@ namespace ea {
         template <
         typename ParentSelectionStrategy=selection::proportionate< >,
         typename SurvivorSelectionStrategy=selection::tournament< > >
-		struct synchronous : public generational_model {
+		struct steady_state : public generational_model {
             typedef ParentSelectionStrategy parent_selection_type;
             typedef SurvivorSelectionStrategy survivor_selection_type;
 			

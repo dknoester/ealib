@@ -127,7 +127,7 @@ namespace ea {
                     for(typename Population::iterator q=P.begin(); q!=P.end(); ++q) {
                         if(p!=q) {
                             if(dominates(**p,**q)) {
-                                attr(p,ea).S.append(q);
+                                attr(p,ea).S.push_back(*q);
                             } else if(dominates(**q,**p)) {
                                 ++attr(p,ea).n;
                             }
@@ -135,7 +135,7 @@ namespace ea {
                     }
                     if(attr(p,ea).n == 0) {
                         attr(p,ea).rank = 0;
-                        F[0].append(p);
+                        F[0].push_back(*p);
                     }
                 }
                 
@@ -147,7 +147,7 @@ namespace ea {
                             --attr(q,ea).n;
                             if(attr(q,ea).n == 0) {
                                 attr(q,ea).rank = i+1;
-                                Q.append(q);
+                                Q.push_back(*q);
                             }
                         }
                     }
@@ -167,7 +167,8 @@ namespace ea {
                 // the set of all possible parents are pulled from the best fronts:
                 for(std::size_t i=0; (i<F.size()) && (dst.size()<n); ++i) {
                     crowding_distance(F[i],ea);
-                    dst.append(F[i].begin(),
+                    dst.insert(dst.end(), 
+                               F[i].begin(),
                                F[i].begin() + std::min(F[i].size(), (n-dst.size())));
                 }
             }
@@ -268,7 +269,7 @@ namespace ea {
                 calculate_fitness(offspring.begin(), offspring.end(), ea);
                 
                 // add the offspring to the parent population to create the next generation:
-                parents.append(offspring.begin(), offspring.end());
+                parents.insert(parents.end(), offspring.begin(), offspring.end());
                 
                 // and swap 'em in:
                 std::swap(population, parents);

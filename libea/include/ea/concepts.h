@@ -104,7 +104,7 @@ namespace ea {
     /*! Generational model concept.
 	 
 	 A generational model is meant to encapsulate the transition of one generation to another.  For
-	 synchronous generations, this is fairly straightforward (all individuals in the population are
+	 steady_state generations, this is fairly straightforward (all individuals in the population are
 	 at the same generation, always).  For other models, generation numbers and ordering
      of operations (death-birth, birth-death) are different.
 	 
@@ -114,7 +114,7 @@ namespace ea {
 	 
 	 <b>Valid expressions:</b> See member functions.
 	 
-	 <b>Models:</b> ea::synchronous_generations
+	 <b>Models:</b> ea::steady_state
 	 */
 	template <typename X, typename Population, typename EA>
 	struct GenerationalModelConcept {
@@ -442,7 +442,7 @@ namespace ea {
 	 
 	 <b>Valid expressions:</b> See member functions.
 	 
-	 <b>Models:</b> ea::synchronous_generations
+	 <b>Models:</b> ea::steady_state
 	 */
 	template <typename X, typename P, typename MD, typename EA>
 	struct MetaPopulationModelConcept {

@@ -42,7 +42,7 @@ mutation::per_site<mutation::bitflip>,
 all_ones,
 configuration,
 recombination::asexual,
-generational_models::synchronous<selection::proportionate< >, selection::tournament< > >
+generational_models::steady_state<selection::proportionate< >, selection::tournament< > >
 > ea_type;
 
 /*! Define the EA's command-line interface.

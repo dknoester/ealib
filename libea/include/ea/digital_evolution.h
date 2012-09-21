@@ -1,4 +1,4 @@
-/* digital_evolution/digital_evolution.h 
+/* digital_evolution.h 
  * 
  * This file is part of EALib.
  * 
@@ -26,6 +26,7 @@
 
 #include <ea/concepts.h>
 #include <ea/configuration.h>
+#include <ea/digital_evolution/events.h>
 #include <ea/digital_evolution/ancestors.h>
 #include <ea/digital_evolution/hardware.h>
 #include <ea/digital_evolution/isa.h>
@@ -40,89 +41,11 @@
 #include <ea/mutation.h>
 #include <ea/population.h>
 #include <ea/recombination.h>
-#include <ea/events.h>
 #include <ea/rng.h>
 
 
-namespace ea {
-        
-    /*! Initialization method that generates a complete population.
-     */
-    template <typename IndividualGenerator>
-    struct alife_population {
-        template <typename EA>
-        void operator()(EA& ea) {
-            typename EA::population_type ancestral;
-            typename EA::individual_type a = typename EA::individual_type();
-            a.name() = next<INDIVIDUAL_COUNT>(ea);
-            a.generation() = -1.0;
-            a.update() = ea.current_update();
-            ancestral.append(make_population_entry(a,ea));
-            
-            IndividualGenerator ig;
-            ea.population().clear();
-            generate_individuals_n(ea.population(), ig, get<INITIAL_POPULATION_SIZE>(ea), ea);
-            
-            for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                ea.events().inheritance(ancestral,ind(i,ea),ea);
-                ea.env().insert(*i);
-                ind(i,ea).priority() = 1.0;
-            }
-        }
-    };
-    
 
-    /*! Alife event handler.
-     */
-    template <typename EA>
-	struct alife_event_handler : event_handler<EA> {
-        //! Called when an individual performs a task.
-        boost::signal<void(typename EA::individual_type&, // individual
-                           typename EA::tasklib_type::task_ptr_type, // task pointer
-                           double, // amount of resource consumed
-                           EA&)> task_performed;
-
-        //! Called when an individual is "born" (immediately after it is placed in the population).
-        boost::signal<void(typename EA::individual_type&, // individual
-                           EA&)> birth;
-
-        //! Called when an individual "dies" or is replaced.
-        boost::signal<void(typename EA::individual_type&, // individual
-                           EA&)> death;
-    };
-
-
-    template <typename EA>
-    struct task_performed_event : event {
-        task_performed_event(EA& ea) {
-            conn = ea.events().task_performed.connect(boost::bind(&task_performed_event::operator(), this, _1, _2, _3, _4));
-        }
-        virtual ~task_performed_event() { }
-        virtual void operator()(typename EA::individual_type&, // individual
-                                typename EA::tasklib_type::task_ptr_type, // task pointer
-                                double r, // resources consumed
-                                EA&) = 0;
-    };
-    
-    template <typename EA>
-    struct birth_event : event {
-        birth_event(EA& ea) {
-            conn = ea.events().birth.connect(boost::bind(&birth_event::operator(), this, _1, _2));
-        }
-        virtual ~birth_event() { }
-        virtual void operator()(typename EA::individual_type&, // individual
-                                EA&) = 0;
-    };
-    
-    template <typename EA>
-    struct death_event : event {
-        death_event(EA& ea) {
-            conn = ea.events().death.connect(boost::bind(&death_event::operator(), this, _1, _2));
-        }
-        virtual ~death_event() { }
-        virtual void operator()(typename EA::individual_type&, // individual
-                                EA&) = 0;
-    };
+namespace ea {    
     
     /*! Artificial life top-level evolutionary algorithm.
      

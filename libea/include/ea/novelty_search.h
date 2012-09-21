@@ -27,7 +27,7 @@
 #include <ea/evolutionary_algorithm.h>
 #include <ea/attributes.h>
 #include <ea/concepts.h>
-#include <ea/generational_models/synchronous.h>
+#include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
 #include <ea/fitness_function.h>
 #include <ea/initialization.h>
@@ -130,7 +130,7 @@ namespace ea {
 	typename FitnessFunction,
     typename NoveltyMetric,
 	typename RecombinationOperator=recombination::two_point_crossover,
-	typename GenerationalModel=generational_models::synchronous< >,
+	typename GenerationalModel=generational_models::steady_state< >,
 	typename Initializer=initialization::complete_population<initialization::random_individual>,
     template <typename> class IndividualAttrs=individual_attributes,
     template <typename,typename,typename> class Individual=novelty_individual,

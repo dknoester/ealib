@@ -17,28 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _NN_FEED_FORWARD_H_
-#define _NN_FEED_FORWARD_H_
+#ifndef _ANN_FEED_FORWARD_H_
+#define _ANN_FEED_FORWARD_H_
 
-#include <limits>
-#include <boost/graph/adjacency_list.hpp>
-
-#include <nn/traits.h>
-#include <nn/neuron.h>
-#include <nn/neural_network.h>
-#include <nn/sigmoid.h>
+#include <ann/sigmoid.h>
 
 
-namespace nn {
+namespace ann {
 	
 	/*! Feed-forward neuron.
 	 */
-	template <typename Sigmoid>
-	struct feed_forward_neuron : neuron_base {
+	template <typename Sigmoid=hyperbolic_tangent>
+	struct feed_forward_neuron {
 		typedef Sigmoid sigmoid_type; //!< Sigmoid type, used for activation.
 		
 		//! Constructor.
-		feed_forward_neuron(neuron_type t=neuron_base::INACTIVE) : neuron_base(t), input(0.0), output(0.0) { }
+		feed_forward_neuron() : input(0.0), output(0.0) { }
 		
 		/*! Feed-forward activation.
 		 
@@ -73,25 +67,7 @@ namespace nn {
 		double weight; //!< Weight of this link.
 	};
 	
-    //! Selector for feed-forward neural networks.
-	struct feed_forwardS { };
-	
-	//! Traits type for feed-forward neural networks.
-	template < >
-	struct neural_network_traits<feed_forwardS> {
-		typedef hyperbolic_tangent sigmoid_type;
-		typedef feed_forward_neuron<sigmoid_type> neuron_type;
-		typedef feed_forward_link link_type;
-		typedef boost::adjacency_list<boost::setS,boost::vecS,boost::bidirectionalS,neuron_type,link_type> graph_type;
-		typedef neuron_activation_visitor<graph_type> activation_visitor_type;
-		double stepsize() const { return std::numeric_limits<double>::quiet_NaN(); }
-
-		static neuron_type make_input_neuron() { return neuron_type(neuron_base::INPUT); }
-		static neuron_type make_hidden_neuron() { return neuron_type(neuron_base::HIDDEN); }
-		static neuron_type make_output_neuron() { return neuron_type(neuron_base::OUTPUT); }
-		static neuron_type make_inactive_neuron() { return neuron_type(neuron_base::INACTIVE); }
-		static link_type make_link(double weight) { return link_type(weight); }
-	};
-}	// nn
+    
+}	// ann
 
 #endif

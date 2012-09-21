@@ -1,4 +1,4 @@
-/* test.cpp
+/* test_libea.cpp
  * 
  * This file is part of EALib.
  * 
@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef BOOST_TEST_DYN_LINK
 #define BOOST_TEST_DYN_LINK
+#endif
 #define BOOST_TEST_MAIN
-#include "test.h"
+#include "test_libea.h"

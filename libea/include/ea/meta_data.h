@@ -20,6 +20,7 @@
 #ifndef _EA_strings_H_
 #define _EA_strings_H_
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/any.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/serialization/map.hpp>
@@ -39,6 +40,7 @@ namespace ea {
         //! Convert this attribute's value from a string.
         virtual void from_string(const std::string& v) = 0;
     };
+    
     
     /*! This is the only specialization of abstract_attribute, and it provides
      the data-type specific components needed for string / value conversion.
@@ -68,6 +70,7 @@ namespace ea {
         
         value_type _value; //!< This attribute's value.
     };
+
     
 	/*! Meta-data is a collection of string covertible key-value pairs (attributes).
 
@@ -80,10 +83,11 @@ namespace ea {
      At serialization time, all extant attributes are converted into their string 
      form and serialized.
      
-     At runtime, the string versions of attribuates are lazily converted to their
+     At runtime, the string versions of attributes are lazily converted to their
      native representation.
 
-	 Meta-data is used with the free functions hasattr, getattr, and setattr.
+	 Meta-data is used with the free functions get, put, exists, and next (which
+     is a convenient test-and-inc).
      */
 	class meta_data {
 	public:
@@ -210,16 +214,16 @@ namespace ea {
 		}		
 	};
     
-    //! Returns true if the attribute exists, false otherwise.
-    template <typename Attribute, typename HasMetaData>
-    bool exists(HasMetaData& hmd) {
-        return hmd.md().exists(Attribute::key());
-    }
-    
     //! Returns a reference to the given attribute's value.
     template <typename Attribute, typename HasMetaData>
     typename Attribute::reference_type get(HasMetaData& hmd) {
         return hmd.md().template getattr<Attribute>(Attribute::key());
+    }
+    
+    //! Returns a reference to the given attribute, setting it a default value if it is not present.
+    template <typename Attribute, typename HasMetaData>
+    typename Attribute::reference_type get(HasMetaData& hmd, const typename Attribute::value_type def) {
+        return hmd.md().template getattr<Attribute>(Attribute::key(),def);
     }
     
     //! Sets the value of the given attribute, and returns a reference to it.
@@ -234,12 +238,12 @@ namespace ea {
         hmd.set(k,v);
     }    
     
-    //! Returns a reference to the given attribute, setting it a default value if it is not present.
+    //! Returns true if the attribute exists, false otherwise.
     template <typename Attribute, typename HasMetaData>
-    typename Attribute::reference_type get(HasMetaData& hmd, const typename Attribute::value_type def) {
-        return hmd.md().template getattr<Attribute>(Attribute::key(),def);
+    bool exists(HasMetaData& hmd) {
+        return hmd.md().exists(Attribute::key());
     }
-
+    
     //! Increment and set an attribute.
     template <typename Attribute, typename HasMetaData>
     typename Attribute::reference_type next(HasMetaData& hmd) {
@@ -331,6 +335,7 @@ namespace ea {
 	// ea.run.*
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
+    LIBEA_MD_DECL(CHECKPOINT_ON, "ea.run.checkpoint_on", int);
 	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
 	LIBEA_MD_DECL(COMMAND_LINE, "ea.run.command_line", std::string);
 

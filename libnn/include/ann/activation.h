@@ -17,15 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _NN_ACTIVATION_H_
-#define _NN_ACTIVATION_H_
+#ifndef _ANN_ACTIVATION_H_
+#define _ANN_ACTIVATION_H_
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/visitors.hpp>
 
-#include <nn/neuron.h>
-
-namespace nn {
+namespace ann {
 	
 	/*! Neural network activation visitor.
 	 */
@@ -54,24 +52,9 @@ namespace nn {
 	 layer of the neural network, are ignored.  Likewise, outputs will only contain
 	 the values output from the output layer.
 	 */
-	template <typename NeuralNetwork, typename ActivationVisitor, typename InputMap, typename OutputMap>
-	void activate(NeuralNetwork& nn, ActivationVisitor& av, InputMap& inputs, OutputMap& outputs) {
-		// apply the inputs:
-		typename NeuralNetwork::adjacency_iterator vi, vi_end;
-		for(boost::tie(vi,vi_end)=nn.input_layer(); vi!=vi_end; ++vi) {
-			nn[*vi].input = inputs[*vi];
-		}
-		
-		// activate:
-//        std::cout << "********" << std::endl;
-		boost::breadth_first_search(nn, nn.preinput(), boost::visitor(boost::make_bfs_visitor(av)));
-//        std::cout << std::endl;
-		// read the outputs:
-		outputs.clear();
-		typename NeuralNetwork::inv_adjacency_iterator ivi, ivi_end;
-		for(boost::tie(ivi,ivi_end)=nn.output_layer(); ivi!=ivi_end; ++ivi) {
-			outputs[*ivi] = nn[*ivi].output;
-		}
+	template <typename Vertex, typename Graph, typename ActivationVisitor>
+	void activate(Vertex v, Graph& g, ActivationVisitor& av) {
+		boost::breadth_first_search(g, v, boost::visitor(boost::make_bfs_visitor(av)));
 	}
 
 	
@@ -79,10 +62,12 @@ namespace nn {
 	 
 	 Apply the inputs, activate the network, and read the outputs.
 	 */
-	template <typename NeuralNetwork, typename InputMap, typename OutputMap>
-	void activate(NeuralNetwork& nn, InputMap& inputs, OutputMap& outputs) {
-		typename NeuralNetwork::activation_visitor_type av(nn);
-		activate(nn, av, inputs, outputs);
+	template <typename Vertex, typename Graph>
+	void activate(unsigned int n, Vertex v, Graph& g) {
+        neuron_activation_visitor<Graph> av(g);
+        for( ; n>0; --n) {
+            activate(v, g, av);
+        }
 	}
 	
 } //nn

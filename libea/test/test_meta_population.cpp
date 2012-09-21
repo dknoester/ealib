@@ -17,14 +17,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test.h"
+#include "test_libea.h"
 
 #include <ea/meta_population.h>
+
+template <typename EA>
+struct test_configuration : public abstract_configuration<EA> {
+    void initial_population(EA& ea) {
+        //        generate_ancestors(mkv_random_individual(), get<POPULATION_SIZE>(ea), ea);
+    }
+};
+
+//typename EA,
+//template <typename> class ConfigurationStrategy,
+//template <typename> class EventHandler=event_handler,
+//typename MetaData=meta_data,
+//typename RandomNumberGenerator=ea::default_rng_type>
+//class meta_population {
 
 /*! 
  */
 BOOST_AUTO_TEST_CASE(test_meta_population) {
-    typedef meta_population<all_ones_ea> ea_type;
+    typedef meta_population<all_ones_ea, test_configuration> ea_type;
     
     ea_type ea;
 }
