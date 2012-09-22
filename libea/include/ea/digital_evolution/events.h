@@ -17,32 +17,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef _EA_DIGITAL_EVOLUTION_EVENTS_H_
 #define _EA_DIGITAL_EVOLUTION_EVENTS_H_
 
 #include <ea/events.h>
 
 namespace ea {    
-    
-    /*! Alife event handler.
-     */
-    template <typename EA>
+  
+  /*! Alife event handler.
+   */
+  template <typename EA>
 	struct alife_event_handler : event_handler<EA> {
-        //! Called when an individual performs a task.
-        boost::signal<void(typename EA::individual_type&, // individual
-                           double, // amount of resource consumed
-                           const std::string&, // task name
-                           EA&)> task_performed;
-        
-        //! Called when an individual is "born" (immediately after it is placed in the population).
-        boost::signal<void(typename EA::individual_type&, // individual
-                           EA&)> birth;
-        
-        //! Called when an individual "dies" or is replaced.
-        boost::signal<void(typename EA::individual_type&, // individual
-                           EA&)> death;
-    };
+    //! Called when an individual performs a task.
+    boost::signal<void(typename EA::individual_type&, // individual
+                       typename EA::tasklib_type::task_ptr_type, // task pointer
+                       double r, // resources consumed
+                       EA&)> task_performed;
+    
+    //! Called when an individual is "born" (immediately after it is placed in the population).
+    boost::signal<void(typename EA::individual_type&, // individual
+                       EA&)> birth;
+    
+    //! Called when an individual "dies" or is replaced.
+    boost::signal<void(typename EA::individual_type&, // individual
+                       EA&)> death;
+  };
   
   
   template <typename EA>
@@ -76,7 +75,7 @@ namespace ea {
     virtual void operator()(typename EA::individual_type&, // individual
                             EA&) = 0;
   };
-
+  
 } // ea
 
 #endif

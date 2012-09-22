@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef _EA_DIGITAL_EVOLUTION_H_
 #define _EA_DIGITAL_EVOLUTION_H_
 
@@ -127,7 +126,6 @@ namespace ea {
         digital_evolution() {
             _configurator.construct(*this);
         }
-        
                 
         //! Initialize this EA.
         void initialize() {

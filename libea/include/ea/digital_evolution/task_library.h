@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <ea/meta_data.h>
+#include <ea/digital_evolution/events.h>
 
 namespace ea {
     

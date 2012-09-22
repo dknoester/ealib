@@ -20,6 +20,8 @@
 #include "test_libea.h"
 
 #include <ea/meta_population.h>
+#include <ea/adaptive_hfc.h>
+#include <ea/alps.h>
 
 template <typename EA>
 struct test_configuration : public abstract_configuration<EA> {
@@ -28,23 +30,22 @@ struct test_configuration : public abstract_configuration<EA> {
     }
 };
 
-//typename EA,
-//template <typename> class ConfigurationStrategy,
-//template <typename> class EventHandler=event_handler,
-//typename MetaData=meta_data,
-//typename RandomNumberGenerator=ea::default_rng_type>
-//class meta_population {
-
-/*! 
- */
 BOOST_AUTO_TEST_CASE(test_meta_population) {
-    typedef meta_population<all_ones_ea, test_configuration> ea_type;
-    
+    typedef meta_population<all_ones_ea, test_configuration> ea_type;    
     ea_type ea;
 }
 
 
 BOOST_AUTO_TEST_CASE(test_adaptive_hfc) {
+  typedef meta_population<all_ones_ea, test_configuration> ea_type;
+  ea_type ea;
+  adaptive_hfc<ea_type> ahfc(ea);
     
-    
+}
+
+BOOST_AUTO_TEST_CASE(test_alps) {
+  typedef meta_population<all_ones_ea, test_configuration> ea_type;
+  ea_type ea;
+  alps<ea_type> al(ea);
+  
 }
