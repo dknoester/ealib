@@ -33,13 +33,6 @@
 #include <ea/rng.h>
 
 namespace ea {
-
-    struct no_mp_mutation {
-        template <typename Representation, typename EA>
-        void operator()(Representation& repr, EA& ea) {
-        }
-    };
-            
     
     template <
     typename EA,

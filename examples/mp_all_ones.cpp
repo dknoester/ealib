@@ -33,7 +33,7 @@ struct configuration : public abstract_configuration<EA> {
     
     //! Called to generate the initial EA population.
     void initial_population(EA& ea) {
-        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea), ea);
+        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea) - ea.population().size(), ea);
     }
 };
 

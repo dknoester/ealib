@@ -152,6 +152,8 @@ namespace ea {
                 // and remove them from this one:
                 ea[i].population().erase(f,l);
             }
+            
+            ea[0].generate_initial_population();
         }
     };
     

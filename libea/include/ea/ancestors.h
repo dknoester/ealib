@@ -124,7 +124,7 @@ namespace ea {
                 typename EA::representation_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().uniform_integer(get<INITIALIZATION_UNIFORM_INT_MIN>(ea), get<INITIALIZATION_UNIFORM_INT_MAX>(ea));
                 }
                 return r;
@@ -139,41 +139,33 @@ namespace ea {
                 typename EA::representation_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().uniform_real(get<INITIALIZATION_UNIFORM_REAL_MIN>(ea), get<INITIALIZATION_UNIFORM_REAL_MAX>(ea));
                 }
                 return r;
             }
         };
 
-        
+        /*! Generates a random representation.
+         */
+        struct random_individual {
+            template <typename EA>
+            typename EA::representation_type operator()(EA& ea) {
+                typename EA::representation_type r;
+                r.resize(get<REPRESENTATION_SIZE>(ea));
+                
+                typename EA::mutation_operator_type::mutation_type mt;
+                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                    mt(r, i, ea);
+                }
+                return r;
+            }
+        };
         
     } // ancestors
     
     namespace initialization {
        
-        
-        
-               
-        
-        /*! Generates a random individual.
-         */
-        struct random_individual {
-            template <typename EA>
-            typename EA::population_entry_type operator()(EA& ea) {
-                typedef typename EA::representation_type representation_type;
-                typename EA::individual_type ind;
-                ind.name() = next<INDIVIDUAL_COUNT>(ea);
-                ind.repr().resize(get<REPRESENTATION_SIZE>(ea));
-                representation_type& repr=ind.repr();
-                
-                typename EA::mutation_operator_type::mutation_type mt;
-                for(typename representation_type::iterator j=repr.begin(); j!=repr.end(); ++j) {
-                    mt(repr, j, ea);
-                }
-                return make_population_entry(ind, ea);
-            }
-        };
         
         
         /*! Generates a random individual of low fitness.
