@@ -20,7 +20,22 @@
 #ifndef _EA_CONFIGURATION_H_
 #define _EA_CONFIGURATION_H_
 
+#include <ea/events.h>
+
 namespace ea {
+    
+    // pre-dec
+    template <typename EA> class abstract_configuration;
+    
+    //! Add an event to the list of events that are registered for an EA.
+    template <template <typename> class Event, typename EA>
+    void add_event(abstract_configuration<EA>* config, EA& ea) {
+        typedef Event<EA> event_type;
+        boost::shared_ptr<event_type> p(new event_type(ea));
+        config->_events.push_back(p);
+    }
+    
+
     
     /*! Abstract configuration object for an EA.
      
@@ -30,7 +45,9 @@ namespace ea {
      experiment-specific changes.
      */
     template <typename EA>
-    struct abstract_configuration {
+    class abstract_configuration {
+    public:
+        typedef std::vector<boost::shared_ptr<ea::event> > event_list; //!< Storage for events.
         
         //! Called as the final step of EA construction.
         virtual void construct(EA& ea) {
@@ -47,6 +64,10 @@ namespace ea {
         //! Called to generate the initial EA population.
         virtual void initial_population(EA& ea) {
         }
+    protected:
+        template <template <typename> class T, typename U> friend void add_event(abstract_configuration<U>* config, U& u);
+        event_list _events; //!< List of all the events attached to an EA.
+
     };
 
 }

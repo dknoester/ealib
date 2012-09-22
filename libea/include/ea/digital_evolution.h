@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef _EA_DIGITAL_EVOLUTION_H_
 #define _EA_DIGITAL_EVOLUTION_H_
 
@@ -42,6 +41,7 @@
 #include <ea/population.h>
 #include <ea/recombination.h>
 #include <ea/rng.h>
+
 
 
 namespace ea {    
