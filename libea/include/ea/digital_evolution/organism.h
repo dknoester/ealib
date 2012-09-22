@@ -88,7 +88,7 @@ namespace ea {
             }
             return *this;
         }
-        
+
         //! Retrieve this organism's name.
         long& name() { return _name; }
 		

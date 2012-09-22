@@ -68,6 +68,7 @@ namespace ea {
             getrusage(RUSAGE_SELF, &r);
             std::cerr << std::fixed << std::setprecision(4) << r.ru_maxrss/rss << std::endl;
             
+            
             _t.restart();
         }
         

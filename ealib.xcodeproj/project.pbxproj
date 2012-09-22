@@ -26,6 +26,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		3E1F5FCF160CC5C100406D80 /* alps.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E1F5FCE160CC5C100406D80 /* alps.h */; };
 		4220F33215D2D563005750F1 /* graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4220F32E15D2D176005750F1 /* graph.cpp */; };
 		42279CB315D55F4700DD63BB /* markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42279CB215D55F4700DD63BB /* markov_network.cpp */; };
 		423CBE41157D0ECF0003A644 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF0157D0E450003A644 /* main.cpp */; };
@@ -177,6 +178,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3E1F5FCE160CC5C100406D80 /* alps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = alps.h; sourceTree = "<group>"; };
 		42015A8215D6BEDC0020F594 /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
 		42015A8415D6BEDC0020F594 /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
 		42015A8515D6BEDC0020F594 /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
@@ -518,6 +520,7 @@
 			children = (
 				42841D1515B2F35300AB18BE /* adaptive_hfc.h */,
 				423CBDAE157D0E450003A644 /* algorithm.h */,
+				3E1F5FCE160CC5C100406D80 /* alps.h */,
 				423CBDBA157D0E450003A644 /* analysis.h */,
 				423CBDAF157D0E450003A644 /* analysis */,
 				423CBDDC157D0E450003A644 /* ancestors.h */,
@@ -828,6 +831,7 @@
 			files = (
 				42F4B63315822A7B0075D6EF /* attributes.h in Headers */,
 				4281FC5F15CAE20D00167444 /* traits.h in Headers */,
+				3E1F5FCF160CC5C100406D80 /* alps.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

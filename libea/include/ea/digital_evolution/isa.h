@@ -172,9 +172,32 @@ namespace ea {
         DIGEVO_INSTRUCTION_DECL(h_divide) {
             if(hw.age() >= (0.8 * hw.original_size())) {            
                 typename Hardware::representation_type& r=hw.repr();
-                typename Hardware::representation_type offr(&r[hw.getHeadLocation(Hardware::RH)],
-                                                            &r[hw.getHeadLocation(Hardware::WH)]);
-                r.resize(hw.original_size());
+                
+                // Check to see if the offspring would be a good length. 
+                int divide_pos = hw.getHeadLocation(Hardware::RH);  
+                int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH); 
+                
+                int child_size = r.size() - divide_pos - extra_lines; 
+                int parent_size = r.size() - child_size - extra_lines;
+                double ratio = 2.0;
+                
+                if ((child_size < (hw.original_size()/ratio)) || 
+                    (child_size > (hw.original_size()*ratio)) || 
+                    (parent_size < (hw.original_size()/ratio)) ||
+                    (parent_size > (hw.original_size()*ratio))){
+                    // fail and die a miserable death!
+                    hw.replicated();
+                    return;
+                }
+                
+                
+                typename Hardware::representation_type::iterator f=r.begin(),l=r.begin();
+                std::advance(f, hw.getHeadLocation(Hardware::RH));
+                std::advance(l, hw.getHeadLocation(Hardware::WH));                             
+                typename Hardware::representation_type offr(f, l);
+                
+                
+                r.resize(parent_size);
                 replicate(p, offr, ea);
                 hw.replicated();
             }
@@ -192,6 +215,25 @@ namespace ea {
             } else {
                 hw.setRegValue(reg, ea.env().read(*p, ea));
                 p->inputs().push_front(hw.getRegValue(reg));
+            }
+        }
+        
+        /*! Read a new input into ?BX?, where there are only 2 possible inputs
+         shared by all organisms.
+         */
+        DIGEVO_INSTRUCTION_DECL(fixed_input) {
+            int reg=hw.modifyRegister();
+            
+            if(p->inputs().size() == 2) {
+                hw.setRegValue(reg, p->inputs().front());
+                p->inputs().push_back(p->inputs().front());
+                p->inputs().pop_front();
+            } else {
+                //  0x0f13149f 0x3308e53e 0x556241eb
+                // 252908703 856220990 1432502763
+                hw.setRegValue(reg, 252908703); 
+                p->inputs().push_front(hw.getRegValue(reg));
+                p->inputs().push_front(856220990);
             }
         }
         
@@ -345,6 +387,7 @@ namespace ea {
         
         //! Execute the next instruction if ?bx? < ?cx?.
         DIGEVO_INSTRUCTION_DECL(if_less) {
+
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
             if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
@@ -352,9 +395,13 @@ namespace ea {
             }
         }
         
-        //! Donate any accumulated resource to this organism's group.
-        DIGEVO_INSTRUCTION_DECL(donate_group) {
-            ea.env().group(p,ea).receive_donation(p,ea);
+        //! Get the organism's current position
+        DIGEVO_INSTRUCTION_DECL(get_xy) {
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx); 
+                        
+            hw.setRegValue(rbx,p->location()->x);
+            hw.setRegValue(rcx,p->location()->y);
         }
     } // instructions
     

@@ -109,6 +109,7 @@ namespace ea {
          */
         template <typename EA>
         void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
+
             std::size_t attempts=0;
             // while we have cycles to spend and we haven't exhausted our attempts 
             // at executing an instruction:
