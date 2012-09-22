@@ -59,19 +59,5 @@
          landmarkName = "operator() (Hardware&amp; hw, typename AL::individual_ptr_type p, AL&amp; al)"
          landmarkType = "7">
       </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "No"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         isPathRelative = "1"
-         filePath = "libea/test/test_ealife.cpp"
-         timestampString = "365789610.061369"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "347"
-         endingLineNumber = "347"
-         landmarkName = "BOOST_AUTO_TEST_CASE(test_self_replication)"
-         landmarkType = "7">
-      </FileBreakpoint>
    </FileBreakpoints>
 </Bucket>

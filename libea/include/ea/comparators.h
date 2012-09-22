@@ -40,7 +40,14 @@ namespace ea {
             }
         };
 
-        
+      template <typename MDType>
+      struct meta_data {
+        template <typename IndividualPtr>
+        bool operator()(IndividualPtr x, IndividualPtr y) {
+          return ea::get<MDType>(*x) < ea::get<MDType>(*y);
+        }
+      };
+      
         /*! Compare individuals based on the natural order of their m'th objective,
          which is useful with multivalued fitnesses.
          */
