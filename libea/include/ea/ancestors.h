@@ -35,9 +35,6 @@ namespace ea {
      called on them (as well as the inheritance signal), each of which require
      a parent population.  We handle all of this here, and at the very end, add
      the ancestors to the EA.
-     
-     We aren't concerned terribly with efficiency here, as it is expected that this
-     method is called relatively infrequently.
      */
 	template <typename RepresentationGenerator, typename EA>
 	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
@@ -67,34 +64,42 @@ namespace ea {
     }
 
 
-    /*! Fill the EA with individuals constructed from the given representation.
+    /*! Fill the EA with individuals copied from the given representation.
      
-     As opposed to the above method, where we generate ancestors, the individuals
-     generated here are simply copied from the given representation -- there is no
-     attempt made to configure them into an lineage.
+     As opposed to the above method, where we generate ancestors, here we copy the
+     given representation n times.
      */
     template <typename EA>
     void fill_population(const typename EA::representation_type& r, std::size_t n, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-
-        // build the population:
-        typename EA::population_type population;
+        
+        // build the placeholder ancestor:
+        typename EA::individual_ptr_type ap = ea.make_individual(typename EA::representation_type());
+        ap->name() = next<INDIVIDUAL_COUNT>(ea);
+        ap->generation() = -1.0;
+        ap->update() = ea.current_update();
+        
+        // wrap it in a population:
+        typename EA::population_type parents;
+        parents.push_back(ap);
+        
+        // now, build the real ancestral population:
+        typename EA::population_type ancestral;
         for( ; n>0; --n) {
-            typename EA::individual_ptr_type p = ea.make_individual(r);
-            p->name() = next<INDIVIDUAL_COUNT>(ea);
-            p->generation() = -1.0;
-            p->update() = ea.current_update();
-            population.push_back(p);
+            ancestral.push_back(ea.make_individual(r));
         }
-
-        // and add them all to the EA:
-        ea.append(population.begin(), population.end());
+        
+        // trigger inheritance:
+        inherits(parents, ancestral, ea);
+        
+        // and add all the ancestors to the EA:
+        ea.append(ancestral.begin(), ancestral.end());
     }
     
     
     namespace ancestors {
         
-        /*! Generates an individual from random bits.
+        /*! Generates a representation from random bits.
          */
         struct random_bitstring {            
             //! Generate an individual.
@@ -110,47 +115,46 @@ namespace ea {
             }
         };
         
-    } // ancestors
-    
-    namespace initialization {
-        /*! Generates an individual from a uniform distribution of integers.
+        /*! Generates a representation from uniformly distributed random integers.
          */
         struct uniform_integer {            
             //! Generate an individual.
             template <typename EA>
-            typename EA::population_entry_type operator()(EA& ea) {
-                typedef typename EA::representation_type representation_type;
-                typename EA::individual_type ind;
-                ind.name() = next<INDIVIDUAL_COUNT>(ea);
-                ind.repr().resize(get<REPRESENTATION_SIZE>(ea));
-                representation_type& repr=ind.repr();
+            typename EA::representation_type operator()(EA& ea) {
+                typename EA::representation_type r;
+                r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
+                for(typename representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().uniform_integer(get<INITIALIZATION_UNIFORM_INT_MIN>(ea), get<INITIALIZATION_UNIFORM_INT_MAX>(ea));
                 }
-                return make_population_entry(ind,ea);
+                return r;
             }
         };
         
-        
-        /*! Generates an individual from a uniform distribution of reals.
+        /*! Generates a representation from uniformly distributed reals.
          */
         struct uniform_real {
             template <typename EA>
-            typename EA::population_entry_type operator()(EA& ea) {
-                typedef typename EA::representation_type representation_type;
-                typename EA::individual_type ind;
-                ind.name() = next<INDIVIDUAL_COUNT>(ea);
-                ind.repr().resize(get<REPRESENTATION_SIZE>(ea));
-                representation_type& repr=ind.repr();
+            typename EA::representation_type operator()(EA& ea) {
+                typename EA::representation_type r;
+                r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
+                for(typename representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().uniform_real(get<INITIALIZATION_UNIFORM_REAL_MIN>(ea), get<INITIALIZATION_UNIFORM_REAL_MAX>(ea));
                 }
-                return make_population_entry(ind,ea);
+                return r;
             }
         };
+
         
+        
+    } // ancestors
+    
+    namespace initialization {
+       
+        
+        
+               
         
         /*! Generates a random individual.
          */

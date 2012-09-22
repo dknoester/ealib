@@ -17,12 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
-
 #ifndef _EA_ADAPTIVE_HFC_H_
 #define _EA_ADAPTIVE_HFC_H_
-
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
