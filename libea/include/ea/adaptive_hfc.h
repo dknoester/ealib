@@ -28,6 +28,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <ea/datafile.h>
 #include <ea/events.h>
 #include <ea/meta_data.h>
 
@@ -157,6 +158,48 @@ namespace ea {
         }
     };
     
+    /*! Datafile for mean generation, and mean & max fitness.
+     */
+    template <typename EA>
+    struct ahfc_datafile : record_statistics_event<EA> {
+        ahfc_datafile(EA& ea) : record_statistics_event<EA>(ea), _df("ahfc.dat") {
+            _df.add_field("update");
+            for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                std::string prefix = "sp" + boost::lexical_cast<std::string>(i);
+                _df.add_field(prefix + "_admission_level")
+                .add_field(prefix + "_mean_fitness")
+                .add_field(prefix + "_max_fitness");
+            }
+        }
+        
+        virtual ~ahfc_datafile() {
+        }
+        
+        virtual void operator()(EA& ea) {
+            using namespace boost::accumulators;
+            
+            _df.write(ea.current_update());
+            
+            for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                accumulator_set<double, stats<tag::mean> > age;
+                accumulator_set<double, stats<tag::mean, tag::max> > fit;
+
+                _df.write(get<ADMISSION_LEVEL>(ea[i], 0.0));
+                          
+                for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
+                    fit(static_cast<double>((*j)->fitness()));
+                }
+                
+                _df.write(mean(fit))
+                .write(max(fit));
+            }
+            
+            _df.endl();
+        }
+        
+        datafile _df;
+    };
+
 } // ea
 
 #endif

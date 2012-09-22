@@ -24,13 +24,11 @@
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/generation_fitness.h>
 #include <ea/adaptive_hfc.h>
+#include <ea/alps.h>
 using namespace ea;
-
-
 
 template <typename EA>
 struct configuration : public abstract_configuration<EA> {
-    
     //! Called to generate the initial EA population.
     void initial_population(EA& ea) {
         generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea) - ea.population().size(), ea);
@@ -51,9 +49,6 @@ generational_models::steady_state<selection::proportionate< >, selection::tourna
 
 template <typename EA>
 struct mp_configuration : public abstract_configuration<EA> {
-    //! Called to generate the initial EA population.
-    void initial_population(EA& ea) {
-    }
 };
 
 
@@ -75,6 +70,7 @@ public:
         add_option<TOURNAMENT_SELECTION_K>(this);
         add_option<RUN_UPDATES>(this);
         add_option<RUN_EPOCHS>(this);
+        add_option<CHECKPOINT_ON>(this);
         add_option<CHECKPOINT_PREFIX>(this);
         add_option<RNG_SEED>(this);
         add_option<RECORDING_PERIOD>(this);
@@ -89,8 +85,8 @@ public:
     }
     
     virtual void gather_events(EA& ea) {
-//        add_event<datafiles::generation_fitness>(this, ea);
-        add_event<adaptive_hfc>(this, ea);
+        add_event<alps>(this, ea);
+        add_event<alps_datafile>(this, ea);
     };
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, ones);

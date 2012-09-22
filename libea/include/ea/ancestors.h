@@ -167,27 +167,27 @@ namespace ea {
     namespace initialization {
        
         
-        
-        /*! Generates a random individual of low fitness.
-         */
-        struct random_low_fitness {
-            template <typename EA>
-            typename EA::population_entry_type operator()(EA& ea) {
-                // generate a population of random individuals:
-                typename EA::population_type population;
-                random_individual ig;
-                fitness_type(population, ig, get<POPULATION_SIZE>(ea), ea);
-                
-                // and find the one with the worst fitness:
-                typename EA::individual_type mini=ind(population.begin(),ea);
-                for(typename EA::population_type::iterator i=population.begin(); i!=population.end(); ++i) {
-                    if(ind(i,ea).fitness() < mini.fitness()) {
-                        mini = ind(i,ea);
-                    }
-                }
-                return make_population_entry(mini,ea);               
-            }
-        };
+//        
+//        /*! Generates a random individual of low fitness.
+//         */
+//        struct random_low_fitness {
+//            template <typename EA>
+//            typename EA::population_entry_type operator()(EA& ea) {
+//                // generate a population of random individuals:
+//                typename EA::population_type population;
+//                random_individual ig;
+//                fitness_type(population, ig, get<POPULATION_SIZE>(ea), ea);
+//                
+//                // and find the one with the worst fitness:
+//                typename EA::individual_type mini=ind(population.begin(),ea);
+//                for(typename EA::population_type::iterator i=population.begin(); i!=population.end(); ++i) {
+//                    if(ind(i,ea).fitness() < mini.fitness()) {
+//                        mini = ind(i,ea);
+//                    }
+//                }
+//                return make_population_entry(mini,ea);               
+//            }
+//        };
         
         
         /*! Generates a replicate of a given individual, with mutation.

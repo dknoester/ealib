@@ -29,6 +29,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <ea/datafile.h>
 #include <ea/events.h>
 #include <ea/meta_data.h>
 
@@ -42,21 +43,20 @@ namespace ea {
     
     LIBEA_MD_DECL(GM_AGE, "ea.alps.genetic_material_age", unsigned int);
     LIBEA_MD_DECL(ADMISSION_AGE, "ea.alps.admission_age", double);
-    LIBEA_MD_DECL(ALPS_MIN_REMAIN, "ea.alps.min_remain", double);
     
-    template <typename EA>
-    struct alps {
+    template <typename MEA>
+    struct alps : event {
+        typedef typename MEA::individual_type EA;
         
-        alps(EA& ea) {
-            _inheritance_conn = ea.events().inheritance.connect(boost::bind(&alps::inheritance, this, _1, _2, _3));
-            _update_conn = ea.events().end_of_update.connect(boost::bind(&alps::end_of_update, this, _1));
+        alps(MEA& ea) {
+            _inheritance_conn.resize(get<META_POPULATION_SIZE>(ea));
             
-            int number_levels = get<META_POPULATION_SIZE>(ea);
-            for(int i=0; i<number_levels; ++i) {
-                int age = i*10; 
-                put<ADMISSION_AGE>(age, ea[i]);
+            for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                _inheritance_conn[i] = ea[i].events().inheritance.connect(boost::bind(&alps::inheritance, this, _1, _2, _3));
+                put<ADMISSION_AGE>(i*10, ea[i]);
             }
             
+            _update_conn = ea.events().end_of_update.connect(boost::bind(&alps::end_of_update, this, _1));
         }
         
         /*! Called for every inheritance event. 
@@ -75,12 +75,12 @@ namespace ea {
         }
         
         //! Perform alps migration among populations.
-        virtual void end_of_update(EA& ea) {
+        virtual void end_of_update(MEA& ea) {
             int number_levels = get<META_POPULATION_SIZE>(ea);
             
             // increment the age of all individuals
-            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                for(typename EA::individual_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
+            for(typename MEA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                for(typename MEA::individual_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
                     int age = get<GM_AGE>(**j) + 1; 
                     put<GM_AGE>(age, **j); 
                 }
@@ -96,9 +96,8 @@ namespace ea {
                 std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::meta_data<GM_AGE>());
                 
                 // find the first individual w/ fitness >= next_admission, but make sure to leave some behind
-                typename EA::individual_type::population_type::iterator f=ea[i].population().begin();
-                std::advance(f, static_cast<std::size_t>(get<ALPS_MIN_REMAIN>(ea)*get<POPULATION_SIZE>(ea)));
-                typename EA::individual_type::population_type::iterator l=ea[i].population().end();
+                typename MEA::individual_type::population_type::iterator f=ea[i].population().begin();
+                typename MEA::individual_type::population_type::iterator l=ea[i].population().end();
                 for( ; f!=l; ++f) {
                     if (get<GM_AGE>(**f) > next_admission) {
                         break;
@@ -106,7 +105,7 @@ namespace ea {
                 }
                 
                 // now, move all individuals w/ fitness >= next_admission to the next pop:
-                ea[i+1].population().insert(ea[i+1].population().end(), f,l);
+                ea[i+1].population().insert(ea[i+1].population().end(), f, l);
                 // and remove them from this one:
                 ea[i].population().erase(f,l);
             }
@@ -114,8 +113,51 @@ namespace ea {
             ea[0].generate_initial_population();
         }
         
-        boost::signals::scoped_connection _inheritance_conn;
+        std::vector<boost::signals::scoped_connection> _inheritance_conn;
         boost::signals::scoped_connection _update_conn;
+    };
+    
+    
+    /*! Datafile for mean generation, and mean & max fitness.
+     */
+    template <typename EA>
+    struct alps_datafile : record_statistics_event<EA> {
+        alps_datafile(EA& ea) : record_statistics_event<EA>(ea), _df("alps.dat") {
+            _df.add_field("update");
+            for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                std::string prefix = "sp" + boost::lexical_cast<std::string>(i);
+                _df.add_field(prefix + "_mean_age")
+                .add_field(prefix + "_mean_fitness")
+                .add_field(prefix + "_max_fitness");
+            }
+        }
+        
+        virtual ~alps_datafile() {
+        }
+        
+        virtual void operator()(EA& ea) {
+            using namespace boost::accumulators;
+            
+            _df.write(ea.current_update());
+            
+            for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                accumulator_set<double, stats<tag::mean> > age;
+                accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                
+                for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
+                    age(get<GM_AGE>(**j));
+                    fit(static_cast<double>((*j)->fitness()));
+                }
+                                
+                _df.write(mean(age))
+                .write(mean(fit))
+                .write(max(fit));
+            }
+
+            _df.endl();
+        }
+        
+        datafile _df;
     };
     
 } // ea
