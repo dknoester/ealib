@@ -53,7 +53,7 @@ namespace ea {
             
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                 _inheritance_conn[i] = ea[i].events().inheritance.connect(boost::bind(&alps::inheritance, this, _1, _2, _3));
-                put<ADMISSION_AGE>(i*10, ea[i]);
+                put<ADMISSION_AGE>(i*100, ea[i]);
             }
             
             _update_conn = ea.events().end_of_update.connect(boost::bind(&alps::end_of_update, this, _1));
@@ -64,38 +64,28 @@ namespace ea {
         virtual void inheritance(typename EA::population_type& parents,
                                  typename EA::individual_type& offspring,
                                  EA& ea) {
-            int age =  ea.current_update(); 
-            int p_age;
-            for (typename EA::population_type::iterator i=parents.begin(); i!=parents.end(); ++i) {
-                p_age = get<GM_AGE>(**i,0); 
-                if (p_age > age) age = p_age + 1;
-            }
-            
-            put<GM_AGE>(age, offspring);
+            std::sort(parents.begin(), parents.end(), comparators::meta_data<GM_AGE>());
+            put<GM_AGE>(get<GM_AGE>(*parents.back(),-1)+1, offspring);
         }
         
         //! Perform alps migration among populations.
         virtual void end_of_update(MEA& ea) {
-            int number_levels = get<META_POPULATION_SIZE>(ea);
-            
             // increment the age of all individuals
             for(typename MEA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                 for(typename MEA::individual_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
-                    int age = get<GM_AGE>(**j) + 1; 
-                    put<GM_AGE>(age, **j); 
+                    get<GM_AGE>(**j) += 1; 
                 }
             }
             
             // "moving" an individual is insert/erase between populations
             // "copying" an individual is insert(make_population_entry(ind))
-            for (int i = 0; i < (number_levels - 1); ++i) {
+            for(int i=get<META_POPULATION_SIZE>(ea)-2; i>=0; --i) {
                 double next_admission = get<ADMISSION_AGE>(ea[i+1]);
-                typename EA::population_type moving_out;
-                
-                // sort ascending by fitness:
+
+                // sort ascending by age:
                 std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::meta_data<GM_AGE>());
                 
-                // find the first individual w/ fitness >= next_admission, but make sure to leave some behind
+                // find the first individual w/ age >= next_admission:
                 typename MEA::individual_type::population_type::iterator f=ea[i].population().begin();
                 typename MEA::individual_type::population_type::iterator l=ea[i].population().end();
                 for( ; f!=l; ++f) {
@@ -104,8 +94,15 @@ namespace ea {
                     }
                 }
                 
-                // now, move all individuals w/ fitness >= next_admission to the next pop:
-                ea[i+1].population().insert(ea[i+1].population().end(), f, l);
+                // now, move all individuals w/ fitness >= next_admission AND fitness greater
+                // than min to the next pop:
+                std::sort(ea[i+1].population().begin(), ea[i+1].population().end(), comparators::fitness());
+                for(typename MEA::individual_type::population_type::iterator tf=f; tf!=l; ++tf) {
+                    if((ea[i+1].population().size() < get<POPULATION_SIZE>(ea[i+1]))
+                       || ((*tf)->fitness() > ea[i+1].population().front()->fitness())) {
+                        ea[i+1].population().insert(ea[i+1].population().end(), *tf);
+                    }
+                }
                 // and remove them from this one:
                 ea[i].population().erase(f,l);
             }
@@ -141,19 +138,23 @@ namespace ea {
             _df.write(ea.current_update());
             
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
-                accumulator_set<double, stats<tag::mean> > age;
-                accumulator_set<double, stats<tag::mean, tag::max> > fit;
-                
-                for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
-                    age(get<GM_AGE>(**j));
-                    fit(static_cast<double>((*j)->fitness()));
+                if(ea[i].population().empty()) {
+                    _df.write(0.0).write(0.0).write(0.0);
+                } else {
+                    accumulator_set<double, stats<tag::mean> > age;
+                    accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                    
+                    for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
+                        age(get<GM_AGE>(**j,0.0));
+                        fit(static_cast<double>((*j)->fitness()));
+                    }
+                    
+                    _df.write(mean(age))
+                    .write(mean(fit))
+                    .write(max(fit));
                 }
-                                
-                _df.write(mean(age))
-                .write(mean(fit))
-                .write(max(fit));
             }
-
+            
             _df.endl();
         }
         

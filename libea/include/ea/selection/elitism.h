@@ -59,7 +59,7 @@ namespace ea {
                 std::sort(src.begin(), src.end(), comparators::fitness());
                 typename Population::reverse_iterator rl=src.rbegin();
                 std::advance(rl, e);
-                dst.append(src.rbegin(), rl);
+                dst.insert(dst.end(), src.rbegin(), rl);
 			};
 
 			embedded_selection_type _embedded; //!< Underlying selection strategy.

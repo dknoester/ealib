@@ -52,6 +52,13 @@ namespace ea {
 			void operator()(Population& population, EA& ea) {
 				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
 				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+                
+                // under certain meta-population configurations, it's possible that
+                // this population could be empty.  in that case, there's nothing to
+                // do here; return.
+                if(population.empty()) {
+                    return;
+                }
 				
                 // build the offspring:
                 Population offspring;

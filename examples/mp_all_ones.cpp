@@ -25,6 +25,7 @@
 #include <ea/datafiles/generation_fitness.h>
 #include <ea/adaptive_hfc.h>
 #include <ea/alps.h>
+#include <ea/selection/elitism.h>
 using namespace ea;
 
 template <typename EA>
@@ -68,6 +69,7 @@ public:
         add_option<MUTATION_PER_SITE_P>(this);
         add_option<TOURNAMENT_SELECTION_N>(this);
         add_option<TOURNAMENT_SELECTION_K>(this);
+        add_option<ELITISM_N>(this);
         add_option<RUN_UPDATES>(this);
         add_option<RUN_EPOCHS>(this);
         add_option<CHECKPOINT_ON>(this);
