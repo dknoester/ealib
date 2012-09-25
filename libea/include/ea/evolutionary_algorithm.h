@@ -109,11 +109,11 @@ namespace ea {
         //! Generates the initial population.
         void generate_initial_population() {
             _configurator.initial_population(*this);
-            calculate_fitness(_population.begin(), _population.end(), *this);
         }
 
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
+            calculate_fitness(_population.begin(), _population.end(), *this);
             for( ; n>0; --n) {
                 update();
             }
@@ -124,7 +124,7 @@ namespace ea {
         //! Advance this EA by one update.
         void update() {
             _events.record_statistics(*this);
-            if(_population.size() > 0) {
+            if(!_population.empty()) {
                 _generational_model(_population, *this);
             }
             _generational_model.next_update();

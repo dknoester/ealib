@@ -37,6 +37,9 @@ LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", int);
 LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
 LIBEA_MD_DECL(MKV_NODE_TYPES, "markov_network.node_types", std::string);
 LIBEA_MD_DECL(MKV_INITIAL_NODES, "markov_network.initial_nodes", int);
+LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", int);
+LIBEA_MD_DECL(MKV_REPR_MAX_SIZE, "markov_network.representation.max_size", int);
+LIBEA_MD_DECL(MKV_REPR_MIN_SIZE, "markov_network.representation.min_size", int);
 LIBEA_MD_DECL(NODE_WV_STEPS, "markov_network.node.wv_steps", double);
 LIBEA_MD_DECL(NODE_ALLOW_ZERO, "markov_network.node.allow_zero", bool);
 LIBEA_MD_DECL(NODE_INPUT_LIMIT, "markov_network.node.input.limit", int);
@@ -89,7 +92,7 @@ namespace ea {
             // gene duplication
             // (the below looks a little crude, but there were some problems related
             // to incorrect compiler optimization.)
-			if(ea.rng().p(get<MUTATION_DUPLICATION_P>(ea)) && (repr.size()<20000)) {
+			if(ea.rng().p(get<MUTATION_DUPLICATION_P>(ea)) && (repr.size()<get<MKV_REPR_MAX_SIZE>(ea))) {
                 int start = ea.rng().uniform_integer(0, repr.size());
                 int extent = ea.rng().uniform_integer(16, 513);
                 codon_buffer buf(extent);
@@ -100,7 +103,7 @@ namespace ea {
 			}
             
             // gene deletion
-			if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>1000)) {
+			if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<MKV_REPR_MIN_SIZE>(ea))) {
 				int start, extent;
 				extent = 15+ea.rng()(512);
 				start = ea.rng()(repr.size()-extent);
@@ -118,7 +121,7 @@ namespace ea {
             using namespace mkv;
             
             typename EA::representation_type repr;
-            repr.resize(get<REPRESENTATION_SIZE>(ea), 127);            
+            repr.resize(get<MKV_REPR_INITIAL_SIZE>(ea), 127);
 			
             // which gate types are supported?
             std::set<mkv_gates> supported = supported_gates(ea);

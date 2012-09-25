@@ -51,7 +51,7 @@ namespace ea {
 				while(n > 0) {
 					Population tourney;
 					std::insert_iterator<Population> tii(tourney,tourney.end());
-					ea.rng().sample_with_replacement(src.begin(), src.end(), tii, N);
+					ea.rng().sample_without_replacement(src.begin(), src.end(), tii, N);
 					
                     std::sort(tourney.begin(), tourney.end(), Comparator());
                     typename Population::reverse_iterator rl=tourney.rbegin();
