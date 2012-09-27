@@ -25,4 +25,4 @@ The following libraries are part of EALib:
 
 
 Contributors:
-David B. Knoester, Heather J. Goldsby, Randy Olson.
+David B. Knoester, Heather J. Goldsby, Randal S. Olson.
