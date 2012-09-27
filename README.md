@@ -23,7 +23,7 @@ Contains an implementation of Artificial Neural Networks (feedforward, recurrent
 and continuous-time recurrent).  *(In progress.)*
 
 ## Installation
-See INSTALL.md
+See INSTALL *(In progress.)*
 
 ## Examples and User's guide
 See doc/users-guide.html *(In progress.)*
