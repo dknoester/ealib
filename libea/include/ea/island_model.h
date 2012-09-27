@@ -1,4 +1,4 @@
-/* adaptive_hfc.h 
+/* island_model.h
  * 
  * This file is part of EALib.
  * 
@@ -20,20 +20,20 @@
 #ifndef _EA_ISLAND_MODEL_H_
 #define _EA_ISLAND_MODEL_H_
 
-
 #include <ea/events.h>
 #include <ea/meta_data.h>
 
 namespace ea {
-    LIBEA_MD_DECL(ADMISSION_LEVEL, "ea.adaptive_hfc.admission_level", double);
+    LIBEA_MD_DECL(ISLAND_MIGRATION_PERIOD, "ea.island_model.migration_period", double);
+    LIBEA_MD_DECL(ISLAND_MIGRATION_RATE, "ea.island_model.migration_rate", double);
 
     /*! Island models provide for migration among different populations in a 
      meta-population EA.
      */
     template <typename EA>
-    struct island_model : end_of_update_event<EA> {
+    struct island_model : periodic_event<ISLAND_MIGRATION_PERIOD,EA> {
         //! Constructor.
-        island_model(EA& ea) : end_of_update_event<EA>(ea) {
+        island_model(EA& ea) : periodic_event<ISLAND_MIGRATION_PERIOD,EA>(ea) {
         }
         
         //! Destructor.
@@ -42,7 +42,8 @@ namespace ea {
         
         //! Perform migration of individuals among populations.
         virtual void operator()(EA& ea) {
-        }        
+
+        }
     };
     
 } // ea
