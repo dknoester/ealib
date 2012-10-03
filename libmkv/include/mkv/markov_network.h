@@ -32,7 +32,6 @@
 #include <control/svm.h>
 #include <control/update.h>
 
-
 namespace mkv {
     
     /*! Updates a Markov network with the given input vector, producing output.

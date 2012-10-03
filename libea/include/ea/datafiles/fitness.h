@@ -20,6 +20,7 @@
 #ifndef _EA_DATAFILES_GENERATION_FITNESS_H_
 #define _EA_DATAFILES_GENERATION_FITNESS_H_
 
+#include <boost/lexical_cast.hpp>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
@@ -98,6 +99,64 @@ namespace ea {
             datafile _df;
         };
 
+        /*! Datafile for mean generation, and mean & max fitness.
+         */
+        template <typename EA>
+        struct meta_population_fitness : record_statistics_event<EA> {
+            meta_population_fitness(EA& ea) 
+            : record_statistics_event<EA>(ea)
+            , _df("subpopulation_fitness.dat")
+            , _mp("metapopulation_fitness.dat") {
+                _df.add_field("update");
+                for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                    _df.add_field("mean_generation_sp" + boost::lexical_cast<std::string>(i))
+                    .add_field("mean_fitness_sp" + boost::lexical_cast<std::string>(i))
+                    .add_field("max_fitness_sp" + boost::lexical_cast<std::string>(i));
+                }
+
+                _mp.add_field("update")
+                .add_field("mean_generation")
+                .add_field("mean_fitness")
+                .add_field("max_fitness");
+            }
+            
+            virtual ~meta_population_fitness() {
+            }
+            
+            virtual void operator()(EA& ea) {
+                using namespace boost::accumulators;
+                
+                accumulator_set<double, stats<tag::mean> > mpgen;
+                accumulator_set<double, stats<tag::mean, tag::max> > mpfit;
+
+                _df.write(ea.current_update());
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    accumulator_set<double, stats<tag::mean> > gen;
+                    accumulator_set<double, stats<tag::mean, tag::max> > fit;
+
+                    for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
+                        gen(j->generation());
+                        fit(static_cast<double>(j->fitness()));
+                        mpgen(j->generation());
+                        mpfit(static_cast<double>(j->fitness()));
+                    }
+                    
+                    _df.write(mean(gen))
+                    .write(mean(fit))
+                    .write(max(fit));
+                }                
+                _df.endl();
+
+                _mp.write(ea.current_update())
+                .write(mean(mpgen))
+                .write(mean(mpfit))
+                .write(max(mpfit))
+                .endl();
+            }
+            
+            datafile _df;
+            datafile _mp;
+        };
         
     } // datafiles
 } // ea

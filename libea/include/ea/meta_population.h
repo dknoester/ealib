@@ -20,10 +20,10 @@
 #ifndef _EA_META_POPULATION_H_
 #define _EA_META_POPULATION_H_
 
+#include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/iterator/indirect_iterator.hpp>
 #include <limits>
 
 #include <ea/ancestors.h>
@@ -143,20 +143,31 @@ namespace ea {
             return p;
         }
         
-        //! Initialize all the embedded EAs.
+        //! Initialize this and all embedded EAs, if we have any.
         void initialize() {
-            for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
-                _population.push_back(make_individual());
+            // ok, if we have embedded eas, they've been loaded via a checkpoint.
+            // they need to be initialized, but we don't need to create any more.
+            // if we don't have any, create & initialize them.
+            if(_population.empty()) {
+                for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
+                    _population.push_back(make_individual()); // this also initializes!
+                }                
+            } else {
+                for(iterator i=begin(); i!=end(); ++i) {
+                    i->initialize();
+                }
             }
             _configurator.initialize(*this);
         }        
         
-        //! Generates the initial population.
+        /*! Generates the initial population.  This does nothing at the 
+         meta-population level, but it does generate the initial populations at
+         the sub-population level.
+         */
         void generate_initial_population() {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->generate_initial_population();
             }
-            _configurator.initial_population(*this);
         }
         
         //! Reset all populations.

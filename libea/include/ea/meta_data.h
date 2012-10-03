@@ -289,7 +289,9 @@ namespace ea {
     LIBEA_MD_DECL(NK_MODEL_N, "ea.fitness_function.nk_model.n", unsigned int);
     LIBEA_MD_DECL(NK_MODEL_K, "ea.fitness_function.nk_model.k", unsigned int);
     LIBEA_MD_DECL(NK_MODEL_BINS, "ea.fitness_function.nk_model.bins", unsigned int);
+    LIBEA_MD_DECL(ELITISM_N, "ea.selection.elitism.n", int);
     
+
     // ea.landscape.*
     LIBEA_MD_DECL(LANDSCAPE_PERIOD, "ea.landscape.period", double);
 
@@ -310,7 +312,6 @@ namespace ea {
 	// ea.selection.*
 	LIBEA_MD_DECL(TOURNAMENT_SELECTION_N, "ea.selection.tournament.n", int);
 	LIBEA_MD_DECL(TOURNAMENT_SELECTION_K, "ea.selection.tournament.k", int);
-	LIBEA_MD_DECL(ELITISM_N, "ea.selection.elitism.n", int);
 	
 	// ea.generational_model.*
 	LIBEA_MD_DECL(STEADY_STATE_LAMBDA, "ea.generational_model.steady_state.lambda", int);

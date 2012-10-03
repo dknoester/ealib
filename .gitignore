@@ -17,3 +17,4 @@ libfn/bin
 tmp
 DerivedData
 build
+dist

@@ -20,11 +20,12 @@
 #ifndef _EA_ISLAND_MODEL_H_
 #define _EA_ISLAND_MODEL_H_
 
+#include "boost/tuple/tuple.hpp"
 #include <ea/events.h>
 #include <ea/meta_data.h>
 
 namespace ea {
-    LIBEA_MD_DECL(ISLAND_MIGRATION_PERIOD, "ea.island_model.migration_period", double);
+    LIBEA_MD_DECL(ISLAND_MIGRATION_PERIOD, "ea.island_model.migration_period", int);
     LIBEA_MD_DECL(ISLAND_MIGRATION_RATE, "ea.island_model.migration_rate", double);
 
     /*! Island models provide for migration among different populations in a 
@@ -42,7 +43,14 @@ namespace ea {
         
         //! Perform migration of individuals among populations.
         virtual void operator()(EA& ea) {
-
+            int migrations = static_cast<int>(get<ISLAND_MIGRATION_RATE>(ea)*get<POPULATION_SIZE>(ea)*get<META_POPULATION_SIZE>(ea));
+            assert(migrations > 0);
+            
+            for( ; migrations>0; --migrations) {
+                typename EA::iterator s,t;
+                boost::tie(s,t) = ea.rng().choose_two_range(ea.begin(), ea.end());
+                t->append(t->make_individual(ea.rng().choice(s->begin(), s->end())->repr()));
+            }
         }
     };
     

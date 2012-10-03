@@ -1,3 +1,11 @@
+import testing ;
+import os ;
+local PREFIX = [ os.environ PREFIX ] ;
+
+if $(PREFIX) = "" {
+    PREFIX = "/usr/local" ;
+}
+
 lib libmkv :
     src/markov_network.cpp
     src/graph.cpp
@@ -7,3 +15,16 @@ lib libmkv :
     :
     : <include>./include
 ;
+
+#alias install : install-lib install-headers ;
+
+#install install-lib : 
+#    libmkv
+#    : <location>$(PREFIX)/lib <install-type>LIB
+#    ;
+
+#install install-headers :
+#    [ glob-tree "*.h" : test $(PREFIX) ]
+#    : <location>$(PREFIX)/include <install-source-root>include
+#    ;
+

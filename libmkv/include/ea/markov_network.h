@@ -24,10 +24,11 @@
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/analysis.h>
+
 #include <mkv/markov_network.h>
+#include <mkv/detail/adaptive_prob_node.h>
 #include <mkv/detail/det_node.h>
 #include <mkv/detail/prob_node.h>
-#include <mkv/detail/adaptive_prob_node.h>
 #include <mkv/graph.h>
 
 // meta-data
@@ -37,9 +38,9 @@ LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", int);
 LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
 LIBEA_MD_DECL(MKV_NODE_TYPES, "markov_network.node_types", std::string);
 LIBEA_MD_DECL(MKV_INITIAL_NODES, "markov_network.initial_nodes", int);
-LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", int);
-LIBEA_MD_DECL(MKV_REPR_MAX_SIZE, "markov_network.representation.max_size", int);
-LIBEA_MD_DECL(MKV_REPR_MIN_SIZE, "markov_network.representation.min_size", int);
+LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", unsigned int);
+LIBEA_MD_DECL(MKV_REPR_MAX_SIZE, "markov_network.representation.max_size", unsigned int);
+LIBEA_MD_DECL(MKV_REPR_MIN_SIZE, "markov_network.representation.min_size", unsigned int);
 LIBEA_MD_DECL(NODE_WV_STEPS, "markov_network.node.wv_steps", double);
 LIBEA_MD_DECL(NODE_ALLOW_ZERO, "markov_network.node.allow_zero", bool);
 LIBEA_MD_DECL(NODE_INPUT_LIMIT, "markov_network.node.input.limit", int);
@@ -67,7 +68,6 @@ namespace mkv {
         if(boost::icontains(gates,"probhistorical")) { supported.insert(PROB_HIST); }
         return supported;
     }
-    
 }
 
 namespace ea {
@@ -111,10 +111,10 @@ namespace ea {
 			}
 		}
 	};
-	
-	/*! Generates random Markov network-based individuals.
-	 */
     
+    
+    /*! Generates random Markov network-based individuals.
+	 */    
 	struct mkv_random_individual {
         template <typename EA>
         typename EA::representation_type operator()(EA& ea) {
@@ -139,108 +139,118 @@ namespace ea {
 			return repr;
 		}
 	};
-    
-} //ea
+}
 
 
-namespace mkv {    
-    
-    template <typename Network, typename ForwardIterator, typename MetaData>
-    void build_prob(Network& net, ForwardIterator h, MetaData& md) {
-        using namespace detail;
-        using namespace ea;
-        using namespace ea::algorithm;
+namespace mkv {
+    namespace detail {
+        /*! Build a probabilistic gate.
+         */
+        template <typename Network, typename ForwardIterator, typename MetaData>
+        void build_prob(Network& net, ForwardIterator h, MetaData& md) {
+            using namespace detail;
+            using namespace ea;
+            using namespace ea::algorithm;
+            
+            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
+            index_list_type inputs(h, h+nin);
+            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nin;
+            index_list_type outputs(h, h+nout);
+            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nout;
+            
+            markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
+            net.append(p);
+        }
         
-        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-        index_list_type inputs(h, h+nin);
-        std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nin;
-        index_list_type outputs(h, h+nout);
-        std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nout;
         
-        markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
-        net.append(p);
+        /*! Build a deterministic gate.
+         */
+        template <typename Network, typename ForwardIterator, typename MetaData>
+        void build_det(Network& net, ForwardIterator h, MetaData& md) {
+            using namespace detail;
+            using namespace ea;
+            using namespace ea::algorithm;
+            
+            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
+            index_list_type inputs(h, h+nin);
+            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nin;
+            index_list_type outputs(h, h+nout);
+            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nout;
+            
+            markov_network::nodeptr_type p(new deterministic_mkv_node(inputs, outputs, h));
+            net.append(p);
+        }    
+        
+        
+        /*! Build a history-tracking gate.
+         */
+        template <typename Network, typename ForwardIterator, typename MetaData>
+        void build_prob_hist(Network& net, ForwardIterator h, MetaData& md) {
+            using namespace detail;
+            using namespace ea;
+            using namespace ea::algorithm;
+            
+            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
+            int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
+            
+            index_list_type inputs(h, h+nin);
+            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nin;
+            index_list_type outputs(h, h+nout);
+            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nout;
+            
+            markov_network::nodeptr_type p(new probabilistic_history_mkv_node(nhistory, inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
+            net.append(p);
+        }
+        
+        
+        /*! Build an adaptive gate.
+         */
+        template <typename Network, typename ForwardIterator, typename MetaData>
+        void build_adaptive(Network& net, ForwardIterator h, MetaData& md) {
+            using namespace detail;
+            using namespace ea;
+            using namespace ea::algorithm;
+            
+            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
+            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
+            int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
+            int posf=*h++ % net.svm_size();
+            int negf=*h++ % net.svm_size();
+            index_list_type inputs(h, h+nin);
+            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nin;
+            index_list_type outputs(h, h+nout);
+            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+            h+=nout;                        
+            weight_vector_type poswv(h, h+nhistory);
+            std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
+                           std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
+            std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
+                           std::bind2nd(std::multiplies<double>(), 1.0/get<NODE_WV_STEPS>(md)));
+            h+=nhistory;
+            weight_vector_type negwv(h, h+nhistory);
+            std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
+                           std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
+            std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
+                           std::bind2nd(std::multiplies<double>(), -1.0/get<NODE_WV_STEPS>(md)));
+            h+=nhistory;
+            
+            markov_network::nodeptr_type p(new adaptive_mkv_node(nhistory,
+                                                                 posf, poswv,
+                                                                 negf, negwv,
+                                                                 inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
+            net.append(p);
+        }
     }
-    
-    template <typename Network, typename ForwardIterator, typename MetaData>
-    void build_det(Network& net, ForwardIterator h, MetaData& md) {
-        using namespace detail;
-        using namespace ea;
-        using namespace ea::algorithm;
-        
-        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-        index_list_type inputs(h, h+nin);
-        std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nin;
-        index_list_type outputs(h, h+nout);
-        std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nout;
-        
-        markov_network::nodeptr_type p(new deterministic_mkv_node(inputs, outputs, h));
-        net.append(p);
-    }    
-    
-    template <typename Network, typename ForwardIterator, typename MetaData>
-    void build_prob_hist(Network& net, ForwardIterator h, MetaData& md) {
-        using namespace detail;
-        using namespace ea;
-        using namespace ea::algorithm;
-        
-        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-        int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
-        
-        index_list_type inputs(h, h+nin);
-        std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nin;
-        index_list_type outputs(h, h+nout);
-        std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nout;
-        
-        markov_network::nodeptr_type p(new probabilistic_history_mkv_node(nhistory, inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
-        net.append(p);
-    }
-    
-    template <typename Network, typename ForwardIterator, typename MetaData>
-    void build_adaptive(Network& net, ForwardIterator h, MetaData& md) {
-        using namespace detail;
-        using namespace ea;
-        using namespace ea::algorithm;
-        
-        int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-        int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-        int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
-        int posf=*h++ % net.svm_size();
-        int negf=*h++ % net.svm_size();
-        index_list_type inputs(h, h+nin);
-        std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nin;
-        index_list_type outputs(h, h+nout);
-        std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-        h+=nout;                        
-        weight_vector_type poswv(h, h+nhistory);
-        std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
-                       std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
-        std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
-                       std::bind2nd(std::multiplies<double>(), 1.0/get<NODE_WV_STEPS>(md)));
-        h+=nhistory;
-        weight_vector_type negwv(h, h+nhistory);
-        std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
-                       std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
-        std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
-                       std::bind2nd(std::multiplies<double>(), -1.0/get<NODE_WV_STEPS>(md)));
-        h+=nhistory;
-        
-        markov_network::nodeptr_type p(new adaptive_mkv_node(nhistory,
-                                                             posf, poswv,
-                                                             negf, negwv,
-                                                             inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
-        net.append(p);
-    }
-    
     
     /*! Build a Markov network from the genome [f,l), with the given meta data.
      */

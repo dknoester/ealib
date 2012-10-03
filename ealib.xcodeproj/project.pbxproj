@@ -200,7 +200,7 @@
 		4220F32C15D2C95F005750F1 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		4220F32E15D2D176005750F1 /* graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
 		42279CA315D52E0500DD63BB /* digital_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_evolution.h; sourceTree = "<group>"; };
-		42279CA515D52E2A00DD63BB /* generation_priority.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generation_priority.h; sourceTree = "<group>"; };
+		42279CA515D52E2A00DD63BB /* priority.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = priority.h; sourceTree = "<group>"; };
 		42279CA615D52E2A00DD63BB /* reactions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reactions.h; sourceTree = "<group>"; };
 		42279CA915D5309E00DD63BB /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
 		42279CB215D55F4700DD63BB /* markov_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = markov_network.cpp; sourceTree = "<group>"; };
@@ -225,7 +225,7 @@
 		423CBDC8157D0E450003A644 /* cmdline_interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cmdline_interface.h; sourceTree = "<group>"; };
 		423CBDC9157D0E450003A644 /* concepts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = concepts.h; sourceTree = "<group>"; };
 		423CBDCA157D0E450003A644 /* datafile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = datafile.h; sourceTree = "<group>"; };
-		423CBDCC157D0E450003A644 /* generation_fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generation_fitness.h; sourceTree = "<group>"; };
+		423CBDCC157D0E450003A644 /* fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fitness.h; sourceTree = "<group>"; };
 		423CBDCD157D0E450003A644 /* events.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = events.h; sourceTree = "<group>"; };
 		423CBDCE157D0E450003A644 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
 		423CBDCF157D0E450003A644 /* exceptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = exceptions.h; sourceTree = "<group>"; };
@@ -313,6 +313,7 @@
 		429BBA4715D99B7C00EA4F67 /* layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = layout.h; sourceTree = "<group>"; };
 		429BBA4A15DA73C800EA4F67 /* groups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = groups.h; sourceTree = "<group>"; };
 		429BBA4E15E5B5C500EA4F67 /* events.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = events.h; sourceTree = "<group>"; };
+		42D116DE161B356D00FA8831 /* parse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parse.h; sourceTree = "<group>"; };
 		42E133B815C6BBA600FE9EAE /* abstract_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_node.h; sourceTree = "<group>"; };
 		42E133B915C6BBA600FE9EAE /* adaptive_prob_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = adaptive_prob_node.h; sourceTree = "<group>"; };
 		42E133BA15C6BBA600FE9EAE /* det_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = det_node.h; sourceTree = "<group>"; };
@@ -581,9 +582,9 @@
 		423CBDCB157D0E450003A644 /* datafiles */ = {
 			isa = PBXGroup;
 			children = (
-				42279CA515D52E2A00DD63BB /* generation_priority.h */,
+				42279CA515D52E2A00DD63BB /* priority.h */,
 				42279CA615D52E2A00DD63BB /* reactions.h */,
-				423CBDCC157D0E450003A644 /* generation_fitness.h */,
+				423CBDCC157D0E450003A644 /* fitness.h */,
 			);
 			path = datafiles;
 			sourceTree = "<group>";
@@ -748,6 +749,7 @@
 			children = (
 				42E133B715C6BBA600FE9EAE /* detail */,
 				42841C3C15ADA06B00AB18BE /* markov_network.h */,
+				42D116DE161B356D00FA8831 /* parse.h */,
 				4220F32C15D2C95F005750F1 /* graph.h */,
 				42E133BD15C6BE8800FE9EAE /* instruments.h */,
 				429BBA4715D99B7C00EA4F67 /* layout.h */,

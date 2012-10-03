@@ -24,9 +24,10 @@
 #include <iterator>
 #include <ea/algorithm.h>
 #include <ea/comparators.h>
-#include <ea/interface.h>
+#include <ea/meta_data.h>
 
 namespace ea {
+
 	namespace selection {
 		
 		/*! Stacks elitism on top of another selection strategy.

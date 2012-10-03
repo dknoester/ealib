@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_digital_evolution_DIGITAL_EVOLUTION_ISA_H_
-#define _EA_digital_evolution_DIGITAL_EVOLUTION_ISA_H_
+#ifndef _EA_DIGITAL_EVOLUTION_ISA_H_
+#define _EA_DIGITAL_EVOLUTION_ISA_H_
 
 #include <boost/shared_ptr.hpp>
 #include <stdexcept>

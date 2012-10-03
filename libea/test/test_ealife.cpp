@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
 BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     al_type al;    
     al_type::individual_ptr_type p = al.make_individual(al_type::representation_type());
-    al_type::isa_type& hw_isa=al.isa();
+    al_type::isa_type& isa=al.isa();
     hardware::representation_type r; // is a circular genome...
     r.push_back(7); // 0
     r.push_back(7); // 1
@@ -95,17 +95,15 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     // in the same place
     // FH at 10
     hw.setHeadLocation(hardware::FH, 10); 
-    int cycle_cost = hw_isa(4, hw, p, al);
+//    isa(4, hw, p, al);
 	BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::IP), 9);
-    
-    
     
     // Check h-search when complement is found 
     // Create our label.
     hw.pushLabelStack(hardware::NOP_C);
     hw.pushLabelStack(hardware::NOP_A);
     hw.pushLabelStack(hardware::NOP_B);
-    cycle_cost = hw_isa(6, hw, p, al); 
+//    isa(6, hw, p, al); 
     
     // If a complement is found, BX is set to the distance to the complement, 
     BOOST_CHECK_EQUAL(hw.getRegValue(hardware::BX), 7);
@@ -121,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
 
 BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {    
     al_type al;    
-    al_type::isa_type& hw_isa=al.isa();
+    al_type::isa_type& isa=al.isa();
     
     put<POPULATION_SIZE>(100,al);
 	put<REPRESENTATION_SIZE>(100,al);
@@ -139,8 +137,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     a.generation() = -1.0;
     a.update() = al.current_update();
     
-    
-    ancestral.append(make_population_entry(a,al));
+    ancestral.insert(ancestral.end(), al.make_individual(a.repr()));
     
     al.population().clear();
     
@@ -151,14 +148,14 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
 
     r[10] = 11; // input
 
-    al.population().append(make_population_entry(r,al));
+    al.append(al.make_individual(r));
 
     int x = al.population().size();
 
     al_type::individual_ptr_type ind1 = al.population()[0];
     
     // Check that h_alloc increases memory by 150%
-    int cycle_cost = hw_isa(25, ind1->hw(), ind1, al);
+    isa(25, ind1->hw(), ind1, al);
     BOOST_CHECK_EQUAL(ind1->repr().size(), 250);
     
     // Check that h_copy: 
@@ -167,7 +164,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     ind1->hw().setHeadLocation(hardware::RH, 10); 
     ind1->hw().setHeadLocation(hardware::WH, 20);
     
-    cycle_cost = hw_isa(26, ind1->hw(), ind1, al);
+    isa(26, ind1->hw(), ind1, al);
     int val = ind1->repr()[20]; 
 	BOOST_CHECK_EQUAL(ind1->repr()[20], 11);
 
@@ -213,7 +210,9 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
 
 
 BOOST_AUTO_TEST_CASE(test_al_type) {
-    al_type al;    
+    al_type al;
+    
+    
     add_task<tasks::task_nand,resources::unlimited,catalysts::additive<1> >("nand", al); //1
 
     put<POPULATION_SIZE>(100,al);

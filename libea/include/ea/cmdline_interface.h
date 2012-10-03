@@ -252,6 +252,10 @@ namespace ea {
             
             ea.initialize();
             gather_events(ea);
+            if(vm.count("with-time")) {
+                add_event<run_statistics>(this,ea);
+            }
+            
             execute(ea);
         }        
         
