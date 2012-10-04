@@ -46,16 +46,12 @@ namespace ea {
      lineage.  While this is kind of interesting, it's unneeded overhead and artificially
      inflates reference counts.
      */
-    template <typename Representation, typename FitnessFunction>
-	class lod_individual : public individual<Representation, FitnessFunction> {
+    template <typename Individual>
+	class lod_individual : public Individual {
     public:
-        typedef Representation representation_type;
-		typedef FitnessFunction fitness_function_type;
-		typedef typename fitness_function_type::value_type fitness_type;
-        typedef individual<representation_type,fitness_function_type> base_type;
-        typedef lod_individual<representation_type,fitness_function_type> individual_type;
-        typedef boost::shared_ptr<individual_type> individual_ptr_type;
-        typedef std::set<individual_ptr_type> parent_set_type;
+        typedef Individual base_type;
+        typedef boost::shared_ptr<lod_individual> lod_ptr_type;
+        typedef std::set<lod_ptr_type> parent_set_type;
 
         //! Constructor.
         lod_individual() : base_type() {
@@ -64,10 +60,6 @@ namespace ea {
         //! Copy constructor.
         lod_individual(const lod_individual& that) : base_type(that) {
         }
-        
-        //! Constructor that builds an individual from a representation.
-		lod_individual(const representation_type& r) : base_type(r) {
-		}
         
         //! Assignment operator.
         lod_individual& operator=(const lod_individual& that) {
@@ -86,7 +78,7 @@ namespace ea {
         parent_set_type& lod_parents() { return _lod_parents; }
         
         //! Shorthand for asexual populations.
-        individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
+        lod_ptr_type lod_parent() { return *_lod_parents.begin(); }
         
         //! Returns true if this individual has parents.
         bool has_parents() { return (_lod_parents.size() > 0); }
@@ -114,7 +106,7 @@ namespace ea {
                                 typename EA::individual_type& offspring,
                                 EA& ea) {
             for(typename EA::population_type::iterator i=parents.begin(); i!=parents.end(); ++i) {
-                offspring.lod_parents().insert(ptr(i,ea));
+                offspring.lod_parents().insert(*i);
             }
         }
     };
