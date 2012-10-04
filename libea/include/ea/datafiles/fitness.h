@@ -105,8 +105,8 @@ namespace ea {
         struct meta_population_fitness : record_statistics_event<EA> {
             meta_population_fitness(EA& ea) 
             : record_statistics_event<EA>(ea)
-            , _df("subpopulation_fitness.dat")
-            , _mp("metapopulation_fitness.dat") {
+            , _df("sub_population_fitness.dat")
+            , _mp("meta_population_fitness.dat") {
                 _df.add_field("update");
                 for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                     _df.add_field("mean_generation_sp" + boost::lexical_cast<std::string>(i))

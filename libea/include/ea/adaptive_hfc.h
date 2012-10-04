@@ -68,6 +68,7 @@ namespace ea {
         virtual void operator()(EA& ea) {
             // Are we done with the initialization period? 
             if (ea.current_update() < get<INITIALIZATION_PERIOD>(ea)) return;
+            
             // Are we in the initialization period?
             if (ea.current_update() == get<INITIALIZATION_PERIOD>(ea)) {
                 setAdmissionLevels(ea);

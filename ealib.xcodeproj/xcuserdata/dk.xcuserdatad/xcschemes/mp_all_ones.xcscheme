@@ -34,7 +34,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/dk/Documents/repositories/research.hg/src/ealib/tmp"
+      customWorkingDirectory = "/Users/dk/Documents/repositories/jimmy2.hg/src/cpp/ealib/tmp"
       buildConfiguration = "Debug">
       <BuildableProductRunnable>
          <BuildableReference
