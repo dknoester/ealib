@@ -34,15 +34,15 @@ namespace ea {
         /*! Datafile for mean generation, and mean & max fitness.
          */
         template <typename EA>
-        struct generation_fitness : record_statistics_event<EA> {
-            generation_fitness(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
+        struct fitness : record_statistics_event<EA> {
+            fitness(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
                 _df.add_field("update")
                 .add_field("mean_generation")
                 .add_field("mean_fitness")
                 .add_field("max_fitness");
             }
             
-            virtual ~generation_fitness() {
+            virtual ~fitness() {
             }
             
             virtual void operator()(EA& ea) {
