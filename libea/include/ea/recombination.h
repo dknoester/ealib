@@ -32,7 +32,7 @@ namespace ea {
     void inherits_from(typename EA::individual_type& parent, typename EA::individual_type& offspring, EA& ea) {
         offspring.name() = next<INDIVIDUAL_COUNT>(ea);
         offspring.generation() = parent.generation() + 1.0;
-        offspring.update() = ea.current_update();
+//        offspring.update() = ea.current_update();
     }        
     
     
@@ -41,8 +41,8 @@ namespace ea {
     template <typename Population, typename EA>
     void inherits(Population& parents, Population& offspring, EA& ea) {
         for(typename Population::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
-            inherits_from(ind(parents.begin(),ea), ind(i,ea), ea);
-            ea.events().inheritance(parents, ind(i,ea), ea);
+            inherits_from(**parents.begin(), **i, ea);
+            ea.events().inheritance(parents, **i, ea);
         }
     }
     

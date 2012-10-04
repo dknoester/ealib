@@ -123,7 +123,7 @@ namespace ea {
         typedef EventHandler<digital_evolution> event_handler_type;
         
         //! Default constructor.
-        digital_evolution() {
+        digital_evolution() : _name(0), _generation(0.0) {
             _configurator.construct(*this);
         }
                 
@@ -199,6 +199,16 @@ namespace ea {
             return _scheduler.current_update();
         }
         
+        //! Retrieve this population's name.
+        unsigned long& name() {
+            return _name;
+        }
+        
+        //! Retrieve this population's generation.
+        double& generation() {
+            return _generation;
+        }
+        
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
         
@@ -224,6 +234,8 @@ namespace ea {
         scheduler_type& scheduler() { return _scheduler; }
         
     protected:
+        unsigned long _name;
+        double _generation;
         rng_type _rng; //!< Random number generator.
         environment_type _env; //!< Environment object.
         scheduler_type _scheduler; //!< Scheduler instance.
