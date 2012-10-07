@@ -47,7 +47,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-c ../examples/libea_defaults.cfg"
+            argument = "-c ../examples/libea_defaults.cfg --with-time"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

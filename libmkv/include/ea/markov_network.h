@@ -24,6 +24,8 @@
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/analysis.h>
+#include <ea/events.h>
+#include <ea/datafile.h>
 
 #include <mkv/markov_network.h>
 #include <mkv/detail/adaptive_prob_node.h>
@@ -140,7 +142,6 @@ namespace ea {
 		}
 	};
 }
-
 
 namespace mkv {
     namespace detail {
@@ -410,7 +411,46 @@ namespace mkv {
             mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
         }
     };
-    
+
+    /*! Datafile for markov network statistics.
+     */
+    template <typename EA>
+    struct mkv_meta_population_datafile : ea::record_statistics_event<EA> {
+        mkv_meta_population_datafile(EA& ea) : ea::record_statistics_event<EA>(ea), _df("mkv_meta_population_datafile.dat") {
+            _df.add_field("update")
+            .add_field("mean_gates")
+            .add_field("max_gates")
+            .add_field("mean_genome_size");
+        }
+        
+        virtual ~mkv_meta_population_datafile() {
+        }
+        
+        virtual void operator()(EA& ea) {
+            using namespace boost::accumulators;
+            accumulator_set<double, stats<tag::mean,tag::max> > gates;
+            accumulator_set<double, stats<tag::mean> > genes;
+            
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
+                    mkv::markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+                    mkv::build_markov_network(net, j->repr().begin(), j->repr().end(), ea);
+                    
+                    gates(net.size());
+                    genes(j->repr().size());
+                }
+            }            
+            
+            _df.write(ea.current_update())
+            .write(mean(gates))
+            .write(max(gates))
+            .write(mean(genes))
+            .endl();
+        }
+        
+        ea::datafile _df;
+    };
+
 } // mkv
 
 #endif
