@@ -336,7 +336,7 @@ namespace ea {
 	// ea.run.*
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
-    LIBEA_MD_DECL(CHECKPOINT_ON, "ea.run.checkpoint_on", int);
+    LIBEA_MD_DECL(CHECKPOINT_OFF, "ea.run.checkpoint_off", int);
 	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
 	LIBEA_MD_DECL(COMMAND_LINE, "ea.run.command_line", std::string);
 

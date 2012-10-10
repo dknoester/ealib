@@ -319,6 +319,7 @@
 		42E133BA15C6BBA600FE9EAE /* det_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = det_node.h; sourceTree = "<group>"; };
 		42E133BB15C6BBA600FE9EAE /* prob_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = prob_node.h; sourceTree = "<group>"; };
 		42E133BD15C6BE8800FE9EAE /* instruments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = instruments.h; sourceTree = "<group>"; };
+		42EA57941623257C007BCF51 /* meta_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_population.h; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		42F4B631158225F00075D6EF /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		42F4B63215822A7B0075D6EF /* attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
@@ -572,6 +573,7 @@
 				423CBDB4157D0E450003A644 /* information.h */,
 				423CBDB5157D0E450003A644 /* landscape.h */,
 				423CBDB6157D0E450003A644 /* line_of_descent.h */,
+				42EA57941623257C007BCF51 /* meta_population.h */,
 				423CBDB7157D0E450003A644 /* modularity.h */,
 				423CBDB8157D0E450003A644 /* population.h */,
 				423CBDB9157D0E450003A644 /* tool.h */,

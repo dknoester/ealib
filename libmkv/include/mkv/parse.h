@@ -47,8 +47,8 @@ namespace mkv {
         
         namespace qi = boost::spirit::qi;
 
-        /*! Parse a Markov network.  This class defines the grammar from which we'll
-         build Markov networks.
+        /*! Parse a Markov network from a genome of integers.  This class defines 
+         the grammar from which we'll build Markov networks.
          */
         template <typename Iterator>
         struct markov_network_parser : qi::grammar<Iterator, markov_network()> {

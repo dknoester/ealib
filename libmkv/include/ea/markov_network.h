@@ -362,13 +362,19 @@ namespace mkv {
         virtual void operator()(EA& ea) {
             using namespace ea;
             using namespace ea::analysis;
-            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
-            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
-            datafile df(get<ANALYSIS_OUTPUT>(ea));
-            std::ostringstream title;
-            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
-            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
+            
+            
+            int count=0;
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                typename EA::individual_type::individual_type& ind = analysis::find_most_fit_individual(*i);
+                markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+                build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+                
+                datafile df("sp_" + boost::lexical_cast<std::string>(count++) + get<ANALYSIS_OUTPUT>(ea));
+                std::ostringstream title;
+                //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+                mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
+            }         
         }
     };
     
@@ -411,7 +417,7 @@ namespace mkv {
             mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
         }
     };
-
+    
     /*! Datafile for markov network statistics.
      */
     template <typename EA>
@@ -428,6 +434,7 @@ namespace mkv {
         
         virtual void operator()(EA& ea) {
             using namespace boost::accumulators;
+            using namespace ea;
             accumulator_set<double, stats<tag::mean,tag::max> > gates;
             accumulator_set<double, stats<tag::mean> > genes;
             
@@ -450,7 +457,7 @@ namespace mkv {
         
         ea::datafile _df;
     };
-
+    
 } // mkv
 
 #endif
