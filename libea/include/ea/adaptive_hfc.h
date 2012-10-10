@@ -162,8 +162,8 @@ namespace ea {
     /*! Datafile for mean generation, and mean & max fitness.
      */
     template <typename EA>
-    struct ahfc_datafile : record_statistics_event<EA> {
-        ahfc_datafile(EA& ea) : record_statistics_event<EA>(ea), _df("ahfc.dat") {
+    struct adaptive_hfc_datafile : record_statistics_event<EA> {
+        adaptive_hfc_datafile(EA& ea) : record_statistics_event<EA>(ea), _df("ahfc.dat") {
             _df.add_field("update");
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                 std::string prefix = "sp" + boost::lexical_cast<std::string>(i);
@@ -173,7 +173,7 @@ namespace ea {
             }
         }
         
-        virtual ~ahfc_datafile() {
+        virtual ~adaptive_hfc_datafile() {
         }
         
         virtual void operator()(EA& ea) {

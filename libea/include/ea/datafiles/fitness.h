@@ -1,4 +1,4 @@
-/* generation_fitness.h
+/* fitness.h
  * 
  * This file is part of EALib.
  * 
@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_DATAFILES_GENERATION_FITNESS_H_
-#define _EA_DATAFILES_GENERATION_FITNESS_H_
+#ifndef _EA_DATAFILES_FITNESS_H_
+#define _EA_DATAFILES_FITNESS_H_
 
 #include <boost/lexical_cast.hpp>
 #include <boost/accumulators/accumulators.hpp>

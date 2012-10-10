@@ -24,6 +24,11 @@
 			<key>orderHint</key>
 			<integer>11</integer>
 		</dict>
+		<key>libfn_test.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>13</integer>
+		</dict>
 		<key>libmkv_test.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
