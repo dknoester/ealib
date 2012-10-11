@@ -363,16 +363,14 @@ namespace mkv {
             using namespace ea;
             using namespace ea::analysis;
             
-            
             int count=0;
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                 typename EA::individual_type::individual_type& ind = analysis::find_most_fit_individual(*i);
                 markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
                 build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
                 
-                datafile df("sp_" + boost::lexical_cast<std::string>(count++) + get<ANALYSIS_OUTPUT>(ea));
+                datafile df("reduced_sp" + boost::lexical_cast<std::string>(count++) + ".dot");
                 std::ostringstream title;
-                //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
                 mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
             }         
         }
