@@ -356,7 +356,7 @@ namespace mkv {
     /*! Save the dominant individual in graphviz format.
      */
     template <typename EA>
-    struct mkv_reduced_graph : public ea::analysis::unary_function<EA> {
+    struct mkv_meta_population_reduced_graph : public ea::analysis::unary_function<EA> {
         static const char* name() { return "mkv_reduced_graph"; }
         
         virtual void operator()(EA& ea) {
@@ -377,6 +377,25 @@ namespace mkv {
     };
     
     
+    /*! Save the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct mkv_reduced_graph : public ea::analysis::unary_function<EA> {
+        static const char* name() { return "mkv_reduced_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ea;
+            using namespace ea::analysis;
+            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+            datafile df(get<ANALYSIS_OUTPUT>(ea));
+            std::ostringstream title;
+            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net), false);
+        }
+    };
+
+    
     /*! Save the detailed graph of the dominant individual in graphviz format.
      */
     template <typename EA>
@@ -395,7 +414,7 @@ namespace mkv {
             mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net), true);
         }
     };
-    
+
     
     /*! Save the causal graph of the dominant individual in graphviz format.
      */
