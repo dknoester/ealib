@@ -344,6 +344,19 @@ namespace ea {
             }                
         }
         
+        //! Send a message to the currently-faced neighbor.
+        DIGEVO_INSTRUCTION_DECL(tx_msg_check_task) {
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);            
+            if(l.occupied()) {
+                int rbx = hw.modifyRegister();
+                int rcx = hw.nextRegister(rbx);
+                l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
+            } 
+            p->outputs().push_front(hw.getRegValue(hw.modifyRegister()));
+            p->outputs().resize(1);
+            ea.tasklib().check_tasks(*p,ea);
+        }
+        
         //! Retrieve a message from the caller's message buffer.
         DIGEVO_INSTRUCTION_DECL(rx_msg) {
             if(hw.msgs_queued()) {
