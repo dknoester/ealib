@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_adaptive_hfc) {
     typedef meta_population<all_ones_ea, test_configuration> ea_type;
     ea_type ea;
     adaptive_hfc<ea_type> ahfc(ea);
-    ahfc_datafile<ea_type> ahfcdf(ea);
+    adaptive_hfc_datafile<ea_type> ahfcdf(ea);
 }
 
 BOOST_AUTO_TEST_CASE(test_alps) {

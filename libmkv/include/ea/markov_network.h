@@ -21,6 +21,11 @@
 #define _EA_MARKOV_NETWORK_H_
 
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/max.hpp>
+
 #include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/analysis.h>

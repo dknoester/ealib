@@ -58,30 +58,7 @@ namespace nn {
         }
         
         
-        /*! Generates a feed-forward neural network with the specified number of neurons at each layer
-         and links with random weights.
-         
-         This is the canonical model of neural networks, also known as a Multi-Layer Perceptron (MLP).
-         At each layer, all neurons are connected to each neuron in the subsequent layer.  Link weights
-         are initialized to random values, each non-input neuron is connected to a bias, and the 
-         resulting network is suitable for training via back-propagation.
-         
-         The number of neurons at each layer are specified by the values of the range [first, last).
-         
-         We're playing a graph theory trick here in order to keep track of the input and output
-         layers.  Specifically, we link the first layer to the input() neuron, and the last layer
-         to the output() neuron.  It's then trivial to get the input and output layers by querying
-         for outgoing or incoming edges, respectively.
-         */
-        template <typename NeuralNetwork, typename InputIterator>
-        void mlp(NeuralNetwork& nn, InputIterator first, InputIterator last) {
-            typedef boost::mt19937 engine_type;
-            typedef boost::uniform_real< > uniform_real_dist;
-            typedef boost::variate_generator<engine_type&, uniform_real_dist > real_rng_type;
-            engine_type engine(static_cast<unsigned int>(std::time(0)));
-            real_rng_type rng(engine, uniform_real_dist(-0.5,0.5));
-            layout_mlp(nn, first, last, rng);
-        }
+     
         
         
         /*! Generate a feed-forward neural network, using the passed-in RNG.
@@ -161,7 +138,30 @@ namespace nn {
                 }		
             }
         }
-        
+        /*! Generates a feed-forward neural network with the specified number of neurons at each layer
+         and links with random weights.
+         
+         This is the canonical model of neural networks, also known as a Multi-Layer Perceptron (MLP).
+         At each layer, all neurons are connected to each neuron in the subsequent layer.  Link weights
+         are initialized to random values, each non-input neuron is connected to a bias, and the
+         resulting network is suitable for training via back-propagation.
+         
+         The number of neurons at each layer are specified by the values of the range [first, last).
+         
+         We're playing a graph theory trick here in order to keep track of the input and output
+         layers.  Specifically, we link the first layer to the input() neuron, and the last layer
+         to the output() neuron.  It's then trivial to get the input and output layers by querying
+         for outgoing or incoming edges, respectively.
+         */
+        template <typename NeuralNetwork, typename InputIterator>
+        void mlp(NeuralNetwork& nn, InputIterator first, InputIterator last) {
+            typedef boost::mt19937 engine_type;
+            typedef boost::uniform_real< > uniform_real_dist;
+            typedef boost::variate_generator<engine_type&, uniform_real_dist > real_rng_type;
+            engine_type engine(static_cast<unsigned int>(std::time(0)));
+            real_rng_type rng(engine, uniform_real_dist(-0.5,0.5));
+            mlp(nn, first, last, rng);
+        }
 	} // layout
 } //nn
 

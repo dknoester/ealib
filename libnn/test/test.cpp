@@ -19,7 +19,7 @@
  */
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
-#include "test_libea.h"
+#include "test.h"
 
 #include <boost/graph/graphviz.hpp>
 #include <iostream>
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(test_neural_network) {
     
     neural_network<feed_forwardS> nn;
     std::size_t layers[] = {2, 2, 1};
-    layout_mlp(nn, layers, layers+3);
+    layout::mlp(nn, layers, layers+3);
         
     train(nn, 100000, data);
     write_graphviz(std::cout, nn);	

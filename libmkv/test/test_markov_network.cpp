@@ -20,16 +20,16 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
 #include <mkv/markov_network.h>
+#include <ea/markov_network.h>
 #include <ea/cvector.h>
 
-#include "test_libea.h"
+#include "test_libmkv.h"
 
 /*!
  */
 BOOST_AUTO_TEST_CASE(test_markov_network_update3) {
     using namespace mkv;
 	using namespace mkv::detail;
-    using namespace control;
     using namespace ea;
     /*
 	 | 0  | 1  | 2  | 3  | rng | history
@@ -81,9 +81,11 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update3) {
 	};
 	
 	int* in;
-	int out[1] = { 0 };
+    int output=0;
+	int* out = &output;
     
     markov_network mkv(2, 1, 1, 42);
+    put<MKV_NODE_TYPES>("probabilistic,deterministic,adaptive", mkv);
     put<NODE_WV_STEPS>(32767.0, mkv);
     put<NODE_ALLOW_ZERO>(false, mkv);
     put<NODE_INPUT_FLOOR>(1, mkv);
@@ -96,36 +98,37 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update3) {
     build_markov_network(mkv, data, data+33, mkv);
     
     in=tc0;
-    update_n(1, mkv, in, in+2, out);
+
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]));
 	
 	in=tc1;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]));
 
     // before learning:
     {
         adaptive_mkv_node& node = *dynamic_cast<adaptive_mkv_node*>(mkv.begin()->get());
         BOOST_CHECK(node._table(1,1)==10);
-        BOOST_CHECK(node._table(1,4)==13);
+        BOOST_CHECK(node._table(1,3)==1);
         BOOST_CHECK((node._history.begin()->first==1) && (node._history.begin()->second==1));
     }    
     
 	in=tc2;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
     
     // after learning:
     {
         adaptive_mkv_node& node = *dynamic_cast<adaptive_mkv_node*>(mkv.begin()->get());
         BOOST_CHECK(node._table(1,1)==20);
-        BOOST_CHECK(node._table(1,4)==23);
+        BOOST_CHECK(node._table(1,3)==1);
         BOOST_CHECK((node._history.begin()->first==1) && (node._history.begin()->second==2));
     }    
 
     BOOST_CHECK((out[0]==in[2]));
 	
 	in=tc3;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
     BOOST_CHECK((out[0]==in[2]));
 }
 
@@ -135,7 +138,6 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update3) {
 BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
     using namespace mkv;
 	using namespace mkv::detail;
-    using namespace control;
     using namespace ea;
 	
 	/*
@@ -194,9 +196,12 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
 	};
 	
 	int* in;
-	int out[2] = { 0, 0 };
+	int output[2] = { 0, 0 };
+	int* out = output;
+
     
     markov_network mkv(2, 2, 1, 42); //random numbers == 5,11,13,2,10
+    put<MKV_NODE_TYPES>("probabilistic,deterministic,adaptive", mkv);
     put<NODE_ALLOW_ZERO>(false, mkv);
     put<NODE_INPUT_FLOOR>(1, mkv);
     put<NODE_INPUT_LIMIT>(8, mkv);
@@ -208,19 +213,19 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
     build_markov_network(mkv, data, data+64, mkv);
     
     in=tc0;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 	
 	in=tc1;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 	
 	in=tc2;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 	
 	in=tc3;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 }
 
@@ -230,7 +235,6 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
 BOOST_AUTO_TEST_CASE(test_markov_network_update1) {
     using namespace mkv;
 	using namespace mkv::detail;
-    using namespace control;
     using namespace ea;
 	
 	/*
@@ -291,6 +295,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update1) {
 	};
     
     markov_network mkv(2, 2, 1);
+    put<MKV_NODE_TYPES>("probabilistic,deterministic,adaptive", mkv);
     put<NODE_INPUT_FLOOR>(1, mkv);
     put<NODE_INPUT_LIMIT>(8, mkv);
     put<NODE_OUTPUT_FLOOR>(1, mkv);
@@ -303,9 +308,10 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update1) {
     BOOST_CHECK(mkv.svm_size()==5);
     
 	
-	int* in;
-	int out[2] = { 0, 0 };
-	
+    int* in;
+	int output[2] = { 0, 0 };
+	int* out = output;
+
     {
         deterministic_mkv_node& node = *dynamic_cast<deterministic_mkv_node*>(mkv.begin()->get());
         BOOST_CHECK(node._in[0]==0);
@@ -319,19 +325,19 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update1) {
     }
     
 	in=tc0;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 	
 	in=tc1;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 	
 	in=tc2;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 	
 	in=tc3;
-    update_n(1, mkv, in, in+2, out);
+    update_n_ptr(1, mkv, in, out);
 	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
 }
 
@@ -513,6 +519,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
 	};
     
     markov_network mkv(2, 2, 2);
+    put<MKV_NODE_TYPES>("probabilistic,deterministic,adaptive", mkv);
     put<NODE_WV_STEPS>(32767.0, mkv);
     put<NODE_ALLOW_ZERO>(false, mkv);
     put<NODE_INPUT_FLOOR>(1, mkv);
@@ -610,6 +617,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor1) {
 	};
     
     markov_network mkv(2, 2, 2);
+    put<MKV_NODE_TYPES>("probabilistic,deterministic,adaptive", mkv);
     put<NODE_WV_STEPS>(32767.0, mkv);
     put<NODE_ALLOW_ZERO>(false, mkv);
     put<NODE_INPUT_FLOOR>(1, mkv);
