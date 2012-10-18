@@ -22,7 +22,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 
 #include <ea/rng.h>
-#include "test_libea.h"
+#include "test.h"
 
 BOOST_AUTO_TEST_CASE(rng_functional) {
 	using namespace ea;

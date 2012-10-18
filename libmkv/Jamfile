@@ -10,7 +10,6 @@ lib libmkv :
     src/markov_network.cpp
     src/graph.cpp
     /libea//libea
-    /libcontrol//libcontrol 
     : <include>./include 
     :
     : <include>./include

@@ -21,4 +21,4 @@
 #define BOOST_TEST_DYN_LINK
 #endif
 #define BOOST_TEST_MAIN
-#include "test_libea.h"
+#include "test.h"

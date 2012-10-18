@@ -87,8 +87,6 @@ namespace ea {
         typedef GenerationalModel generational_model_type;
         //! Population type.
         typedef Population<individual_type, individual_ptr_type> population_type;
-        //! Value type stored in population.
-        typedef typename population_type::value_type population_entry_type;
         //! Meta-data type.
         typedef MetaData md_type;
         //! Random number generator type.
