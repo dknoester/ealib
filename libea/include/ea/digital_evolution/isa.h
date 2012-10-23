@@ -450,7 +450,16 @@ namespace ea {
             boost::shared_ptr<inst_type> p(new Instruction<hardware_type,ea_type>(cost));
             _isa.push_back(p);
             _name[p->name()] = _isa.size() - 1;
-        }            
+        }
+        
+        //! Knockout the instruction at index i with the given instruction.
+        template <template <typename,typename> class Instruction>
+        void knockout(std::size_t i, std::size_t cost) {
+            assert(i < _isa.size());
+            boost::shared_ptr<inst_type> p(new Instruction<hardware_type,ea_type>(cost));
+            _isa[i] = p;
+        }
+
         
         //! Execute instruction i.
         void operator()(std::size_t i, hardware_type& hw, individual_ptr_type p, ea_type& ea) {
@@ -491,6 +500,22 @@ namespace ea {
     void append_isa(EA& ea) {
         ea.isa().template append<Instruction>(1);
     }
+
+    //! Helper method to add an instruction to the ISA with the given cost.
+    template <template <typename,typename> class Instruction, typename EA>
+    void knockout_isa(const std::string& inst, std::size_t cost, EA& ea) {
+        std::size_t i = ea.isa()[inst];
+        ea.isa().template knockout<Instruction>(i, cost);
+    }
+    
+    //! Helper method to add an instruction to the ISA with a cost of 1.
+    template <template <typename,typename> class Instruction, typename EA>
+    void knockout_isa(const std::string& inst, EA& ea) {
+        std::size_t i = ea.isa()[inst];
+        ea.isa().template knockout<Instruction>(i, 1);
+    }
+
+    
 
 } // ea
 

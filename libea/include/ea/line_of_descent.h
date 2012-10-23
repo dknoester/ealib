@@ -224,7 +224,7 @@ namespace ea {
          */
         individual_ptr_type mrca(ea_type& ea) {
             assert(ea.population().size()>0);
-            individual_ptr_type offspring=ptr(ea.population().begin(),ea);
+            individual_ptr_type offspring=*ea.population().begin();
             individual_ptr_type parent;
             individual_ptr_type m=offspring;
             
@@ -263,9 +263,8 @@ namespace ea {
             ar & boost::serialization::make_nvp("lineage_size", s);
             _lod.clear();
             for(std::size_t i=0; i<s; ++i) {
-                individual_type j;
-                ar & boost::serialization::make_nvp("individual", j);
-                individual_ptr_type p(new individual_type(j));
+                individual_ptr_type p(new individual_type());
+                ar & boost::serialization::make_nvp("individual", *p);
                 _lod.push_back(p);
             }
 		}
@@ -274,24 +273,6 @@ namespace ea {
     };
     
 
-    /*! Dereference an LoD iterator.
-     */
-    template <typename EA>
-    typename EA::individual_type& ind(typename line_of_descent<EA>::iterator i, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        return ind(*i,ea);
-    }
-
-
-    /*! Dereference an LoD iterator.
-     */
-    template <typename EA>
-    typename EA::individual_type& ind(typename line_of_descent<EA>::reverse_iterator i, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        return ind(*i,ea);
-    }
-
-    
     /*! Line-of-descent datafile.
      
      Saves the lod at the end of every epoch.
@@ -315,17 +296,6 @@ namespace ea {
             datafile df("lod", ea.current_update(), ".xml");
             boost::archive::xml_oarchive oa(df);            
             oa << BOOST_SERIALIZATION_NVP(lod);
-            
-            lod.uniq();
-            datafile dff("lod_fitness", ea.current_update(), ".dat");
-            dff.add_field("update")
-            .add_field("generation")
-            .add_field("fitness");
-            typename line_of_descent<EA>::iterator i=lod.begin();
-            ++i;
-            for(; i!=lod.end(); ++i) {
-                dff.write(ind(i,ea).update()).write(ind(i,ea).generation()).write(fitness(ind(i,ea),ea)).endl();
-            }
         }
 
         lod_event<EA> _lod_event;
