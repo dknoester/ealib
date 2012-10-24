@@ -1,4 +1,4 @@
-/* update.h
+/* test.cpp
  * 
  * This file is part of EALib.
  * 
@@ -17,23 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _CONTROL_UPDATE_H_
-#define _CONTROL_UPDATE_H_
-
-#include <stdexcept>
-
-namespace control {
-    
-    /*! Update a system-under-control (SOC) n times with inputs [f,l), and place
-     all output in result.
-     */
-    template <typename SOC, typename StateVector>
-    void update_n(std::size_t n, SOC& soc, const StateVector& input, StateVector& output) {
-        for(; n>0; --n) {
-            update(soc, input, output);
-        }
-    }    
-    
-} // fn
-
-#endif
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MAIN
+#include "test_libmkv.h"

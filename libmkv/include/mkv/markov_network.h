@@ -29,8 +29,7 @@
 #include <ea/algorithm.h>
 #include <ea/rng.h>
 #include <ea/meta_data.h>
-#include <control/svm.h>
-#include <control/update.h>
+#include <mkv/svm.h>
 
 
 namespace mkv {
@@ -58,6 +57,36 @@ namespace mkv {
         std::copy(mkv.output_begin(), mkv.output_end(), output.begin());
     }
 
+    template <typename MKV, typename T>
+    void update_ptr(MKV& mkv, const T* input, T* output) {
+        mkv.rotate();
+        std::copy(input, input+mkv.input_size(), mkv.input_begin());
+        
+        mkv.top_half();
+        for(typename MKV::iterator i=mkv.begin(); i!=mkv.end(); ++i) {
+            (*i)->update(mkv);
+        }
+        mkv.bottom_half();
+        
+        std::copy(mkv.output_begin(), mkv.output_end(), output);
+    }
+
+    /*! Update a Markov Network n times with inputs [f,l).
+     */
+    template <typename MKV, typename StateVector>
+    void update_n(std::size_t n, MKV& mkv, const StateVector& input, StateVector& output) {
+        for(; n>0; --n) {
+            update(mkv, input, output);
+        }
+    }
+
+    template <typename MKV, typename T>
+    void update_n_ptr(std::size_t n, MKV& mkv, const T* input, T* output) {
+        for(; n>0; --n) {
+            update_ptr(mkv, input, output);
+        }
+    }
+
     //! Reinforce all nodes in a (Markov) network.
     template <typename Network>
     void reinforce(Network& net, double lr) {
@@ -79,7 +108,7 @@ namespace mkv {
     class markov_network {
     public:
         typedef int state_type; //!< Type for states.
-        typedef control::svm<state_type> svm_type; //!< State vector machine type.
+        typedef svm<state_type> svm_type; //!< State vector machine type.
         typedef boost::shared_ptr<detail::abstract_markov_node> nodeptr_type; //!< Pointer type for markov nodes.
         typedef std::vector<nodeptr_type> nodelist_type; //!< Type for a list of markov nodes.
         typedef std::vector<mkv_instrument*> instrument_list_type; //!< Type for a list of instruments.

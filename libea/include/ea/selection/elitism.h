@@ -24,9 +24,10 @@
 #include <iterator>
 #include <ea/algorithm.h>
 #include <ea/comparators.h>
-#include <ea/interface.h>
+#include <ea/meta_data.h>
 
 namespace ea {
+
 	namespace selection {
 		
 		/*! Stacks elitism on top of another selection strategy.
@@ -59,8 +60,8 @@ namespace ea {
                 std::sort(src.begin(), src.end(), comparators::fitness());
                 typename Population::reverse_iterator rl=src.rbegin();
                 std::advance(rl, e);
-                dst.append(src.rbegin(), rl);
-			};
+                dst.insert(dst.end(), src.rbegin(), rl);
+            };
 
 			embedded_selection_type _embedded; //!< Underlying selection strategy.
 		};

@@ -20,6 +20,7 @@
 #ifndef _EA_EVOLUTIONARY_ALGORITHM_H_
 #define _EA_EVOLUTIONARY_ALGORITHM_H_
 
+#include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -86,15 +87,21 @@ namespace ea {
         typedef GenerationalModel generational_model_type;
         //! Population type.
         typedef Population<individual_type, individual_ptr_type> population_type;
-        //! Value type stored in population.
-        typedef typename population_type::value_type population_entry_type;
         //! Meta-data type.
         typedef MetaData md_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
         //! Event handler.
         typedef EventHandler<evolutionary_algorithm> event_handler_type;
-        
+        //! Iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
+        //! Const iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
+        //! Reverse iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
+        //! Const reverse iterator for embedded EAs.
+        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
+
         //! Default constructor.
         evolutionary_algorithm() {
             _configurator.construct(*this);
@@ -109,7 +116,6 @@ namespace ea {
         //! Generates the initial population.
         void generate_initial_population() {
             _configurator.initial_population(*this);
-            calculate_fitness(_population.begin(), _population.end(), *this);
         }
 
         //! Advance the epoch of this EA by n updates.
@@ -124,7 +130,7 @@ namespace ea {
         //! Advance this EA by one update.
         void update() {
             _events.record_statistics(*this);
-            if(_population.size() > 0) {
+            if(!_population.empty()) {
                 _generational_model(_population, *this);
             }
             _generational_model.next_update();
@@ -139,12 +145,14 @@ namespace ea {
         
         //! Insert individual x into the population.
         void append(individual_ptr_type x) {
+            calculate_fitness(*x, *this);
             _population.insert(_population.end(), x);
         }
         
         //! Insert the range of individuals [f,l) into the population.
         template <typename ForwardIterator>
         void append(ForwardIterator f, ForwardIterator l) {
+            calculate_fitness(f, l, *this);
             _population.insert(_population.end(), f, l);
         }
         
@@ -179,6 +187,51 @@ namespace ea {
         
         //! Accessor for the population model object.
         population_type& population() { return _population; }
+        
+        //! Return the n'th individual in the population.
+        individual_type& operator[](std::size_t n) {
+            return *_population[n];
+        }
+        
+        //! Returns a begin iterator to the population.
+        iterator begin() {
+            return iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population.
+        iterator end() {
+            return iterator(_population.end());
+        }
+        
+        //! Returns a begin iterator to the population (const-qualified).
+        const_iterator begin() const {
+            return const_iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population (const-qualified).
+        const_iterator end() const {
+            return const_iterator(_population.end());
+        }
+        
+        //! Returns a reverse begin iterator to the population.
+        reverse_iterator rbegin() {
+            return reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population.
+        reverse_iterator rend() {
+            return reverse_iterator(_population.rend());
+        }
+        
+        //! Returns a reverse begin iterator to the population (const-qualified).
+        const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population (const-qualified).
+        const_reverse_iterator rend() const {
+            return const_reverse_iterator(_population.rend());
+        }
         
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }

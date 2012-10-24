@@ -20,28 +20,24 @@
 #ifndef _EA_SELECTION_H_
 #define _EA_SELECTION_H_
 
-#include <ea/algorithm.h>
-#include <ea/interface.h>
-#include <ea/meta_data.h>
-
-
 namespace ea {
 
-    /*! Select n individuals from src into dst using the given selector type.
-     
+    /*! Select at most n individuals from src into dst using the given selector type.
      This is "survivor selection" -- The near-final step of most generational models,
-     immediately prior to population swaps (if any).  As such, this is where relative 
-     fitness is calculated, if the fitness function specifies it.
+     immediately prior to population swaps (if any).
 	 */
 	template <typename Selector, typename Population, typename EA>
 	void select_n(Population& src, Population& dst, std::size_t n, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
         ea.preselect(src);
-        Selector select(n,src,ea);
-        select(src, dst, n, ea);
-	}
-    
+        if(src.size() <= n) {
+            dst.insert(dst.end(), src.begin(), src.end());
+        } else {
+            Selector select(n,src,ea);
+            select(src, dst, n, ea);
+        }
+	}    
 
 } // ea
 

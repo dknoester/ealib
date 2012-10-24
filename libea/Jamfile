@@ -1,4 +1,11 @@
 import testing ;
+import os ;
+local PREFIX = [ os.environ PREFIX ] ;
+
+if $(PREFIX) = "" {
+    PREFIX = "/usr/local" ;
+}
+
 alias libea : : : : <include>./include ;
 
 lib libea_runner :
@@ -33,3 +40,16 @@ run test/test_libea.cpp
     /boost//unit_test_framework
     /site-config//z
     ;
+
+#alias install : install-lib install-headers ;
+
+#install install-lib : 
+#    libea_runner 
+#    : <location>$(PREFIX)/lib <install-type>LIB
+#    ;
+
+#install install-headers :
+#    [ glob-tree *.h : test $(PREFIX) ]
+#    : <location>$(PREFIX)/include <install-source-root>include
+#    ;
+

@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _FN_SVM_H_
-#define _FN_SVM_H_
+#ifndef _MKV_SVM_H_
+#define _MKV_SVM_H_
 
-namespace control {
+namespace mkv {
     
     /*! State Vector Machine.
      
@@ -89,9 +89,6 @@ namespace control {
         state_vector_type* _tminus1; //!< Pointer to state vector at time t-1.
     };
 
-} // fn
-
-
-
+} // mkv
 
 #endif

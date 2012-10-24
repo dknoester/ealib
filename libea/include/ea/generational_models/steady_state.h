@@ -52,7 +52,7 @@ namespace ea {
 			void operator()(Population& population, EA& ea) {
 				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
 				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-				
+                
                 // build the offspring:
                 Population offspring;
                 std::size_t n = static_cast<std::size_t>(get<REPLACEMENT_RATE_P>(ea)*population.size());

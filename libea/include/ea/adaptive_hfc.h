@@ -17,12 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
-
 #ifndef _EA_ADAPTIVE_HFC_H_
 #define _EA_ADAPTIVE_HFC_H_
-
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
@@ -32,6 +28,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <ea/datafile.h>
 #include <ea/events.h>
 #include <ea/meta_data.h>
 
@@ -71,6 +68,7 @@ namespace ea {
         virtual void operator()(EA& ea) {
             // Are we done with the initialization period? 
             if (ea.current_update() < get<INITIALIZATION_PERIOD>(ea)) return;
+            
             // Are we in the initialization period?
             if (ea.current_update() == get<INITIALIZATION_PERIOD>(ea)) {
                 setAdmissionLevels(ea);
@@ -156,9 +154,53 @@ namespace ea {
                 // and remove them from this one:
                 ea[i].population().erase(f,l);
             }
+            
+            ea[0].generate_initial_population();
         }
     };
     
+    /*! Datafile for mean generation, and mean & max fitness.
+     */
+    template <typename EA>
+    struct adaptive_hfc_datafile : record_statistics_event<EA> {
+        adaptive_hfc_datafile(EA& ea) : record_statistics_event<EA>(ea), _df("ahfc.dat") {
+            _df.add_field("update");
+            for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                std::string prefix = "sp" + boost::lexical_cast<std::string>(i);
+                _df.add_field(prefix + "_admission_level")
+                .add_field(prefix + "_mean_fitness")
+                .add_field(prefix + "_max_fitness");
+            }
+        }
+        
+        virtual ~adaptive_hfc_datafile() {
+        }
+        
+        virtual void operator()(EA& ea) {
+            using namespace boost::accumulators;
+            
+            _df.write(ea.current_update());
+            
+            for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                accumulator_set<double, stats<tag::mean> > age;
+                accumulator_set<double, stats<tag::mean, tag::max> > fit;
+
+                _df.write(get<ADMISSION_LEVEL>(ea[i], 0.0));
+                          
+                for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
+                    fit(static_cast<double>((*j)->fitness()));
+                }
+                
+                _df.write(mean(fit))
+                .write(max(fit));
+            }
+            
+            _df.endl();
+        }
+        
+        datafile _df;
+    };
+
 } // ea
 
 #endif

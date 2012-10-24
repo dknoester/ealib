@@ -183,7 +183,7 @@ namespace ea {
     template <template <typename> class Tool, typename EA>
     void add_tool(cmdline_interface<EA>* ci) {
         typedef Tool<EA> tool_type;
-        ci->_tools.put<tool_type>();
+        ci->_tools.template put<tool_type>();
     }
     
     //! Add an event to the list of events that are registered for an EA.
@@ -217,13 +217,13 @@ namespace ea {
         }
         
         //! Gather the options supported by this EA.
-        virtual void gather_options() = 0;
+        virtual void gather_options() { }
         
         //! Gather the analysis tools supported by this EA.
-        virtual void gather_tools() = 0;
+        virtual void gather_tools() { }
         
         //! Gather the events that occur during a trial of this EA.
-        virtual void gather_events(EA& ea) = 0;
+        virtual void gather_events(EA& ea) { }
 
         //! Analyze an EA instance.
 		virtual void analyze(boost::program_options::variables_map& vm) {
@@ -252,6 +252,10 @@ namespace ea {
             
             ea.initialize();
             gather_events(ea);
+            if(vm.count("with-time")) {
+                add_event<run_statistics>(this,ea);
+            }
+            
             execute(ea);
         }        
         
@@ -334,7 +338,7 @@ namespace ea {
 			// and run it!
 			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
                 ea.advance_epoch(get<RUN_UPDATES>(ea));
-                if(get<CHECKPOINT_ON>(ea)) {
+                if(!get<CHECKPOINT_OFF>(ea,0)) {
                     checkpoint(ea);
                 }
 			}

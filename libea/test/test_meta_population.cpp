@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test_libea.h"
+#include "test.h"
 
 #include <ea/meta_population.h>
 #include <ea/adaptive_hfc.h>
@@ -37,15 +37,14 @@ BOOST_AUTO_TEST_CASE(test_meta_population) {
 
 
 BOOST_AUTO_TEST_CASE(test_adaptive_hfc) {
-  typedef meta_population<all_ones_ea, test_configuration> ea_type;
-  ea_type ea;
-  adaptive_hfc<ea_type> ahfc(ea);
-    
+    typedef meta_population<all_ones_ea, test_configuration> ea_type;
+    ea_type ea;
+    adaptive_hfc<ea_type> ahfc(ea);
+    adaptive_hfc_datafile<ea_type> ahfcdf(ea);
 }
 
 BOOST_AUTO_TEST_CASE(test_alps) {
-  typedef meta_population<all_ones_ea, test_configuration> ea_type;
-  ea_type ea;
-  alps<ea_type> al(ea);
-  
+    typedef meta_population<all_ones_ea, test_configuration> ea_type;
+    ea_type ea;
+    alps<ea_type> a(ea);
 }

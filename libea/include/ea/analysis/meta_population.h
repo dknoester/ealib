@@ -1,4 +1,4 @@
-/* test.h
+/* meta_population.h 
  * 
  * This file is part of EALib.
  * 
@@ -17,27 +17,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _TEST_H_
-#define _TEST_H_
 
-#include <boost/test/unit_test.hpp>
+#ifndef _EA_ANALYSIS_META_POPULATION_H_
+#define _EA_ANALYSIS_META_POPULATION_H_
 
-struct test_rng {
-	test_rng(int r) : _r(r) {
-	}
-	
-	virtual ~test_rng() {
-	}
-	
-	virtual int operator()(int m) {
-		return std::min(_r,m-1);
-	}
-	
-	void reset(int r) {
-		_r = r;
-	}
-	
-	int _r;
-};
+#include <ea/analysis/tool.h>
+
+
+namespace ea {
+    namespace analysis {
+      
+        template <typename EA>
+        struct meta_population_tool : unary_function {
+            virtual void operator()(EA& ea) {
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    operator()(*i);
+                }
+            }
+            virtual void operator()(typename EA::individual_type& ea) = 0;
+        };
+        
+    } // analysis
+} // ea
 
 #endif

@@ -292,7 +292,7 @@ namespace ea {
 	void calculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-			calculate_fitness(ind(first,ea),ea);
+			calculate_fitness(**first,ea);
 		}
 	}
 

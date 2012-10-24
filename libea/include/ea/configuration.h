@@ -35,7 +35,6 @@ namespace ea {
         config->_events.push_back(p);
     }
     
-
     
     /*! Abstract configuration object for an EA.
      
@@ -64,11 +63,12 @@ namespace ea {
         //! Called to generate the initial EA population.
         virtual void initial_population(EA& ea) {
         }
+        
     protected:
         template <template <typename> class T, typename U> friend void add_event(abstract_configuration<U>* config, U& u);
         event_list _events; //!< List of all the events attached to an EA.
-
     };
 
 }
+
 #endif

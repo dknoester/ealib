@@ -25,9 +25,104 @@
 
 namespace ea {
 	namespace detail {
-        //! Concept checking helper.
+        //! Concept checking helper to ensure that two parameters are the same type.
 		template <typename T> void same_type(const T&, const T&);
 	}
+    
+    /*! Evolutionary algorithm concept, used to ensure the stability of the evolutionary_algorithm
+	 interface.
+	 
+	 There should be no need to implement a new evolutionary algorithm type; all customization is
+	 preformed through the various types passed as template parameters.
+	 
+	 <b>Refinement of:</b>
+	 
+	 <b>Associated types:</b> See attributes.
+	 
+	 <b>Valid expressions:</b> See member functions.
+	 
+	 <b>Models:</b> ea::evolutionary_algorithm, ea::digital_evolution, 
+     ea::novelty_search, ea::meta_population.
+	 
+	 */
+	template <typename X>
+	struct EvolutionaryAlgorithmConcept {
+	public:
+        typedef typename X::configuration_type configuration_type;
+        
+        typedef typename X::population_type population_type;
+        typedef typename X::individual_type individual_type;
+        typedef typename X::individual_ptr_type individual_ptr_type;
+        typedef typename X::iterator iterator;
+        typedef typename X::const_iterator const_iterator;
+        typedef typename X::reverse_iterator reverse_iterator;
+        typedef typename X::const_reverse_iterator const_reverse_iterator;
+        
+        typedef typename X::event_handler_type event_handler_type;
+        typedef typename X::md_type md_type;
+        typedef typename X::rng_type rng_type;
+        
+        
+//        typedef X::configuration_type configuration_type;
+//        typedef X::representation_type representation_type;
+//        typedef X::fitness_function_type fitness_function_type;
+//
+//        //! Fitness type.
+//        typedef typename fitness_function_type::fitness_type fitness_type;
+//        //! Attributes attached to individuals.
+//        typedef IndividualAttrs<evolutionary_algorithm> individual_attr_type;
+//        //! Individual type.
+//        typedef Individual<representation_type,fitness_type,individual_attr_type> individual_type;
+//        //! Individual pointer type.
+//        typedef boost::shared_ptr<individual_type> individual_ptr_type;
+//        //! Mutation operator type.
+//        typedef MutationOperator mutation_operator_type;
+//        //! Crossover operator type.
+//        typedef RecombinationOperator recombination_operator_type;
+//        //! Generational model type.
+//        typedef GenerationalModel generational_model_type;
+//        //! Population type.
+//        typedef Population<individual_type, individual_ptr_type> population_type;
+//        //! Value type stored in population.
+//        typedef typename population_type::value_type population_entry_type;
+//        //! Meta-data type.
+//        typedef MetaData md_type;
+//        //! Random number generator type.
+//        typedef RandomNumberGenerator rng_type;
+//        //! Event handler.
+//        typedef EventHandler<evolutionary_algorithm> event_handler_type;
+//        //! Iterator for embedded EAs.
+//        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
+//        //! Const iterator for embedded EAs.
+//        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
+//        //! Reverse iterator for embedded EAs.
+//        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
+//        //! Const reverse iterator for embedded EAs.
+//        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
+        
+        //		typedef typename X::ea_type ea_type;
+        //		typedef typename X::representation_type representation_type;
+        //		typedef typename X::fitness_function_type fitness_function_type;
+        //		typedef typename X::fitness_type fitness_type;
+        //		typedef typename X::individual_type individual_type;
+        //		typedef typename X::mutation_operator_type mutation_operator_type;
+        //		typedef typename X::recombination_operator_type recombination_operator_type;
+        //		typedef typename X::population_type population_type;
+        //		typedef typename X::parent_selection_type parent_selection_type;
+        //		typedef typename X::survivor_selection_type survivor_selection_type;
+        //		typedef typename X::generational_model_type generational_model_type;
+        //		typedef typename X::rng_type rng_type;
+        //		typedef typename X::event_handler_type event_handler_type;
+		
+		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
+		}
+	private:
+		X x;
+	};	
+
+    
+    
+    
     
     
 	/*! Selection strategy concept.
@@ -501,44 +596,7 @@ namespace ea {
 	private:
 	};
 	
-	/*! Evolutionary algorithm concept, used to ensure the stability of the evolutionary_algorithm
-	 interface.
-	 
-	 There should be no need to implement a new evolutionary algorithm type; all customization is
-	 preformed through the various types passed as template parameters.
-	 
-	 <b>Refinement of:</b> 
-	 
-	 <b>Associated types:</b> See attributes.
-	 
-	 <b>Valid expressions:</b> See member functions.
-	 
-	 <b>Models:</b> ea::evolutionary_algorithm	 
-	 
-	 */
-	template <typename X>
-	struct EvolutionaryAlgorithmConcept {
-	public:
-//		typedef typename X::ea_type ea_type;
-//		typedef typename X::representation_type representation_type;
-//		typedef typename X::fitness_function_type fitness_function_type;
-//		typedef typename X::fitness_type fitness_type;
-//		typedef typename X::individual_type individual_type;
-//		typedef typename X::mutation_operator_type mutation_operator_type;
-//		typedef typename X::recombination_operator_type recombination_operator_type;
-//		typedef typename X::population_type population_type;
-//		typedef typename X::parent_selection_type parent_selection_type;
-//		typedef typename X::survivor_selection_type survivor_selection_type;
-//		typedef typename X::generational_model_type generational_model_type;
-//		typedef typename X::rng_type rng_type;
-//		typedef typename X::event_handler_type event_handler_type;
 		
-		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
-		}
-	private:
-		X x;
-	};	
-	
 }
 
 #endif
