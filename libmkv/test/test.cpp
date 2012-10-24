@@ -19,4 +19,4 @@
  */
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MAIN
-#include "test_libmkv.h"
+#include "test.h"

@@ -28,7 +28,7 @@ run test/test_libea.cpp
     test/test_generational.cpp
     test/test_meta_data.cpp
     test/test_recombination.cpp
-    test/test_meta_population.cpp
+#    test/test_meta_population.cpp
     test/test_rng.cpp
     test/test_selection.cpp
     libea

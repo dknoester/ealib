@@ -29,7 +29,7 @@
 #include <ea/algorithm.h>
 #include <ea/rng.h>
 #include <ea/meta_data.h>
-#include <mkv/svm.h>
+#include <mkv/state_vector_machine.h>
 
 
 namespace mkv {
@@ -108,7 +108,7 @@ namespace mkv {
     class markov_network {
     public:
         typedef int state_type; //!< Type for states.
-        typedef svm<state_type> svm_type; //!< State vector machine type.
+        typedef state_vector_machine<state_type> svm_type; //!< State vector machine type.
         typedef boost::shared_ptr<detail::abstract_markov_node> nodeptr_type; //!< Pointer type for markov nodes.
         typedef std::vector<nodeptr_type> nodelist_type; //!< Type for a list of markov nodes.
         typedef std::vector<mkv_instrument*> instrument_list_type; //!< Type for a list of instruments.

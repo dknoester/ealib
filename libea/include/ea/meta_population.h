@@ -26,6 +26,7 @@
 #include <boost/shared_ptr.hpp>
 #include <limits>
 
+#include <ea/concepts.h>
 #include <ea/ancestors.h>
 #include <ea/interface.h>
 #include <ea/meta_data.h>
@@ -67,6 +68,7 @@ namespace ea {
 
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
         }
         
         //! Accessor for the random number generator.

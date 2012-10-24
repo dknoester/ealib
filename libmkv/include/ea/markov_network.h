@@ -362,7 +362,7 @@ namespace mkv {
      */
     template <typename EA>
     struct mkv_meta_population_reduced_graph : public ea::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_reduced_graph"; }
+        static const char* name() { return "mkv_meta_population_reduced_graph"; }
         
         virtual void operator()(EA& ea) {
             using namespace ea;
