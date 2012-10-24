@@ -93,17 +93,18 @@ namespace ea {
         typedef RandomNumberGenerator rng_type;
         //! Event handler.
         typedef EventHandler<evolutionary_algorithm> event_handler_type;
-        //! Iterator for embedded EAs.
+        //! Iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
-        //! Const iterator for embedded EAs.
+        //! Const iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
-        //! Reverse iterator for embedded EAs.
+        //! Reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
-        //! Const reverse iterator for embedded EAs.
+        //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
 
         //! Default constructor.
         evolutionary_algorithm() {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
             _configurator.construct(*this);
         }
                 

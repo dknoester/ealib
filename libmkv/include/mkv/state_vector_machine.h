@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _MKV_SVM_H_
-#define _MKV_SVM_H_
+#ifndef _MKV_STATE_VECTOR_MACHINE_H_
+#define _MKV_STATE_VECTOR_MACHINE_H_
 
 namespace mkv {
     
@@ -28,13 +28,13 @@ namespace mkv {
      machines.
      */
     template <typename StateType>
-    class svm {
+    class state_vector_machine {
     public:
         typedef StateType state_type;
         typedef std::vector<state_type> state_vector_type;
 
         //! Constructor.
-        svm(std::size_t n) : _n(n), _sv0(n), _sv1(n) {
+        state_vector_machine(std::size_t n) : _n(n), _sv0(n), _sv1(n) {
             _t = &_sv0;
             _tminus1 = &_sv1;
         }        

@@ -181,6 +181,7 @@ namespace ea {
         
         //! Default constructor.
         novelty_search() {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<novelty_search>));
         }
         
         //! Initialize this EA.

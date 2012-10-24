@@ -1,7 +1,6 @@
 LIBEA_INCLUDE = ./libea/include
 LIBMKV_INCLUDE = ./libmkv/include
 LIBNN_INCLUDE = ./libnn/include
-LIBCONTROL_INCLUDE = ./libcontrol/include
 HEADER_SEARCH_PATHS = $(LIBEA_INCLUDE) $(LIBFN_INCLUDE) $(LIBCONTROL_INCLUDE) $(LIBMKV_INCLUDE) $(LIBNN_INCLUDE) $(HOME)/include /usr/local/include
 OTHER_LDFLAGS = -lboost_iostreams -lboost_program_options -lboost_regex -lboost_serialization -lboost_signals
 LIBRARY_SEARCH_PATHS = $(HOME)/lib /usr/local/lib

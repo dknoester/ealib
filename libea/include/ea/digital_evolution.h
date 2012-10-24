@@ -124,6 +124,7 @@ namespace ea {
         
         //! Default constructor.
         digital_evolution() : _name(0), _generation(0.0) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
             _configurator.construct(*this);
         }
                 
