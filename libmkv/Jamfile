@@ -6,14 +6,16 @@ if $(PREFIX) = "" {
     PREFIX = "/usr/local" ;
 }
 
-lib libmkv :
-    src/markov_network.cpp
-    src/graph.cpp
-    /libea//libea
-    : <include>./include 
-    :
-    : <include>./include
-;
+alias libmkv : : : : <include>./include ;
+
+#lib libmkv :
+#    src/markov_network.cpp
+#    src/graph.cpp
+#    /libea//libea
+#    : <include>./include
+#    :
+#    : <include>./include
+#;
 
 #alias install : install-lib install-headers ;
 

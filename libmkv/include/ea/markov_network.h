@@ -1,19 +1,19 @@
 /* markov_network.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,46 +33,36 @@
 #include <ea/datafile.h>
 
 #include <mkv/markov_network.h>
-#include <mkv/detail/adaptive_prob_node.h>
-#include <mkv/detail/det_node.h>
-#include <mkv/detail/prob_node.h>
-#include <mkv/graph.h>
 
 // meta-data
 LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", int);
 LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", int);
 LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", int);
 LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
-LIBEA_MD_DECL(MKV_NODE_TYPES, "markov_network.node_types", std::string);
-LIBEA_MD_DECL(MKV_INITIAL_NODES, "markov_network.initial_nodes", int);
+LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
+LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", int);
 LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", unsigned int);
 LIBEA_MD_DECL(MKV_REPR_MAX_SIZE, "markov_network.representation.max_size", unsigned int);
 LIBEA_MD_DECL(MKV_REPR_MIN_SIZE, "markov_network.representation.min_size", unsigned int);
-LIBEA_MD_DECL(NODE_WV_STEPS, "markov_network.node.wv_steps", double);
-LIBEA_MD_DECL(NODE_ALLOW_ZERO, "markov_network.node.allow_zero", bool);
-LIBEA_MD_DECL(NODE_INPUT_LIMIT, "markov_network.node.input.limit", int);
-LIBEA_MD_DECL(NODE_INPUT_FLOOR, "markov_network.node.input.floor", int);
-LIBEA_MD_DECL(NODE_OUTPUT_LIMIT, "markov_network.node.output.limit", int);
-LIBEA_MD_DECL(NODE_OUTPUT_FLOOR, "markov_network.node.output.floor", int);
-LIBEA_MD_DECL(NODE_HISTORY_LIMIT, "markov_network.node.history.limit", int);
-LIBEA_MD_DECL(NODE_HISTORY_FLOOR, "markov_network.node.history.floor", int);
+LIBEA_MD_DECL(GATE_INPUT_LIMIT, "markov_network.gate.input.limit", int);
+LIBEA_MD_DECL(GATE_INPUT_FLOOR, "markov_network.gate.input.floor", int);
+LIBEA_MD_DECL(GATE_OUTPUT_LIMIT, "markov_network.gate.output.limit", int);
+LIBEA_MD_DECL(GATE_OUTPUT_FLOOR, "markov_network.gate.output.floor", int);
 
 
 namespace mkv {
     
-    enum mkv_gates { PROB=42, DET=43, ADAPTIVE=44, PROB_HIST=45 };
+    enum gate_types { MARKOV=42, LOGIC=43 };
     
     /*! Returns a set of supported gate types.
      */
     template <typename EA>
-    std::set<mkv_gates> supported_gates(EA& ea) {
+    std::set<gate_types> supported_gates(EA& ea) {
         using namespace ea;
-        std::set<mkv_gates> supported;
-        std::string gates = get<MKV_NODE_TYPES>(ea);
-        if(boost::icontains(gates,"deterministic")) { supported.insert(DET); }
-        if(boost::icontains(gates,"probabilistic")) { supported.insert(PROB); }
-        if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
-        if(boost::icontains(gates,"probhistorical")) { supported.insert(PROB_HIST); }
+        std::set<gate_types> supported;
+        std::string gates = get<MKV_GATE_TYPES>(ea);
+        if(boost::icontains(gates,"markov")) { supported.insert(MARKOV); }
+        if(boost::icontains(gates,"logic")) { supported.insert(LOGIC); }
         return supported;
     }
 }
@@ -105,7 +95,7 @@ namespace ea {
                 codon_buffer buf(extent);
                 for(int i=0; i<extent; ++i) {
                     buf[i] = repr[start+i];
-                }                
+                }
 				repr.insert(ea.rng().choice(repr.begin(),repr.end()), buf.begin(), buf.end());
 			}
             
@@ -121,7 +111,7 @@ namespace ea {
     
     
     /*! Generates random Markov network-based individuals.
-	 */    
+	 */
 	struct mkv_random_individual {
         template <typename EA>
         typename EA::representation_type operator()(EA& ea) {
@@ -131,10 +121,10 @@ namespace ea {
             repr.resize(get<MKV_REPR_INITIAL_SIZE>(ea), 127);
 			
             // which gate types are supported?
-            std::set<mkv_gates> supported = supported_gates(ea);
+            std::set<gate_types> supported = supported_gates(ea);
             
 			int i,j;
-			for(i=0; i<get<MKV_INITIAL_NODES>(ea); ++i) {
+			for(i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
 				j=ea.rng()(repr.size()-100);
                 int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
                 repr[j] = gate;
@@ -150,118 +140,55 @@ namespace ea {
 
 namespace mkv {
     namespace detail {
-        /*! Build a probabilistic gate.
+        
+        /*! Build a markov gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_prob(Network& net, ForwardIterator h, MetaData& md) {
-            using namespace detail;
+        void build_io(Network& net, index_list_type& inputs, index_list_type& outputs, ForwardIterator& h, MetaData& md) {
             using namespace ea;
             using namespace ea::algorithm;
-            
-            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-            index_list_type inputs(h, h+nin);
-            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+
+            int nin=modnorm(*h++, get<GATE_INPUT_FLOOR>(md), get<GATE_INPUT_LIMIT>(md));
+            int nout=modnorm(*h++, get<GATE_OUTPUT_FLOOR>(md), get<GATE_OUTPUT_LIMIT>(md));
+
+            inputs.clear();
+            inputs.insert(inputs.end(), h, h+nin);
+            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.nstates()));
             h+=nin;
-            index_list_type outputs(h, h+nout);
-            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
+
+            outputs.clear();
+            outputs.insert(outputs.end(), h, h+nout);
+            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.nstates()));
             h+=nout;
-            
-            markov_network::nodeptr_type p(new probabilistic_mkv_node(inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
-            net.append(p);
         }
         
         
-        /*! Build a deterministic gate.
+        /*! Build a markov gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_det(Network& net, ForwardIterator h, MetaData& md) {
-            using namespace detail;
-            using namespace ea;
-            using namespace ea::algorithm;
-            
-            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-            index_list_type inputs(h, h+nin);
-            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            h+=nin;
-            index_list_type outputs(h, h+nout);
-            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            h+=nout;
-            
-            markov_network::nodeptr_type p(new deterministic_mkv_node(inputs, outputs, h));
-            net.append(p);
-        }    
-        
-        
-        /*! Build a history-tracking gate.
-         */
-        template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_prob_hist(Network& net, ForwardIterator h, MetaData& md) {
-            using namespace detail;
-            using namespace ea;
-            using namespace ea::algorithm;
-            
-            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-            int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
-            
-            index_list_type inputs(h, h+nin);
-            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            h+=nin;
-            index_list_type outputs(h, h+nout);
-            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            h+=nout;
-            
-            markov_network::nodeptr_type p(new probabilistic_history_mkv_node(nhistory, inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
-            net.append(p);
+        void build_markov_gate(Network& net, ForwardIterator h, MetaData& md) {
+            index_list_type inputs, outputs;
+            build_io(net, inputs, outputs, h, md);
+            markov_gate g(inputs, outputs, h);
+            net.append(g);
         }
         
         
-        /*! Build an adaptive gate.
+        /*! Build a logic gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_adaptive(Network& net, ForwardIterator h, MetaData& md) {
-            using namespace detail;
-            using namespace ea;
-            using namespace ea::algorithm;
-            
-            int nin=modnorm(*h++, get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-            int nout=modnorm(*h++, get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-            int nhistory=modnorm(*h++, get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
-            int posf=*h++ % net.svm_size();
-            int negf=*h++ % net.svm_size();
-            index_list_type inputs(h, h+nin);
-            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            h+=nin;
-            index_list_type outputs(h, h+nout);
-            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            h+=nout;                        
-            weight_vector_type poswv(h, h+nhistory);
-            std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
-                           std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
-            std::transform(poswv.begin(), poswv.end(), poswv.begin(), 
-                           std::bind2nd(std::multiplies<double>(), 1.0/get<NODE_WV_STEPS>(md)));
-            h+=nhistory;
-            weight_vector_type negwv(h, h+nhistory);
-            std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
-                           std::bind2nd(std::modulus<int>(), get<NODE_WV_STEPS>(md)+1));
-            std::transform(negwv.begin(), negwv.end(), negwv.begin(), 
-                           std::bind2nd(std::multiplies<double>(), -1.0/get<NODE_WV_STEPS>(md)));
-            h+=nhistory;
-            
-            markov_network::nodeptr_type p(new adaptive_mkv_node(nhistory,
-                                                                 posf, poswv,
-                                                                 negf, negwv,
-                                                                 inputs, outputs, h, get<NODE_ALLOW_ZERO>(md)));
-            net.append(p);
+        void build_logic_gate(Network& net, ForwardIterator h, MetaData& md) {
+            index_list_type inputs, outputs;
+            build_io(net, inputs, outputs, h, md);
+            logic_gate g(inputs, outputs, h);
+            net.append(g);
         }
     }
     
     /*! Build a Markov network from the genome [f,l), with the given meta data.
      */
-    template <typename Network, typename ForwardIterator, typename MetaData>
-    void build_markov_network(Network& net, ForwardIterator f, ForwardIterator l, MetaData& md) {
+    template <typename ForwardIterator, typename MetaData>
+    void build_markov_network(markov_network& net, ForwardIterator f, ForwardIterator l, MetaData& md) {
         using namespace detail;
         using namespace ea;
         using namespace ea::algorithm;
@@ -270,8 +197,8 @@ namespace mkv {
         if(f == l) { return; }
         
         // which gate types are supported?
-        std::set<mkv_gates> supported = supported_gates(md);
-        
+        std::set<gate_types> supported = supported_gates(md);
+
         ForwardIterator last=f;
         ++f;
         
@@ -279,166 +206,127 @@ namespace mkv {
             int start_codon = *f + *last;
             if(start_codon == 255) {
                 switch(*last) {
-                    case PROB: { // build a probabilistic node
-                        if(!supported.count(PROB)) { break; }
-                        build_prob(net, f+1, md);
+                    case MARKOV: { // build a markov gate
+                        if(!supported.count(MARKOV)) { break; }
+                        build_markov_gate(net, f+1, md);
                         break;
                     }
-                    case DET: { // build a deterministic node
-                        if(!supported.count(DET)) { break; }
-                        build_det(net, f+1, md);
+                    case LOGIC: { // build a logic gate
+                        if(!supported.count(LOGIC)) { break; }
+                        build_logic_gate(net, f+1, md);
                         break;
                     }
-                    case ADAPTIVE: { // build a synaptically learning probabilistic node
-                        if(!supported.count(ADAPTIVE)) { break; }
-                        build_adaptive(net, f+1, md);
-                        break;
-                    }
-                    case PROB_HIST: {
-                        if(!supported.count(PROB_HIST)) { break; }
-                        build_prob_hist(net, f+1, md);
-                        break;
-                    }
-                    default: { 
+                    default: {
                         break;
                     }
                 }
             }
         }
     }
-    
-    /*! Generates a random markov network.
-     */
-    template <typename Network, typename RNG, typename MetaData>
-    void build_random_markov_network(Network& net, std::size_t n, RNG& rng, MetaData& md) {
-        using namespace detail;
-        using namespace ea;
-        using namespace ea::algorithm;
         
-        for( ; n>0; --n) {
-            int nin=modnorm(rng(), get<NODE_INPUT_FLOOR>(md), get<NODE_INPUT_LIMIT>(md));
-            int nout=modnorm(rng(), get<NODE_OUTPUT_FLOOR>(md), get<NODE_OUTPUT_LIMIT>(md));
-            int hn=modnorm(rng(), get<NODE_HISTORY_FLOOR>(md), get<NODE_HISTORY_LIMIT>(md));
-            
-            index_list_type inputs(nin);
-            std::generate(inputs.begin(), inputs.end(), rng);
-            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            
-            index_list_type outputs(nout);
-            std::generate(outputs.begin(), outputs.end(), rng);
-            std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.svm_size()));
-            
-            std::vector<int> table((1<<nin) * (1<<nout));
-            std::generate(table.begin(), table.end(), rng);
-            
-            markov_network::nodeptr_type p(new probabilistic_history_mkv_node(hn, inputs, outputs, table.begin(), get<NODE_ALLOW_ZERO>(md)));
-            net.append(p);
-        }
-    }
-    
-    /*! Save the dominant individual in graphviz format.
-     */
-    template <typename EA>
-    struct mkv_genetic_graph : public ea::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_genetic_graph"; }
-        
-        virtual void operator()(EA& ea) {
-            using namespace ea;
-            using namespace ea::analysis;
-            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
-            
-            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
-            
-            datafile df(get<ANALYSIS_OUTPUT>(ea));
-            std::ostringstream title;
-            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
-            mkv::write_graphviz(title.str(), df, mkv::as_genetic_graph(net));
-        }
-    };
-    
-    
-    /*! Save the dominant individual in graphviz format.
-     */
-    template <typename EA>
-    struct mkv_meta_population_reduced_graph : public ea::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_meta_population_reduced_graph"; }
-        
-        virtual void operator()(EA& ea) {
-            using namespace ea;
-            using namespace ea::analysis;
-            
-            int count=0;
-            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                typename EA::individual_type::individual_type& ind = analysis::find_most_fit_individual(*i);
-                markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-                build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
-                
-                datafile df("reduced_sp" + boost::lexical_cast<std::string>(count++) + ".dot");
-                std::ostringstream title;
-                mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
-            }         
-        }
-    };
-    
-    
-    /*! Save the dominant individual in graphviz format.
-     */
-    template <typename EA>
-    struct mkv_reduced_graph : public ea::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_reduced_graph"; }
-        
-        virtual void operator()(EA& ea) {
-            using namespace ea;
-            using namespace ea::analysis;
-            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
-            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
-            datafile df(get<ANALYSIS_OUTPUT>(ea));
-            std::ostringstream title;
-            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net), false);
-        }
-    };
-
-    
-    /*! Save the detailed graph of the dominant individual in graphviz format.
-     */
-    template <typename EA>
-    struct mkv_detailed_graph : public ea::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_detailed_graph"; }
-        
-        virtual void operator()(EA& ea) {
-            using namespace ea;
-            using namespace ea::analysis;
-            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
-            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
-            datafile df(get<ANALYSIS_OUTPUT>(ea));
-            std::ostringstream title;
-            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
-            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net), true);
-        }
-    };
-
-    
-    /*! Save the causal graph of the dominant individual in graphviz format.
-     */
-    template <typename EA>
-    struct mkv_causal_graph : public ea::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_causal_graph"; }
-        
-        virtual void operator()(EA& ea) {
-            using namespace ea;
-            using namespace ea::analysis;
-            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
-            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
-            datafile df(get<ANALYSIS_OUTPUT>(ea));
-            std::ostringstream title;
-            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
-            mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
-        }
-    };
+//    /*! Save the dominant individual in graphviz format.
+//     */
+//    template <typename EA>
+//    struct mkv_genetic_graph : public ea::analysis::unary_function<EA> {
+//        static const char* name() { return "mkv_genetic_graph"; }
+//        
+//        virtual void operator()(EA& ea) {
+//            using namespace ea;
+//            using namespace ea::analysis;
+//            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+//            
+//            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+//            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+//            
+//            datafile df(get<ANALYSIS_OUTPUT>(ea));
+//            std::ostringstream title;
+//            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+//            mkv::write_graphviz(title.str(), df, mkv::as_genetic_graph(net));
+//        }
+//    };
+//    
+//    
+//    /*! Save the dominant individual in graphviz format.
+//     */
+//    template <typename EA>
+//    struct mkv_meta_population_reduced_graph : public ea::analysis::unary_function<EA> {
+//        static const char* name() { return "mkv_meta_population_reduced_graph"; }
+//        
+//        virtual void operator()(EA& ea) {
+//            using namespace ea;
+//            using namespace ea::analysis;
+//            
+//            int count=0;
+//            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+//                typename EA::individual_type::individual_type& ind = analysis::find_most_fit_individual(*i);
+//                markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+//                build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+//                
+//                datafile df("reduced_sp" + boost::lexical_cast<std::string>(count++) + ".dot");
+//                std::ostringstream title;
+//                mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
+//            }
+//        }
+//    };
+//    
+//    
+//    /*! Save the dominant individual in graphviz format.
+//     */
+//    template <typename EA>
+//    struct mkv_reduced_graph : public ea::analysis::unary_function<EA> {
+//        static const char* name() { return "mkv_reduced_graph"; }
+//        
+//        virtual void operator()(EA& ea) {
+//            using namespace ea;
+//            using namespace ea::analysis;
+//            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+//            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+//            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+//            datafile df(get<ANALYSIS_OUTPUT>(ea));
+//            std::ostringstream title;
+//            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net), false);
+//        }
+//    };
+//    
+//    
+//    /*! Save the detailed graph of the dominant individual in graphviz format.
+//     */
+//    template <typename EA>
+//    struct mkv_detailed_graph : public ea::analysis::unary_function<EA> {
+//        static const char* name() { return "mkv_detailed_graph"; }
+//        
+//        virtual void operator()(EA& ea) {
+//            using namespace ea;
+//            using namespace ea::analysis;
+//            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+//            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+//            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+//            datafile df(get<ANALYSIS_OUTPUT>(ea));
+//            std::ostringstream title;
+//            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+//            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net), true);
+//        }
+//    };
+//    
+//    
+//    /*! Save the causal graph of the dominant individual in graphviz format.
+//     */
+//    template <typename EA>
+//    struct mkv_causal_graph : public ea::analysis::unary_function<EA> {
+//        static const char* name() { return "mkv_causal_graph"; }
+//        
+//        virtual void operator()(EA& ea) {
+//            using namespace ea;
+//            using namespace ea::analysis;
+//            typename EA::individual_type ind = analysis::find_most_fit_individual(ea);
+//            markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+//            build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+//            datafile df(get<ANALYSIS_OUTPUT>(ea));
+//            std::ostringstream title;
+//            //            title << "individual=" << i.name() << "; generation=" << i.generation() << "; fitness=" << static_cast<std::string>(i.fitness());
+//            mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
+//        }
+//    };
     
     /*! Datafile for markov network statistics.
      */
@@ -468,7 +356,7 @@ namespace mkv {
                     gates(net.size());
                     genes(j->repr().size());
                 }
-            }            
+            }
             
             _df.write(ea.current_update())
             .write(mean(gates))

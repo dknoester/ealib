@@ -82,6 +82,16 @@ namespace mkv {
         };
                 
     } // detail
+    
+    
+//    //! Reinforce all nodes in a (Markov) network.
+//    template <typename Network>
+//    void reinforce(Network& net, double lr) {
+//        for(typename Network::iterator i=net.begin(); i!=net.end(); ++i) {
+//            (*i)->reinforce(lr);
+//        }
+//    }
+
 } // mkv
 
 #endif
