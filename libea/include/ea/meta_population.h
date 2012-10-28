@@ -68,7 +68,7 @@ namespace ea {
 
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
+            // BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
         }
         
         //! Accessor for the random number generator.
@@ -170,6 +170,7 @@ namespace ea {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->generate_initial_population();
             }
+            _configurator.initial_population(*this);
         }
         
         //! Reset all populations.

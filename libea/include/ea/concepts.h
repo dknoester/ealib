@@ -48,6 +48,7 @@ namespace ea {
 	template <typename X>
 	struct EvolutionaryAlgorithmConcept {
 	public:
+        /*
         typedef typename X::population_type population_type;
         typedef typename X::individual_type individual_type;
         typedef typename X::individual_ptr_type individual_ptr_type;
@@ -56,7 +57,7 @@ namespace ea {
         typedef typename X::reverse_iterator reverse_iterator;
         typedef typename X::const_reverse_iterator const_reverse_iterator;
         typedef typename X::rng_type rng_type;
-		
+		*/
 		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
 		}
 	private:
