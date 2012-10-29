@@ -6,26 +6,30 @@ if $(PREFIX) = "" {
     PREFIX = "/usr/local" ;
 }
 
-alias libmkv : : : : <include>./include ;
+lib libmkv :
+    src/graph.cpp
+    /libea//libea
+    : <include>./include
+    :
+    : <include>./include
+;
 
-#lib libmkv :
-#    src/markov_network.cpp
-#    src/graph.cpp
-#    /libea//libea
-#    : <include>./include
-#    :
-#    : <include>./include
-#;
+run test/test_mkv.cpp
+    libmkv
+    /libea//libea
+    /boost//unit_test_framework
+    ;
 
-#alias install : install-lib install-headers ;
+alias install : install-lib install-headers ;
 
-#install install-lib : 
-#    libmkv
-#    : <location>$(PREFIX)/lib <install-type>LIB
-#    ;
+install install-lib :
+    libmkv
+    : <location>$(PREFIX)/lib <install-type>LIB <install-dependencies>on
+    ;
 
-#install install-headers :
-#    [ glob-tree "*.h" : test $(PREFIX) ]
-#    : <location>$(PREFIX)/include <install-source-root>include
-#    ;
+install install-headers :
+    [ glob-tree *.h : test archive ]
+    : <location>$(PREFIX)/include <install-source-root>include
+    ;
 
+explicit install install-lib install-headers ;

@@ -48,11 +48,14 @@ LIBEA_MD_DECL(GATE_INPUT_LIMIT, "markov_network.gate.input.limit", int);
 LIBEA_MD_DECL(GATE_INPUT_FLOOR, "markov_network.gate.input.floor", int);
 LIBEA_MD_DECL(GATE_OUTPUT_LIMIT, "markov_network.gate.output.limit", int);
 LIBEA_MD_DECL(GATE_OUTPUT_FLOOR, "markov_network.gate.output.floor", int);
+LIBEA_MD_DECL(GATE_HISTORY_FLOOR, "markov_network.gate.history.floor", int);
+LIBEA_MD_DECL(GATE_HISTORY_LIMIT, "markov_network.gate.history.limit", int);
+LIBEA_MD_DECL(GATE_WV_STEPS, "markov_network.gate.wv_steps", int);
 
 
 namespace mkv {
     
-    enum gate_types { MARKOV=42, LOGIC=43 };
+    enum gate_types { MARKOV=42, LOGIC=43, ADAPTIVE=44 };
     
     /*! Returns a set of supported gate types.
      */
@@ -63,6 +66,7 @@ namespace mkv {
         std::string gates = get<MKV_GATE_TYPES>(ea);
         if(boost::icontains(gates,"markov")) { supported.insert(MARKOV); }
         if(boost::icontains(gates,"logic")) { supported.insert(LOGIC); }
+        if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
         return supported;
     }
 }
@@ -141,7 +145,7 @@ namespace ea {
 namespace mkv {
     namespace detail {
         
-        /*! Build a markov gate.
+        /*! Parse the inputs and outputs for a Markov network gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
         void build_io(Network& net, index_list_type& inputs, index_list_type& outputs, ForwardIterator& h, MetaData& md) {
@@ -162,6 +166,15 @@ namespace mkv {
             h+=nout;
         }
         
+        /*! Build a logic gate.
+         */
+        template <typename Network, typename ForwardIterator, typename MetaData>
+        void build_logic_gate(Network& net, ForwardIterator h, MetaData& md) {
+            index_list_type inputs, outputs;
+            build_io(net, inputs, outputs, h, md);
+            logic_gate g(inputs, outputs, h);
+            net.append(g);
+        }
         
         /*! Build a markov gate.
          */
@@ -172,18 +185,39 @@ namespace mkv {
             markov_gate g(inputs, outputs, h);
             net.append(g);
         }
-        
-        
-        /*! Build a logic gate.
+
+        /*! Build an adaptive gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_logic_gate(Network& net, ForwardIterator h, MetaData& md) {
+        void build_adaptive_gate(Network& net, ForwardIterator h, MetaData& md) {
+            using namespace ea;
+            using namespace ea::algorithm;
+
             index_list_type inputs, outputs;
             build_io(net, inputs, outputs, h, md);
-            logic_gate g(inputs, outputs, h);
+            
+            int nhistory=modnorm(*h++, get<GATE_HISTORY_FLOOR>(md), get<GATE_HISTORY_LIMIT>(md));
+            int posf=*h++ % net.nstates();
+            int negf=*h++ % net.nstates();
+            
+            weight_vector_type poswv(h, h+nhistory);
+            std::transform(poswv.begin(), poswv.end(), poswv.begin(),
+                           std::bind2nd(std::modulus<int>(), get<GATE_WV_STEPS>(md)+1));
+            std::transform(poswv.begin(), poswv.end(), poswv.begin(),
+                           std::bind2nd(std::multiplies<double>(), 1.0/get<GATE_WV_STEPS>(md)));
+            h+=nhistory;
+            weight_vector_type negwv(h, h+nhistory);
+            std::transform(negwv.begin(), negwv.end(), negwv.begin(),
+                           std::bind2nd(std::modulus<int>(), get<GATE_WV_STEPS>(md)+1));
+            std::transform(negwv.begin(), negwv.end(), negwv.begin(),
+                           std::bind2nd(std::multiplies<double>(), -1.0/get<GATE_WV_STEPS>(md)));
+            h+=nhistory;
+
+            adaptive_gate g(nhistory, posf, poswv, negf, negwv, inputs, outputs, h);
             net.append(g);
         }
-    }
+        
+    } // detail
     
     /*! Build a Markov network from the genome [f,l), with the given meta data.
      */
@@ -214,6 +248,11 @@ namespace mkv {
                     case LOGIC: { // build a logic gate
                         if(!supported.count(LOGIC)) { break; }
                         build_logic_gate(net, f+1, md);
+                        break;
+                    }
+                    case ADAPTIVE: { // build an adaptive gate
+                        if(!supported.count(ADAPTIVE)) { break; }
+                        build_adaptive_gate(net, f+1, md);
                         break;
                     }
                     default: {

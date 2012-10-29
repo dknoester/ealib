@@ -41,15 +41,16 @@ run test/test_libea.cpp
     /site-config//z
     ;
 
-#alias install : install-lib install-headers ;
+alias install : install-lib install-headers ;
 
-#install install-lib : 
-#    libea_runner 
-#    : <location>$(PREFIX)/lib <install-type>LIB
-#    ;
+install install-lib :
+    libea_runner
+    : <location>$(PREFIX)/lib <install-type>LIB <install-dependencies>on
+    ;
 
-#install install-headers :
-#    [ glob-tree *.h : test $(PREFIX) ]
-#    : <location>$(PREFIX)/include <install-source-root>include
-#    ;
+install install-headers :
+    [ glob-tree *.h : test ]
+    : <location>$(PREFIX)/include <install-source-root>include
+    ;
 
+explicit install install-lib install-headers ;

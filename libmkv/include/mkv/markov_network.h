@@ -33,28 +33,49 @@
 namespace mkv {
     
     namespace detail {
-        typedef std::vector<std::size_t> index_list_type; //!< Type for a list of indices.
         
-        /*! Logic gate.
+        typedef std::vector<std::size_t> index_list_type; //!< Type for a list of indices.
+        typedef std::vector<double> weight_vector_type; //!< Type for feedback weights vector.
+
+        /*! Abstract gate.
          */
-        struct logic_gate {
+        struct abstract_gate {
             //! Constructor.
-            template <typename ForwardIterator>
-            logic_gate(const index_list_type& ins, const index_list_type& outs, ForwardIterator f)
-            : inputs(ins), outputs(outs), M(1<<inputs.size()) {
-                for(std::size_t i=0; i<static_cast<std::size_t>(1<<inputs.size()); ++i, ++f) {
-                    M[i] = *f;
-                }
+            abstract_gate(const index_list_type& ins, const index_list_type& outs)
+            : inputs(ins), outputs(outs) {
+            }
+            
+            //! Destructor.
+            virtual ~abstract_gate() {
             }
             
             index_list_type inputs; //!< Input indices to this node.
             index_list_type outputs; //!< Output indices from this node.
+        };
+        
+        /*! Logic gate.
+         */
+        struct logic_gate : abstract_gate {
+            //! Constructor.
+            template <typename ForwardIterator>
+            logic_gate(const index_list_type& ins, const index_list_type& outs, ForwardIterator f)
+            : abstract_gate(ins, outs), M(1<<inputs.size()) {
+                for(std::size_t i=0; i<static_cast<std::size_t>(1<<inputs.size()); ++i, ++f) {
+                    M[i] = *f;
+                }
+            }
+
+            //! Destructor.
+            virtual ~logic_gate() {
+            }
+            
             index_list_type M; //!< Truth table.
         };
         
+        
         /*! Markov gate.
          */
-        struct markov_gate {
+        struct markov_gate : abstract_gate {
             typedef boost::numeric::ublas::matrix<double> matrix_type; //!< Probability table type.
             typedef boost::numeric::ublas::matrix_column<matrix_type> column_type; //!< Column type.
             typedef boost::numeric::ublas::matrix_row<matrix_type> row_type; //!< Row type.
@@ -62,17 +83,76 @@ namespace mkv {
             //! Constructor.
             template <typename ForwardIterator>
             markov_gate(const index_list_type& ins, const index_list_type& outs, ForwardIterator f)
-            : inputs(ins), outputs(outs), M(1<<inputs.size(), 1<<outputs.size()) {
+            : abstract_gate(ins, outs), M(1<<inputs.size(), 1<<outputs.size()) {
                 for(std::size_t i=0; i<M.size1(); ++i) {
                     row_type row(M, i);
                     f = ea::algorithm::normalize(f, f+M.size2(), row.begin(), 1.0);
                 }
             }
             
-            index_list_type inputs; //!< Input indices to this node.
-            index_list_type outputs; //!< Output indices from this node.
+            //! Destructor.
+            virtual ~markov_gate() {
+            }
+
             matrix_type M; //!< Probability table.
         };
+        
+
+        /*! Adaptive Markov gate.
+         */
+        struct adaptive_gate : abstract_gate {
+            typedef boost::numeric::ublas::matrix<double> matrix_type; //!< Probability table type.
+            typedef boost::numeric::ublas::matrix_column<matrix_type> column_type; //!< Column type.
+            typedef boost::numeric::ublas::matrix_row<matrix_type> row_type; //!< Row type.
+            typedef std::deque<std::pair<std::size_t, std::size_t> > history_type;//!< Type for tracking history of decisions.
+
+            //! Constructor.
+            template <typename ForwardIterator>
+            adaptive_gate(std::size_t hn,
+                          std::size_t posf, weight_vector_type poswv,
+                          std::size_t negf, weight_vector_type negwv,
+                          index_list_type ins, index_list_type outs, ForwardIterator f)
+            : abstract_gate(ins, outs), h(hn), p(posf), P(poswv), n(negf), N(negwv), M(1<<inputs.size(), 1<<outputs.size()) {
+                for(std::size_t i=0; i<M.size1(); ++i) {
+                    row_type row(M, i);
+                    f = ea::algorithm::normalize(f, f+M.size2(), row.begin(), 1.0);
+                }
+            }
+            
+            //! Destructor.
+            virtual ~adaptive_gate() {
+            }
+
+            //! Scale the probability of output (i,j) by s.
+            void scale(std::size_t i, std::size_t j, double s) {
+                M(i,j) *= 1.0 + s;
+                row_type row(M, i);
+                ea::algorithm::normalize(row.begin(), row.end(), row.begin(), 1.0);
+            }
+
+            //! Reinforce the recent behavior of this gate.
+            void reinforce() {
+                for(std::size_t i=0; (i<P.size()) && (i<H.size()); ++i) {
+                    scale(H[i].first, H[i].second, P[i]);
+                }
+            }
+
+            //! Inhibit the recent behavior of this gate.
+            void inhibit() {
+                for(std::size_t i=0; (i<N.size()) && (i<H.size()); ++i) {
+                    scale(H[i].first, H[i].second, N[i]);
+                }
+            }
+          
+            std::size_t h; //!< Size of history to keep.
+            history_type H; //!< History of decisions made by this node.
+            std::size_t p; //!< Index of positive feedback state.
+            weight_vector_type P; //!< Positive feedback weight vector.
+            std::size_t n; //!< Index of negative feedback state.
+            weight_vector_type N; //!< Negative feedback weight vector.
+            matrix_type M; //!< Probability table.
+        };
+
     } // detail
     
     
@@ -80,7 +160,7 @@ namespace mkv {
     public:
         typedef int state_type; //!< Type for states.
         typedef state_vector_machine<state_type> svm_type; //!< State vector machine type.
-        typedef boost::variant<detail::logic_gate, detail::markov_gate> variant_gate_type; //!< Variant gate type.
+        typedef boost::variant<detail::logic_gate, detail::markov_gate, detail::adaptive_gate> variant_gate_type; //!< Variant gate type.
         typedef std::vector<variant_gate_type> gate_list_type; //!< List of gates.
         typedef ea::default_rng_type rng_type; //!< Random number generator type.
 
@@ -118,7 +198,7 @@ namespace mkv {
         //! Retrieve an iterator to the end of this network's gate list.
         gate_list_type::iterator end() { return _gates.end(); }
         
-        //! Retrieve gate i.
+        //! Retrieve a reference to gate i.
         variant_gate_type& operator[](std::size_t i) { return _gates[i]; }
         
         //! Clear the network.
@@ -172,6 +252,7 @@ namespace mkv {
     
     
     namespace detail {
+        
         /*! Visitor, used to trigger updates on different gate types.
          */
         template <typename RandomAccessIterator>
@@ -208,15 +289,17 @@ namespace mkv {
             
             //! Update a Markov gate.
             void operator()(markov_gate& g) const {
-                markov_gate::row_type row(g.M, get_input(g.inputs));
+                // output:
+                std::size_t i = get_input(g.inputs);
+                markov_gate::row_type row(g.M, i);
                 double p = _net.rng().uniform_real(0.0,1.0);
                 
-                for(int i=0; i<static_cast<int>(g.M.size2()); ++i) {
-                    if(p <= row[i]) {
-                        set_output(i, g.outputs);
+                for(int j=0; j<static_cast<int>(g.M.size2()); ++j) {
+                    if(p <= row[j]) {
+                        set_output(j, g.outputs);
                         return;
                     }
-                    p -= row[i];
+                    p -= row[j];
                 }
                 
                 // if we get here, there was a floating point precision problem.
@@ -224,10 +307,47 @@ namespace mkv {
                 set_output(static_cast<int>(g.M.size2()-1), g.outputs);
             }
             
+            //! Update an adaptive Markov gate.
+            void operator()(adaptive_gate& g) const {
+                // learn first: if one of the feedback bits is on, it means that
+                // the previous behavior of this gate should be reinforced.
+                // if we wait to learn until after updating, we'll be reinforcing
+                // for the *next* output as well.
+                while(g.H.size() > g.h) { // prune history
+                    g.H.pop_front();
+                }
+                if(_net.input(_f, g.p)) { // reinforce
+                    g.reinforce();
+                }
+                if(_net.input(_f, g.n)) { // inhibit
+                    g.inhibit();
+                }
+                
+                // now handle the next output:
+                std::size_t i = get_input(g.inputs);
+                adaptive_gate::row_type row(g.M, i);
+                double p = _net.rng().uniform_real(0.0,1.0);
+                
+                for(int j=0; j<static_cast<int>(g.M.size2()); ++j) {
+                    if(p <= row[j]) {
+                        set_output(j, g.outputs);
+                        g.H.push_back(std::make_pair(i,j));
+                        return;
+                    }
+                    p -= row[j];
+                }
+                
+                // if we get here, there was a floating point precision problem.
+                // default to the final column:
+                set_output(static_cast<int>(g.M.size2()-1), g.outputs);
+                g.H.push_back(std::make_pair(i,static_cast<int>(g.M.size2()-1)));
+            }
+            
         protected:
             markov_network& _net;
             RandomAccessIterator _f;
         };
+        
     } // detail
     
     

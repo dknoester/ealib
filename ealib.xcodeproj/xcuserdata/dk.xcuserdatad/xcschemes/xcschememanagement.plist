@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>21</integer>
 		</dict>
+		<key>ea copy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>27</integer>
+		</dict>
 		<key>ea.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -68,6 +73,11 @@
 			<true/>
 		</dict>
 		<key>423CBE56157D0FCC0003A644</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>42720FB3163C0B1F008C8E63</key>
 		<dict>
 			<key>primary</key>
 			<true/>

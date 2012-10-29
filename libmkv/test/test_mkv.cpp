@@ -17,13 +17,86 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef BOOST_TEST_DYN_LINK
 #define BOOST_TEST_DYN_LINK
+#endif
 #define BOOST_TEST_MAIN
 
 #include <iostream>
 #include <ea/markov_network.h>
 #include <ea/cvector.h>
+#include <mkv/graph.h>
 #include "test.h"
+
+
+/*! Test for converting a Markov network to a graph.
+ */
+BOOST_AUTO_TEST_CASE(test_graph_conversion) {
+    using namespace mkv;
+    using namespace mkv::detail;
+    using namespace ea;
+    
+    int data[76] = {
+        5, 0,
+        6, 0,
+        7, 0,
+        8, 0, // 64
+        43, 255-43, // start
+        1, 1, // 2in, 2out
+        0, 1, // inputs from edge 0,1
+        2, 4, // outputs to edge 2,4
+        2, // D table (these are column indices)
+        1,
+        3,
+        0, // 76
+        42, 255-42, // start
+        1, 1, // 2in, 2out
+        6, 1, // inputs from edge 0,1 (mod 6)
+        2, 4, // outputs to edge 2,4
+        10, 0, 0, 0, // P table
+        0, 10, 0, 0,
+        0, 0, 10, 0,
+        0, 0, 0, 10, // 24
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0, // 40
+        42, 255-42, // start
+        2, 0, // 3in, 1out
+        2, 4, 1, // inputs from edge 2,4,1
+        3, // outputs to edge 3 // 48
+        1, 0, // P table
+        2, 0,
+        3, 0,
+        4, 0
+    };
+    
+    meta_data md;
+    put<MKV_GATE_TYPES>("logic,markov", md);
+    put<GATE_INPUT_FLOOR>(1, md);
+    put<GATE_INPUT_LIMIT>(8, md);
+    put<GATE_OUTPUT_FLOOR>(1, md);
+    put<GATE_OUTPUT_LIMIT>(8, md);
+    
+    // build the network, check that the gate is what we expect:
+    markov_network net(2, 2, 2, 42);
+    cvector<int> cv(data, data+76);
+    build_markov_network(net, cv.begin(), cv.end(), md);
+
+    markov_graph G=as_reduced_graph(net);
+    using namespace boost;
+    BOOST_CHECK(G[vertex(6,G)].nt == vertex_properties::GATE);
+    BOOST_CHECK(G[vertex(7,G)].nt == vertex_properties::GATE);
+    BOOST_CHECK(G[vertex(8,G)].nt == vertex_properties::GATE);
+    
+    BOOST_CHECK(in_degree(vertex(6,G),G) == 2);
+    BOOST_CHECK(edge(vertex(0,G), vertex(6,G), G).second);
+    BOOST_CHECK(edge(vertex(1,G), vertex(6,G), G).second);
+
+    BOOST_CHECK(in_degree(vertex(8,G),G) == 3);
+    BOOST_CHECK(out_degree(vertex(8,G),G) == 1);
+}
+
 
 /*! Test for logic gates.
  */
@@ -43,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
     //	 0-in 1-in
     //	 |   /
     //	 4-HHH
-    //	 /    \
+    //	 /    
     //	 2-out 3-out
     
 	int data[64] = {
@@ -133,7 +206,7 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
 
 /*! Test for Markov gates.
  */
-BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
+BOOST_AUTO_TEST_CASE(test_markov_gate) {
     using namespace mkv;
 	using namespace mkv::detail;
     using namespace ea;
@@ -150,7 +223,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network_update2) {
     //	 0-in 1-in
     //	 |   /
     //	 4-HHH
-    //	 /    \
+    //	 /
     //	 2-out 3-out
     
 	int data[64] = {
