@@ -22,7 +22,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ea/interface.h>
+
 #include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>

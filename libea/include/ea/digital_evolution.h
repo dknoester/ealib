@@ -35,7 +35,7 @@
 #include <ea/digital_evolution/well_mixed.h>
 #include <ea/digital_evolution/task_library.h>
 #include <ea/ancestors.h>
-#include <ea/interface.h>
+
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
 #include <ea/population.h>

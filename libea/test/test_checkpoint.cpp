@@ -41,6 +41,9 @@ BOOST_AUTO_TEST_CASE(ealib_checkpoint) {
     //	BOOST_CHECK_NE(ea1, ea2);
     ea2.advance_epoch(10);
     
-    // and check them for equality:
-    //	BOOST_CHECK(eq);
+    // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
+    for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
+        BOOST_CHECK(fitness(*i) == fitness(*j));
+        BOOST_CHECK(i->name() == j->name());
+    }
 }

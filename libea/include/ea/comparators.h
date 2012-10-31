@@ -20,6 +20,7 @@
 #ifndef _EA_COMPARATORS_H_
 #define _EA_COMPARATORS_H_
 
+#include <ea/attributes.h>
 
 namespace ea {
     namespace comparators {
@@ -28,7 +29,7 @@ namespace ea {
         struct fitness {
             template <typename IndividualPtr>
             bool operator()(IndividualPtr x, IndividualPtr y) {
-                return x->fitness() < y->fitness();
+                return ea::fitness(*x) < ea::fitness(*y);
             }
         };
         

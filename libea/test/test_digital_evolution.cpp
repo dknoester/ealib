@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "test.h"
-
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/spatial.h>
 

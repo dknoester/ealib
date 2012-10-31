@@ -20,96 +20,59 @@
 #ifndef _EA_NOVELTY_SEARCH_H_
 #define _EA_NOVELTY_SEARCH_H_
 
-
+#include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/base_object.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ea/evolutionary_algorithm.h>
 #include <ea/attributes.h>
 #include <ea/concepts.h>
+#include <ea/configuration.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
 #include <ea/fitness_function.h>
-#include <ea/initialization.h>
-#include <ea/interface.h>
+#include <ea/ancestors.h>
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
+#include <ea/selection.h>
 #include <ea/population.h>
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>
-#include <vector>
 
 namespace ea {
     
-    /*! Definition of an individual for novelty search.
-     
-     This class extends the standard individual by adding objective, novelty, 
-     and novelty point member variables.
-	 */
-	template <typename Representation, typename FitnessType, typename Attributes>
-	class novelty_individual : public individual <Representation, FitnessType, Attributes> {
-	public:
-        typedef Representation representation_type;
-		typedef FitnessType fitness_type;
-        typedef Attributes attr_type;
-        typedef individual<representation_type, fitness_type, attr_type> base_type;
-        typedef novelty_individual<representation_type, fitness_type, attr_type> individual_type;
-		
-		//! Constructor.
-		novelty_individual() : base_type() {
-		}
+    //! Novelty attribute.
+    template <typename EA>
+    struct novelty_attribute {
+        typedef std::vector<double> novelty_type; //!< This individual's location in phenotype space.
         
-		//! Constructor that builds a novelty individual from a representation.
-		novelty_individual(const representation_type& r) : base_type(r) {
-		}
+        novelty_type& novelty() { return _v; }
         
-        //! Copy constructor.
-        novelty_individual(const novelty_individual& that) : base_type(that) {
-            _objective_fitness = that._objective_fitness;
-            _novelty_point = that._novelty_point;
-        }
-        
-        //! Assignment operator.
-        novelty_individual& operator=(const novelty_individual& that) {
-            if(this != &that) {
-                base_type::operator=(that);
-                _objective_fitness = that._objective_fitness;
-                _novelty_point = that._novelty_point;
-            }
-            return *this;
-        }
-        
-        //! Destructor.
-        virtual ~novelty_individual() {
-        }
-        
-        //! Retrieve this individual's objective fitness.
-		fitness_type& objective_fitness() { return _objective_fitness; }
-        
-        //! Retrieve this individual's fitness (const-qualified).
-		const fitness_type& objective_fitness() const { return _objective_fitness; }
-        
-        //! Retrieve this individual's novelty point.
-        std::vector<double>& novelty_point() { return _novelty_point; }
-		
-        //! Retrieve this individual's novelty point (const-qualified).
-        const std::vector<double>& novelty_point() const { return _novelty_point; }
-
-	protected:
-        fitness_type _objective_fitness; //!< This individual's objective fitness.
-        std::vector<double> _novelty_point; //!< This individual's location in phenotype space.
-        
-	private:
-		friend class boost::serialization::access;
         template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) { 
-            ar & boost::serialization::make_nvp("base_individual", boost::serialization::base_object<base_type>(*this));
-            ar & boost::serialization::make_nvp("objective_fitness", _objective_fitness);
-            ar & boost::serialization::make_nvp("novelty_point", _novelty_point);
-		}
-	};
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("novelty", _v);
+        }
+        
+        novelty_type _v;
+    };
     
+    //! Novelty accessor method.
+    template <typename T>
+    typename T::attr_type::novelty_type& novelty(T& t) {
+        return t.attr().novelty();
+    }
+    
+    //! Default attributes for a novelty_search individual.
+    template <typename EA>
+    struct default_ns_attributes : fitness_attribute<EA>, novelty_attribute<EA> {
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<fitness_attribute<EA> >(*this));
+            ar & boost::serialization::make_nvp("novelty_attr", boost::serialization::base_object<novelty_attribute<EA> >(*this));
+        }
+    };
     
     //! Compare individual pointers based on the natural order of their fitnesses in descending order.
     struct objective_fitness_desc {
@@ -118,34 +81,32 @@ namespace ea {
             return x->objective_fitness() > y->objective_fitness();
         }
     };
-    
-    
+        
     /*! Novelty search evolutionary algorithm.
      
-     TODO: Explain how NS works, provide cite to paper.
+     In contrast to traditional evolutionary algorithms, novelty search is
+     "objectiveless," in the sense that individuals with higher fitness are not
+     necessarily preferentially replicated.  Instead, those individuals that are
+     most "novel" reproduce more frequently.
      */
     template <
 	typename Representation,
 	typename MutationOperator,
 	typename FitnessFunction,
     typename NoveltyMetric,
+    template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::two_point_crossover,
-	typename GenerationalModel=generational_models::steady_state< >,
-	typename Initializer=initialization::complete_population<initialization::random_individual>,
-    template <typename> class IndividualAttrs=individual_attributes,
-    template <typename,typename,typename> class Individual=novelty_individual,
+	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
+    template <typename> class IndividualAttrs=default_ns_attributes,
+    template <typename,typename> class Individual=individual,
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
 	class novelty_search {
     public:
-        //! This evolutionary_algorithm's type.
-        typedef novelty_search<Representation, MutationOperator, FitnessFunction, NoveltyMetric,
-        RecombinationOperator, GenerationalModel, Initializer, IndividualAttrs,
-        Individual, Population, EventHandler, MetaData, RandomNumberGenerator
-        > ea_type;
-        
+        //! Configuration object type.
+        typedef ConfigurationStrategy<novelty_search> configuration_type;
         //! Representation type.
         typedef Representation representation_type;
         //! Fitness function type.
@@ -155,9 +116,9 @@ namespace ea {
         //! Novelty metric.
         typedef NoveltyMetric novelty_metric_type;
         //! Attributes attached to individuals.
-        typedef IndividualAttrs<ea_type> individual_attr_type;
+        typedef IndividualAttrs<novelty_search> individual_attr_type;
         //! Individual type.
-        typedef Individual<representation_type,fitness_type,individual_attr_type> individual_type;
+        typedef Individual<representation_type,individual_attr_type> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Mutation operator type.
@@ -168,20 +129,25 @@ namespace ea {
         typedef GenerationalModel generational_model_type;
         //! Population type.
         typedef Population<individual_type, individual_ptr_type> population_type;
-        //! Value type stored in population.
-        typedef typename population_type::value_type population_entry_type;
         //! Meta-data type.
         typedef MetaData md_type;
-        //! Population initializer type.
-        typedef Initializer initializer_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
         //! Event handler.
-        typedef EventHandler<ea_type> event_handler_type;
+        typedef EventHandler<novelty_search> event_handler_type;
+        //! Iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
+        //! Const iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
+        //! Reverse iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
+        //! Const reverse iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
         
         //! Default constructor.
         novelty_search() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<novelty_search>));
+            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
         }
         
         //! Initialize this EA.
@@ -276,9 +242,9 @@ namespace ea {
             
             // adjust the archive threshold, if necessary
             if(archive_add_count > 3) {
-                scale<NOVELTY_THRESHOLD>(1.1, *this);
+                get<NOVELTY_THRESHOLD>(*this) *= 1.1;
             } else if(archive_add_count == 0) {
-                scale<NOVELTY_THRESHOLD>(0.9, *this);
+                get<NOVELTY_THRESHOLD>(*this) *= 0.9;
             }
         }
         

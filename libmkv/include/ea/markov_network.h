@@ -26,7 +26,7 @@
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 
-#include <ea/interface.h>
+
 #include <ea/meta_data.h>
 #include <ea/analysis.h>
 #include <ea/events.h>

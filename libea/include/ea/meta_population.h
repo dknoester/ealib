@@ -28,7 +28,7 @@
 
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
-#include <ea/interface.h>
+#include <ea/population.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
 #include <ea/rng.h>
@@ -50,7 +50,7 @@ namespace ea {
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
-        typedef std::vector<individual_ptr_type> population_type;
+        typedef population<individual_type,individual_ptr_type> population_type;
         //! Event handler.
         typedef EventHandler<meta_population> event_handler_type;
         //! Meta-data type.
@@ -69,6 +69,7 @@ namespace ea {
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<individual_type>));
         }
         
         //! Accessor for the random number generator.
