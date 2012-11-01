@@ -180,7 +180,7 @@ namespace ea {
         
         //! Calculate fitness (stochastic).
         void evaluate_fitness(individual_type& i, rng_type& rng) {
-            fitness(i) = _fitness_function(i, rng, *this);
+            ea::fitness(i) = _fitness_function(i, rng, *this);
         }
         
         //! Reset the population.

@@ -52,8 +52,8 @@ namespace ea {
                 accumulator_set<double, stats<tag::mean, tag::max> > fit;
                 
                 for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    gen(ind(i,ea).generation());                
-                    fit(static_cast<double>(ind(i,ea).fitness()));
+                    gen((*i)->generation());
+                    fit(static_cast<double>(ea::fitness(**i)));
                 }
                 
                 _df.write(ea.current_update())

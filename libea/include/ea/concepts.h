@@ -172,7 +172,7 @@ namespace ea {
 	 <b>Models:</b> ea::population.
      */
 	template <typename X>
-	struct PopulationConcept : boost::CopyConstructible<X>, boost::RandomAccessContainer<X>, boost::BackInsertionSequence<X>, boost::Assignable<X> {
+	struct PopulationConcept : boost::CopyConstructible<X>, boost::RandomAccessContainer<X>, boost::BackInsertionSequence<X> {
 	public:
         typedef typename X::individual_type individual_type; //!< Type of individual pointed to by the population.
         typedef typename X::individual_ptr_type individual_ptr_type; //!< Type of the individual pointer.
@@ -247,7 +247,7 @@ namespace ea {
             BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
             BOOST_CONCEPT_ASSERT((SuppliesRNGConcept<X>));
             
-            population_type& p=x.population();
+            detail::same_type(p, x.population());
 		}
         
         //! Retrieve the current population.
@@ -255,6 +255,7 @@ namespace ea {
          
 	private:
 		X x;
+        population_type p;
 	};	
     
     

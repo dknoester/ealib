@@ -50,7 +50,7 @@ namespace ea {
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
-        typedef population<individual_type,individual_ptr_type> population_type;
+        typedef ea::population<individual_type,individual_ptr_type> population_type;
         //! Event handler.
         typedef EventHandler<meta_population> event_handler_type;
         //! Meta-data type.

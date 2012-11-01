@@ -22,6 +22,7 @@
 #define _EA_ANALYSIS_MAX_FIT_INDIVIDUAL_H_
 
 #include <iostream>
+#include <ea/attributes.h>
 #include <ea/meta_data.h>
 #include <ea/analysis/tool.h>
 
@@ -44,11 +45,11 @@ namespace ea {
             typename EA::population_type& pop = ea.population();
             typename EA::population_type::iterator mi=pop.begin();            
             for(typename EA::population_type::iterator i=pop.begin(); i!=pop.end(); ++i) {
-                if(ind(i,ea).fitness() > ind(mi,ea).fitness()) {
+                if(ea::fitness(*i) > ea::fitness(*mi)) {
                     mi = i;
                 }
             }
-            return ind(mi,ea);
+            return *mi;
         }
         
         

@@ -277,7 +277,7 @@ namespace ea {
         //! Constant: calculate fitness only if this individual has not yet been evaluated.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
-            if(fitness(i).is_null()) {
+            if(ea::fitness(i).is_null()) {
                 calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
             }
         }
