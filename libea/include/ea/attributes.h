@@ -25,34 +25,38 @@
 
 namespace ea {
     
-    //! Fitness attribute.
-    template <typename EA>
-    struct fitness_attribute {
-        typedef typename EA::fitness_type fitness_type;
-        
-        fitness_type& fitness() { return _v; }
-        
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_attr", _v);
-        }
-        
-        fitness_type _v;
-    };
-    
     //! Fitness accessor method.
     template <typename T>
     typename T::attr_type::fitness_type& fitness(T& t) {
         return t.attr().fitness();
     }
     
+    namespace attr {
+
+        //! Fitness attribute.
+        template <typename EA>
+        struct fitness_attribute {
+            typedef typename EA::fitness_type fitness_type;
+            
+            fitness_type& fitness() { return _v; }
+            
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+                ar & boost::serialization::make_nvp("fitness_attr", _v);
+            }
+            
+            fitness_type _v;
+        };
+        
+    }
+    
     namespace access {
         
         //! Fitness accessor functor.
-        struct fitness {
+        struct fitness_accessor {
             template <typename T>
             typename T::attr_type::fitness_type& operator()(T& t) {
-                return t.attr().fitness();
+                return ea::fitness(t);
             }
         };
         

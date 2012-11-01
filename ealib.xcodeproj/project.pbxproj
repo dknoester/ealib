@@ -536,14 +536,14 @@
 			children = (
 				423CBDF4157D0E450003A644 /* test.h */,
 				42B55B6E1641C2C500F240C5 /* test_ea.cpp */,
+				42B55B6F1641C2C500F240C5 /* test_evolutionary_algorithm.cpp */,
+				42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */,
 				423CBDF6157D0E450003A644 /* test_checkpoint.cpp */,
 				42841C2915A5F4D800AB18BE /* test_circular.cpp */,
-				42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */,
+				42B55B701641C2C500F240C5 /* test_information.cpp */,
 				423CBDF9157D0E450003A644 /* test_meta_data.cpp */,
 				423CBDFB157D0E450003A644 /* test_rng.cpp */,
 				42D68D89163F891F00659AE1 /* test_meta_population.cpp */,
-				42B55B6F1641C2C500F240C5 /* test_evolutionary_algorithm.cpp */,
-				42B55B701641C2C500F240C5 /* test_information.cpp */,
 				42B55B711641C2C500F240C5 /* test_novelty_search.cpp */,
 			);
 			path = test;

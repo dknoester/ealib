@@ -37,7 +37,7 @@ namespace ea {
         struct fitness_desc {
             template <typename IndividualPtr>
             bool operator()(IndividualPtr x, IndividualPtr y) {
-                return x->fitness() > y->fitness();
+                return ea::fitness(*x) > ea::fitness(*y);
             }
         };
 

@@ -45,10 +45,10 @@ namespace ea {
     /*! Default attributes for an evolutionary_algorithm individual.
      */
     template <typename EA>
-    struct default_ea_attributes : fitness_attribute<EA> {
+    struct default_ea_attributes : attr::fitness_attribute<EA> {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<fitness_attribute<EA> >(*this));
+            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
         }
     };
     
@@ -175,7 +175,7 @@ namespace ea {
         
         //! Calculate fitness (non-stochastic).
         void evaluate_fitness(individual_type& i) {
-            fitness(i) = _fitness_function(i, *this);
+            ea::fitness(i) = _fitness_function(i, *this);
         }
         
         //! Calculate fitness (stochastic).

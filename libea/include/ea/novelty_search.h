@@ -66,10 +66,10 @@ namespace ea {
     
     //! Default attributes for a novelty_search individual.
     template <typename EA>
-    struct default_ns_attributes : fitness_attribute<EA>, novelty_attribute<EA> {
+    struct default_ns_attributes : attr::fitness_attribute<EA>, novelty_attribute<EA> {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<fitness_attribute<EA> >(*this));
+            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
             ar & boost::serialization::make_nvp("novelty_attr", boost::serialization::base_object<novelty_attribute<EA> >(*this));
         }
     };

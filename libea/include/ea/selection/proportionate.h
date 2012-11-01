@@ -38,7 +38,7 @@ namespace ea {
          breaks (divide by zero).  The offset prevents users of proportionate selection
          from having to deal with this.
 		 */
-        template <typename AttributeAccessor=access::fitness>
+        template <typename AttributeAccessor=access::fitness_accessor>
 		struct proportionate {
             typedef AttributeAccessor acc_type; //!< Accessor for proportionate selection.
             
