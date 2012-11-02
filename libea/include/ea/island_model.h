@@ -2,7 +2,7 @@
  * 
  * This file is part of EALib.
  * 
- * Copyright 2012 David B. Knoester, Randal S. Olson.
+ * Copyright 2012 David B. Knoester.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,11 @@ namespace ea {
             assert(migrations > 0);
             
             for( ; migrations>0; --migrations) {
-                typename EA::iterator s,t;
+                typename EA::iterator s,t; // source and target populations
                 boost::tie(s,t) = ea.rng().choose_two_range(ea.begin(), ea.end());
-                t->append(t->make_individual(ea.rng().choice(s->begin(), s->end())->repr()));
+                typename EA::individual_type::iterator migrant=ea.rng().choice(s->begin(), s->end()); // migrating individual
+                t->append(t->make_individual(migrant->repr())); // copy the migrant to the target population
+                s->erase(migrant); // remove the migrant from the source population
             }
         }
     };

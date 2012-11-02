@@ -168,6 +168,11 @@ namespace ea {
             _population.insert(_population.end(), f, l);
         }
         
+        //! Erase the given individual from the population.
+        void erase(iterator i) {
+            _population.erase(i.base());
+        }
+        
         //! Perform any needed preselection.
         void preselect(population_type& src) {
             relativize_fitness(src.begin(), src.end(), *this);

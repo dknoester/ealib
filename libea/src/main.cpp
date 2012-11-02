@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         po::options_description cmdline_only_options("Command-line only options");
         cmdline_only_options.add_options()
         ("help,h", "produce this help message")
-        ("config,c", po::value<string>()->default_value("libea_defaults.cfg"), "ealib configuration file")
+        ("config,c", po::value<string>()->default_value("ealib.cfg"), "ealib configuration file")
         ("checkpoint,l", po::value<string>(), "load a checkpoint file")
         ("override", "override checkpoint options")
         ("reset", "reset all fitness values prior to continuing a checkpoint")

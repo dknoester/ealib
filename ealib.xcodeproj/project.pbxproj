@@ -150,7 +150,6 @@
 		42279CA515D52E2A00DD63BB /* priority.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = priority.h; sourceTree = "<group>"; };
 		42279CA615D52E2A00DD63BB /* reactions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reactions.h; sourceTree = "<group>"; };
 		42279CA915D5309E00DD63BB /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
-		423CBC83157D0D910003A644 /* boost_howto.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = boost_howto.rtf; sourceTree = "<group>"; };
 		423CBC85157D0D910003A644 /* ealib.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ealib.xcconfig; sourceTree = "<group>"; };
 		423CBC86157D0D910003A644 /* Jamroot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Jamroot; sourceTree = "<group>"; };
 		423CBD9F157D0E0B0003A644 /* libea.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libea.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -210,7 +209,6 @@
 		42720FB1163C0957008C8E63 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		42720FB2163C0AEA008C8E63 /* graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
 		42720FBF163C0B1F008C8E63 /* libmkv.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmkv.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4281481E1642F6D500BE0D35 /* example_1.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = example_1.cpp; sourceTree = "<group>"; };
 		4281FC3C15CAE04600167444 /* libnn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4281FC4115CAE0AA00167444 /* activation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = activation.h; sourceTree = "<group>"; };
 		4281FC4215CAE0AA00167444 /* back_propagation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = back_propagation.h; sourceTree = "<group>"; };
@@ -350,7 +348,6 @@
 				42841C7E15ADACF000AB18BE /* CONTRIBUTORS */,
 				42841C7F15ADACF100AB18BE /* README.md */,
 				423CBC86157D0D910003A644 /* Jamroot */,
-				423CBC82157D0D910003A644 /* doc */,
 				423CBC84157D0D910003A644 /* etc */,
 				423CBE4C157D0F310003A644 /* lib */,
 				423CBDAB157D0E450003A644 /* libea */,
@@ -371,15 +368,6 @@
 				42720FBF163C0B1F008C8E63 /* libmkv.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		423CBC82157D0D910003A644 /* doc */ = {
-			isa = PBXGroup;
-			children = (
-				423CBC83157D0D910003A644 /* boost_howto.rtf */,
-				4281481D1642F6D500BE0D35 /* tutorial */,
-			);
-			path = doc;
 			sourceTree = "<group>";
 		};
 		423CBC84157D0D910003A644 /* etc */ = {
@@ -557,14 +545,6 @@
 				423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */,
 			);
 			name = lib;
-			sourceTree = "<group>";
-		};
-		4281481D1642F6D500BE0D35 /* tutorial */ = {
-			isa = PBXGroup;
-			children = (
-				4281481E1642F6D500BE0D35 /* example_1.cpp */,
-			);
-			path = tutorial;
 			sourceTree = "<group>";
 		};
 		4281FC3E15CAE0AA00167444 /* libnn */ = {
