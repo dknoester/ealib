@@ -210,6 +210,7 @@
 		42720FB1163C0957008C8E63 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		42720FB2163C0AEA008C8E63 /* graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
 		42720FBF163C0B1F008C8E63 /* libmkv.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmkv.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4281481E1642F6D500BE0D35 /* example_1.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = example_1.cpp; sourceTree = "<group>"; };
 		4281FC3C15CAE04600167444 /* libnn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4281FC4115CAE0AA00167444 /* activation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = activation.h; sourceTree = "<group>"; };
 		4281FC4215CAE0AA00167444 /* back_propagation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = back_propagation.h; sourceTree = "<group>"; };
@@ -348,13 +349,13 @@
 			children = (
 				42841C7E15ADACF000AB18BE /* CONTRIBUTORS */,
 				42841C7F15ADACF100AB18BE /* README.md */,
+				423CBC86157D0D910003A644 /* Jamroot */,
+				423CBC82157D0D910003A644 /* doc */,
+				423CBC84157D0D910003A644 /* etc */,
 				423CBE4C157D0F310003A644 /* lib */,
 				423CBDAB157D0E450003A644 /* libea */,
 				42841C3515ADA06B00AB18BE /* libmkv */,
 				4281FC3E15CAE0AA00167444 /* libnn */,
-				423CBC82157D0D910003A644 /* doc */,
-				423CBC84157D0D910003A644 /* etc */,
-				423CBC86157D0D910003A644 /* Jamroot */,
 				423CBC7C157D0D440003A644 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -376,6 +377,7 @@
 			isa = PBXGroup;
 			children = (
 				423CBC83157D0D910003A644 /* boost_howto.rtf */,
+				4281481D1642F6D500BE0D35 /* tutorial */,
 			);
 			path = doc;
 			sourceTree = "<group>";
@@ -391,8 +393,8 @@
 		423CBDAB157D0E450003A644 /* libea */ = {
 			isa = PBXGroup;
 			children = (
-				423CBDAC157D0E450003A644 /* include */,
 				423CBDEE157D0E450003A644 /* Jamfile */,
+				423CBDAC157D0E450003A644 /* include */,
 				423CBDEF157D0E450003A644 /* src */,
 				423CBDF2157D0E450003A644 /* test */,
 			);
@@ -555,6 +557,14 @@
 				423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */,
 			);
 			name = lib;
+			sourceTree = "<group>";
+		};
+		4281481D1642F6D500BE0D35 /* tutorial */ = {
+			isa = PBXGroup;
+			children = (
+				4281481E1642F6D500BE0D35 /* example_1.cpp */,
+			);
+			path = tutorial;
 			sourceTree = "<group>";
 		};
 		4281FC3E15CAE0AA00167444 /* libnn */ = {
