@@ -310,6 +310,11 @@ namespace ea {
         
         location_matrix_type& locations() { return _locs; }
         
+        location_type& location(int x, int y) {
+            // x == j, y == i
+            return _locs(y, x);
+        }
+        
         //! Serialize this topology.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
