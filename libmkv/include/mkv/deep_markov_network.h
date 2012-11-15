@@ -76,7 +76,7 @@ namespace mkv {
         
         //! Retrieve the number of hidden state variables in this network.
         std::size_t nhidden_states() const {
-            return std::accumulate(begin(), end(), 0, bl::_1 += bind(&markov_network::nhidden_states, bl::_2));
+            return std::accumulate(begin(), end(), 0, bl::_1 += bl::bind(&markov_network::nhidden_states, bl::_2));
         }
         
         //! Retrieve the number of state variables in this network.
@@ -86,7 +86,7 @@ namespace mkv {
         
         //! Retrieve the number of gates in this network.
         std::size_t ngates() const {
-            return std::accumulate(begin(), end(), 0, bl::_1 += bind(&markov_network::ngates, bl::_2));
+            return std::accumulate(begin(), end(), 0, bl::_1 += bl::bind(&markov_network::ngates, bl::_2));
         }
         
         //! Convenience method to access a specific gate.
@@ -96,12 +96,12 @@ namespace mkv {
         
         //! Clear the network.
         void clear() {
-            std::for_each(begin(), end(), bind(&markov_network::clear, bl::_1));
+            std::for_each(begin(), end(), bl::bind(&markov_network::clear, bl::_1));
         }
         
         //! Rotate t and t-1 state vectors.
         void rotate() {
-            std::for_each(begin(), end(), bind(&markov_network::rotate, bl::_1));
+            std::for_each(begin(), end(), bl::bind(&markov_network::rotate, bl::_1));
         }
         
         //! Retrieve an iterator to the beginning of the svm outputs at time t in the last (highest-level) layer.
@@ -111,8 +111,8 @@ namespace mkv {
         markov_network::svm_type::iterator end_output() { return rbegin()->end_output(); }
 
     private:
-        rng_type _rng; //<! Random number generator.
         dmkv_desc_type _desc; //!< Description of the geometries of each successive layer of DMKVs.
+        rng_type _rng; //<! Random number generator.
     };
 
     

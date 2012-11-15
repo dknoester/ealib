@@ -115,7 +115,58 @@ namespace ea {
 			}
 		}
 	};
-    
+
+    /*! Markov network mutation type.
+     
+     Performs per-site, duplication, and deletion mutations.
+	 */
+	struct mkv_smart_mutation {
+		template <typename Representation, typename EA>
+		void operator()(Representation& repr, EA& ea) {
+            double per_site_p = get<MUTATION_PER_SITE_P>(ea);
+            int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
+            
+            std::size_t f=1,l=repr.size(),last=0;
+            if(f >= l) { return; }
+            
+            std::vector<std::pair<std::size_t, std::size_t> > genes;
+            
+            for( ; f!=l; ++f, ++last) {
+                int start_codon = repr[f] + repr[last];
+                if(start_codon == 255) {
+                    std::size_t ms=ea.rng().uniform_integer(16, 257);
+                    
+                    // don't overrun:
+                    if((f+ms) < l) {
+                        // per-site mutations
+                        for(std::size_t i=f; i<(f+ms); ++i) {
+                            if(ea.rng().p(per_site_p)) {
+                                repr[i] = ea.rng()(imax);
+                            }
+                        }
+                        
+                        genes.push_back(std::make_pair(f, f+ms));
+                    }
+                }
+            }
+                        
+            if(!genes.empty()) {
+                // gene duplication
+                if(ea.rng().p(get<MUTATION_DUPLICATION_P>(ea)) && (repr.size()<get<MKV_REPR_MAX_SIZE>(ea))) {
+                    std::pair<std::size_t, std::size_t>& g=*ea.rng().choice(genes.begin(), genes.end());
+                    std::vector<typename Representation::codon_type> buffer(repr.begin()+g.first, repr.begin()+g.second);
+                    repr.insert(repr.end(), buffer.begin(), buffer.end());
+                }
+                
+                // gene deletion
+                if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<MKV_REPR_MIN_SIZE>(ea))) {
+                    std::pair<std::size_t, std::size_t>& g=*ea.rng().choice(genes.begin(), genes.end());
+                    repr.erase(repr.begin()+g.first, repr.begin()+g.second);
+                }
+            }
+		}
+	};
+
     
     /*! Generates random Markov network-based individuals.
 	 */

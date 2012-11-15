@@ -155,7 +155,7 @@ namespace mkv {
 
     } // detail
     
-    enum { IN, OUT, HID } geo_idx;
+    enum { IN, OUT, HID } ;
     typedef boost::tuple<std::size_t, std::size_t, std::size_t> mkv_desc_type; //!< Type for geometry of a Markov Network.
     typedef boost::variant<detail::logic_gate, detail::markov_gate, detail::adaptive_gate> variant_gate_type; //!< Variant gate type.
 
