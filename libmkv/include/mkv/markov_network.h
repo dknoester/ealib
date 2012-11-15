@@ -155,52 +155,50 @@ namespace mkv {
 
     } // detail
     
-    
-    class markov_network {
+    enum { IN, OUT, HID } geo_idx;
+    typedef boost::tuple<std::size_t, std::size_t, std::size_t> mkv_desc_type; //!< Type for geometry of a Markov Network.
+    typedef boost::variant<detail::logic_gate, detail::markov_gate, detail::adaptive_gate> variant_gate_type; //!< Variant gate type.
+
+    /*! Markov Network that contains gates, a state vector machine, and an underlying geometry of
+     inputs, outputs, and hidden states.
+     */
+    class markov_network : public std::vector<variant_gate_type> {
     public:
         typedef int state_type; //!< Type for states.
         typedef state_vector_machine<state_type> svm_type; //!< State vector machine type.
-        typedef boost::variant<detail::logic_gate, detail::markov_gate, detail::adaptive_gate> variant_gate_type; //!< Variant gate type.
-        typedef std::vector<variant_gate_type> gate_list_type; //!< List of gates.
+        typedef std::vector<variant_gate_type> base_type; //!< List of gates.
         typedef ea::default_rng_type rng_type; //!< Random number generator type.
 
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, const rng_type& rng)
-        : _nin(nin), _nout(nout), _nhid(nhid), _svm(_nout+_nhid), _rng(rng) {
+        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(rng) {
         }
         
-        //! Constructs a Markov network with a copy of the given random number generator.
+        //! Constructs a Markov network with the given seed.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
-        : _nin(nin), _nout(nout), _nhid(nhid), _svm(_nout+_nhid), _rng(seed) {
+        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed) {
         }
         
         //! Retrieve this network's underlying random number generator.
         rng_type& rng() { return _rng; }
         
-        //! Retrieve the number of state variables in this network.
-        std::size_t nstates() const { return _nin + _nout + _nhid; }
-        
         //! Retrieve the number of input state variables in this network.
-        std::size_t ninput_states() const { return _nin; }
+        std::size_t ninput_states() const { return _desc.get<IN>(); }
         
         //! Retrieve the number of output state variables in this network.
-        std::size_t noutput_states() const { return _nout; }
+        std::size_t noutput_states() const { return _desc.get<OUT>(); }
         
         //! Retrieve the number of hidden state variables in this network.
-        std::size_t nhidden_states() const { return _nhid; }
+        std::size_t nhidden_states() const { return _desc.get<HID>(); }
+        
+        //! Retrieve the number of state variables in this network.
+        std::size_t nstates() const {
+            return ninput_states() + noutput_states() + nhidden_states();
+        }
         
         //! Retrieve the size of this network, in number of gates.
-        std::size_t size() const { return _gates.size(); }
-        
-        //! Retrieve an iterator to the beginning of this network's gate list.
-        gate_list_type::iterator begin() { return _gates.begin(); }
-        
-        //! Retrieve an iterator to the end of this network's gate list.
-        gate_list_type::iterator end() { return _gates.end(); }
-        
-        //! Retrieve a reference to gate i.
-        variant_gate_type& operator[](std::size_t i) { return _gates[i]; }
-        
+        std::size_t ngates() const { return size(); }
+                
         //! Clear the network.
         void clear() { _svm.clear(); }
         
@@ -208,10 +206,10 @@ namespace mkv {
         void rotate() { _svm.rotate(); }
         
         //! Retrieve an iterator to the beginning of the svm outputs at time t.
-        svm_type::state_vector_type::iterator output_begin() { return _svm.t().begin(); }
+        svm_type::iterator begin_output() { return _svm.t().begin(); }
         
         //! Retrieve an iterator to the end of the svm outputs at time t.
-        svm_type::state_vector_type::iterator output_end() { return _svm.t().begin()+_nout; }
+        svm_type::iterator end_output() { return _svm.t().begin()+_desc.get<OUT>(); }
         
         /*! Retrieve the value of input i.  Markov networks treat any state variable
          as input, so we need to check to see if the requested input comes from
@@ -219,10 +217,10 @@ namespace mkv {
          */
         template <typename RandomAccessIterator>
         state_type input(RandomAccessIterator f, std::size_t i) {
-            if(i < _nin) {
+            if(i < _desc.get<IN>()) {
                 return f[i];
             } else {
-                return _svm.state_tminus1(i-_nin);
+                return _svm.state_tminus1(i-_desc.get<IN>());
             }
         }
         
@@ -230,23 +228,14 @@ namespace mkv {
          to the input space.
          */
         void output(std::size_t i, const state_type& v) {
-            if(i >= _nin) {
-                _svm.state_t(i-_nin) |= v;
+            if(i >= _desc.get<IN>()) {
+                _svm.state_t(i-_desc.get<IN>()) |= v;
             }
         }
 
-        //! Append a gate to this Markov network.
-        void append(const variant_gate_type& v) {
-            _gates.push_back(v);
-        }
-
     protected:
-        std::size_t _nin; //!< Number of input states.
-        std::size_t _nout; //!< Number of output states.
-        std::size_t _nhid; //!< Number of hidden states.
+        mkv_desc_type _desc; //!< Geometry descriptor for this Markov Network.
         svm_type _svm; //!< State vector machine for the hidden & output states.
-        
-        gate_list_type _gates; //!< List of gates in this markov network.
         rng_type _rng; //<! Random number generator.
     };
     
@@ -256,9 +245,9 @@ namespace mkv {
         /*! Visitor, used to trigger updates on different gate types.
          */
         template <typename RandomAccessIterator>
-        class gate_update_visitor : public boost::static_visitor< > {
+        class markov_network_update_visitor : public boost::static_visitor< > {
         public:
-            gate_update_visitor(markov_network& net, RandomAccessIterator f)
+            markov_network_update_visitor(markov_network& net, RandomAccessIterator f)
             : _net(net), _f(f) {
             }
             
@@ -351,18 +340,15 @@ namespace mkv {
     } // detail
     
     
-    /*! Update a Markov network n times, with the inputs given by f and writing outputs to o.
+    /*! Update a Markov Network n times with inputs given by f.
      */
-    template <typename RandomAccessIterator, typename OutputIterator>
-    void update(markov_network& net, std::size_t n, RandomAccessIterator f, OutputIterator o) {
-        detail::gate_update_visitor<RandomAccessIterator> visitor(net, f);
-        
+    template <typename RandomAccessIterator>
+    void update(markov_network& net, std::size_t n, RandomAccessIterator f) {
+        detail::markov_network_update_visitor<RandomAccessIterator> visitor(net, f);
         for( ; n>0; --n) {
             net.rotate();
             std::for_each(net.begin(), net.end(), boost::apply_visitor(visitor));
         }
-        
-        std::copy(net.output_begin(), net.output_end(), o);
     }
     
 } // mkv

@@ -235,6 +235,7 @@
 		42841C8015AEEC3A00AB18BE /* meta_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_population.h; sourceTree = "<group>"; };
 		42841D1515B2F35300AB18BE /* adaptive_hfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = adaptive_hfc.h; sourceTree = "<group>"; };
 		42841D3E15BEDF7700AB18BE /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
+		4287A8B916553F7F002AFCB6 /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
 		429B1CBD162ED94F00578A1C /* bitstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bitstring.h; sourceTree = "<group>"; };
 		429B1CBE162EDCD600578A1C /* all_ones.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = all_ones.h; sourceTree = "<group>"; };
 		429B1CD7162EEDE000578A1C /* state_vector_machine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = state_vector_machine.h; sourceTree = "<group>"; };
@@ -623,6 +624,7 @@
 		42841C3B15ADA06B00AB18BE /* mkv */ = {
 			isa = PBXGroup;
 			children = (
+				4287A8B916553F7F002AFCB6 /* deep_markov_network.h */,
 				42841C3C15ADA06B00AB18BE /* markov_network.h */,
 				42720FB1163C0957008C8E63 /* graph.h */,
 				429B1CD7162EEDE000578A1C /* state_vector_machine.h */,

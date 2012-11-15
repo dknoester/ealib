@@ -7,7 +7,7 @@
 
 mkv::markov_graph mkv::as_genetic_graph(markov_network& net) {
     
-    markov_graph g(net.nstates() + net.size());
+    markov_graph g(net.nstates() + net.ngates());
     
     // color the states:
     int v=0; // vertex counter
@@ -25,7 +25,7 @@ mkv::markov_graph mkv::as_genetic_graph(markov_network& net) {
     }
     
     // add the edges:
-    for(std::size_t i=0; i<net.size(); ++i, ++v) {
+    for(std::size_t i=0; i<net.ngates(); ++i, ++v) {
         g[boost::vertex(v,g)].nt = vertex_properties::GATE;
         g[boost::vertex(v,g)].idx = v;
         boost::apply_visitor(detail::graph_building_visitor(boost::vertex(v,g), g), net[i]);

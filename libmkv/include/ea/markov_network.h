@@ -33,6 +33,7 @@
 #include <ea/datafile.h>
 
 #include <mkv/markov_network.h>
+#include <mkv/deep_markov_network.h>
 
 // meta-data
 LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", int);
@@ -44,6 +45,8 @@ LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", int);
 LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", unsigned int);
 LIBEA_MD_DECL(MKV_REPR_MAX_SIZE, "markov_network.representation.max_size", unsigned int);
 LIBEA_MD_DECL(MKV_REPR_MIN_SIZE, "markov_network.representation.min_size", unsigned int);
+LIBEA_MD_DECL(GATE_LAYER_LIMIT, "markov_network.gate.layer.limit", int);
+LIBEA_MD_DECL(GATE_LAYER_FLOOR, "markov_network.gate.layer.floor", int);
 LIBEA_MD_DECL(GATE_INPUT_LIMIT, "markov_network.gate.input.limit", int);
 LIBEA_MD_DECL(GATE_INPUT_FLOOR, "markov_network.gate.input.floor", int);
 LIBEA_MD_DECL(GATE_OUTPUT_LIMIT, "markov_network.gate.output.limit", int);
@@ -148,18 +151,18 @@ namespace mkv {
         /*! Parse the inputs and outputs for a Markov network gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_io(Network& net, index_list_type& inputs, index_list_type& outputs, ForwardIterator& h, MetaData& md) {
+        void build_io(Network& net, std::size_t& layer, index_list_type& inputs, index_list_type& outputs, ForwardIterator& h, MetaData& md) {
             using namespace ea;
             using namespace ea::algorithm;
-
+            
             int nin=modnorm(*h++, get<GATE_INPUT_FLOOR>(md), get<GATE_INPUT_LIMIT>(md));
             int nout=modnorm(*h++, get<GATE_OUTPUT_FLOOR>(md), get<GATE_OUTPUT_LIMIT>(md));
-
+            
             inputs.clear();
             inputs.insert(inputs.end(), h, h+nin);
             std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.nstates()));
             h+=nin;
-
+            
             outputs.clear();
             outputs.insert(outputs.end(), h, h+nout);
             std::transform(outputs.begin(), outputs.end(), outputs.begin(), std::bind2nd(std::modulus<int>(), net.nstates()));
@@ -170,31 +173,34 @@ namespace mkv {
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
         void build_logic_gate(Network& net, ForwardIterator h, MetaData& md) {
+            std::size_t layer=0;
             index_list_type inputs, outputs;
-            build_io(net, inputs, outputs, h, md);
+            build_io(net, layer, inputs, outputs, h, md);
             logic_gate g(inputs, outputs, h);
-            net.append(g);
+            net.push_back(g);
         }
         
         /*! Build a markov gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
         void build_markov_gate(Network& net, ForwardIterator h, MetaData& md) {
+            std::size_t layer=0;
             index_list_type inputs, outputs;
-            build_io(net, inputs, outputs, h, md);
+            build_io(net, layer, inputs, outputs, h, md);
             markov_gate g(inputs, outputs, h);
-            net.append(g);
+            net.push_back(g);
         }
-
+        
         /*! Build an adaptive gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
         void build_adaptive_gate(Network& net, ForwardIterator h, MetaData& md) {
             using namespace ea;
             using namespace ea::algorithm;
-
+            
+            std::size_t layer=0;
             index_list_type inputs, outputs;
-            build_io(net, inputs, outputs, h, md);
+            build_io(net, layer, inputs, outputs, h, md);
             
             int nhistory=modnorm(*h++, get<GATE_HISTORY_FLOOR>(md), get<GATE_HISTORY_LIMIT>(md));
             int posf=*h++ % net.nstates();
@@ -212,12 +218,68 @@ namespace mkv {
             std::transform(negwv.begin(), negwv.end(), negwv.begin(),
                            std::bind2nd(std::multiplies<double>(), -1.0/get<GATE_WV_STEPS>(md)));
             h+=nhistory;
-
+            
             adaptive_gate g(nhistory, posf, poswv, negf, negwv, inputs, outputs, h);
-            net.append(g);
+            net.push_back(g);
         }
         
+        template <typename ForwardIterator, typename MetaData>
+        std::size_t get_layer(ForwardIterator h, MetaData& md) {
+            using namespace ea;
+            using namespace ea::algorithm;
+            return modnorm(*h, get<GATE_LAYER_FLOOR>(md), get<GATE_LAYER_LIMIT>(md));
+        }        
+        
     } // detail
+    
+    
+    /*! Build a Deep Markov network from the genome [f,l), with the given meta data.
+     */
+    template <typename ForwardIterator, typename MetaData>
+    void build_deep_markov_network(deep_markov_network& net, ForwardIterator f, ForwardIterator l, MetaData& md) {
+        using namespace detail;
+        using namespace ea;
+        using namespace ea::algorithm;
+        using namespace mkv;
+        
+        if(f == l) { return; }
+        
+        // which gate types are supported?
+        std::set<gate_types> supported = supported_gates(md);
+        
+        ForwardIterator last=f;
+        ++f;
+        
+        for( ; f!=l; ++f, ++last) {
+            int start_codon = *f + *last;
+            if(start_codon == 255) {
+                switch(*last) {
+                    case MARKOV: { // build a markov gate
+                        if(!supported.count(MARKOV)) { break; }
+                        markov_network& layer=net[get_layer(f+1,md)];
+                        build_markov_gate(layer, f+2, md);
+                        break;
+                    }
+                    case LOGIC: { // build a logic gate
+                        if(!supported.count(LOGIC)) { break; }
+                        markov_network& layer=net[get_layer(f+1,md)];
+                        build_logic_gate(layer, f+2, md);
+                        break;
+                    }
+                    case ADAPTIVE: { // build an adaptive gate
+                        if(!supported.count(ADAPTIVE)) { break; }
+                        markov_network& layer=net[get_layer(f+1,md)];
+                        build_adaptive_gate(layer, f+2, md);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     
     /*! Build a Markov network from the genome [f,l), with the given meta data.
      */
@@ -232,7 +294,7 @@ namespace mkv {
         
         // which gate types are supported?
         std::set<gate_types> supported = supported_gates(md);
-
+        
         ForwardIterator last=f;
         ++f;
         
@@ -262,7 +324,9 @@ namespace mkv {
             }
         }
     }
-        
+    
+
+    
 //    /*! Save the dominant individual in graphviz format.
 //     */
 //    template <typename EA>
@@ -392,7 +456,7 @@ namespace mkv {
                     mkv::markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
                     mkv::build_markov_network(net, j->repr().begin(), j->repr().end(), ea);
                     
-                    gates(net.size());
+                    gates(net.ngates());
                     genes(j->repr().size());
                 }
             }

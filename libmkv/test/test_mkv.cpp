@@ -23,10 +23,163 @@
 #define BOOST_TEST_MAIN
 
 #include <iostream>
+#include <algorithm>
 #include <ea/markov_network.h>
 #include <ea/cvector.h>
 #include <mkv/graph.h>
 #include "test.h"
+
+
+/*! Test for layered Markov Networks.
+ */
+BOOST_AUTO_TEST_CASE(test_layers) {
+    using namespace mkv;
+	using namespace mkv::detail;
+    using namespace ea;
+	
+    //	 | 0  | 1  | 2  | 3  | 4  |
+    //	 | 0i | 1i | 0o | 1o | 0h |
+    //
+    //	 0h:
+    //	 o(2,5) = f(i(0,1)); o(2,5)==i(0,1)
+    //	 1h:
+    //	 o(3) = f(i(4,5,1)); o(3)==i(1)
+    //
+    //	 0-in 1-in
+    //	 |   /
+    //	 4-HHH
+    //	 /
+    //	 2-out 3-out
+    
+	int data[100] = {
+		43, 255-43, // start
+        0, // layer 0
+        3, 1, // 4in, 2out
+		0, 1, 2, 3, // inputs from state 0-3
+		4, 5, // outputs to state 4-5
+		0, // d table; echos input
+		1,
+		2,
+		3,
+		0, // d table; echos input
+		1,
+		2,
+		3,
+		0, // d table; echos input
+		1,
+		2,
+		3,
+		0, // d table; echos input
+		1,
+		2,
+		3,
+        0, // 28
+		43, 255-43, // start
+        1, // layer 0
+        1, 3, // 2in, 4out
+		0, 1, // inputs from state 0-1
+		2, 3, 4, 5, // outputs to state 2-5
+		1, // d table; echos 2^in
+		2,
+		4,
+		8,
+        0 // 28
+    };
+    
+    meta_data md;
+    put<MKV_GATE_TYPES>("logic", md);
+    put<GATE_LAYER_FLOOR>(0, md);
+    put<GATE_LAYER_LIMIT>(2, md);
+    put<GATE_INPUT_FLOOR>(1, md);
+    put<GATE_INPUT_LIMIT>(8, md);
+    put<GATE_OUTPUT_FLOOR>(1, md);
+    put<GATE_OUTPUT_LIMIT>(8, md);
+    
+    deep_markov_network::dmkv_desc_type lv;
+    lv.push_back(boost::make_tuple(4,2,0));
+    lv.push_back(boost::make_tuple(2,4,0));
+    deep_markov_network net(lv, 42);
+    
+    build_deep_markov_network(net, data, data+44, md);
+    BOOST_CHECK(net.size()==2);
+    BOOST_CHECK(net.ninput_states()==6);
+    BOOST_CHECK(net.noutput_states()==6);
+    BOOST_CHECK(net.nhidden_states()==0);
+    BOOST_CHECK(net.nstates()==12);
+    BOOST_CHECK(net.ngates()==2);
+    
+    BOOST_CHECK(net[0].nstates()==6);
+    BOOST_CHECK(net[0].noutput_states()==2);
+    
+    BOOST_CHECK(net[1].nstates()==6);
+    BOOST_CHECK(net[1].noutput_states()==4);
+    
+    BOOST_CHECK(std::distance(net.begin_output(), net.end_output())==4);
+    
+    {
+        logic_gate& g = boost::get<logic_gate>(net(0,0));
+        BOOST_CHECK(g.inputs[0]==0);
+        BOOST_CHECK(g.inputs[1]==1);
+        BOOST_CHECK(g.inputs[2]==2);
+        BOOST_CHECK(g.inputs[3]==3);
+        BOOST_CHECK(g.outputs[0]==4);
+        BOOST_CHECK(g.outputs[1]==5);
+        BOOST_CHECK(g.M[0]==0);
+        BOOST_CHECK(g.M[1]==1);
+        BOOST_CHECK(g.M[2]==2);
+        BOOST_CHECK(g.M[3]==3);
+    }
+    {
+        logic_gate& g = boost::get<logic_gate>(net(1,0));
+        BOOST_CHECK(g.inputs[0]==0);
+        BOOST_CHECK(g.inputs[1]==1);
+        BOOST_CHECK(g.outputs[0]==2);
+        BOOST_CHECK(g.outputs[1]==3);
+        BOOST_CHECK(g.outputs[2]==4);
+        BOOST_CHECK(g.outputs[3]==5);
+        BOOST_CHECK(g.M[0]==1);
+        BOOST_CHECK(g.M[1]==2);
+        BOOST_CHECK(g.M[2]==4);
+        BOOST_CHECK(g.M[3]==8);
+    }
+    
+    
+    // test cases:
+	int tc0[8] = {
+		0, 0, 0, 0, // inputs
+		1, 0, 0, 0 // expected outputs
+	};
+	int tc1[8] = {
+		1, 0, 0, 0,
+		0, 1, 0, 0
+	};
+	int tc2[8] = {
+		0, 1, 0, 0,
+		0, 0, 1, 0
+	};
+	int tc3[8] = {
+		1, 1, 0, 0,
+		0, 0, 0, 1
+	};
+    
+    int* in;
+    
+	in=tc0;
+    update(net, 2, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
+    
+	in=tc1;
+    update(net, 2, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
+    
+	in=tc2;
+    update(net, 2, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
+	
+	in=tc3;
+    update(net, 2, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
+}
 
 
 /*! Test for converting a Markov network to a graph.
@@ -154,7 +307,8 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
     build_markov_network(net, data, data+64, md);
     BOOST_CHECK(net.size()==1);
     BOOST_CHECK(net.nstates()==5);
-    
+    BOOST_CHECK(std::distance(net.begin_output(), net.end_output())==2);
+
     logic_gate& g = boost::get<logic_gate>(net[0]);
     BOOST_CHECK(g.inputs[0]==0);
     BOOST_CHECK(g.inputs[1]==1);
@@ -184,23 +338,22 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
 	};
     
     int* in;
-	int out[2] = { 0, 0 };
     
 	in=tc0;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
     
 	in=tc1;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc2;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc3;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 }
 
 
@@ -259,6 +412,7 @@ BOOST_AUTO_TEST_CASE(test_markov_gate) {
     build_markov_network(net, data, data+64, md);
     BOOST_CHECK(net.size()==1);
     BOOST_CHECK(net.nstates()==5);
+    BOOST_CHECK(std::distance(net.begin_output(), net.end_output())==2);
     
     markov_gate& g = boost::get<markov_gate>(net[0]);
     BOOST_CHECK(g.inputs[0]==0);
@@ -295,23 +449,22 @@ BOOST_AUTO_TEST_CASE(test_markov_gate) {
 	};
 	
     int* in;
-	int out[2] = { 0, 0 };
     
 	in=tc0;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
     
 	in=tc1;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc2;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc3;
-    update(net, 1, in, out);
-	BOOST_CHECK((out[0]==in[2]) && (out[1]==in[3]));
+    update(net, 1, in);
+    BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 }
 
 
@@ -370,7 +523,8 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
     build_markov_network(net, cv.begin(), cv.end(), md);
     BOOST_CHECK(net.size()==3);
     BOOST_CHECK(net.nstates()==6);
-    
+    BOOST_CHECK(std::distance(net.begin_output(), net.end_output())==2);
+
     {
         logic_gate& g = boost::get<logic_gate>(net[0]);
         BOOST_CHECK(g.inputs.size() == 2);
