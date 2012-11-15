@@ -70,6 +70,7 @@ namespace ea {
         meta_population() : _update(0) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<individual_type>));
+            _configurator.construct(*this);
         }
         
         //! Accessor for the random number generator.

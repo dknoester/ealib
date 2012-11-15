@@ -45,11 +45,11 @@ namespace ea {
             typename EA::population_type& pop = ea.population();
             typename EA::population_type::iterator mi=pop.begin();            
             for(typename EA::population_type::iterator i=pop.begin(); i!=pop.end(); ++i) {
-                if(ea::fitness(*i) > ea::fitness(*mi)) {
+                if(ea::fitness(**i) > ea::fitness(**mi)) {
                     mi = i;
                 }
             }
-            return *mi;
+            return **mi;
         }
         
         
