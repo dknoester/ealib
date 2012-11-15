@@ -193,6 +193,8 @@ void mkv::write_graphviz(const std::string& title, std::ostream& out, const mark
                 if(i == nl.rend()) {
                     nl.push_back('A');
                 }
+            } else {
+                ++*nl.rbegin();
             }
         }
     }
