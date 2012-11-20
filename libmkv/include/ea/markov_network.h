@@ -39,14 +39,13 @@
 LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", int);
 LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", int);
 LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", int);
+LIBEA_MD_DECL(MKV_LAYER_N, "markov_network.layer.n", int);
 LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
 LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
 LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", int);
 LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", unsigned int);
 LIBEA_MD_DECL(MKV_REPR_MAX_SIZE, "markov_network.representation.max_size", unsigned int);
 LIBEA_MD_DECL(MKV_REPR_MIN_SIZE, "markov_network.representation.min_size", unsigned int);
-LIBEA_MD_DECL(GATE_LAYER_LIMIT, "markov_network.gate.layer.limit", int);
-LIBEA_MD_DECL(GATE_LAYER_FLOOR, "markov_network.gate.layer.floor", int);
 LIBEA_MD_DECL(GATE_INPUT_LIMIT, "markov_network.gate.input.limit", int);
 LIBEA_MD_DECL(GATE_INPUT_FLOOR, "markov_network.gate.input.floor", int);
 LIBEA_MD_DECL(GATE_OUTPUT_LIMIT, "markov_network.gate.output.limit", int);
@@ -139,13 +138,13 @@ namespace ea {
                     // don't overrun:
                     if((f+ms) < l) {
                         // per-site mutations
-                        for(std::size_t i=f; i<(f+ms); ++i) {
+                        for(std::size_t i=(f+1); i<(f+ms); ++i) {
                             if(ea.rng().p(per_site_p)) {
                                 repr[i] = ea.rng()(imax);
                             }
                         }
                         
-                        genes.push_back(std::make_pair(f, f+ms));
+                        genes.push_back(std::make_pair(f-1, f+ms));
                     }
                 }
             }
@@ -278,7 +277,7 @@ namespace mkv {
         std::size_t get_layer(ForwardIterator h, MetaData& md) {
             using namespace ea;
             using namespace ea::algorithm;
-            return modnorm(*h, get<GATE_LAYER_FLOOR>(md), get<GATE_LAYER_LIMIT>(md));
+            return modnorm(*h, 0, get<MKV_LAYER_N>(md));
         }        
         
     } // detail
