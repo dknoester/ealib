@@ -408,6 +408,26 @@ namespace ea {
             }
         }
         
+        //! Execute the next instruction if ?bx? == ?cx?.
+        DIGEVO_INSTRUCTION_DECL(if_equal) {
+            
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            if(hw.getRegValue(rbx) != hw.getRegValue(rcx)) {
+                hw.advanceHead(Hardware::IP);
+            }
+        }
+        
+        //! Execute the next instruction if ?bx? != ?cx?.
+        DIGEVO_INSTRUCTION_DECL(if_not_equal) {
+            
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            if(hw.getRegValue(rbx) == hw.getRegValue(rcx)) {
+                hw.advanceHead(Hardware::IP);
+            }
+        }
+        
         //! Get the organism's current position
         DIGEVO_INSTRUCTION_DECL(get_xy) {
             int rbx = hw.modifyRegister();
@@ -416,9 +436,24 @@ namespace ea {
             hw.setRegValue(rbx,p->location()->x);
             hw.setRegValue(rcx,p->location()->y);
         }
+        
+        //! Get the organism's age
+        DIGEVO_INSTRUCTION_DECL(get_age){
+            int rbx = hw.modifyRegister();
+            hw.setRegValue(rbx,hw.age());
+        }
+        
+        //! Jump the organism's IP head; Move head ?IP? by amount in CX register
+        DIGEVO_INSTRUCTION_DECL(jump_head){
+            int rbx = hw.modifyRegister();
+            int jumpAmt = hw.getRegValue(rbx);
+            hw.advanceHead(Hardware::IP, jumpAmt);
+        }
+            
+        
     } // instructions
-    
-    
+
+
     /*! Instruction set architecture for digital evolution.
      */
     template <typename EA>
