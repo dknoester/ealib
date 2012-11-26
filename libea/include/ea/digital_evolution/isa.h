@@ -145,7 +145,7 @@ namespace ea {
          its size, and the flow head is set to the instruction immediately 
          following the complement.  If no label is found, BX and CX are set to
          zero, and the flow head is moved to the instruction following h_search.
-         */
+        */
         DIGEVO_INSTRUCTION_DECL(h_search) {
             std::pair<int, int> comp_label = hw.findComplementLabel();
             hw.setHeadLocation(Hardware::FH, hw.getHeadLocation(Hardware::IP)); 
@@ -153,7 +153,7 @@ namespace ea {
             // if the complement of the label exists...
             if (comp_label.first != -1) {
                 hw.setRegValue(Hardware::BX, comp_label.first); 
-                hw.setRegValue(Hardware::CX, comp_label.second);                
+                hw.setRegValue(Hardware::CX, comp_label.second);
             } else { 
                 hw.setRegValue(Hardware::BX, 0); 
                 hw.setRegValue(Hardware::CX, 0);
@@ -162,6 +162,7 @@ namespace ea {
             hw.advanceHead(Hardware::FH, dist + comp_label.second);
         }
         
+            
         /*! Divide this organism's memory between parent and offspring.
          
          Instructions from the beginning of the organism's memory to the current

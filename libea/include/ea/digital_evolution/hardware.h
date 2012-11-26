@@ -162,7 +162,8 @@ namespace ea {
         void replicated_soft_reset() { 
             _mem_extended = false;
             _orig_size = _repr.size();
-
+            bzero(_head_position, sizeof(int)*NUM_HEADS);
+            advanceHead(IP, -1);
         }
         
         //! Return the age of this hardware in virtual CPU cycles.
