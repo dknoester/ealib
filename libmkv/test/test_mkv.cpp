@@ -88,14 +88,12 @@ BOOST_AUTO_TEST_CASE(test_layers) {
     
     meta_data md;
     put<MKV_GATE_TYPES>("logic", md);
-    put<GATE_LAYER_FLOOR>(0, md);
-    put<GATE_LAYER_LIMIT>(2, md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
     put<GATE_OUTPUT_LIMIT>(8, md);
     
-    deep_markov_network::dmkv_desc_type lv;
+    deep_markov_network::desc_type lv;
     lv.push_back(boost::make_tuple(4,2,0));
     lv.push_back(boost::make_tuple(2,4,0));
     deep_markov_network net(lv, 42);

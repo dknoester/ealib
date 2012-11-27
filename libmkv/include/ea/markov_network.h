@@ -36,10 +36,7 @@
 #include <mkv/deep_markov_network.h>
 
 // meta-data
-LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", int);
-LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", int);
-LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", int);
-LIBEA_MD_DECL(MKV_LAYER_N, "markov_network.layer.n", int);
+LIBEA_MD_DECL(MKV_DESC, "markov_network.desc", std::string);
 LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
 LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
 LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", int);
@@ -273,11 +270,11 @@ namespace mkv {
             net.push_back(g);
         }
         
-        template <typename ForwardIterator, typename MetaData>
-        std::size_t get_layer(ForwardIterator h, MetaData& md) {
+        template <typename ForwardIterator>
+        std::size_t get_layer(ForwardIterator h, int max_layer) {
             using namespace ea;
             using namespace ea::algorithm;
-            return modnorm(*h, 0, get<MKV_LAYER_N>(md));
+            return modnorm(*h, 0, max_layer);
         }        
         
     } // detail
@@ -306,19 +303,19 @@ namespace mkv {
                 switch(*last) {
                     case MARKOV: { // build a markov gate
                         if(!supported.count(MARKOV)) { break; }
-                        markov_network& layer=net[get_layer(f+1,md)];
+                        markov_network& layer=net[get_layer(f+1,net.size())];
                         build_markov_gate(layer, f+2, md);
                         break;
                     }
                     case LOGIC: { // build a logic gate
                         if(!supported.count(LOGIC)) { break; }
-                        markov_network& layer=net[get_layer(f+1,md)];
+                        markov_network& layer=net[get_layer(f+1,net.size())];
                         build_logic_gate(layer, f+2, md);
                         break;
                     }
                     case ADAPTIVE: { // build an adaptive gate
                         if(!supported.count(ADAPTIVE)) { break; }
-                        markov_network& layer=net[get_layer(f+1,md)];
+                        markov_network& layer=net[get_layer(f+1,net.size())];
                         build_adaptive_gate(layer, f+2, md);
                         break;
                     }
@@ -328,6 +325,33 @@ namespace mkv {
                 }
             }
         }
+    }
+
+
+    /*! Convenience method to build a Deep Markov Network.
+     */
+    template <typename Individual, typename RNG, typename EA>
+    deep_markov_network make_deep_markov_network(const deep_markov_network::desc_type& desc, Individual& ind, RNG& rng, EA& ea) {
+        deep_markov_network net(desc, rng);
+        build_deep_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+        return net;
+    }
+    
+    
+    /*! Decode excitatory/inhibitory bit pairs into an integer.
+     
+     This is a common way to interpret the output from a Markov Network, hence is included here.
+     */
+    template <typename ForwardIterator>
+    int decode(ForwardIterator f, ForwardIterator l) {
+        assert((std::distance(f,l)%2) == 0);
+        int d=0;
+        for(std::size_t j=0; f!=l; ++f, ++j) {
+            int excite=(*f & 0x01);
+            int inhibit=(*++f & 0x01);
+            d |=  (excite & ~inhibit) << j;
+        }
+        return d;
     }
 
     
@@ -483,43 +507,43 @@ namespace mkv {
     
     /*! Datafile for markov network statistics.
      */
-    template <typename EA>
-    struct mkv_meta_population_datafile : ea::record_statistics_event<EA> {
-        mkv_meta_population_datafile(EA& ea) : ea::record_statistics_event<EA>(ea), _df("mkv_meta_population_datafile.dat") {
-            _df.add_field("update")
-            .add_field("mean_gates")
-            .add_field("max_gates")
-            .add_field("mean_genome_size");
-        }
-        
-        virtual ~mkv_meta_population_datafile() {
-        }
-        
-        virtual void operator()(EA& ea) {
-            using namespace boost::accumulators;
-            using namespace ea;
-            accumulator_set<double, stats<tag::mean,tag::max> > gates;
-            accumulator_set<double, stats<tag::mean> > genes;
-            
-            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
-                    mkv::markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-                    mkv::build_markov_network(net, j->repr().begin(), j->repr().end(), ea);
-                    
-                    gates(net.ngates());
-                    genes(j->repr().size());
-                }
-            }
-            
-            _df.write(ea.current_update())
-            .write(mean(gates))
-            .write(max(gates))
-            .write(mean(genes))
-            .endl();
-        }
-        
-        ea::datafile _df;
-    };
+//    template <typename EA>
+//    struct mkv_meta_population_datafile : ea::record_statistics_event<EA> {
+//        mkv_meta_population_datafile(EA& ea) : ea::record_statistics_event<EA>(ea), _df("mkv_meta_population_datafile.dat") {
+//            _df.add_field("update")
+//            .add_field("mean_gates")
+//            .add_field("max_gates")
+//            .add_field("mean_genome_size");
+//        }
+//        
+//        virtual ~mkv_meta_population_datafile() {
+//        }
+//        
+//        virtual void operator()(EA& ea) {
+//            using namespace boost::accumulators;
+//            using namespace ea;
+//            accumulator_set<double, stats<tag::mean,tag::max> > gates;
+//            accumulator_set<double, stats<tag::mean> > genes;
+//            
+//            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+//                for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
+//                    mkv::markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
+//                    mkv::build_markov_network(net, j->repr().begin(), j->repr().end(), ea);
+//                    
+//                    gates(net.ngates());
+//                    genes(j->repr().size());
+//                }
+//            }
+//            
+//            _df.write(ea.current_update())
+//            .write(mean(gates))
+//            .write(max(gates))
+//            .write(mean(genes))
+//            .endl();
+//        }
+//        
+//        ea::datafile _df;
+//    };
     
 } // mkv
 

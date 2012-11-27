@@ -23,6 +23,7 @@
 #include <boost/variant.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <vector>
 
 #include <ea/algorithm.h>
@@ -31,7 +32,7 @@
 
 
 namespace mkv {
-    
+
     namespace detail {
         
         typedef std::vector<std::size_t> index_list_type; //!< Type for a list of indices.
@@ -155,15 +156,16 @@ namespace mkv {
 
     } // detail
     
-    enum { IN, OUT, HID } ;
-    typedef boost::tuple<std::size_t, std::size_t, std::size_t> mkv_desc_type; //!< Type for geometry of a Markov Network.
-    typedef boost::variant<detail::logic_gate, detail::markov_gate, detail::adaptive_gate> variant_gate_type; //!< Variant gate type.
 
+    typedef boost::variant<detail::logic_gate, detail::markov_gate, detail::adaptive_gate> variant_gate_type; //!< Variant gate type.
+    
     /*! Markov Network that contains gates, a state vector machine, and an underlying geometry of
      inputs, outputs, and hidden states.
      */
     class markov_network : public std::vector<variant_gate_type> {
     public:
+        typedef boost::tuple<std::size_t, std::size_t, std::size_t> desc_type; //!< Descriptor for Markov Networks.
+        enum { IN, OUT, HID }; //!< Indices into the desc_type for number of inputs, outputs, and hidden states.
         typedef int state_type; //!< Type for states.
         typedef state_vector_machine<state_type> svm_type; //!< State vector machine type.
         typedef std::vector<variant_gate_type> base_type; //!< List of gates.
@@ -178,7 +180,12 @@ namespace mkv {
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
         : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed) {
         }
-        
+
+        //! Constructs a Markov network with the given seed.
+        markov_network(const desc_type& desc, unsigned int seed=0)
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(seed) {
+        }
+
         //! Retrieve this network's underlying random number generator.
         rng_type& rng() { return _rng; }
         
@@ -234,7 +241,7 @@ namespace mkv {
         }
 
     protected:
-        mkv_desc_type _desc; //!< Geometry descriptor for this Markov Network.
+        desc_type _desc; //!< Geometry descriptor for this Markov Network.
         svm_type _svm; //!< State vector machine for the hidden & output states.
         rng_type _rng; //<! Random number generator.
     };

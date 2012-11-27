@@ -43,21 +43,21 @@ namespace mkv {
      */
     class deep_markov_network : public std::vector<markov_network> {
     public:
-        typedef std::vector<mkv_desc_type> dmkv_desc_type; //!< Type for geometry of Deep Markov Network.
+        typedef std::vector<markov_network::desc_type> desc_type; //!< Type for geometry of Deep Markov Network.
         typedef std::vector<markov_network> base_type; //!< Base type container for Deep Markov Networks.
         typedef ea::default_rng_type rng_type; //!< Random number generator type.
 
         //! Constructs a Deep Markov network with a copy of the given random number generator.
-        deep_markov_network(const dmkv_desc_type& desc, const rng_type& rng) : _desc(desc), _rng(rng) {
-            for(dmkv_desc_type::iterator i=_desc.begin(); i!=_desc.end(); ++i) {
-                push_back(markov_network(i->get<IN>(), i->get<OUT>(), i->get<HID>(), _rng()));
+        deep_markov_network(const desc_type& desc, const rng_type& rng) : _desc(desc), _rng(rng) {
+            for(desc_type::iterator i=_desc.begin(); i!=_desc.end(); ++i) {
+                push_back(markov_network(*i, _rng()));
             }
         }
         
         //! Constructs a Deep Markov network with a given seed.
-        deep_markov_network(const dmkv_desc_type& desc, unsigned int seed=0) : _desc(desc), _rng(seed) {
-            for(dmkv_desc_type::iterator i=_desc.begin(); i!=_desc.end(); ++i) {
-                push_back(markov_network(i->get<IN>(), i->get<OUT>(), i->get<HID>(), _rng()));
+        deep_markov_network(const desc_type& desc, unsigned int seed=0) : _desc(desc), _rng(seed) {
+            for(desc_type::iterator i=_desc.begin(); i!=_desc.end(); ++i) {
+                push_back(markov_network(*i, _rng()));
             }
         }
         
@@ -111,7 +111,7 @@ namespace mkv {
         markov_network::svm_type::iterator end_output() { return rbegin()->end_output(); }
 
     private:
-        dmkv_desc_type _desc; //!< Description of the geometries of each successive layer of DMKVs.
+        desc_type _desc; //!< Description of the geometries of each successive layer of DMKVs.
         rng_type _rng; //<! Random number generator.
     };
 
