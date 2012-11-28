@@ -183,7 +183,7 @@ namespace ea {
     template <template <typename> class Tool, typename EA>
     void add_tool(cmdline_interface<EA>* ci) {
         typedef Tool<EA> tool_type;
-        ci->_tools.put<tool_type>();
+        ci->_tools.template put<tool_type>();
     }
     
     //! Add an event to the list of events that are registered for an EA.
