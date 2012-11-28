@@ -1,4 +1,4 @@
-/* test.cpp
+/* numeric_vector.h
  * 
  * This file is part of EALib.
  * 
@@ -17,6 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MAIN
-#include "test_libea.h"
+#ifndef _EA_REPRESENTATIONS_BITSTRING_H_
+#define _EA_REPRESENTATIONS_BITSTRING_H_
+
+#include <ea/representations/numeric_vector.h>
+
+namespace ea {
+
+    //! Bitstring representation type.
+	typedef numeric_vector<int> bitstring;
+	
+} // ea
+
+#endif

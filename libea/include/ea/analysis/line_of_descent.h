@@ -26,7 +26,7 @@
 #include <cmath>
 #include <vector>
 #include <ea/datafile.h>
-#include <ea/interface.h>
+
 #include <ea/line_of_descent.h>
 #include <ea/analysis/tool.h>
 #include <ea/analysis/graph.h>

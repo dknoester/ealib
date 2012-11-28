@@ -22,7 +22,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ea/interface.h>
+
 #include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>
@@ -35,7 +35,7 @@ namespace ea {
 
 		 The idea here is that all individuals that are slated to die (according
          to a configurable replacement rate) die at once, and then the population
-         expands back to that size via fitness proportionate selection (with replacement).
+         expands back to that size.
          
          This is a reasonable approximation of the Moran process, as described by Patrick Moran.
          

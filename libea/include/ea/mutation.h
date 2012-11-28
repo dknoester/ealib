@@ -21,7 +21,7 @@
 #define _EA_MUTATION_H_
 
 #include <ea/algorithm.h>
-#include <ea/interface.h>
+
 #include <ea/meta_data.h>
 
 
@@ -53,7 +53,7 @@ namespace ea {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
 		for( ; first!=last; ++first) {
-			mutate(ind(first,ea), mutator, ea);
+			mutate(**first, mutator, ea);
 		}		
 	}
     

@@ -116,6 +116,9 @@ namespace ea {
 			return *this;
 		}
 		
+        //! Returns a reference to this meta-data object (for compatibiliy with the get & set methods below).
+        meta_data& md() { return *this; }
+        
 		//! Returns a reference to an attribute's value.
         template <typename Attribute>
         typename Attribute::reference_type getattr(const std::string& k) {
@@ -336,7 +339,7 @@ namespace ea {
 	// ea.run.*
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
-    LIBEA_MD_DECL(CHECKPOINT_ON, "ea.run.checkpoint_on", int);
+    LIBEA_MD_DECL(CHECKPOINT_OFF, "ea.run.checkpoint_off", int);
 	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
 	LIBEA_MD_DECL(COMMAND_LINE, "ea.run.command_line", std::string);
 

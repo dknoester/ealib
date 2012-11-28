@@ -21,7 +21,6 @@
 #define _EA_GENERATIONAL_MODELS_STEADY_STATE_H_
 
 #include <algorithm>
-#include <ea/interface.h>
 #include <ea/meta_data.h>
 #include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>

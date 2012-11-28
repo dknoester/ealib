@@ -18,9 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
-
 #include <ea/cvector.h>
-#include "test_libea.h"
+#include "test.h"
 
 BOOST_AUTO_TEST_CASE(test_circular_vector) {
 	using namespace ea;

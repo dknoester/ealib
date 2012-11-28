@@ -21,13 +21,13 @@
 #define _EA_SELECTION_PROPORTIONATE_H_
 
 #include <ea/attributes.h>
-#include <ea/interface.h>
+
 #include <ea/selection.h>
 
 namespace ea {
 	namespace selection {
         
-		/*! {roportionate selection.
+		/*! Proportionate selection.
 		 
          This strategy selects individuals proportionately by some attribute,
          usually fitness.
@@ -38,7 +38,7 @@ namespace ea {
          breaks (divide by zero).  The offset prevents users of proportionate selection
          from having to deal with this.
 		 */
-        template <typename AttributeAccessor=attributes::fitness>
+        template <typename AttributeAccessor=access::fitness_accessor>
 		struct proportionate {
             typedef AttributeAccessor acc_type; //!< Accessor for proportionate selection.
             

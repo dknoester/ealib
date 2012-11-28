@@ -27,7 +27,7 @@
 #include <cmath>
 #include <ea/datafile.h>
 #include <ea/exceptions.h>
-#include <ea/interface.h>
+
 #include <ea/analysis/graph.h>
 #include <ea/analysis/individual.h>
 #include <ea/analysis/modularity.h>

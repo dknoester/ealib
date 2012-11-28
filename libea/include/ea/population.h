@@ -24,21 +24,20 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
-#include <ea/interface.h>
+
 #include <ea/concepts.h>
 #include <ea/meta_data.h>
 
 
 namespace ea {
     
-    /*! Random access container of individuals.
+    /*! Population; a container for individuals.
 	 */
 	template <typename Individual, typename IndividualPtr>
 	class population : public std::vector<IndividualPtr> {
 	public:
         typedef Individual individual_type;
         typedef IndividualPtr individual_ptr_type;
-		typedef population<individual_type, individual_ptr_type> population_type;
 		
 		typedef std::vector<individual_ptr_type> base_type;
         typedef typename base_type::value_type value_type;
@@ -48,38 +47,25 @@ namespace ea {
 		
 		//! Constructor.
 		population() {
-			BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
 		}
+        
+        //! Initializing constructor.
+        population(std::size_t n) : base_type(n) {
+        }
+
+        //! Initializing constructor.
+        population(std::size_t n, const value_type& t) : base_type(n,t) {
+        }
+
+        //! Initializing constructor.
+        template <typename ForwardIterator>
+        population(ForwardIterator f, ForwardIterator l) : base_type(f,l) {
+        }
         
         //! Destructor.
         virtual ~population() {
         }
         
-        individual_type& ind(iterator i) {
-            return **i;
-        }
-        
-        const individual_type& ind(const_iterator i) const {
-            return **i;
-        }
-        
-        individual_ptr_type ptr(iterator i) {
-            return *i;
-        }
-
-        const individual_ptr_type ptr(const_iterator i) {
-            return *i;
-        }
-
-        individual_ptr_type ptr(value_type i) {
-            return i;
-        }
-
-        template <typename EA>
-        value_type make_population_entry(individual_ptr_type p, EA& ea) {
-            return p;
-        }
-                
 	private:
 		friend class boost::serialization::access;
         

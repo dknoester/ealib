@@ -1,4 +1,4 @@
-/* update.h
+/* meta_population.h 
  * 
  * This file is part of EALib.
  * 
@@ -17,23 +17,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _CONTROL_UPDATE_H_
-#define _CONTROL_UPDATE_H_
 
-#include <stdexcept>
+#ifndef _EA_ANALYSIS_META_POPULATION_H_
+#define _EA_ANALYSIS_META_POPULATION_H_
 
-namespace control {
-    
-    /*! Update a system-under-control (SOC) n times with inputs [f,l), and place
-     all output in result.
-     */
-    template <typename SOC, typename StateVector>
-    void update_n(std::size_t n, SOC& soc, const StateVector& input, StateVector& output) {
-        for(; n>0; --n) {
-            update(soc, input, output);
-        }
-    }    
-    
-} // fn
+#include <ea/analysis/tool.h>
+
+
+namespace ea {
+    namespace analysis {
+      
+        template <typename EA>
+        struct meta_population_tool : unary_function {
+            virtual void operator()(EA& ea) {
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    operator()(*i);
+                }
+            }
+            virtual void operator()(typename EA::individual_type& ea) = 0;
+        };
+        
+    } // analysis
+} // ea
 
 #endif

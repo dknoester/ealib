@@ -25,9 +25,238 @@
 
 namespace ea {
 	namespace detail {
-        //! Concept checking helper.
+        //! Concept checking helper to ensure that two parameters are the same type.
 		template <typename T> void same_type(const T&, const T&);
 	}
+
+    /*! Attribute concept, used to attach information to individuals.
+     
+     Attributes and meta-data both share a similar purpose, which is to attach information
+     about an individual or EA to an instance.  While meta-data focuses on single-value,
+     string convertible information that is relatively infrequently used, attributes 
+     can be more complex.  For example, an individual's line of descent can be an 
+     attribute, but not meta-data.  In contrast, it's probably overkill to encode
+     information about an individual's fitness in an attribute, and meta-data should
+     be preferred.
+
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b>
+     */
+	template <typename X>
+	struct AttributeConcept : boost::Assignable<X> {
+	public:
+		BOOST_CONCEPT_USAGE(AttributeConcept) {
+		}
+	private:
+	};
+    
+    
+    /*! Meta-data concept.
+     
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b> ea::meta_data.
+     */
+    template <typename X>
+	struct MetaDataConcept : boost::Assignable<X> {
+	public:
+		BOOST_CONCEPT_USAGE(MetaDataConcept) {
+		}
+	private:
+        X x;
+	};
+    
+    
+    /*! Concept to ensure that the given type supports meta-data.
+
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b>
+     */
+    template <typename X>
+	struct SupportsMetaDataConcept {
+	public:
+        typedef typename X::md_type md_type;
+        
+		BOOST_CONCEPT_USAGE(SupportsMetaDataConcept) {
+            BOOST_CONCEPT_ASSERT((MetaDataConcept<md_type>));
+            detail::same_type(x.md(), md);
+		}
+	private:
+        X x;
+        md_type md;
+	};
+    
+
+    /*! Representation concept.
+     
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b>
+     */
+    template <typename X>
+	struct RepresentationConcept {
+	public:
+		BOOST_CONCEPT_USAGE(RepresentationConcept) {
+		}
+	private:
+        X x;
+	};
+
+    
+    /*! Individual concept.
+     
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b> ea::individual, ea::organism.
+     */
+	template <typename X>
+	struct IndividualConcept {
+	public:
+        typedef typename X::representation_type representation_type; //!< Underlying representation for this individual; its genome.
+        typedef typename X::attr_type attr_type; //!< Attributes for this individual.
+        
+		BOOST_CONCEPT_USAGE(IndividualConcept) {
+            BOOST_CONCEPT_ASSERT((RepresentationConcept<representation_type>));
+            BOOST_CONCEPT_ASSERT((AttributeConcept<attr_type>));
+            BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
+
+            detail::same_type(long(), x.name());
+            detail::same_type(double(), x.generation());
+            detail::same_type(long(), x.update());
+            detail::same_type(representation_type(), x.repr());
+            
+            x.name() = long();
+            x.generation() = double();
+            x.update() = long();
+            x.repr() = representation_type();
+		}
+        
+        //! Retrieve this individual's name.
+        long& name();
+		
+        //! Retrieve this individual's name (const-qualified).
+        const long& name() const;
+        
+        //! Retrieve this individual's generation.
+        double& generation();
+        
+        //! Retrieve this individual's generation (const-qualified).
+        const double& generation() const;
+        
+        //! Retrieve this individual's update.
+        long& update();
+        
+        //! Retrieve this individual's update (const-qualified).
+        const long& update() const;
+        
+        //! Retrieve this individual's representation.
+		representation_type& repr();
+        
+		//! Retrieve this individual's representation (const-qualified).
+		const representation_type& repr() const;
+
+	private:
+		X x; //!< Default constructible.
+	};
+    
+    
+    /*! Population concept.
+     
+     Populations in EALib are actually containers of pointers to individuals, and
+     this concept ensures that this is supported by population types.
+
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b> ea::population.
+     */
+	template <typename X>
+	struct PopulationConcept : boost::CopyConstructible<X>, boost::RandomAccessContainer<X>, boost::BackInsertionSequence<X> {
+	public:
+        typedef typename X::individual_type individual_type; //!< Type of individual pointed to by the population.
+        typedef typename X::individual_ptr_type individual_ptr_type; //!< Type of the individual pointer.
+        
+		BOOST_CONCEPT_USAGE(PopulationConcept) {
+            detail::same_type(i, *p);
+		}
+	private:
+        individual_type i;
+        individual_ptr_type p;
+	};
+    
+    
+    /*! RNG concept.
+     
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b> ea::rng.
+     */
+    template <typename X>
+	struct RNGConcept : boost::Assignable<X> {
+	public:
+		BOOST_CONCEPT_USAGE(RNGConcept) {
+		}
+	private:
+	};
+
+    
+    /*! Concept to ensure that the given type supplies a random number generator.
+     
+     <b>Refinement of:</b>
+	 
+	 <b>Models:</b>
+     */
+    template <typename X>
+	struct SuppliesRNGConcept {
+	public:
+        typedef typename X::rng_type rng_type;
+        
+		BOOST_CONCEPT_USAGE(SuppliesRNGConcept) {
+            BOOST_CONCEPT_ASSERT((RNGConcept<rng_type>));
+            detail::same_type(x.rng(), rng);
+		}
+	private:
+        X x;
+        rng_type rng;
+	};
+
+    
+    /*! Evolutionary algorithm concept, used to ensure the stability of the evolutionary_algorithm
+	 interface.
+	 
+	 <b>Refinement of:</b>
+	 
+	 <b>Models:</b> ea::evolutionary_algorithm, ea::digital_evolution, 
+     ea::novelty_search, ea::meta_population.
+	 
+	 */
+	template <typename X>
+	struct EvolutionaryAlgorithmConcept {
+	public:
+        typedef typename X::individual_type individual_type; //!< Individual; an "agent."
+        typedef typename X::individual_ptr_type individual_ptr_type; //!< Pointer type to an individual.
+        typedef typename X::population_type population_type; //!< Population; a container for individuals.
+        typedef typename X::iterator iterator; //!< Iterator over a population.
+        typedef typename X::const_iterator const_iterator; //!< Const iterator over a population.
+        typedef typename X::reverse_iterator reverse_iterator; //!< Reverse iterator over a population.
+        typedef typename X::const_reverse_iterator const_reverse_iterator; //!< Const reverse iterator over a population.
+		
+		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
+            BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
+            BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
+            BOOST_CONCEPT_ASSERT((SuppliesRNGConcept<X>));
+            
+            detail::same_type(p, x.population());
+		}
+        
+        //! Retrieve the current population.
+        population_type& population();
+         
+	private:
+		X x;
+        population_type p;
+	};	
     
     
 	/*! Selection strategy concept.
@@ -139,171 +368,8 @@ namespace ea {
 		X x; Population p; EA ea;
 	};
 
+  
     
-    /*! Population concept, used to check that population types passed as a template parameter
-	 to an ea::evolutionary_algorithm are valid.
-	 
-	 A Population is a container that stores and enables access to the individuals stored within it.
-	 An individual is actually a tuple that is partially defined by the Population.  Specifically,
-	 each individual comprises: {representation, fitness value, population-specific information}.
-	 
-	 The representation and fitness value components are required, while the population-specific
-	 information is optional and defined only by the population.  Population-specific information
-	 allows for location information to be attached to an individual, for example.
-	 
-	 <b>Refinement of:</b> RandomAccessContainer, BackInsertionSequence
-	 
-	 <b>Associated types:</b> See attributes.
-	 
-	 <b>Valid expressions:</b> See member functions.
-	 
-	 <b>Models:</b> ea::unstructured_population
-	 
-	 \todo Include next-generation functionality.
-	 
-	 \see http://www.sgi.com/tech/stl/RandomAccessContainer.html
-	 */
-	template <typename X>
-	struct PopulationModelConcept : boost::CopyConstructible<X>, boost::RandomAccessContainer<X>, boost::BackInsertionSequence<X> {
-	public:
-		BOOST_CONCEPT_USAGE(PopulationModelConcept) {
-			// populations are assignable:
-			BOOST_CONCEPT_ASSERT((boost::Assignable<X>));
-			// and so are the individuals they contain:
-			//			BOOST_CONCEPT_ASSERT((boost::Assignable<typename X::individual_type>));
-			// fitness comparators must be a model of an adaptable binary predicate:
-			//			BOOST_CONCEPT_ASSERT((boost::AdaptableBinaryPredicate<typename X::fitness_comparator_type, 
-			//														typename X::individual_type, 
-			//														typename X::individual_type>));
-			//			same_type(x.less_than(), fc); // must define a factory method for fitness comparators.
-			//			x.push_back(r); // must define push_back for representations, w/ default fitness.
-			//			x.push_back(r, f); // must define push_back for representations w/ specified fitness.
-			//			same_type(i, v); // the individual_type must be the same as the container's value_type.
-			//			same_type(x.representation(i), r); // must be able to retrieve a representation from an individual.
-			//			same_type(x.fitness(i), f); // must be able to retrieve a fitness value from an individual.
-		}
-	private:
-		//! Appends a new individual with the given representation and fitness to the end of this Population.
-		//		void push_back(const typename X::representation_type&, const typename X::fitness_type&);
-		
-		//! Retrieves a reference to the representation of an individual.
-		//		typename X::representation_type& representation(typename X::individual_type&);
-		//		
-		//		//! Retrieves a reference to the fitness value of an individual.
-		//		typename X::fitness_type& fitness(typename X::individual_type&);
-		//		
-		//		//! Returns a function object that can be used in less-than comparisons.
-		//		//typename X::fitness_comparator_type less_than();
-		//
-		//		X x; //!< Populations must be default constructible.
-		//		typename X::representation_type r; //!< Representation type.
-		//		typename X::fitness_type f; //!< Fitness value type; a result of fitness evaluation.
-		//		typename X::individual_type i; //!< Individual type; stored in Population container.
-		//		//typename X::fitness_comparator_type fc; //!< Fitness comparator, used to order individuals by fitness value.
-		//		typename X::value_type v; // this is from Container, for convenience only.
-		//		template <typename T> void same_type(const T&, const T&); // used to enforce same-typeness.
-	};	
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    	
-
-	template <typename X>
-	struct MetaDataConcept {
-	public:
-		BOOST_CONCEPT_USAGE(MetaDataConcept) {
-		}		
-	};
-	
-	
-	
-		
-	
-	template <typename X, typename P, typename EA>
-	struct GenerableSelectionStrategy {
-	public:
-		BOOST_CONCEPT_USAGE(GenerableSelectionStrategy) {
-			X x(p,ea); // must define a population constructor
-			x(p,ea); // must be able to generate an individual without a destination population.
-		}	
-	private:
-		P p;
-		EA ea;
-	};
-	
-	
-
-	
-	/*! Representations are the genomes of individuals in EALib.  They are the
-	 "evolving" part of an evolutionary algorithm.
-	 
-	 Conceptually, representations in EALib are nothing more than iterable 
-	 containers that provide a mutate() method and can be operated upon by 
-	 recombination and variation operators.  Iterators here are used as an
-	 abstraction so that generic mutation and recombination operators can be
-	 written.  Conceptually, each mutable element within a representation can be
-	 thought of as a gene.
-	 
-	 <b>Refinement of:</b>
-	 
-	 <b>Associated types:</b> See ForwardContainer.
-	 
-	 <b>Valid expressions:</b> See member functions.
-	 
-	 <b>Models:</b> ea::network, ea::matrix, ea::bitstring, 
-	 ea::realstring.
-	 */
-	template <typename X, typename EA>
-	struct RepresentationConcept : boost::ForwardContainer<X> {
-	public:
-		BOOST_CONCEPT_ASSERT((boost::Assignable<X>));
-		BOOST_CONCEPT_ASSERT((boost::CopyConstructible<X>));
-
-		BOOST_CONCEPT_USAGE(RepresentationConcept) {
-			// require a mutate() method that takes an iterator and an ea.
-			x.mutate(x.begin(), ea);
-		}
-		
-		/*! Mutate gene i of this representation.
-		 */
-		void mutate(typename X::iterator i, EA& ea);
-		
-	private:
-		X x;
-		EA ea;
-	};
-	
-		
-	/*! Matrix representations are matrix-based genomes of individuals in EALib.
-	 
-	 Matrix representations are refinements of representations.  They enable
-	 matrix-specific mutation and recombination operators.
-	 
-	 <b>Refinement of:</b> Representation.
-	 
-	 <b>Associated types:</b> See Representation.
-	 
-	 <b>Valid expressions:</b> See member functions.
-	 
-	 <b>Models:</b> ea::matrix.
-	 */
-	template <typename X, typename EA>
-	struct MatrixRepresentationConcept: RepresentationConcept<X,EA> {
-	public:
-		BOOST_CONCEPT_USAGE(MatrixRepresentationConcept) {
-		}
-
-	private:
-		X x;
-		EA ea;
-	};
 	
 	
 	/*! Fitness function concept, used to check that fitness function types passed as a template
@@ -428,49 +494,6 @@ namespace ea {
 	
 	
 	
-	
-
-	
-	
-	
-	/*! Meta-population generational model concept, used to check that generational 
-	 model types passed as a template parameter to an ea::evolutionary_algorithm are valid.
-	 
-	 <b>Refinement of:</b> GenerationalModelConcept.
-	 
-	 <b>Associated types:</b> ea::hierarchical_fair_competition
-	 
-	 <b>Valid expressions:</b> See member functions.
-	 
-	 <b>Models:</b> ea::steady_state
-	 */
-	template <typename X, typename P, typename MD, typename EA>
-	struct MetaPopulationModelConcept {
-	public:
-		BOOST_CONCEPT_USAGE(MetaPopulationModelConcept) {
-		}
-	private:
-		X x;
-		EA ea;
-	};
-
-	
-
-	
-	
-	/*!
-	 */
-	template <typename X, typename EA>
-	struct RandomNumberGeneratorConcept {
-	public:
-		BOOST_CONCEPT_USAGE(RandomNumberGeneratorConcept) {
-		}
-	private:
-		X x; //!< RandomNumberGeneratorConcept must be default constructible.
-		EA ea;		
-	};
-	
-	
 	/*!
 	 */
 	template <typename X, typename EA>
@@ -481,64 +504,7 @@ namespace ea {
 		X x; //!< SchedulingConcept must be default constructible.
 		EA ea;		
 	};
-	
-	template <typename X>
-	struct IndividualConcept {
-	public:
-		BOOST_CONCEPT_USAGE(IndividualConcept) {
-			x.fitness();
-		}
-
-	private:
-		X x; //!< Default constructible.
-	};
-
-	template <typename X>
-	struct PopulationConcept {
-	public:
-		BOOST_CONCEPT_USAGE(PopulationConcept) {
-		}
-	private:
-	};
-	
-	/*! Evolutionary algorithm concept, used to ensure the stability of the evolutionary_algorithm
-	 interface.
-	 
-	 There should be no need to implement a new evolutionary algorithm type; all customization is
-	 preformed through the various types passed as template parameters.
-	 
-	 <b>Refinement of:</b> 
-	 
-	 <b>Associated types:</b> See attributes.
-	 
-	 <b>Valid expressions:</b> See member functions.
-	 
-	 <b>Models:</b> ea::evolutionary_algorithm	 
-	 
-	 */
-	template <typename X>
-	struct EvolutionaryAlgorithmConcept {
-	public:
-//		typedef typename X::ea_type ea_type;
-//		typedef typename X::representation_type representation_type;
-//		typedef typename X::fitness_function_type fitness_function_type;
-//		typedef typename X::fitness_type fitness_type;
-//		typedef typename X::individual_type individual_type;
-//		typedef typename X::mutation_operator_type mutation_operator_type;
-//		typedef typename X::recombination_operator_type recombination_operator_type;
-//		typedef typename X::population_type population_type;
-//		typedef typename X::parent_selection_type parent_selection_type;
-//		typedef typename X::survivor_selection_type survivor_selection_type;
-//		typedef typename X::generational_model_type generational_model_type;
-//		typedef typename X::rng_type rng_type;
-//		typedef typename X::event_handler_type event_handler_type;
 		
-		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
-		}
-	private:
-		X x;
-	};	
-	
 }
 
 #endif

@@ -17,74 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test_libea.h"
-#include <ea/analysis/girvan_newman_clustering.h>
-#include <ea/analysis/information.h>
-
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <iterator>
 #include <algorithm>
-
-
-/*! Tests of Girvan-Newman clustering.
- */
-BOOST_AUTO_TEST_CASE(gm_clustering) {
-    // Graph edge properties (bundled properties)
-    struct EdgeProperties {
-        int weight;
-    };
-    
-    typedef boost::adjacency_list<boost::setS,
-    boost::vecS,
-    boost::undirectedS
-    //boost::no_property
-    //EdgeProperties 
-    > Graph;
-    typedef Graph::vertex_descriptor Vertex;
-    typedef Graph::edge_descriptor Edge;
-
-    // Create a star graph
-    Graph g;
-    
-    // Central vertex
-    Vertex centerVertex = boost::add_vertex(g);
-    
-    // Surrounding vertices
-    Vertex v;
-    v = boost::add_vertex(g);
-    boost::add_edge(centerVertex, v, g);
-    v = boost::add_vertex(g);
-    boost::add_edge(centerVertex, v, g);
-    v = boost::add_vertex(g);
-    boost::add_edge(centerVertex, v, g);
-    v = boost::add_vertex(g);
-    boost::add_edge(centerVertex, v, g);
-    v = boost::add_vertex(g);
-    boost::add_edge(centerVertex, v, g);
-    v = boost::add_vertex(g);
-    boost::add_edge(centerVertex, v, g);
-    v = boost::add_vertex(g);
-    boost::add_edge(centerVertex, v, g);
-    
-    // Attach an additional vertex to one of the star arm vertices
-    Vertex x = boost::add_vertex(g);
-    boost::add_edge(v, x, g);
-    
-//    std::cout << "Before" << std::endl;
-//    BGL_FORALL_EDGES(edge, g, Graph) {
-//        std::cout << edge << ": " <<e_centrality_map[edge] << std::endl;
-//    }
-//    std::cout << boost::num_edges(g) << std::endl;
-    ea::analysis::girvan_newman_clustering(g);
-//    std::cout << boost::num_edges(g) << std::endl;
-    
-//    std::cout << "\nAfter" << std::endl;
-//    BGL_FORALL_EDGES(edge, g, Graph) {
-//        std::cout << edge << ": " <<e_centrality_map[edge] << std::endl;
-//    }
-}
+#include "test.h"
+#include <ea/analysis/information.h>
 
 
 /*! Tests of entropy.

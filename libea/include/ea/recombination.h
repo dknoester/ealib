@@ -22,7 +22,7 @@
 
 #include <algorithm>
 #include <utility>
-#include <ea/interface.h>
+
 
 namespace ea {
     
@@ -41,8 +41,8 @@ namespace ea {
     template <typename Population, typename EA>
     void inherits(Population& parents, Population& offspring, EA& ea) {
         for(typename Population::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
-            inherits_from(ind(parents.begin(),ea), ind(i,ea), ea);
-            ea.events().inheritance(parents, ind(i,ea), ea);
+            inherits_from(**parents.begin(), **i, ea);
+            ea.events().inheritance(parents, **i, ea);
         }
     }
     
@@ -125,8 +125,8 @@ namespace ea {
             void operator()(Population& parents, Population& offspring, EA& ea) {
                 // build the offspring:
                 typename Population::iterator p=parents.begin();
-                typename EA::representation_type o1=ind(p,ea).repr();
-                typename EA::representation_type o2=ind(++p,ea).repr();
+                typename EA::representation_type o1=(*p)->repr();
+                typename EA::representation_type o2=(*++p)->repr();
                 
                 // they need to be the same size...
                 assert(o1.size() == o2.size());

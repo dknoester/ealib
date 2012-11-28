@@ -20,7 +20,7 @@
 #ifndef _EA_INITIALIZATION_H_
 #define _EA_INITIALIZATION_H_
 
-#include <ea/interface.h>
+
 #include <ea/meta_data.h>
 #include <ea/generators.h>
 

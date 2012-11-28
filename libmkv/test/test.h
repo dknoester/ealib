@@ -22,6 +22,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+
 struct test_rng {
 	test_rng(int r) : _r(r) {
 	}

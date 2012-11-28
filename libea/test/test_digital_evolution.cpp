@@ -17,8 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test_libea.h"
-
+#include "test.h"
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/spatial.h>
 

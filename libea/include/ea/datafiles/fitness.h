@@ -26,7 +26,8 @@
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 #include <ea/datafile.h>
-#include <ea/interface.h>
+#include <ea/attributes.h>
+
 
 namespace ea {
     namespace datafiles {
@@ -51,8 +52,8 @@ namespace ea {
                 accumulator_set<double, stats<tag::mean, tag::max> > fit;
                 
                 for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    gen(ind(i,ea).generation());                
-                    fit(static_cast<double>(ind(i,ea).fitness()));
+                    gen((*i)->generation());
+                    fit(static_cast<double>(ea::fitness(**i)));
                 }
                 
                 _df.write(ea.current_update())
@@ -103,9 +104,9 @@ namespace ea {
 
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         gen(j->generation());
-                        fit(static_cast<double>(j->fitness()));
+                        fit(static_cast<double>(ea::fitness(*j)));
                         mpgen(j->generation());
-                        mpfit(static_cast<double>(j->fitness()));
+                        mpfit(static_cast<double>(ea::fitness(*j)));
                     }
                     
                     _df.write(mean(gen))
