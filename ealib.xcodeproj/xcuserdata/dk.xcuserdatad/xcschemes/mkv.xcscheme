@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "42841C6715ADA43900AB18BE"
+               BlueprintIdentifier = "42720FB3163C0B1F008C8E63"
                BuildableName = "libmkv.a"
                BlueprintName = "mkv"
                ReferencedContainer = "container:ealib.xcodeproj">
