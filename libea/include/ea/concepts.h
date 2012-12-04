@@ -35,9 +35,7 @@ namespace ea {
      about an individual or EA to an instance.  While meta-data focuses on single-value,
      string convertible information that is relatively infrequently used, attributes 
      can be more complex.  For example, an individual's line of descent can be an 
-     attribute, but not meta-data.  In contrast, it's probably overkill to encode
-     information about an individual's fitness in an attribute, and meta-data should
-     be preferred.
+     attribute, but not meta-data.
 
      <b>Refinement of:</b>
 	 

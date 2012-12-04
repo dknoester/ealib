@@ -74,14 +74,15 @@ namespace mkv {
     
     /*! Parse a deep_markov_network description from a string.
      */
-    void parse_desc(const std::string& s, deep_markov_network::desc_type& desc) {
+    template <typename T>
+    void parse_desc(const T& t, deep_markov_network::desc_type& desc) {
         using boost::spirit::ascii::space;
         typedef std::string::const_iterator iterator_type;
         
         detail::deep_desc_parser<iterator_type> parser;
         
-        std::string::const_iterator iter = s.begin();
-        std::string::const_iterator end = s.end();
+        typename T::const_iterator iter = t.begin();
+        typename T::const_iterator end = t.end();
         if(!phrase_parse(iter, end, parser, space, desc)) {
             throw std::invalid_argument("could not parse deep_markov_network description");
         }
@@ -90,22 +91,24 @@ namespace mkv {
     
     /*! Parse a markov_network description from a string.
      */
-    void parse_desc(const std::string& s, markov_network::desc_type& desc) {
+    template <typename T>
+    void parse_desc(const T& t, markov_network::desc_type& desc) {
         using boost::spirit::ascii::space;
         typedef std::string::const_iterator iterator_type;
         
         detail::desc_parser<iterator_type> parser;
         
-        std::string::const_iterator iter = s.begin();
-        std::string::const_iterator end = s.end();
+        typename T::const_iterator iter = t.begin();
+        typename T::const_iterator end = t.end();
         if(!phrase_parse(iter, end, parser, space, desc)) {
             throw std::invalid_argument("could not parse markov_network description");
         }
     }
     
-    markov_network::desc_type make_markov_network_desc(const std::string& s) {
+    template <typename T>
+    markov_network::desc_type make_markov_network_desc(const T& t) {
         markov_network::desc_type d;
-        parse_desc(s,d);
+        parse_desc(t,d);
         return d;
     }
     

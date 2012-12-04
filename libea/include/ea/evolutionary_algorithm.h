@@ -155,6 +155,12 @@ namespace ea {
             return p;
         }
         
+        //! Build a copy of an individual.
+        individual_ptr_type make_individual(const individual_type& r) {
+            individual_ptr_type p(new individual_type(r));
+            return p;
+        }
+        
         //! Insert individual x into the population.
         void append(individual_ptr_type x) {
             calculate_fitness(*x, *this);
@@ -190,8 +196,9 @@ namespace ea {
         
         //! Reset the population.
         void reset() {
-            _configurator.reset(*this);
             nullify_fitness(_population.begin(), _population.end(), *this);
+            _configurator.reset(*this);
+            calculate_fitness(_population.begin(), _population.end(), *this);
         }
         
         //! Returns the current update of this EA.

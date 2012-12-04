@@ -54,7 +54,7 @@ namespace ea {
                 typename EA::iterator s,t; // source and target populations
                 boost::tie(s,t) = ea.rng().choose_two_range(ea.begin(), ea.end());
                 typename EA::individual_type::iterator migrant=ea.rng().choice(s->begin(), s->end()); // migrating individual
-                t->append(t->make_individual(migrant->repr())); // copy the migrant to the target population
+                t->append(t->make_individual(*migrant)); // copy the migrant to the target population
                 s->erase(migrant); // remove the migrant from the source population
             }
         }
