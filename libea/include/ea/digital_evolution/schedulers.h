@@ -116,8 +116,8 @@ namespace ea {
             // these are the individuals in the population at the start of the update.
             // they are the *only* ones that can execute during this update,
             // and some of them are likely to be replaced.
-            // offspring are appended to population asteady_stately, thus we're
-            // indexing population instead of iterating.
+            // offspring are appended to population asynchronously, thus we're
+            // indexing into the population instead of iterating.
             
             unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
             long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
@@ -130,7 +130,7 @@ namespace ea {
                 if((budget % eff_population_size) == 0) {
                     ea.env().partial_update(delta_t, ea);
                 }
-                typename ea_type::individual_ptr_type p=ptr(population[i],ea);
+                typename ea_type::individual_ptr_type p=population[i];
                 i = (i+1) % last;
                 
                 if(p->alive()) {
@@ -143,7 +143,7 @@ namespace ea {
             
             Population next;
             for(std::size_t i=0; i<population.size(); ++i) {
-                typename ea_type::individual_ptr_type p=ptr(population[i],ea);
+                typename ea_type::individual_ptr_type p=population[i];
                 if(p->alive()) {
                     next.push_back(p);
                 }

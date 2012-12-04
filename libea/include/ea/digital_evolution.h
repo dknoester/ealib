@@ -20,6 +20,7 @@
 #ifndef _EA_DIGITAL_EVOLUTION_H_
 #define _EA_DIGITAL_EVOLUTION_H_
 
+#include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -121,7 +122,15 @@ namespace ea {
         typedef RandomNumberGenerator rng_type;
         //! Event handler.
         typedef EventHandler<digital_evolution> event_handler_type;
-        
+        //! Iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
+        //! Const iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
+        //! Reverse iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
+        //! Const reverse iterator over this EA's population.
+        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
+
         //! Default constructor.
         digital_evolution() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));

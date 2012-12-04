@@ -34,8 +34,8 @@ namespace ea {
     
     struct empty { };
     
-    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", unsigned int);
-    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", unsigned int);
+    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
+    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
     
     
     namespace resources {
@@ -80,9 +80,8 @@ namespace ea {
                 _level = _initial; 
             }
 
-
-            double _level; //!< Current resource level.
             double _initial; //!< Initial resource level
+            double _level; //!< Current resource level.
             double _inflow; //!< Amount of resource flowing in per update.
             double _outflow; //!< Rate at which resource flows out per update.
             double _consume; //!< Fraction of resource consumed.

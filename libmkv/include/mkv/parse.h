@@ -103,6 +103,12 @@ namespace mkv {
         }
     }
     
+    markov_network::desc_type make_markov_network_desc(const std::string& s) {
+        markov_network::desc_type d;
+        parse_desc(s,d);
+        return d;
+    }
+    
 } // mkv
 
 

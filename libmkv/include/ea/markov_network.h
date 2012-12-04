@@ -34,6 +34,7 @@
 
 #include <mkv/markov_network.h>
 #include <mkv/deep_markov_network.h>
+#include <mkv/parse.h>
 
 // meta-data
 LIBEA_MD_DECL(MKV_DESC, "markov_network.desc", std::string);
@@ -54,7 +55,7 @@ LIBEA_MD_DECL(GATE_WV_STEPS, "markov_network.gate.wv_steps", int);
 
 namespace mkv {
     
-    enum gate_types { MARKOV=42, LOGIC=43, ADAPTIVE=44 };
+    enum gate_types { MARKOV=42, LOGIC=43, ADAPTIVE=44, SPATIAL=45 };
     
     /*! Returns a set of supported gate types.
      */
@@ -66,6 +67,7 @@ namespace mkv {
         if(boost::icontains(gates,"markov")) { supported.insert(MARKOV); }
         if(boost::icontains(gates,"logic")) { supported.insert(LOGIC); }
         if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
+        if(boost::icontains(gates,"spatial")) { supported.insert(SPATIAL); }
         return supported;
     }
 }
@@ -270,6 +272,23 @@ namespace mkv {
             net.push_back(g);
         }
         
+        /*! Build a spatial gate.
+         */
+        template <typename Network, typename ForwardIterator, typename MetaData>
+        void build_spatial_gate(Network& net, ForwardIterator h, MetaData& md) {
+            std::size_t layer=0;
+            index_list_type inputs, outputs;
+            build_io(net, layer, inputs, outputs, h, md);
+            
+            for(std::size_t i=1; i<inputs.size();++i) {
+                inputs[i] = inputs[i-1] + 1;
+            }
+            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.nstates()));
+
+            logic_gate g(inputs, outputs, h);
+            net.push_back(g);
+        }
+        
         template <typename ForwardIterator>
         std::size_t get_layer(ForwardIterator h, int max_layer) {
             using namespace ea;
@@ -319,6 +338,13 @@ namespace mkv {
                         build_adaptive_gate(layer, f+2, md);
                         break;
                     }
+                    case SPATIAL: { // build a spatial gate
+                        if(!supported.count(SPATIAL)) { break; }
+                        markov_network& layer=net[get_layer(f+1,net.size())];
+                        build_spatial_gate(layer, f+2, md);
+                        break;
+                    }
+
                     default: {
                         break;
                     }
@@ -391,6 +417,11 @@ namespace mkv {
                         build_adaptive_gate(net, f+1, md);
                         break;
                     }
+                    case SPATIAL: { // build a spatial gate
+                        if(!supported.count(SPATIAL)) { break; }
+                        build_spatial_gate(net, f+1, md);
+                        break;
+                    }
                     default: {
                         break;
                     }
@@ -398,7 +429,15 @@ namespace mkv {
             }
         }
     }
-    
+
+    /*! Convenience method to build a Markov Network.
+     */
+    template <typename Individual, typename RNG, typename EA>
+    markov_network make_markov_network(const markov_network::desc_type& desc, Individual& ind, RNG& rng, EA& ea) {
+        markov_network net(desc, rng);
+        build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+        return net;
+    }
 
     
 //    /*! Save the dominant individual in graphviz format.

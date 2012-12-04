@@ -54,6 +54,7 @@ namespace mkv {
             index_list_type outputs; //!< Output indices from this node.
         };
         
+
         /*! Logic gate.
          */
         struct logic_gate : abstract_gate {
@@ -184,6 +185,11 @@ namespace mkv {
         //! Constructs a Markov network with the given seed.
         markov_network(const desc_type& desc, unsigned int seed=0)
         : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(seed) {
+        }
+        
+        //! Constructs a Markov network with a copy of the given random number generator.
+        markov_network(const desc_type& desc, const rng_type& rng)
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(rng) {
         }
 
         //! Retrieve this network's underlying random number generator.
