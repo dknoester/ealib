@@ -174,22 +174,22 @@ namespace mkv {
 
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, const rng_type& rng)
-        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(rng) {
+        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(rng), _threshold(0) {
         }
         
         //! Constructs a Markov network with the given seed.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
-        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed) {
+        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed), _threshold(0) {
         }
 
         //! Constructs a Markov network with the given seed.
         markov_network(const desc_type& desc, unsigned int seed=0)
-        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(seed) {
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(seed), _threshold(0) {
         }
         
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(const desc_type& desc, const rng_type& rng)
-        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(rng) {
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(rng), _threshold(0) {
         }
 
         //! Retrieve this network's underlying random number generator.
@@ -224,6 +224,9 @@ namespace mkv {
         //! Retrieve an iterator to the end of the svm outputs at time t.
         svm_type::iterator end_output() { return _svm.t().begin()+_desc.get<OUT>(); }
         
+        //! Retrieve the threshold for inputs to be considered a "1".
+        int& threshold() { return _threshold; }
+        
         /*! Retrieve the value of input i.  Markov networks treat any state variable
          as input, so we need to check to see if the requested input comes from
          the range of inputs, or if it's an internal state variable.
@@ -231,7 +234,7 @@ namespace mkv {
         template <typename RandomAccessIterator>
         state_type input(RandomAccessIterator f, std::size_t i) {
             if(i < _desc.get<IN>()) {
-                return f[i];
+                return (f[i] > _threshold);
             } else {
                 return _svm.state_tminus1(i-_desc.get<IN>());
             }
@@ -250,6 +253,7 @@ namespace mkv {
         desc_type _desc; //!< Geometry descriptor for this Markov Network.
         svm_type _svm; //!< State vector machine for the hidden & output states.
         rng_type _rng; //<! Random number generator.
+        state_type _threshold; //!< Threshold value above which an input is considered a "1".
     };
     
     
