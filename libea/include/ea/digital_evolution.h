@@ -186,7 +186,7 @@ namespace ea {
                 _env.replace(l.first, offspring, *this);
                 offspring->priority() = parent->priority();
                 _population.insert(_population.end(), offspring);
-                _events.birth(*offspring, *this);
+                _events.birth(*offspring, *parent, *this);
             }
         }
         

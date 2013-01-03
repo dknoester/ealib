@@ -243,6 +243,70 @@ namespace ea {
             return iterator(*p->location(),p->location()->heading,_locs,ea);            
         }
         
+        //! Given two orgs, rotate them to face one another.
+        void face_org(individual_type& p1, individual_type& p2) {
+            location_ptr_type l1 = p1.location();
+            location_ptr_type l2 = p2.location();
+        
+            // Make sure everyone has a location...
+            if ((l1 == NULL) || (l2 == NULL)) {
+                return;
+            }
+            
+            int x1 = l1->x;
+            int x2 = l2->x;
+            int y1 = l1->y;
+            int y2 = l2->y;
+            // think in terms of x,y. sort out later.
+            if ((l1->x < l2->x) && (l1->y < l2->y)) {
+                p1.location()->set_heading(1);
+                p2.location()->set_heading(5);
+                // l1 heading = 1
+                // l2 heading = 5
+            } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
+                // l1 heading = 5
+                // l2 heading = 1
+                p1.location()->set_heading(5);
+                p2.location()->set_heading(1);
+            } else if ((l1->x < l2->x) && (l1->y > l2->y)) {
+                // l1 heading = 7
+                // l2 heading = 3
+                p1.location()->set_heading(7);
+                p2.location()->set_heading(3);
+            } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
+                // l1 heading = 3
+                // l2 heading = 7
+                p1.location()->set_heading(3);
+                p2.location()->set_heading(7);
+            } else if ((l1->x < l2->x) && (l1->y == l2->y)) {
+                // l1 heading = 0
+                // l2 heading = 4
+                p1.location()->set_heading(0);
+                p2.location()->set_heading(4);
+            } else if ((l1->x > l2->x) && (l1->y == l2->y)) {
+                // l1 heading = 4
+                // l2 heading = 0
+                p1.location()->set_heading(4);
+                p2.location()->set_heading(0);
+            } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
+                // l1 heading = 2
+                // l2 heading = 6
+                p1.location()->set_heading(2);
+                p2.location()->set_heading(6);
+            } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
+                // l1 heading = 6
+                // l2 heading = 2
+                p1.location()->set_heading(6);
+                p2.location()->set_heading(2);
+            }
+            
+            int ax1 = l1->x;
+            int ax2 = l2->x;
+            int ay1 = l1->y;
+            int ay2 = l2->y;
+            
+        }
+        
         //! Replace the organism (if any) living in location l with p.
         void replace(iterator i, individual_ptr_type p, ea_type& ea) {
             location_type& l=(*i);

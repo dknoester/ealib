@@ -46,12 +46,6 @@ namespace ea {
         std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
             typedef typename EA::environment_type::iterator location_iterator;
             std::pair<location_iterator, location_iterator> i = ea.env().neighborhood(parent,ea);
-            //std::random_shuffle(i.first, i.second, ea.rng());
-            
-//            std::random_shuffle(i->population().begin(), i->population().end(), ea.rng());
-
-            
-            // how do you shuffle?
             return std::make_pair(ea.rng().choice(i.first, i.second), true);
         }
     };

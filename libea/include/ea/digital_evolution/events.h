@@ -35,7 +35,8 @@ namespace ea {
                        EA&)> task_performed;
     
     //! Called when an individual is "born" (immediately after it is placed in the population).
-    boost::signal<void(typename EA::individual_type&, // individual
+    boost::signal<void(typename EA::individual_type&, // individual offspring
+                       typename EA::individual_type&, // individual parent
                        EA&)> birth;
     
     //! Called when an individual "dies" or is replaced.
@@ -59,10 +60,11 @@ namespace ea {
   template <typename EA>
   struct birth_event : event {
     birth_event(EA& ea) {
-      conn = ea.events().birth.connect(boost::bind(&birth_event::operator(), this, _1, _2));
+      conn = ea.events().birth.connect(boost::bind(&birth_event::operator(), this, _1, _2, _3));
     }
     virtual ~birth_event() { }
-    virtual void operator()(typename EA::individual_type&, // individual
+    virtual void operator()(typename EA::individual_type&, // individual offspring
+                            typename EA::individual_type&, // individual parent
                             EA&) = 0;
   };
   
