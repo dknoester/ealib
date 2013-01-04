@@ -22,7 +22,7 @@
 #define _EA_ANALYSIS_POPULATION_H_
 
 #include <ea/datafile.h>
-#include <ea/interface.h>
+
 
 
 namespace ea {

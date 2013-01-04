@@ -91,7 +91,7 @@ namespace ea {
             
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                 for(typename EA::individual_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
-                    fit(static_cast<double>(ind(j,*i).fitness()));
+                    fit(static_cast<double>(ea::fitness(**j)));
                 }
             }
             
@@ -106,7 +106,7 @@ namespace ea {
             accumulator_set<double, stats<tag::mean, tag::max, tag::variance> > fit; 
             
             for(typename EA::individual_type::population_type::iterator j=ea.rbegin()->population().begin(); j!=ea.rbegin()->population().end(); ++j) {
-                fit(static_cast<double>(ind(j,*ea.rbegin()).fitness()));
+                fit(static_cast<double>(ea::fitness(**j)));
             }
             
             double mean_base_one_fit = get<ADMISSION_LEVEL>(ea[1]);
@@ -144,7 +144,7 @@ namespace ea {
                 std::advance(f, static_cast<std::size_t>(get<MIN_REMAIN>(ea)*get<POPULATION_SIZE>(ea)));
                 typename EA::individual_type::population_type::iterator l=ea[i].population().end();
                 for( ; f!=l; ++f) {
-                    if(ind(f,ea[i]).fitness() > next_admission) {
+                    if(ea::fitness(**f) > next_admission) {
                         break;
                     }
                 }
@@ -188,7 +188,7 @@ namespace ea {
                 _df.write(get<ADMISSION_LEVEL>(ea[i], 0.0));
                           
                 for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
-                    fit(static_cast<double>((*j)->fitness()));
+                    fit(static_cast<double>(ea::fitness(**j)));
                 }
                 
                 _df.write(mean(fit))

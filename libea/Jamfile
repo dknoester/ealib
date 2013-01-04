@@ -20,17 +20,15 @@ lib libea_runner :
     /site-config//z
     ;
 
-run test/test_libea.cpp
-    test/test_circular.cpp
-    test/test_analysis.cpp
+run test/test_ea.cpp
+    test/test_evolutionary_algorithm.cpp
     test/test_checkpoint.cpp
-#    test/test_ealife.cpp
-    test/test_generational.cpp
+    test/test_circular.cpp
+    test/test_information.cpp
     test/test_meta_data.cpp
-    test/test_recombination.cpp
-#    test/test_meta_population.cpp
     test/test_rng.cpp
-    test/test_selection.cpp
+    test/test_meta_population.cpp
+    test/test_novelty_search.cpp
     libea
     /boost//program_options
     /boost//serialization
@@ -41,15 +39,16 @@ run test/test_libea.cpp
     /site-config//z
     ;
 
-#alias install : install-lib install-headers ;
+alias install : install-lib install-headers ;
 
-#install install-lib : 
-#    libea_runner 
-#    : <location>$(PREFIX)/lib <install-type>LIB
-#    ;
+install install-lib :
+    libea_runner
+    : <location>$(PREFIX)/lib <install-type>LIB <install-dependencies>on
+    ;
 
-#install install-headers :
-#    [ glob-tree *.h : test $(PREFIX) ]
-#    : <location>$(PREFIX)/include <install-source-root>include
-#    ;
+install install-headers :
+    [ glob-tree *.h : test ]
+    : <location>$(PREFIX)/include <install-source-root>include
+    ;
 
+explicit install install-lib install-headers ;

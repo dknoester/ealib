@@ -22,7 +22,7 @@
 
 #include <boost/serialization/nvp.hpp>
 #include <algorithm>
-#include <ea/interface.h>
+
 #include <ea/individual.h>
 #include <ea/meta_data.h>
 #include <ea/generational_model.h>

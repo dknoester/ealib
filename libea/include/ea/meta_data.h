@@ -116,6 +116,9 @@ namespace ea {
 			return *this;
 		}
 		
+        //! Returns a reference to this meta-data object (for compatibiliy with the get & set methods below).
+        meta_data& md() { return *this; }
+        
 		//! Returns a reference to an attribute's value.
         template <typename Attribute>
         typename Attribute::reference_type getattr(const std::string& k) {

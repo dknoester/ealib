@@ -22,10 +22,12 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/split_member.hpp>
 #include <limits>
 #include <string>
 #include <vector>
 #include <ea/algorithm.h>
+#include <ea/attributes.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
 
@@ -78,7 +80,12 @@ namespace ea {
             _f += that._f;
             return *this;
         }
-        
+
+        //! Operator <
+        bool operator<(const unary_fitness& that) {
+            return _f < that._f;
+        }
+
         //! Value-type cast operator.
         operator value_type() { return _f; }
 
@@ -106,13 +113,29 @@ namespace ea {
         //! Returns true if this fitness is maximal, false otherwise.
         bool is_maximum() const { return (_f==maximum()); }
         
-        //! Serialize this fitness value.
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) { 
-            ar & boost::serialization::make_nvp("f", _f);
-        }
+        template<class Archive>
+		void save(Archive & ar, const unsigned int version) const {
+			bool null_fitness=is_null();
+			ar & BOOST_SERIALIZATION_NVP(null_fitness);
+			if(!null_fitness) {
+				ar & boost::serialization::make_nvp("f", _f);
+			}
+		}
+		
+		template<class Archive>
+		void load(Archive & ar, const unsigned int version) {
+			bool null_fitness=true;
+			ar & BOOST_SERIALIZATION_NVP(null_fitness);
+			if(null_fitness) {
+                nullify();
+			} else {
+				ar & boost::serialization::make_nvp("f", _f);
+			}
+		}
         
         value_type _f; //!< Fitness value.
+        
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
     
     
@@ -254,7 +277,7 @@ namespace ea {
         //! Constant: calculate fitness only if this individual has not yet been evaluated.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
-            if(i.fitness().is_null()) {
+            if(ea::fitness(i).is_null()) {
                 calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
             }
         }
@@ -302,7 +325,7 @@ namespace ea {
 	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-			ind(first,ea).fitness().nullify();
+            ea::fitness(**first).nullify();
 		}
 	}
 
@@ -313,8 +336,8 @@ namespace ea {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-			ind(first,ea).fitness().nullify();
-			calculate_fitness(ind(first,ea),ea);
+            ea::fitness(**first).nullify();
+			calculate_fitness(**first,ea);
 		}
     }    
     

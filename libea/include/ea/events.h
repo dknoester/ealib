@@ -22,8 +22,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/signal.hpp>
-
-#include <ea/interface.h>
+#include <ea/meta_data.h>
 
 namespace ea {
 

@@ -26,7 +26,7 @@
 #include <cmath>
 #include <vector>
 #include <ea/datafile.h>
-#include <ea/interface.h>
+
 #include <ea/analysis/tool.h>
 
 

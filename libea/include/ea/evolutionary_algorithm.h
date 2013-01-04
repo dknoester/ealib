@@ -31,7 +31,7 @@
 #include <ea/individual.h>
 #include <ea/fitness_function.h>
 #include <ea/ancestors.h>
-#include <ea/interface.h>
+
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
 #include <ea/selection.h>
@@ -42,23 +42,33 @@
 
 namespace ea {
     
+    /*! Default attributes for an evolutionary_algorithm individual.
+     */
+    template <typename EA>
+    struct default_ea_attributes : attr::fitness_attribute<EA> {
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
+        }
+    };
+    
+    
 	/*! Generic evolutionary algorithm class.
 	 
 	 This class is designed to be generic, such that all the main features of evolutionary
 	 algorithms can be easily incorporated.  The focus of this class is on the 
 	 common features of most EAs, while leaving the problem-specific components 
-	 easily customizable.  For example, this class includes selection strategies
-	 such as tournament selection, but does not specify fitness functions.
+	 easily customizable.
 	 */
 	template <
 	typename Representation,
 	typename MutationOperator,
 	typename FitnessFunction,
-    template <typename> class ConfigurationStrategy,
+    template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::two_point_crossover,
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-    template <typename> class IndividualAttrs=individual_attributes,
-    template <typename,typename,typename> class Individual=individual,
+    template <typename> class IndividualAttrs=default_ea_attributes,
+    template <typename,typename> class Individual=individual,
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
@@ -76,7 +86,7 @@ namespace ea {
         //! Attributes attached to individuals.
         typedef IndividualAttrs<evolutionary_algorithm> individual_attr_type;
         //! Individual type.
-        typedef Individual<representation_type,fitness_type,individual_attr_type> individual_type;
+        typedef Individual<representation_type,individual_attr_type> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Mutation operator type.
@@ -105,6 +115,7 @@ namespace ea {
         //! Default constructor.
         evolutionary_algorithm() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
+            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
             _configurator.construct(*this);
         }
                 
@@ -144,6 +155,12 @@ namespace ea {
             return p;
         }
         
+        //! Build a copy of an individual.
+        individual_ptr_type make_individual(const individual_type& r) {
+            individual_ptr_type p(new individual_type(r));
+            return p;
+        }
+        
         //! Insert individual x into the population.
         void append(individual_ptr_type x) {
             calculate_fitness(*x, *this);
@@ -157,25 +174,31 @@ namespace ea {
             _population.insert(_population.end(), f, l);
         }
         
+        //! Erase the given individual from the population.
+        void erase(iterator i) {
+            _population.erase(i.base());
+        }
+        
         //! Perform any needed preselection.
         void preselect(population_type& src) {
             relativize_fitness(src.begin(), src.end(), *this);
         }
         
         //! Calculate fitness (non-stochastic).
-        void evaluate_fitness(individual_type& indi) {
-            indi.fitness() = _fitness_function(indi, *this);
+        void evaluate_fitness(individual_type& i) {
+            ea::fitness(i) = _fitness_function(i, *this);
         }
         
         //! Calculate fitness (stochastic).
-        void evaluate_fitness(individual_type& indi, rng_type& rng) {
-            indi.fitness() = _fitness_function(indi, rng, *this);
+        void evaluate_fitness(individual_type& i, rng_type& rng) {
+            ea::fitness(i) = _fitness_function(i, rng, *this);
         }
         
         //! Reset the population.
         void reset() {
-            _configurator.reset(*this);
             nullify_fitness(_population.begin(), _population.end(), *this);
+            _configurator.reset(*this);
+            calculate_fitness(_population.begin(), _population.end(), *this);
         }
         
         //! Returns the current update of this EA.

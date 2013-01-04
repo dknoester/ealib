@@ -166,10 +166,14 @@ namespace ea {
             typedef matrix<value_type> Matrix;
             typedef matrix_column<Matrix> Column;
 
-            Matrix m(x.size(),2);
-            Column(m,0) = x;
-            Column(m,1) = y;
-            return entropy(x) + entropy(y) - joint_entropy(m);            
+            Matrix M(x.size(),2);
+            Column X(M,0);
+            Column Y(M,1);
+            
+            std::copy(x.begin(), x.end(), X.begin());
+            std::copy(y.begin(), y.end(), Y.begin());
+            
+            return entropy(X) + entropy(Y) - joint_entropy(M);
         }
 
         
