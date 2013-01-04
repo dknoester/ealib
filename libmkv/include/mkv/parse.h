@@ -80,6 +80,7 @@ namespace mkv {
         typedef std::string::const_iterator iterator_type;
         
         detail::deep_desc_parser<iterator_type> parser;
+        desc.clear();
         
         typename T::const_iterator iter = t.begin();
         typename T::const_iterator end = t.end();

@@ -336,8 +336,8 @@ namespace ea {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-			ind(first,ea).fitness().nullify();
-			calculate_fitness(ind(first,ea),ea);
+            ea::fitness(**first).nullify();
+			calculate_fitness(**first,ea);
 		}
     }    
     
