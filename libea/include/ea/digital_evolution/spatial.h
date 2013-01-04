@@ -253,10 +253,7 @@ namespace ea {
                 return;
             }
             
-            int x1 = l1->x;
-            int x2 = l2->x;
-            int y1 = l1->y;
-            int y2 = l2->y;
+           
             // think in terms of x,y. sort out later.
             if ((l1->x < l2->x) && (l1->y < l2->y)) {
                 p1.location()->set_heading(1);
@@ -299,11 +296,6 @@ namespace ea {
                 p1.location()->set_heading(6);
                 p2.location()->set_heading(2);
             }
-            
-            int ax1 = l1->x;
-            int ax2 = l2->x;
-            int ay1 = l1->y;
-            int ay2 = l2->y;
             
         }
         
