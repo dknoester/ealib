@@ -184,6 +184,10 @@ namespace ea {
         
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->calculate_fitness();
+            }
+            
             // update all the EAs:
             for( ; n>0; --n) {
                 update();

@@ -130,8 +130,15 @@ namespace ea {
             _configurator.initial_population(*this);
         }
 
+        //! Calculate the fitness of all individuals in this EA.
+        void calculate_fitness() {
+            ea::calculate_fitness(_population.begin(), _population.end(), *this);
+        }
+        
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
+            calculate_fitness();
+
             for( ; n>0; --n) {
                 update();
             }
@@ -163,14 +170,14 @@ namespace ea {
         
         //! Insert individual x into the population.
         void append(individual_ptr_type x) {
-            calculate_fitness(*x, *this);
+            ea::calculate_fitness(*x, *this);
             _population.insert(_population.end(), x);
         }
         
         //! Insert the range of individuals [f,l) into the population.
         template <typename ForwardIterator>
         void append(ForwardIterator f, ForwardIterator l) {
-            calculate_fitness(f, l, *this);
+            ea::calculate_fitness(f, l, *this);
             _population.insert(_population.end(), f, l);
         }
         
@@ -198,7 +205,6 @@ namespace ea {
         void reset() {
             nullify_fitness(_population.begin(), _population.end(), *this);
             _configurator.reset(*this);
-            calculate_fitness(_population.begin(), _population.end(), *this);
         }
         
         //! Returns the current update of this EA.
