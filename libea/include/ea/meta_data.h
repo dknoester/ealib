@@ -274,6 +274,8 @@ namespace ea {
     
 	// ea.representation.*
 	LIBEA_MD_DECL(REPRESENTATION_SIZE, "ea.representation.size", int);
+	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
+	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
 	LIBEA_MD_DECL(REALSTRING_MEAN, "ea.representation.realstring.mean", double);
 	LIBEA_MD_DECL(REALSTRING_VARIANCE, "ea.representation.realstring.variance", double);
 	LIBEA_MD_DECL(INTSTRING_MEAN, "ea.representation.intstring.mean", int);
@@ -327,6 +329,7 @@ namespace ea {
 	LIBEA_MD_DECL(MUTATION_DUPLICATION_P, "ea.mutation.duplication.p", double);
 	LIBEA_MD_DECL(MUTATION_DELETION_P, "ea.mutation.deletion.p", double);
 	LIBEA_MD_DECL(MUTATION_INSERTION_P, "ea.mutation.insertion.p", double);
+    LIBEA_MD_DECL(MUTATION_INDEL_CHUNK_SIZE, "ea.mutation.indel.chunk_size", int);
     LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MIN, "ea.mutation.uniform_integer.min", int);
     LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MAX, "ea.mutation.uniform_integer.max", int);
     LIBEA_MD_DECL(MUTATION_UNIFORM_REAL_MIN, "ea.mutation.uniform_real.min", double);

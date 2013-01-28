@@ -48,7 +48,12 @@ namespace ea {
 		
 		//! Constructor that initializes to the given size.
 		numeric_vector(const std::size_t n) : base_type(n) { }
-		
+
+        //! Constructor that initializes with the range [f,l).
+        template <typename InputIterator>
+		numeric_vector(InputIterator f, InputIterator l) : base_type(f, l) {
+		}
+
         // These enable a more compact serialization of the genome.
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
