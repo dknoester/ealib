@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_MARKOV_NETWORK_H_
-#define _EA_MARKOV_NETWORK_H_
+#ifndef _MKV_EA_MARKOV_NETWORK_H_
+#define _MKV_EA_MARKOV_NETWORK_H_
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/accumulators/accumulators.hpp>
@@ -378,6 +378,37 @@ namespace mkv {
             d |=  (excite & ~inhibit) << j;
         }
         return d;
+    }
+    
+
+    /*! Decode excitatory/inhibitory bit pairs into a list of bits.
+     
+     This is a common way to interpret the output from a Markov Network, hence is included here.
+     */
+    template <typename ForwardIterator, typename OutputIterator>
+    void decode(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
+        assert((std::distance(f,l)%2) == 0);
+        for( ; f!=l; ++f) {
+            int excite=(*f & 0x01);
+            int inhibit=(*++f & 0x01);
+            *oi++ = (excite & ~inhibit);
+        }
+    }
+
+    /*! Write the indices of "on" outputs from a Markov Network to an output iterator.
+
+     This is a common way to interpret the output from a Markov Network, hence is included here.
+     */
+    template <typename ForwardIterator, typename OutputIterator>
+    void expand(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
+        assert((std::distance(f,l)%2) == 0);
+        for(int i=0; f!=l; ++f, ++i) {
+            int excite=(*f & 0x01);
+            int inhibit=(*++f & 0x01);
+            if(excite & ~inhibit) {
+                *oi++ = i;
+            }
+        }
     }
 
     
