@@ -21,7 +21,6 @@
 #define _EA_MUTATION_H_
 
 #include <ea/algorithm.h>
-
 #include <ea/meta_data.h>
 
 
@@ -183,33 +182,37 @@ namespace ea {
             
             mutation_type _mt;
         };
-        
 
-        /*! Per-site mutation, with single insertion and deletion.
+        
+        /*! Insertion/deletion (of fixed-size chunks) mutation type.
+         
+         \todo for variable size chunks, implement slip mutations.
          */
-        template <typename MutationType>
-        struct per_site_indel {            
-            typedef MutationType mutation_type;
-            
-            //! Iterate through all elements in the given representation, possibly mutating them.
+        template <typename MutationOperator>
+        struct indel {
+            typedef MutationOperator mutation_operator_type;
+
+            //! Probabilistically perform indel mutations.
             template <typename Representation, typename EA>
             void operator()(Representation& repr, EA& ea) {
-                const double per_site_p=get<MUTATION_PER_SITE_P>(ea);
-                for(typename Representation::iterator i=repr.begin(); i!=repr.end(); ++i){
-                    if(ea.rng().p(per_site_p)) {
-                        _mt(repr, i, ea);
-                    }
+                // insertion:
+                if((repr.size() < get<REPRESENTATION_MAX_SIZE>(ea)) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
+                    typename Representation::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
+                    Representation chunk(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea)); // copy to avoid undefined behavior
+                    repr.insert(ea.rng().choice(repr.begin(),repr.end()), chunk.begin(), chunk.end());
                 }
                 
-                if(ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
-                    _mt(repr, repr.insert(ea.rng().choice(repr.begin(),repr.end()), typename Representation::codon_type()), ea);
+                // deletion:
+                if((repr.size() > get<REPRESENTATION_MIN_SIZE>(ea)) && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
+                    typename Representation::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
+                    repr.erase(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea));
                 }
-                if(ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
-                    repr.erase(ea.rng().choice(repr.begin(),repr.end()));
-                }                
+                
+                // then carry on with normal mutations:
+                _mt(repr, ea);
             }
             
-            mutation_type _mt;
+            mutation_operator_type _mt;            
         };
         
     } // mutation
