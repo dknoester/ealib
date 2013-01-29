@@ -158,9 +158,22 @@ namespace ea {
             --_age;
         }
         
+        //! This hardware undergoes a soft reset -- for multi-birth organisms
+        void replicated_soft_reset() { 
+            _mem_extended = false;
+            _orig_size = _repr.size();
+            bzero(_head_position, sizeof(int)*NUM_HEADS);
+            advanceHead(IP, -1);
+        }
+        
         //! Return the age of this hardware in virtual CPU cycles.
         int age() { 
             return _age;
+        }
+        
+        //! Add a cost
+        void add_cost (int cost) {
+            _cost += cost;
         }
         
         //! Get the register to be modified

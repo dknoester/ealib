@@ -145,7 +145,7 @@ namespace ea {
          its size, and the flow head is set to the instruction immediately 
          following the complement.  If no label is found, BX and CX are set to
          zero, and the flow head is moved to the instruction following h_search.
-         */
+        */
         DIGEVO_INSTRUCTION_DECL(h_search) {
             std::pair<int, int> comp_label = hw.findComplementLabel();
             hw.setHeadLocation(Hardware::FH, hw.getHeadLocation(Hardware::IP)); 
@@ -153,7 +153,7 @@ namespace ea {
             // if the complement of the label exists...
             if (comp_label.first != -1) {
                 hw.setRegValue(Hardware::BX, comp_label.first); 
-                hw.setRegValue(Hardware::CX, comp_label.second);                
+                hw.setRegValue(Hardware::CX, comp_label.second);
             } else { 
                 hw.setRegValue(Hardware::BX, 0); 
                 hw.setRegValue(Hardware::CX, 0);
@@ -162,6 +162,7 @@ namespace ea {
             hw.advanceHead(Hardware::FH, dist + comp_label.second);
         }
         
+            
         /*! Divide this organism's memory between parent and offspring.
          
          Instructions from the beginning of the organism's memory to the current
@@ -344,6 +345,19 @@ namespace ea {
             }                
         }
         
+        //! Send a message to the currently-faced neighbor.
+        DIGEVO_INSTRUCTION_DECL(tx_msg_check_task) {
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);            
+            if(l.occupied()) {
+                int rbx = hw.modifyRegister();
+                int rcx = hw.nextRegister(rbx);
+                l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
+            } 
+            p->outputs().push_front(hw.getRegValue(hw.modifyRegister()));
+            p->outputs().resize(1);
+            ea.tasklib().check_tasks(*p,ea);
+        }
+        
         //! Retrieve a message from the caller's message buffer.
         DIGEVO_INSTRUCTION_DECL(rx_msg) {
             if(hw.msgs_queued()) {
@@ -395,6 +409,26 @@ namespace ea {
             }
         }
         
+        //! Execute the next instruction if ?bx? == ?cx?.
+        DIGEVO_INSTRUCTION_DECL(if_equal) {
+            
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            if(hw.getRegValue(rbx) != hw.getRegValue(rcx)) {
+                hw.advanceHead(Hardware::IP);
+            }
+        }
+        
+        //! Execute the next instruction if ?bx? != ?cx?.
+        DIGEVO_INSTRUCTION_DECL(if_not_equal) {
+            
+            int rbx = hw.modifyRegister();
+            int rcx = hw.nextRegister(rbx);
+            if(hw.getRegValue(rbx) == hw.getRegValue(rcx)) {
+                hw.advanceHead(Hardware::IP);
+            }
+        }
+        
         //! Get the organism's current position
         DIGEVO_INSTRUCTION_DECL(get_xy) {
             int rbx = hw.modifyRegister();
@@ -403,9 +437,24 @@ namespace ea {
             hw.setRegValue(rbx,p->location()->x);
             hw.setRegValue(rcx,p->location()->y);
         }
+        
+        //! Get the organism's age
+        DIGEVO_INSTRUCTION_DECL(get_age){
+            int rbx = hw.modifyRegister();
+            hw.setRegValue(rbx,hw.age());
+        }
+        
+        //! Jump the organism's IP head; Move head ?IP? by amount in CX register
+        DIGEVO_INSTRUCTION_DECL(jump_head){
+            int rbx = hw.modifyRegister();
+            int jumpAmt = hw.getRegValue(rbx);
+            hw.advanceHead(Hardware::IP, jumpAmt);
+        }
+            
+        
     } // instructions
-    
-    
+
+
     /*! Instruction set architecture for digital evolution.
      */
     template <typename EA>
@@ -437,7 +486,16 @@ namespace ea {
             boost::shared_ptr<inst_type> p(new Instruction<hardware_type,ea_type>(cost));
             _isa.push_back(p);
             _name[p->name()] = _isa.size() - 1;
-        }            
+        }
+        
+        //! Knockout the instruction at index i with the given instruction.
+        template <template <typename,typename> class Instruction>
+        void knockout(std::size_t i, std::size_t cost) {
+            assert(i < _isa.size());
+            boost::shared_ptr<inst_type> p(new Instruction<hardware_type,ea_type>(cost));
+            _isa[i] = p;
+        }
+
         
         //! Execute instruction i.
         void operator()(std::size_t i, hardware_type& hw, individual_ptr_type p, ea_type& ea) {
@@ -478,6 +536,22 @@ namespace ea {
     void append_isa(EA& ea) {
         ea.isa().template append<Instruction>(1);
     }
+
+    //! Helper method to add an instruction to the ISA with the given cost.
+    template <template <typename,typename> class Instruction, typename EA>
+    void knockout_isa(const std::string& inst, std::size_t cost, EA& ea) {
+        std::size_t i = ea.isa()[inst];
+        ea.isa().template knockout<Instruction>(i, cost);
+    }
+    
+    //! Helper method to add an instruction to the ISA with a cost of 1.
+    template <template <typename,typename> class Instruction, typename EA>
+    void knockout_isa(const std::string& inst, EA& ea) {
+        std::size_t i = ea.isa()[inst];
+        ea.isa().template knockout<Instruction>(i, 1);
+    }
+
+    
 
 } // ea
 

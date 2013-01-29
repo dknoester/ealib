@@ -132,8 +132,8 @@ namespace ea {
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
 
         //! Default constructor.
-        digital_evolution() {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
+        digital_evolution() : _name(0), _generation(0.0) {
+            //BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
             _configurator.construct(*this);
         }
                 
@@ -195,7 +195,7 @@ namespace ea {
                 _env.replace(l.first, offspring, *this);
                 offspring->priority() = parent->priority();
                 _population.insert(_population.end(), offspring);
-                _events.birth(*offspring, *this);
+                _events.birth(*offspring, *parent, *this);
             }
         }
         
@@ -207,6 +207,16 @@ namespace ea {
         //! Returns the current update of this EA.
         unsigned long current_update() {
             return _scheduler.current_update();
+        }
+        
+        //! Retrieve this population's name.
+        unsigned long& name() {
+            return _name;
+        }
+        
+        //! Retrieve this population's generation.
+        double& generation() {
+            return _generation;
         }
         
         //! Accessor for the random number generator.
@@ -234,6 +244,8 @@ namespace ea {
         scheduler_type& scheduler() { return _scheduler; }
         
     protected:
+        unsigned long _name;
+        double _generation;
         rng_type _rng; //!< Random number generator.
         environment_type _env; //!< Environment object.
         scheduler_type _scheduler; //!< Scheduler instance.

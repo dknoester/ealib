@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "42841C8315AFB14100AB18BE"
-               BuildableName = "all"
-               BlueprintName = "all"
+               BlueprintIdentifier = "42681E1E166E44F300665BD1"
+               BuildableName = "tutorial_1 copy"
+               BlueprintName = "tutorial_2"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,6 +29,15 @@
       buildConfiguration = "Debug">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "42681E1E166E44F300665BD1"
+            BuildableName = "tutorial_1 copy"
+            BlueprintName = "tutorial_2"
+            ReferencedContainer = "container:ealib.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
@@ -39,6 +48,15 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "42681E1E166E44F300665BD1"
+            BuildableName = "tutorial_1 copy"
+            BlueprintName = "tutorial_2"
+            ReferencedContainer = "container:ealib.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -48,6 +66,15 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "42681E1E166E44F300665BD1"
+            BuildableName = "tutorial_1 copy"
+            BlueprintName = "tutorial_2"
+            ReferencedContainer = "container:ealib.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

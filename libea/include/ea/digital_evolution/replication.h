@@ -36,9 +36,22 @@ namespace ea {
             return std::make_pair(ea.env().neighborhood(parent,ea).first, true);
         }
     };
+    
+    /*! Selects the location of a random neighbor to the parent as the location
+     for an offspring.
+     
+     */
+    struct random_neighbor {
+        template <typename EA>
+        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
+            typedef typename EA::environment_type::iterator location_iterator;
+            std::pair<location_iterator, location_iterator> i = ea.env().neighborhood(parent,ea);
+            return std::make_pair(ea.rng().choice(i.first, i.second), true);
+        }
+    };
 
     /*! Selects the location of an empty neighbor location to the parent as the location
-     for an offspring.
+     for an offspring. (Note: here empty includes locations occupied by dead organisms.)
      
      If there is not an empty location, then the replacement does not proceed. This method 
      does not makes sense with well-mixed, since the 'neighborhood' of an organism is 
@@ -58,6 +71,7 @@ namespace ea {
             return std::make_pair(i.second, false);
         }
     };
+    
     
     /*! Replicates a parent p to produce an offspring with representation r.
      */
