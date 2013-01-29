@@ -146,7 +146,23 @@ namespace ea {
             
             mutation_type _mt;
         };
-        
+
+        template <typename MutationType>
+        struct zero {
+            typedef MutationType mutation_type;
+            
+            template <typename Representation, typename EA>
+            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
+                if(ea.rng().p(get<MUTATION_ZERO_P>(ea))) {
+                    *i = 0.0;
+                } else {
+                    _mt(repr, i, ea);
+                }
+            }
+            
+            mutation_type _mt;
+        };
+
         /*! Single-point mutation.
          */
         template <typename MutationType>
