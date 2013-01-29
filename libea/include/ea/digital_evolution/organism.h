@@ -56,12 +56,12 @@ namespace ea {
 		typedef std::map<std::string, double> phenotype_map_type; //!< Type for storing phenotype information.
         
 		//! Constructor.
-		organism() : _name(0), _generation(0.0), _update(0), _alive(true) {
+		organism() : _name(0), _generation(0.0), _update(0), _alive(true), _location(NULL) {
 		}
         
 		//! Constructor that builds an organism from a representation.
 		organism(const representation_type& r) 
-        : _name(0), _generation(0.0), _update(0), _alive(true), _hw(r) {
+        : _name(0), _generation(0.0), _update(0), _alive(true), _hw(r), _location(NULL) {
 		}
         
         //! Copy constructor.
@@ -73,6 +73,7 @@ namespace ea {
             _priority = that._priority;
             _hw = that._hw;
             _md = that._md;
+            _location = NULL;
         }
         
         //! Assignment operator.
@@ -85,6 +86,7 @@ namespace ea {
                 _priority = that._priority;
                 _hw = that._hw;
                 _md = that._md;
+                _location = NULL;
             }
             return *this;
         }

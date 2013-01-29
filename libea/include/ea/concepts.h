@@ -232,6 +232,7 @@ namespace ea {
 	template <typename X>
 	struct EvolutionaryAlgorithmConcept {
 	public:
+        // hjg: commented out locally... 
         typedef typename X::individual_type individual_type; //!< Individual; an "agent."
         typedef typename X::individual_ptr_type individual_ptr_type; //!< Pointer type to an individual.
         typedef typename X::population_type population_type; //!< Population; a container for individuals.

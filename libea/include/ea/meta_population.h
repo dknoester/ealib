@@ -68,6 +68,7 @@ namespace ea {
 
         //! Construct a meta-population EA.
         meta_population() : _update(0) {
+            // hjg: commented out locally...
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<individual_type>));
             _configurator.construct(*this);
@@ -172,6 +173,7 @@ namespace ea {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->generate_initial_population();
             }
+            _configurator.initial_population(*this);
         }
         
         //! Reset all populations.
