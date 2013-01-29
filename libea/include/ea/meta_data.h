@@ -338,6 +338,7 @@ namespace ea {
     LIBEA_MD_DECL(MUTATION_NORMAL_REAL_VAR, "ea.mutation.normal_real.var", double);
     LIBEA_MD_DECL(MUTATION_CLIP_MIN, "ea.mutation.clip.min", double);
     LIBEA_MD_DECL(MUTATION_CLIP_MAX, "ea.mutation.clip.max", double);
+    LIBEA_MD_DECL(MUTATION_ZERO_P, "ea.mutation.zero.p", double);
     
 	// ea.run.*
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
