@@ -265,9 +265,6 @@ namespace ea {
                 // mutate the offspring:
 				mutate(offspring.begin(), offspring.end(), ea);
                 
-                // calculate fitness:
-                calculate_fitness(offspring.begin(), offspring.end(), ea);
-                
                 // add the offspring to the parent population to create the next generation:
                 parents.insert(parents.end(), offspring.begin(), offspring.end());
                 

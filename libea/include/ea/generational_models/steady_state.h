@@ -64,7 +64,7 @@ namespace ea {
 				// mutate them:
 				mutate(offspring.begin(), offspring.end(), ea);
 				
-                // make sure all have their fitness calculated:
+                // make sure the offspring have their fitness calculated:
                 calculate_fitness(offspring.begin(), offspring.end(), ea);
 
 				// add the offspring to the current population:

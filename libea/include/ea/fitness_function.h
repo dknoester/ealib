@@ -32,7 +32,12 @@
 #include <ea/events.h>
 
 namespace ea {
-    //! Indicates that fitness is constant, and thus should be cached.
+
+    /* The following are tags that are to be used to indicate properties of a
+     given fitness function:
+     */
+    
+    //! Indicates that fitness is constant, and can be cached.
     struct constantS { };
     
     //! Indicates that fitness may change between evaluations, and should not be cached.
@@ -49,6 +54,12 @@ namespace ea {
 
     //! Indicates that fitness is stochastic, and requires its own RNG.
     struct stochasticS { };
+    
+    
+    /* While fitnesses are typically thought of as a single real value (e.g., a
+     double), treating them as an object has numerous benefits, especially for
+     multiobjective problems.  Here is the unary fitness value:
+     */
     
     /*! Unary fitness value.
      */
@@ -382,38 +393,6 @@ namespace ea {
             recalculate_fitness(ea.population().begin(), ea.population().end(), ea);
         }
     };
-
-    
-//    /*! Adaptor for alternating among a series of fitness functions.
-//     */
-//    template <typename FitnessFunction>
-//    struct switching : fitness_function<typename FitnessFunction::value_type> {
-//        typedef FitnessFunction fitness_function_type;
-//        typedef typename fitness_function_type::value_type value_type;
-//        typedef std::vector<fitness_function_type> ff_list_type;        
-//        
-//        template <typename EA>
-//        void initialize(EA& ea) {
-//            fitness_functions.resize(get<FF_N>(ea));
-//            for(typename ff_list_type::iterator i=fitness_functions.begin(); i!=fitness_functions.end(); ++i) {
-//                i->initialize(ea);
-//            }
-//            _current = 0;
-//        }
-//
-//        template <typename EA>
-//        void reinitialize(EA& ea) {
-//            _current = ++_current % fitness_functions.size();
-//        }
-//
-//        template <typename Individual, typename EA>
-//        value_type operator()(Individual& ind, EA& ea) {
-//            return fitness_functions[_current](ind,ea);
-//        }
-//        
-//        ff_list_type fitness_functions; //!< All fitness functions.
-//        std::size_t _current; //!< Index of the currently active fitness function.
-//    };
     
 } // ea
 

@@ -37,7 +37,7 @@ namespace ea {
          to a configurable replacement rate) die at once, and then the population
          expands back to that size.
          
-         This is a reasonable approximation of the Moran process, as described by Patrick Moran.
+         This is a reasonable approximation of the Moran process.
          
          \warning Fitness can not be negative.
 		 */
@@ -73,9 +73,6 @@ namespace ea {
                 // mutate them:
 				mutate(offspring.begin(), offspring.end(), ea);
 				
-                // calculate fitness:
-                calculate_fitness(offspring.begin(), offspring.end(), ea);
-                
 				// add the offspring to the list of survivors:
 				survivors.insert(survivors.end(), offspring.begin(), offspring.end());
                 

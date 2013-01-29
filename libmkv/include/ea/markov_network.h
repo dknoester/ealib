@@ -410,6 +410,17 @@ namespace mkv {
             }
         }
     }
+    
+    /*! Convert the bits in range [f,l) to an integer. 
+     */
+    template <typename ForwardIterator>
+    int range2int(ForwardIterator f, ForwardIterator l) {
+        int d=0;
+        for(std::size_t j=0; f!=l; ++f, ++j) {
+            d |=  (*f & 0x01) << j;
+        }
+        return d;
+    }
 
     
     /*! Build a Markov network from the genome [f,l), with the given meta data.

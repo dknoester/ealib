@@ -150,6 +150,10 @@ namespace ea {
         void update() {
             _events.record_statistics(*this);
             if(!_population.empty()) {
+                // we need to look at everyone in the population immediately
+                // prior to the call to the generational model.  this simplifies
+                // the handling of both constant and nonstationary fitness functions:
+                calculate_fitness();
                 _generational_model(_population, *this);
             }
             _generational_model.next_update();
