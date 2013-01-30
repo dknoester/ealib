@@ -53,6 +53,7 @@
 		42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_circular.cpp */; };
 		42841C5E15ADA3F700AB18BE /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42841C6515ADA42B00AB18BE /* test_mkv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C4115ADA06B00AB18BE /* test_mkv.cpp */; };
+		42A160C716B8801E0007755C /* test_digital_evolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */; };
 		42B55B731641C2C500F240C5 /* test_ea.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test_ea.cpp */; };
 		42B55B741641C2C500F240C5 /* test_evolutionary_algorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6F1641C2C500F240C5 /* test_evolutionary_algorithm.cpp */; };
 		42B55B751641C2C500F240C5 /* test_information.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B701641C2C500F240C5 /* test_information.cpp */; };
@@ -1157,6 +1158,7 @@
 				42B55B741641C2C500F240C5 /* test_evolutionary_algorithm.cpp in Sources */,
 				42B55B751641C2C500F240C5 /* test_information.cpp in Sources */,
 				42B55B761641C2C500F240C5 /* test_novelty_search.cpp in Sources */,
+				42A160C716B8801E0007755C /* test_digital_evolution.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

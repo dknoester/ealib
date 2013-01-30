@@ -450,8 +450,7 @@ namespace ea {
             int jumpAmt = hw.getRegValue(rbx);
             hw.advanceHead(Hardware::IP, jumpAmt);
         }
-            
-        
+
     } // instructions
 
 
@@ -537,21 +536,19 @@ namespace ea {
         ea.isa().template append<Instruction>(1);
     }
 
-    //! Helper method to add an instruction to the ISA with the given cost.
+    //! Helper method to knockout an instruction from the ISA with the given cost.
     template <template <typename,typename> class Instruction, typename EA>
     void knockout_isa(const std::string& inst, std::size_t cost, EA& ea) {
         std::size_t i = ea.isa()[inst];
         ea.isa().template knockout<Instruction>(i, cost);
     }
     
-    //! Helper method to add an instruction to the ISA with a cost of 1.
+    //! Helper method to knockout an instruction from the ISA with a cost of 1.
     template <template <typename,typename> class Instruction, typename EA>
     void knockout_isa(const std::string& inst, EA& ea) {
         std::size_t i = ea.isa()[inst];
         ea.isa().template knockout<Instruction>(i, 1);
     }
-
-    
 
 } // ea
 

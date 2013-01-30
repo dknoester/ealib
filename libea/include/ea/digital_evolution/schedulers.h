@@ -72,7 +72,7 @@ namespace ea {
                     ea.env().partial_update(delta_t, ea);
                 }
                 
-                typename ea_type::individual_ptr_type p=ptr(population[live[i]],ea);
+                typename ea_type::individual_ptr_type p=population[live[i]];
                 i = (i+1) % live.size();
 
                 if(p->alive()) {
@@ -85,7 +85,7 @@ namespace ea {
             
             Population next;
             for(std::size_t i=0; i<population.size(); ++i) {
-                typename ea_type::individual_ptr_type p=ptr(population[i],ea);
+                typename ea_type::individual_ptr_type p=population[i];
                 if(p->alive()) {
                     next.push_back(p);
                 }

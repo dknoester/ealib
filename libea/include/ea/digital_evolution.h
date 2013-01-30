@@ -76,7 +76,7 @@ namespace ea {
     template <typename> class ConfigurationStrategy,
     template <typename> class Environment=well_mixed,
     typename ReplacementStrategy=first_neighbor,
-    template <typename> class Scheduler=weighted_round_robin,
+    template <typename> class Scheduler=round_robin,
     template <typename> class TaskLibrary=task_library,
     typename Hardware=hardware,
     template <typename> class InstructionSetArchitecture=isa,

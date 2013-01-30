@@ -80,7 +80,7 @@ namespace ea {
             return (_repr == that._repr)
             && std::equal(_head_position, _head_position+NUM_HEADS, that._head_position)
             && std::equal(_regfile, _regfile+NUM_REGISTERS, that._regfile)
-            && (_label_stack == that._label_stack)
+            && std::equal(_label_stack.begin(), _label_stack.end(), that._label_stack.begin())
             && (_age == that._age)
             && (_mem_extended == that._mem_extended)
             && (_stack == that._stack)
@@ -155,7 +155,7 @@ namespace ea {
         void replicated() {
             initialize();
             advanceHead(IP, -1);
-            --_age;
+//            --_age;
         }
         
         //! This hardware undergoes a soft reset -- for multi-birth organisms

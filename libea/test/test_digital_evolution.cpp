@@ -21,9 +21,56 @@
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/spatial.h>
 
+template <typename EA>
+struct test_configuration : public abstract_configuration<EA> {
+    
+    typedef typename EA::tasklib_type::task_ptr_type task_ptr_type;
+    typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+    
+    //! Called as the final step of EA construction.
+    void construct(EA& ea) {
+        using namespace ea::instructions;
+        append_isa<nop_a>(0,ea);
+        append_isa<nop_b>(0,ea);
+        append_isa<nop_c>(0,ea);
+        append_isa<nop_x>(ea);
+        append_isa<mov_head>(ea);
+        append_isa<if_label>(ea);
+        append_isa<h_search>(ea);
+        append_isa<nand>(ea);
+        append_isa<push>(ea);
+        append_isa<pop>(ea);
+        append_isa<swap>(ea);
+        append_isa<inc>(ea);
+        append_isa<dec>(ea);
+        append_isa<tx_msg>(ea);
+        append_isa<rx_msg>(ea);
+        append_isa<bc_msg>(ea);
+        append_isa<rotate>(ea);
+        append_isa<rotate_cw>(ea);
+        append_isa<rotate_ccw>(ea);
+        append_isa<if_less>(ea);
+        append_isa<h_alloc>(ea);
+        append_isa<h_copy>(ea);
+        append_isa<h_divide>(ea);
+        append_isa<input>(ea);
+        append_isa<fixed_input>(ea);
+        append_isa<output>(ea);
+        append_isa<repro>(ea);
+    }
+    
+    void initialize(EA& ea) {
+        task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
+        
+        resource_ptr_type resA = make_resource("resA", ea);
+        
+        task_nand->consumes(resA);
+    }
+    
+};
 
 typedef digital_evolution<
-abstract_configuration,
+test_configuration,
 spatial
 > al_type;
 
@@ -31,18 +78,28 @@ spatial
 /*!
  */
 BOOST_AUTO_TEST_CASE(test_avida_hardware) {
-    hardware::representation_type r; // is a circular genome...
-    r.push_back(0);
-    r.push_back(1);
-    r.push_back(2);
-    r.push_back(3);
-    r.push_back(4);
-    r.push_back(5);
-    r.push_back(6);
-    r.push_back(7);
-
-    hardware hw(r);
+    al_type al;
+    al_type::isa_type& isa=al.isa();
     
+    put<POPULATION_SIZE>(100,al);
+	put<REPRESENTATION_SIZE>(10,al);
+	put<MUTATION_PER_SITE_P>(0.0075,al);
+    put<SPATIAL_X>(10,al);
+    put<SPATIAL_Y>(10,al);
+    put<MUTATION_UNIFORM_INT_MIN>(0,al);
+    put<MUTATION_UNIFORM_INT_MAX>(20,al);
+    
+    al.initialize();
+    generate_ancestors(nopx_ancestor(), 1, al);
+    
+    typename al_type::individual_ptr_type p = al.population()[0];
+    typename al_type::representation_type& r = p->repr();
+    typename al_type::hardware_type& hw = p->hw();
+    
+    r[8] = isa["nop_a"];
+    r[9] = isa["nop_b"];
+    r[10] = isa["nop_c"];
+
     // Check setting and getting of register values
     hw.setRegValue(hardware::AX, 27);
 	BOOST_CHECK_EQUAL(hw.getRegValue(hardware::AX), 27);
@@ -53,7 +110,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
     
     // Advance a head location - should deal with circular genome
     hw.advanceHead(hardware::FH, 12); 
-	BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::FH), 4);
+	BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::FH), 2);
     
     // Find a label's complement
     hw.pushLabelStack(hardware::NOP_C);
@@ -70,31 +127,34 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
 }
 
 BOOST_AUTO_TEST_CASE(test_avida_instructions) {
-    al_type al;    
-    al_type::individual_ptr_type p = al.make_individual(al_type::representation_type());
+    al_type al;
     al_type::isa_type& isa=al.isa();
-    hardware::representation_type r; // is a circular genome...
-    r.push_back(7); // 0
-    r.push_back(7); // 1
-    r.push_back(7); // 2
-    r.push_back(7); // 3
-    r.push_back(0); // 4
-    r.push_back(1); // 5
-    r.push_back(2); // 6
-    r.push_back(3); // 7
-    r.push_back(4); // 8
-    r.push_back(5); // 9
-    r.push_back(6); // 10
-    r.push_back(7); // 11
     
-    hardware hw(r);
+    put<POPULATION_SIZE>(100,al);
+	put<REPRESENTATION_SIZE>(100,al);
+	put<MUTATION_PER_SITE_P>(0.0075,al);
+    put<SPATIAL_X>(10,al);
+    put<SPATIAL_Y>(10,al);
+    put<MUTATION_UNIFORM_INT_MIN>(0,al);
+    put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
+    al.initialize();
+    generate_ancestors(nopx_ancestor(), 1, al);
+    
+    typename al_type::individual_ptr_type p = al.population()[0];
+    typename al_type::representation_type& r = p->repr();
+    typename al_type::hardware_type& hw = p->hw();
+
+    r[4] = isa["nop_a"];
+    r[5] = isa["nop_b"];
+    r[6] = isa["nop_c"];
+
     // Check if mov-head does in fact move the IP head to the position
     // before the FH (counting on the advance mechanism to put them
     // in the same place
     // FH at 10
-    hw.setHeadLocation(hardware::FH, 10); 
-//    isa(4, hw, p, al);
+    hw.setHeadLocation(hardware::FH, 10);
+    isa(isa["mov_head"], p->hw(), p, al);
 	BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::IP), 9);
     
     // Check h-search when complement is found 
@@ -102,10 +162,10 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     hw.pushLabelStack(hardware::NOP_C);
     hw.pushLabelStack(hardware::NOP_A);
     hw.pushLabelStack(hardware::NOP_B);
-//    isa(6, hw, p, al); 
+    isa(isa["h_search"], p->hw(), p, al);
     
     // If a complement is found, BX is set to the distance to the complement, 
-    BOOST_CHECK_EQUAL(hw.getRegValue(hardware::BX), 7);
+    BOOST_CHECK_EQUAL(hw.getRegValue(hardware::BX), 95);
     
     // CX is set to its size, 
     BOOST_CHECK_EQUAL(hw.getRegValue(hardware::CX), 3);
@@ -129,50 +189,28 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
     al.initialize();
+    generate_ancestors(nopx_ancestor(), 1, al);
     
-    al_type::population_type ancestral;
-    al_type::individual_type a = al_type::individual_type();
-    a.name() = next<INDIVIDUAL_COUNT>(al);
-    a.generation() = -1.0;
-    a.update() = al.current_update();
+    typename al_type::individual_ptr_type p = al.population()[0];
+    typename al_type::representation_type& r = p->repr();
     
-    ancestral.insert(ancestral.end(), al.make_individual(a.repr()));
-    
-    al.population().clear();
-    
-    al_type::representation_type r; // is a circular genome...
-    r.resize(100);
-    
-    std::fill(r.begin(), r.end(), 3); // fill it with nop-Xs..
-
-    r[10] = 11; // input
-
-    al.append(al.make_individual(r));
-
-    int x = al.population().size();
-
-    al_type::individual_ptr_type ind1 = al.population()[0];
-    
-    // Check that h_alloc increases memory by 150%
-    isa(25, ind1->hw(), ind1, al);
-    BOOST_CHECK_EQUAL(ind1->repr().size(), 250);
+    // check that h_alloc increases the size of the organism's memory:
+    isa(isa["h_alloc"], p->hw(), p, al);
+    BOOST_CHECK_EQUAL(r.size(), 250);
     
     // Check that h_copy: 
     // (1) Copies the instruction at the read head to the location pointed to by 
     // the write head
-    ind1->hw().setHeadLocation(hardware::RH, 10); 
-    ind1->hw().setHeadLocation(hardware::WH, 20);
+    r[10] = isa["input"];
+    p->hw().setHeadLocation(hardware::RH, 10);
+    p->hw().setHeadLocation(hardware::WH, 20);
     
-    isa(26, ind1->hw(), ind1, al);
-    int val = ind1->repr()[20]; 
-	BOOST_CHECK_EQUAL(ind1->repr()[20], 11);
+    isa(isa["h_copy"], p->hw(), p, al);
+	BOOST_CHECK_EQUAL(r[20], isa["input"]);
 
     // (2) Advances the read and write head positions by 1.
-	BOOST_CHECK_EQUAL(ind1->hw().getHeadLocation(hardware::RH), 11);
-	BOOST_CHECK_EQUAL(ind1->hw().getHeadLocation(hardware::WH), 21);
-
-
-
+	BOOST_CHECK_EQUAL(p->hw().getHeadLocation(hardware::RH), 11);
+	BOOST_CHECK_EQUAL(p->hw().getHeadLocation(hardware::WH), 21);
 }
 
 BOOST_AUTO_TEST_CASE(test_logic9_environment) {
@@ -209,11 +247,9 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
 
 
 BOOST_AUTO_TEST_CASE(test_al_type) {
+    typedef typename al_type::tasklib_type::task_ptr_type task_ptr_type;
     al_type al;
     
-    
-    add_task<tasks::task_nand,resources::unlimited,catalysts::additive<1> >("nand", al); //1
-
     put<POPULATION_SIZE>(100,al);
 	put<REPRESENTATION_SIZE>(100,al);
 	put<MUTATION_PER_SITE_P>(0.0,al);
@@ -223,38 +259,17 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
 
     al.initialize();
+    generate_ancestors(repro_ancestor(), 1, al);
     
-    al_type::population_type ancestral;
-    al_type::individual_type a = al_type::individual_type();
-    a.name() = next<INDIVIDUAL_COUNT>(al);
-    a.generation() = -1.0;
-    a.update() = al.current_update();
-    ancestral.append(make_population_entry(a,al));
+    typename al_type::individual_ptr_type p = al.population()[0];
+    typename al_type::representation_type& r = p->repr();
     
-    al.population().clear();
-   
-    al_type::representation_type r; // is a circular genome...
-    r.resize(100);
-    std::fill(r.begin(), r.end(), 11); // fill it with inputs..
-    // input*90
-    // 91: nopc
-    // 92: input
-    // 93: nand
-    // 94: output
-    // 95: repro
-    
-    r[95] = 2; // cx, input
-    r[96] = 11; // input
-    r[97] = 7; // nand
-    r[98] = 12; // output
-    r[99] = 24; // repro
-    al.population().append(make_population_entry(r,al));
-    
-    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
-        al.events().inheritance(ancestral,ind(i,al),al);
-        al.env().insert(ptr(i,al));
-        ind(i,al).priority() = 1.0;
-    }
+    r[94] = al.isa()["nop_c"];
+    r[95] = al.isa()["input"];
+    r[96] = al.isa()["input"];
+    r[97] = al.isa()["nand"];
+    r[98] = al.isa()["output"];
+
     BOOST_CHECK(al.population().size()==1);
     
     put<SCHEDULER_TIME_SLICE>(100,al);
@@ -284,7 +299,6 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
 
 BOOST_AUTO_TEST_CASE(test_self_replication) {
     al_type al;    
-    add_task<tasks::task_nand,resources::unlimited,catalysts::additive<1> >("nand", al); //1
     
     put<POPULATION_SIZE>(100,al);
 	put<REPRESENTATION_SIZE>(100,al);
@@ -295,45 +309,28 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
     
     al.initialize();
+    generate_ancestors(nopx_ancestor(), 1, al);
     
-    al_type::population_type ancestral;
-    al_type::individual_type a = al_type::individual_type();
-    a.name() = next<INDIVIDUAL_COUNT>(al);
-    a.generation() = -1.0;
-    a.update() = al.current_update();
-    ancestral.append(make_population_entry(a,al));
-    
-    al.population().clear();
-    
-    al_type::representation_type r; // is a circular genome...
-    r.resize(100);
-    std::fill(r.begin(), r.end(), 3); // fill it with nopx
-   
-    r[0] = 25; // h_alloc
-    r[1] = 2; // nopc
-    r[2] = 0; // nopa
-    r[3] = 6; // hsearch
-    r[4] = 2; // nopc
-    r[5] = 4; // movhead
-    
-    r[91] = 6; // hsearch
-    r[92] = 26; // hcopy
-    r[93] = 2; // nopc
-    r[94] = 0; // nopa
-    r[95] = 5; // iflabel
-    r[96] = 27; // hdivide
-    r[97] = 4; // movhead
-    r[98] = 0; // nopa
-    r[99] = 1; // nopb
-    
+    typename al_type::individual_ptr_type p = al.population()[0];
+    typename al_type::representation_type& r = p->repr();
 
-    al.population().append(make_population_entry(r,al));
-    
-    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
-        al.events().inheritance(ancestral,ind(i,al),al);
-        al.env().insert(ptr(i,al));
-        ind(i,al).priority() = 1.0;
-    }
+    r[0] = al.isa()["h_alloc"];
+    r[1] = al.isa()["nop_c"];
+    r[2] = al.isa()["nop_a"];
+    r[3] = al.isa()["h_search"];
+    r[4] = al.isa()["nop_c"];
+    r[5] = al.isa()["mov_head"];
+
+    r[91] = al.isa()["h_search"];
+    r[92] = al.isa()["h_copy"];
+    r[93] = al.isa()["nop_c"];
+    r[94] = al.isa()["nop_a"];
+    r[95] = al.isa()["if_label"];
+    r[96] = al.isa()["h_divide"];
+    r[97] = al.isa()["mov_head"];
+    r[98] = al.isa()["nop_a"];
+    r[99] = al.isa()["nop_b"];
+
     BOOST_CHECK(al.population().size()==1);
     
     put<SCHEDULER_TIME_SLICE>(389,al);
@@ -359,39 +356,17 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
     al.initialize();
+    generate_ancestors(nopx_ancestor(), 2, al);
     
-    al_type::population_type ancestral;
-    al_type::individual_type a = al_type::individual_type();
-    a.name() = next<INDIVIDUAL_COUNT>(al);
-    a.generation() = -1.0;
-    a.update() = al.current_update();
-    ancestral.append(make_population_entry(a,al));
+    typename al_type::individual_ptr_type p = al.population()[0];
+    typename al_type::representation_type& r = p->repr();
+
+    r[94] = al.isa()["nop_c"];
+    r[95] = al.isa()["input"];
+    r[96] = al.isa()["input"];
+    r[97] = al.isa()["nand"];
+    r[98] = al.isa()["bc_msg"];
     
-    al.population().clear();
-    
-    al_type::representation_type r; // is a circular genome...
-    r.resize(100);
-    std::fill(r.begin(), r.end(), 11); // fill it with inputs..
-    // input*90
-    // 91: nopc
-    // 92: input
-    // 93: nand
-    // 94: tx-msg
-    // 95: nopx
-    
-    r[95] = 2; // cx, input
-    r[96] = 11; // input
-    r[97] = 7; // nand
-    r[98] = 17; // tx-msg
-    r[99] = 3; // nopx
-    al.population().append(make_population_entry(r,al));
-    al.population().append(make_population_entry(r,al));
-    
-    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
-        al.events().inheritance(ancestral,ind(i,al),al);
-        al.env().insert(ptr(i,al));
-        ind(i,al).priority() = 1.0;
-    }
     BOOST_CHECK(al.population().size()==2);
     
     put<SCHEDULER_TIME_SLICE>(100,al);
