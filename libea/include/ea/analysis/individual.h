@@ -39,6 +39,17 @@ namespace ea {
         }
         // LIBEA_ANALYSIS_TOOL(test_individual, "test an individual")
         
+        template <typename EA>
+        typename EA::individual_type& find_dominant(EA& ea) {
+            typename EA::population_type& pop = ea.population();
+            typename EA::population_type::iterator mi=pop.begin();
+            for(typename EA::population_type::iterator i=pop.begin(); i!=pop.end(); ++i) {
+                if(ea::fitness(**i) > ea::fitness(**mi)) {
+                    mi = i;
+                }
+            }
+            return **mi;
+        }
         
         template <typename EA>
         typename EA::individual_type& find_most_fit_individual(EA& ea) {
