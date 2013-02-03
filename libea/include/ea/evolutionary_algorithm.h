@@ -137,27 +137,28 @@ namespace ea {
         
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
+            // initial fitness & statistics recording:
             calculate_fitness();
-
+            _events.record_statistics(*this);
+            
             for( ; n>0; --n) {
                 update();
             }
-            _events.record_statistics(*this);
+            
             _events.end_of_epoch(*this);
         }
         
         //! Advance this EA by one update.
         void update() {
-            _events.record_statistics(*this);
             if(!_population.empty()) {
-                // we need to look at everyone in the population immediately
-                // prior to the call to the generational model.  this simplifies
-                // the handling of both constant and nonstationary fitness functions:
-                calculate_fitness();
                 _generational_model(_population, *this);
             }
             _generational_model.next_update();
             _events.end_of_update(*this);
+
+            // fitness is calculated and statistics are recorded between updates:
+            calculate_fitness();
+            _events.record_statistics(*this);
         }
         
         //! Build an individual from the given representation.

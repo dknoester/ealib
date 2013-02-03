@@ -374,6 +374,7 @@
 		429B1CD7162EEDE000578A1C /* state_vector_machine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = state_vector_machine.h; sourceTree = "<group>"; };
 		429BBA4A15DA73C800EA4F67 /* groups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = groups.h; sourceTree = "<group>"; };
 		429BBA4E15E5B5C500EA4F67 /* events.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = events.h; sourceTree = "<group>"; };
+		42AF136F16BD8FEE002C4D61 /* benchmarks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = benchmarks.h; sourceTree = "<group>"; };
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
 		42B55B6E1641C2C500F240C5 /* test_ea.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_ea.cpp; sourceTree = "<group>"; };
 		42B55B6F1641C2C500F240C5 /* test_evolutionary_algorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_evolutionary_algorithm.cpp; sourceTree = "<group>"; };
@@ -644,6 +645,7 @@
 			isa = PBXGroup;
 			children = (
 				429B1CBE162EDCD600578A1C /* all_ones.h */,
+				42AF136F16BD8FEE002C4D61 /* benchmarks.h */,
 				423CBDD3157D0E450003A644 /* direct.h */,
 				423CBDD4157D0E450003A644 /* nk.h */,
 			);
