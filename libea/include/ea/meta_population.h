@@ -186,44 +186,43 @@ namespace ea {
         
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
+            // initial fitness & statistics recording:
             for(iterator i=begin(); i!=end(); ++i) {
-                i->calculate_fitness();
+                calculate_fitness(i->population().begin(), i->population().end(), *i);
+                i->events().record_statistics(*i);
             }
+            _events.record_statistics(*this);
             
             // update all the EAs:
             for( ; n>0; --n) {
                 update();
             }
             
-            // record end-of-epoch stats:
+            // signal end-of-epoch:
             for(iterator i=begin(); i!=end(); ++i) {
-                i->events().record_statistics(*i);
                 i->events().end_of_epoch(*i); // don't checkpoint!
             }
             
-            _events.record_statistics(*this);
             _events.end_of_epoch(*this); // checkpoint!
         }
         
         //! Advance this EA by one update.
         void update() {
-            _events.record_statistics(*this);
             for(iterator i=begin(); i!=end(); ++i) {
                 i->update();
             }
-            ++_update;
             _events.end_of_update(*this);
-        }        
+
+            // update counter and statistics are handled between updates:
+            ++_update;
+            _events.record_statistics(*this);
+        }
         
         //! Returns the current update of this EA.
         unsigned long current_update() {
             return _update;
         }
                 
-        //! Perform any needed preselection.
-        void preselect(population_type& src) {
-        }
-
     protected:
         unsigned long _update; //!< Meta-population update.
         rng_type _rng; //!< Random number generator.

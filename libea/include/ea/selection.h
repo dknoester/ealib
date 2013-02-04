@@ -20,6 +20,8 @@
 #ifndef _EA_SELECTION_H_
 #define _EA_SELECTION_H_
 
+#include <ea/fitness_function.h>
+
 namespace ea {
 
     /*! Select at most n individuals from src into dst using the given selector type.
@@ -30,7 +32,11 @@ namespace ea {
 	void select_n(Population& src, Population& dst, std::size_t n, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-        ea.preselect(src);
+
+        // selection may operate on absolute fitnesses, or on relative fitnesses.
+        // if relative fitnesses are being used, calculate them here:
+        relativize_fitness(src.begin(), src.end(), ea);
+        
         if(src.size() <= n) {
             dst.insert(dst.end(), src.begin(), src.end());
         } else {

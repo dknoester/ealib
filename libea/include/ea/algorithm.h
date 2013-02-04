@@ -161,6 +161,57 @@ namespace ea {
             return sum / static_cast<T>(c);
         }
         
+        /*! Decode excitatory/inhibitory bit pairs into an integer.
+         */
+        template <typename ForwardIterator>
+        int range_pair2int(ForwardIterator f, ForwardIterator l) {
+            assert((std::distance(f,l)%2) == 0);
+            int d=0;
+            for(std::size_t j=0; f!=l; ++f, ++j) {
+                int excite=(*f & 0x01);
+                int inhibit=(*++f & 0x01);
+                d |=  (excite & ~inhibit) << j;
+            }
+            return d;
+        }
+        
+        /*! Decode excitatory/inhibitory bit pairs into a list of bits.
+         */
+        template <typename ForwardIterator, typename OutputIterator>
+        void range_pair2int(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
+            assert((std::distance(f,l)%2) == 0);
+            for( ; f!=l; ++f) {
+                int excite=(*f & 0x01);
+                int inhibit=(*++f & 0x01);
+                *oi++ = (excite & ~inhibit);
+            }
+        }
+        
+        /*! Write the indices of "on" outputs to an output iterator.
+         */
+        template <typename ForwardIterator, typename OutputIterator>
+        void range_pair2indices(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
+            assert((std::distance(f,l)%2) == 0);
+            for(int i=0; f!=l; ++f, ++i) {
+                int excite=(*f & 0x01);
+                int inhibit=(*++f & 0x01);
+                if(excite & ~inhibit) {
+                    *oi++ = i;
+                }
+            }
+        }
+        
+        /*! Convert the bits in range [f,l) to an integer.
+         */
+        template <typename ForwardIterator>
+        int range2int(ForwardIterator f, ForwardIterator l) {
+            int d=0;
+            for(std::size_t j=0; f!=l; ++f, ++j) {
+                d |=  (*f & 0x01) << j;
+            }
+            return d;
+        }
+        
 	} // algorithm
 } // ea
 

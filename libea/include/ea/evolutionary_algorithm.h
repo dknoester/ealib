@@ -52,7 +52,7 @@ namespace ea {
         }
     };
     
-    
+
 	/*! Generic evolutionary algorithm class.
 	 
 	 This class is designed to be generic, such that all the main features of evolutionary
@@ -67,6 +67,7 @@ namespace ea {
     template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::two_point_crossover,
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
+    typename Encoding=directS,
     template <typename> class IndividualAttrs=default_ea_attributes,
     template <typename,typename> class Individual=individual,
 	template <typename,typename> class Population=population,
@@ -79,6 +80,8 @@ namespace ea {
         typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
         //! Representation type.
         typedef Representation representation_type;
+        //! Encoding type
+        typedef Encoding encoding_tag;
         //! Fitness function type.
         typedef FitnessFunction fitness_function_type;
         //! Fitness type.
@@ -130,15 +133,10 @@ namespace ea {
             _configurator.initial_population(*this);
         }
 
-        //! Calculate the fitness of all individuals in this EA.
-        void calculate_fitness() {
-            ea::calculate_fitness(_population.begin(), _population.end(), *this);
-        }
-        
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
             // initial fitness & statistics recording:
-            calculate_fitness();
+            calculate_fitness(_population.begin(), _population.end(), *this);
             _events.record_statistics(*this);
             
             for( ; n>0; --n) {
@@ -153,11 +151,11 @@ namespace ea {
             if(!_population.empty()) {
                 _generational_model(_population, *this);
             }
-            _generational_model.next_update();
             _events.end_of_update(*this);
 
-            // fitness is calculated and statistics are recorded between updates:
-            calculate_fitness();
+            // update counter, fitness, and statistics are handled *between* updates:
+            _generational_model.next_update();
+            calculate_fitness(_population.begin(), _population.end(), *this);
             _events.record_statistics(*this);
         }
         
@@ -175,35 +173,20 @@ namespace ea {
         
         //! Insert individual x into the population.
         void append(individual_ptr_type x) {
-            ea::calculate_fitness(*x, *this);
+            calculate_fitness(*x, *this);
             _population.insert(_population.end(), x);
         }
         
         //! Insert the range of individuals [f,l) into the population.
         template <typename ForwardIterator>
         void append(ForwardIterator f, ForwardIterator l) {
-            ea::calculate_fitness(f, l, *this);
+            calculate_fitness(f, l, *this);
             _population.insert(_population.end(), f, l);
         }
         
         //! Erase the given individual from the population.
         void erase(iterator i) {
             _population.erase(i.base());
-        }
-        
-        //! Perform any needed preselection.
-        void preselect(population_type& src) {
-            relativize_fitness(src.begin(), src.end(), *this);
-        }
-        
-        //! Calculate fitness (non-stochastic).
-        void evaluate_fitness(individual_type& i) {
-            ea::fitness(i) = _fitness_function(i, *this);
-        }
-        
-        //! Calculate fitness (stochastic).
-        void evaluate_fitness(individual_type& i, rng_type& rng) {
-            ea::fitness(i) = _fitness_function(i, rng, *this);
         }
         
         //! Reset the population.
@@ -279,7 +262,10 @@ namespace ea {
         
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
-      
+
+        //! Returns the configuration object.
+        configuration_type& configuration() { return _configurator; }
+        
     protected:
         rng_type _rng; //!< Random number generator.
         fitness_function_type _fitness_function; //!< Fitness function object.

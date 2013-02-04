@@ -356,70 +356,12 @@ namespace mkv {
 
     /*! Convenience method to build a Deep Markov Network.
      */
-    template <typename Individual, typename RNG, typename EA>
-    deep_markov_network make_deep_markov_network(const deep_markov_network::desc_type& desc, Individual& ind, RNG& rng, EA& ea) {
+    template <typename ForwardIterator, typename RNG, typename EA>
+    deep_markov_network make_deep_markov_network(const deep_markov_network::desc_type& desc,
+                                                 ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
         deep_markov_network net(desc, rng);
-        build_deep_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+        build_deep_markov_network(net, f, l, ea);
         return net;
-    }
-    
-    
-    /*! Decode excitatory/inhibitory bit pairs into an integer.
-     
-     This is a common way to interpret the output from a Markov Network, hence is included here.
-     */
-    template <typename ForwardIterator>
-    int decode(ForwardIterator f, ForwardIterator l) {
-        assert((std::distance(f,l)%2) == 0);
-        int d=0;
-        for(std::size_t j=0; f!=l; ++f, ++j) {
-            int excite=(*f & 0x01);
-            int inhibit=(*++f & 0x01);
-            d |=  (excite & ~inhibit) << j;
-        }
-        return d;
-    }
-    
-
-    /*! Decode excitatory/inhibitory bit pairs into a list of bits.
-     
-     This is a common way to interpret the output from a Markov Network, hence is included here.
-     */
-    template <typename ForwardIterator, typename OutputIterator>
-    void decode(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
-        assert((std::distance(f,l)%2) == 0);
-        for( ; f!=l; ++f) {
-            int excite=(*f & 0x01);
-            int inhibit=(*++f & 0x01);
-            *oi++ = (excite & ~inhibit);
-        }
-    }
-
-    /*! Write the indices of "on" outputs from a Markov Network to an output iterator.
-
-     This is a common way to interpret the output from a Markov Network, hence is included here.
-     */
-    template <typename ForwardIterator, typename OutputIterator>
-    void expand(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
-        assert((std::distance(f,l)%2) == 0);
-        for(int i=0; f!=l; ++f, ++i) {
-            int excite=(*f & 0x01);
-            int inhibit=(*++f & 0x01);
-            if(excite & ~inhibit) {
-                *oi++ = i;
-            }
-        }
-    }
-    
-    /*! Convert the bits in range [f,l) to an integer. 
-     */
-    template <typename ForwardIterator>
-    int range2int(ForwardIterator f, ForwardIterator l) {
-        int d=0;
-        for(std::size_t j=0; f!=l; ++f, ++j) {
-            d |=  (*f & 0x01) << j;
-        }
-        return d;
     }
 
     

@@ -110,36 +110,36 @@ namespace mkv {
         //! Retrieve an iterator to the end of the svm outputs at time t in the last (highest-level) layer.
         markov_network::svm_type::iterator end_output() { return rbegin()->end_output(); }
 
+        //! Update the network n times per layer, with the top-level inputs given by f.
+        template <typename RandomAccessIterator>
+        void update(std::size_t n, RandomAccessIterator f) {
+            if(size() == 0) { return; } // empty network, should warn
+            
+            for( ; n>0; --n) {
+                rotate();
+                
+                markov_network& l0=operator[](0);
+                detail::markov_network_update_visitor<RandomAccessIterator> l0v(l0, f);
+                std::for_each(l0.begin(), l0.end(), boost::apply_visitor(l0v));
+                
+                for(std::size_t i=1; i<size(); ++i) {
+                    markov_network& l=operator[](i);
+                    
+                    // get a visitor to the **previous** layer's outputs:
+                    detail::markov_network_update_visitor<markov_network::svm_type::iterator> lv(l, operator[](i-1).begin_output());
+                    
+                    // and now update this layer:
+                    std::for_each(l.begin(), l.end(), boost::apply_visitor(lv));
+                }
+            }
+        }
+
     private:
         desc_type _desc; //!< Description of the geometries of each successive layer of DMKVs.
         rng_type _rng; //<! Random number generator.
     };
 
     
-    /*! Update a Deep Markov Network n times per layer, with the top-level inputs given by f.
-     */
-    template <typename RandomAccessIterator>
-    void update(deep_markov_network& net, std::size_t n, RandomAccessIterator f) {
-        if(net.size() == 0) { return; } // empty network, should warn
-        
-        for( ; n>0; --n) {
-            net.rotate();
-            
-            markov_network& l0=net[0];
-            detail::markov_network_update_visitor<RandomAccessIterator> l0v(l0, f);
-            std::for_each(l0.begin(), l0.end(), boost::apply_visitor(l0v));
-            
-            for(std::size_t i=1; i<net.size(); ++i) {
-                markov_network& l=net[i];
-
-                // get a visitor to the **previous** layer's outputs:
-                detail::markov_network_update_visitor<markov_network::svm_type::iterator> lv(l, net[i-1].begin_output());
-                
-                // and now update this layer:
-                std::for_each(l.begin(), l.end(), boost::apply_visitor(lv));
-            }
-        }
-    }
 } // mkv
 
 #endif

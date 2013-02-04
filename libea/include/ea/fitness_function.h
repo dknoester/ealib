@@ -56,6 +56,17 @@ namespace ea {
     struct stochasticS { };
     
     
+    /* The following are tags that are used to indicate how the representation for
+     an individual is used with respect to fitness evaluation:
+     */
+    
+    //! Indicates a direct encoding, genome used directly in fitness calculation.
+    struct directS { };
+    
+    //! Indicates an indirect encoding, genome is transformed prior to fitness calculation.
+    struct indirectS { };
+    
+    
     /* While fitnesses are typically thought of as a single real value (e.g., a
      double), treating them as an object has numerous benefits, especially for
      multiobjective problems.  Here is the unary fitness value:
@@ -266,23 +277,56 @@ namespace ea {
     
     
     namespace detail {
+        
+        //! Calculate fitness for a non-stochastic direct encoding:
+        template <typename EA>
+        void calculate_fitness(typename EA::individual_type& i, directS, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            fitness(i) = ea.fitness_function()(i, ea);
+            ea.events().fitness_evaluated(i,ea);
+        }
+        
+        //! Calculate fitness for a non-stochastic indirect encoding:
+        template <typename EA>
+        void calculate_fitness(typename EA::individual_type& i, indirectS, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            typename EA::configuration_type::transform_type ti=ea.configuration().transform(i, ea);
+            fitness(i) = ea.fitness_function()(i, ti, ea);
+            ea.events().fitness_evaluated(i,ea);
+        }
+        
+        //! Calculate fitness for a stochastic direct encoding:
+        template <typename EA, typename RNG>
+        void calculate_fitness(typename EA::individual_type& i, directS, RNG& rng, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            fitness(i) = ea.fitness_function()(i, rng, ea);
+            ea.events().fitness_evaluated(i,ea);
+        }
+
+        //! Calculate fitness for a stochastic indirect encoding:
+        template <typename EA, typename RNG>
+        void calculate_fitness(typename EA::individual_type& i, indirectS, RNG& rng, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            typename EA::configuration_type::transform_type ti=ea.configuration().transform(i, rng, ea);
+            fitness(i) = ea.fitness_function()(i, ti, rng, ea);
+            ea.events().fitness_evaluated(i,ea);
+        }
+
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            ea.evaluate_fitness(i);
-            ea.events().fitness_evaluated(i,ea);
+            calculate_fitness(i, typename EA::encoding_tag(), ea);
         }
         
-        //! Stochastic: provide an RNG for use by the fitness function.
+        //! Stochastic: provide an RNG for use during fitness evaluation.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, stochasticS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
             next<FF_RNG_SEED>(ea);
             typename EA::rng_type rng(get<FF_RNG_SEED>(ea)+1); // +1 to avoid clock
             put<FF_RNG_SEED>(get<FF_RNG_SEED>(ea), i); // save the seed that was used to evaluate this individual
-            ea.evaluate_fitness(i,rng);
-            ea.events().fitness_evaluated(i,ea);
+            calculate_fitness(i, typename EA::encoding_tag(), rng, ea);
         }        
         
         //! Constant: calculate fitness only if this individual has not yet been evaluated.
