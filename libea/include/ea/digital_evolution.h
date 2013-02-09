@@ -33,7 +33,7 @@
 #include <ea/digital_evolution/organism.h>
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/digital_evolution/replication.h>
-#include <ea/digital_evolution/well_mixed.h>
+#include <ea/digital_evolution/spatial.h>
 #include <ea/digital_evolution/task_library.h>
 #include <ea/ancestors.h>
 
@@ -74,9 +74,9 @@ namespace ea {
      */
 	template <
     template <typename> class ConfigurationStrategy,
-    template <typename> class Environment=well_mixed,
-    typename ReplacementStrategy=first_neighbor,
-    template <typename> class Scheduler=round_robin,
+    template <typename> class Environment=spatial,
+    typename ReplacementStrategy=random_neighbor,
+    template <typename> class Scheduler=weighted_round_robin,
     template <typename> class TaskLibrary=task_library,
     typename Hardware=hardware,
     template <typename> class InstructionSetArchitecture=isa,

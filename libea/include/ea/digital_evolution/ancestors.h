@@ -50,6 +50,41 @@ namespace ea {
         }
     };
     
+    //! Generates a representation for a self-replicating ancestor.
+    struct selfrep_ancestor {
+        template <typename EA>
+        typename EA::representation_type operator()(EA& ea) {
+            typename EA::representation_type repr;
+            repr.resize(get<REPRESENTATION_SIZE>(ea));
+            
+            // fill the genome with nop-x:
+            std::fill(repr.begin(), repr.end(), ea.isa()["nop_x"]);
+            
+            // 6 instructions go at the front of the genome:
+            typename EA::representation_type::iterator f=repr.begin();
+            *f++ =  ea.isa()["h_alloc"];
+            *f++ =  ea.isa()["nop_c"];
+            *f++ =  ea.isa()["nop_a"];
+            *f++ =  ea.isa()["h_search"];
+            *f++ =  ea.isa()["nop_c"];
+            *f++ =  ea.isa()["mov_head"];
+            
+            // and 9 go at the back:
+            std::advance(f, repr.size()-15);
+            *f++ =  ea.isa()["h_search"];
+            *f++ =  ea.isa()["h_copy"];
+            *f++ =  ea.isa()["nop_c"];
+            *f++ =  ea.isa()["nop_a"];
+            *f++ =  ea.isa()["if_label"];
+            *f++ =  ea.isa()["h_divide"];
+            *f++ =  ea.isa()["mov_head"];
+            *f++ =  ea.isa()["nop_a"];
+            *f++ =  ea.isa()["nop_b"];
+            
+            return repr;
+        }
+    };
+    
 } // ea
 
 #endif

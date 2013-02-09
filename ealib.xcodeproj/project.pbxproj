@@ -50,6 +50,10 @@
 		42720FC1163EAC10008C8E63 /* graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42720FB2163C0AEA008C8E63 /* graph.cpp */; };
 		42720FC2163EAC18008C8E63 /* libmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42720FBF163C0B1F008C8E63 /* libmkv.a */; };
 		4281FC5615CAE0FB00167444 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
+		4281FEDC16C45E890066610C /* test_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEDA16C45C840066610C /* test_graph.cpp */; };
+		4281FEEB16C464000066610C /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEE916C463F50066610C /* test.cpp */; };
+		4281FEEE16C4644F0066610C /* test_neuroevolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */; };
+		4281FEF016C464BE0066610C /* test_neuroevolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */; };
 		42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_circular.cpp */; };
 		42841C5E15ADA3F700AB18BE /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42841C6515ADA42B00AB18BE /* test_mkv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C4115ADA06B00AB18BE /* test_mkv.cpp */; };
@@ -312,6 +316,7 @@
 		423CBDFB157D0E450003A644 /* test_rng.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_rng.cpp; sourceTree = "<group>"; };
 		423CBE57157D0FCC0003A644 /* libea_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libea_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
+		423FAA6316C2A9A700D832FB /* coevolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coevolutionary_algorithm.h; sourceTree = "<group>"; };
 		425E833416602B5A003B6867 /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
 		42681E0C166E43A000665BD1 /* tutorial_1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tutorial_1; sourceTree = BUILT_PRODUCTS_DIR; };
 		42681E18166E441F00665BD1 /* tutorial_1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial_1.cpp; sourceTree = "<group>"; };
@@ -334,29 +339,21 @@
 		42720FB1163C0957008C8E63 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		42720FB2163C0AEA008C8E63 /* graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
 		42720FBF163C0B1F008C8E63 /* libmkv.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmkv.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		427E526316B18D7600D25B44 /* activation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = activation.h; sourceTree = "<group>"; };
-		427E526416B18D7600D25B44 /* ctrnn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ctrnn.h; sourceTree = "<group>"; };
-		427E526516B18D7600D25B44 /* feed_forward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = feed_forward.h; sourceTree = "<group>"; };
-		427E526616B18D7600D25B44 /* layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = layout.h; sourceTree = "<group>"; };
-		427E526716B18D7600D25B44 /* neural_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neural_network.h; sourceTree = "<group>"; };
-		427E526816B18D7600D25B44 /* recurrent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recurrent.h; sourceTree = "<group>"; };
-		427E526916B18D7600D25B44 /* sigmoid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sigmoid.h; sourceTree = "<group>"; };
-		427E526B16B18D7600D25B44 /* direct_graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = direct_graph.h; sourceTree = "<group>"; };
-		427E526D16B18D7600D25B44 /* activation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = activation.h; sourceTree = "<group>"; };
-		427E526E16B18D7600D25B44 /* back_propagation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = back_propagation.h; sourceTree = "<group>"; };
-		427E526F16B18D7600D25B44 /* ctrnn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ctrnn.h; sourceTree = "<group>"; };
-		427E527016B18D7600D25B44 /* feed_forward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = feed_forward.h; sourceTree = "<group>"; };
-		427E527116B18D7600D25B44 /* layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = layout.h; sourceTree = "<group>"; };
-		427E527216B18D7700D25B44 /* neural_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neural_network.h; sourceTree = "<group>"; };
-		427E527316B18D7700D25B44 /* neuron.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neuron.h; sourceTree = "<group>"; };
-		427E527416B18D7700D25B44 /* recurrent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recurrent.h; sourceTree = "<group>"; };
-		427E527516B18D7700D25B44 /* sigmoid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sigmoid.h; sourceTree = "<group>"; };
-		427E527616B18D7700D25B44 /* traits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = traits.h; sourceTree = "<group>"; };
-		427E527716B18D7700D25B44 /* Jamfile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.jam; path = Jamfile; sourceTree = "<group>"; };
-		427E527916B18D7700D25B44 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
-		427E527A16B18D7700D25B44 /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
 		4281FC3C15CAE04600167444 /* libnn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4281FC5B15CAE0FB00167444 /* libnn_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libnn_test; sourceTree = BUILT_PRODUCTS_DIR; };
+		4281FED816C45C630066610C /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		4281FEDA16C45C840066610C /* test_graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_graph.cpp; sourceTree = "<group>"; };
+		4281FEE016C463F50066610C /* activation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = activation.h; sourceTree = "<group>"; };
+		4281FEE116C463F50066610C /* ctrnn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ctrnn.h; sourceTree = "<group>"; };
+		4281FEE216C463F50066610C /* feed_forward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = feed_forward.h; sourceTree = "<group>"; };
+		4281FEE316C463F50066610C /* layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = layout.h; sourceTree = "<group>"; };
+		4281FEE416C463F50066610C /* neural_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neural_network.h; sourceTree = "<group>"; };
+		4281FEE516C463F50066610C /* recurrent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recurrent.h; sourceTree = "<group>"; };
+		4281FEE616C463F50066610C /* sigmoid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sigmoid.h; sourceTree = "<group>"; };
+		4281FEE716C463F50066610C /* Jamfile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.jam; path = Jamfile; sourceTree = "<group>"; };
+		4281FEE916C463F50066610C /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		4281FEEA16C463F50066610C /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
+		4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neuroevolution.cpp; sourceTree = "<group>"; };
 		42841C2915A5F4D800AB18BE /* test_circular.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_circular.cpp; sourceTree = "<group>"; };
 		42841C3A15ADA06B00AB18BE /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
 		42841C3C15ADA06B00AB18BE /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
@@ -514,8 +511,8 @@
 				423CBC86157D0D910003A644 /* Jamroot */,
 				423CBC84157D0D910003A644 /* etc */,
 				423CBE4C157D0F310003A644 /* lib */,
+				4281FEDD16C463F50066610C /* libann */,
 				423CBDAB157D0E450003A644 /* libea */,
-				427E526016B18D7600D25B44 /* libgraph */,
 				42841C3515ADA06B00AB18BE /* libmkv */,
 				42681E17166E441F00665BD1 /* tutorial */,
 				423CBC7C157D0D440003A644 /* Products */,
@@ -582,6 +579,7 @@
 				42015A8115D6BEDC0020F594 /* digital_evolution */,
 				423CBDC6157D0E450003A644 /* checkpoint.h */,
 				423CBDC8157D0E450003A644 /* cmdline_interface.h */,
+				423FAA6316C2A9A700D832FB /* coevolutionary_algorithm.h */,
 				42F4B6191580EA0B0075D6EF /* comparators.h */,
 				423CBDC9157D0E450003A644 /* concepts.h */,
 				42279CA915D5309E00DD63BB /* configuration.h */,
@@ -667,6 +665,7 @@
 			children = (
 				429B1CBD162ED94F00578A1C /* bitstring.h */,
 				423CBDE5157D0E450003A644 /* circular_genome.h */,
+				4281FED816C45C630066610C /* graph.h */,
 				423CBDE6157D0E450003A644 /* numeric_vector.h */,
 			);
 			path = representations;
@@ -702,6 +701,8 @@
 				42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */,
 				423CBDF6157D0E450003A644 /* test_checkpoint.cpp */,
 				42841C2915A5F4D800AB18BE /* test_circular.cpp */,
+				4281FEDA16C45C840066610C /* test_graph.cpp */,
+				4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */,
 				42B55B701641C2C500F240C5 /* test_information.cpp */,
 				423CBDF9157D0E450003A644 /* test_meta_data.cpp */,
 				423CBDFB157D0E450003A644 /* test_rng.cpp */,
@@ -738,80 +739,45 @@
 			path = tutorial;
 			sourceTree = "<group>";
 		};
-		427E526016B18D7600D25B44 /* libgraph */ = {
+		4281FEDD16C463F50066610C /* libann */ = {
 			isa = PBXGroup;
 			children = (
-				427E526116B18D7600D25B44 /* include */,
-				427E527716B18D7700D25B44 /* Jamfile */,
-				427E527816B18D7700D25B44 /* test */,
+				4281FEDE16C463F50066610C /* include */,
+				4281FEE716C463F50066610C /* Jamfile */,
+				4281FEE816C463F50066610C /* test */,
 			);
-			path = libgraph;
+			path = libann;
 			sourceTree = "<group>";
 		};
-		427E526116B18D7600D25B44 /* include */ = {
+		4281FEDE16C463F50066610C /* include */ = {
 			isa = PBXGroup;
 			children = (
-				427E526216B18D7600D25B44 /* ann */,
-				427E526A16B18D7600D25B44 /* ea */,
-				427E527B16B18F1400D25B44 /* graph */,
-				427E526C16B18D7600D25B44 /* nn */,
+				4281FEDF16C463F50066610C /* ann */,
 			);
 			path = include;
 			sourceTree = "<group>";
 		};
-		427E526216B18D7600D25B44 /* ann */ = {
+		4281FEDF16C463F50066610C /* ann */ = {
 			isa = PBXGroup;
 			children = (
-				427E526316B18D7600D25B44 /* activation.h */,
-				427E526416B18D7600D25B44 /* ctrnn.h */,
-				427E526516B18D7600D25B44 /* feed_forward.h */,
-				427E526616B18D7600D25B44 /* layout.h */,
-				427E526716B18D7600D25B44 /* neural_network.h */,
-				427E526816B18D7600D25B44 /* recurrent.h */,
-				427E526916B18D7600D25B44 /* sigmoid.h */,
+				4281FEE016C463F50066610C /* activation.h */,
+				4281FEE116C463F50066610C /* ctrnn.h */,
+				4281FEE216C463F50066610C /* feed_forward.h */,
+				4281FEE316C463F50066610C /* layout.h */,
+				4281FEE416C463F50066610C /* neural_network.h */,
+				4281FEE516C463F50066610C /* recurrent.h */,
+				4281FEE616C463F50066610C /* sigmoid.h */,
 			);
 			path = ann;
 			sourceTree = "<group>";
 		};
-		427E526A16B18D7600D25B44 /* ea */ = {
+		4281FEE816C463F50066610C /* test */ = {
 			isa = PBXGroup;
 			children = (
-				427E526B16B18D7600D25B44 /* direct_graph.h */,
-			);
-			path = ea;
-			sourceTree = "<group>";
-		};
-		427E526C16B18D7600D25B44 /* nn */ = {
-			isa = PBXGroup;
-			children = (
-				427E526D16B18D7600D25B44 /* activation.h */,
-				427E526E16B18D7600D25B44 /* back_propagation.h */,
-				427E526F16B18D7600D25B44 /* ctrnn.h */,
-				427E527016B18D7600D25B44 /* feed_forward.h */,
-				427E527116B18D7600D25B44 /* layout.h */,
-				427E527216B18D7700D25B44 /* neural_network.h */,
-				427E527316B18D7700D25B44 /* neuron.h */,
-				427E527416B18D7700D25B44 /* recurrent.h */,
-				427E527516B18D7700D25B44 /* sigmoid.h */,
-				427E527616B18D7700D25B44 /* traits.h */,
-			);
-			path = nn;
-			sourceTree = "<group>";
-		};
-		427E527816B18D7700D25B44 /* test */ = {
-			isa = PBXGroup;
-			children = (
-				427E527916B18D7700D25B44 /* test.cpp */,
-				427E527A16B18D7700D25B44 /* test.h */,
+				4281FEE916C463F50066610C /* test.cpp */,
+				4281FEEA16C463F50066610C /* test.h */,
 			);
 			path = test;
-			sourceTree = "<group>";
-		};
-		427E527B16B18F1400D25B44 /* graph */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = graph;
 			sourceTree = "<group>";
 		};
 		42841C3515ADA06B00AB18BE /* libmkv */ = {
@@ -1144,6 +1110,7 @@
 			files = (
 				423CBE41157D0ECF0003A644 /* main.cpp in Sources */,
 				423CBE42157D0ECF0003A644 /* runner.cpp in Sources */,
+				4281FEEE16C4644F0066610C /* test_neuroevolution.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1155,10 +1122,12 @@
 				423CBE66157D0FF50003A644 /* test_meta_data.cpp in Sources */,
 				423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */,
 				42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */,
+				4281FEDC16C45E890066610C /* test_graph.cpp in Sources */,
 				42D68D8B163F892000659AE1 /* test_meta_population.cpp in Sources */,
 				42B55B731641C2C500F240C5 /* test_ea.cpp in Sources */,
 				42B55B741641C2C500F240C5 /* test_evolutionary_algorithm.cpp in Sources */,
 				42B55B751641C2C500F240C5 /* test_information.cpp in Sources */,
+				4281FEF016C464BE0066610C /* test_neuroevolution.cpp in Sources */,
 				42B55B761641C2C500F240C5 /* test_novelty_search.cpp in Sources */,
 				42A160C716B8801E0007755C /* test_digital_evolution.cpp in Sources */,
 			);
@@ -1231,6 +1200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4281FEEB16C464000066610C /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -21,6 +21,8 @@
 #define _ANN_NEURAL_NETWORK_H_
 
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/split_member.hpp>
 #include <ann/activation.h>
 #include <ann/recurrent.h>
 #include <ann/layout.h>
@@ -37,11 +39,26 @@ namespace ann {
     : public boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, Neuron, Edge> {
     public:
         typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, Neuron, Edge> base_type;
+
+        //! Default constructor.
+        neural_network() : base_type() {
+        }
         
         //! Constructor.
         neural_network(std::size_t n) : base_type(n) {
         }
         
+    private:
+		friend class boost::serialization::access;
+        
+		template<class Archive>
+		void save(Archive & ar, const unsigned int version) const {
+		}
+		
+		template<class Archive>
+		void load(Archive & ar, const unsigned int version) {
+		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
 
 } // ann

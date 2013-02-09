@@ -200,7 +200,18 @@ namespace ea {
                 }
             }
         }
-        
+
+        /*! Write the indices of "on" outputs to an output iterator.
+         */
+        template <typename ForwardIterator, typename OutputIterator>
+        void range2indices(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
+            for(int i=0; f!=l; ++f, ++i) {
+                if(*f & 0x01) {
+                    *oi++ = i;
+                }
+            }
+        }
+
         /*! Convert the bits in range [f,l) to an integer.
          */
         template <typename ForwardIterator>

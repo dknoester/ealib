@@ -46,17 +46,21 @@ namespace ea {
      lineage.  While this is kind of interesting, it's unneeded overhead and artificially
      inflates reference counts.
      */
-    template <typename Individual>
-	class lod_individual : public Individual {
+    template <typename Representation, typename Attributes>
+	class lod_individual : public individual<Representation,Attributes> {
     public:
-        typedef Individual base_type;
+        typedef individual<Representation,Attributes> base_type;
         typedef boost::shared_ptr<lod_individual> lod_ptr_type;
         typedef std::set<lod_ptr_type> parent_set_type;
 
         //! Constructor.
         lod_individual() : base_type() {
         }
-        
+
+        //! Constructor.
+        lod_individual(const Representation& r) : base_type(r) {
+        }
+
         //! Copy constructor.
         lod_individual(const lod_individual& that) : base_type(that) {
         }

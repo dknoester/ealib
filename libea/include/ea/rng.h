@@ -249,7 +249,7 @@ namespace ea {
 			}
 		}
 		
-		/*! Returns a randomly-selected iterator from the given range, selected with replacement.
+		/*! Returns a randomly-selected iterator from the given range.
 		 */
 		template <typename InputIterator>
 		InputIterator choice(InputIterator first, InputIterator last) {
