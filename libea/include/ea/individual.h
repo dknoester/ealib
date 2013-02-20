@@ -29,11 +29,11 @@ namespace ea {
      
      Individuals in EALib are containers for a representation, attributes, and meta-data.
 	 */
-	template <typename Representation, typename Attributes>
+	template <typename EA>
 	class individual {
 	public:
-		typedef Representation representation_type; //!< Representation type; the "genome."
-        typedef Attributes attr_type; //!< Attributes type for this individual.
+		typedef typename EA::representation_type representation_type; //!< Representation type; the "genome."
+        typedef typename EA::individual_attr_type attr_type; //!< Attributes type for this individual.
         typedef meta_data md_type; //!< Meta-data type.
 		
 		//! Constructor.

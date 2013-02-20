@@ -46,27 +46,28 @@ namespace ea {
      lineage.  While this is kind of interesting, it's unneeded overhead and artificially
      inflates reference counts.
      */
-    template <typename Representation, typename Attributes>
-	class lod_individual : public individual<Representation,Attributes> {
+    template <typename EA>
+	class individual_lod : public individual<EA> {
     public:
-        typedef individual<Representation,Attributes> base_type;
-        typedef boost::shared_ptr<lod_individual> lod_ptr_type;
-        typedef std::set<lod_ptr_type> parent_set_type;
+        typedef individual<EA> base_type;
+        typedef typename EA::individual_ptr_type individual_ptr_type;
+        typedef typename EA::representation_type representation_type;
+        typedef std::set<individual_ptr_type> parent_set_type;
 
         //! Constructor.
-        lod_individual() : base_type() {
+        individual_lod() : base_type() {
         }
 
         //! Constructor.
-        lod_individual(const Representation& r) : base_type(r) {
+        individual_lod(const representation_type& r) : base_type(r) {
         }
 
         //! Copy constructor.
-        lod_individual(const lod_individual& that) : base_type(that) {
+        individual_lod(const individual_lod& that) : base_type(that) {
         }
         
         //! Assignment operator.
-        lod_individual& operator=(const lod_individual& that) {
+        individual_lod& operator=(const individual_lod& that) {
             if(this != & that) {
                 base_type::operator=(that);
                 _lod_parents.clear();
@@ -75,14 +76,55 @@ namespace ea {
         }
         
         //! Destructor.
-        virtual ~lod_individual() {
+        virtual ~individual_lod() {
         }
         
         //! Retrieve the set of this individual's parents.
         parent_set_type& lod_parents() { return _lod_parents; }
         
         //! Shorthand for asexual populations.
-        lod_ptr_type lod_parent() { return *_lod_parents.begin(); }
+        individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
+        
+        //! Returns true if this individual has parents.
+        bool has_parents() { return (_lod_parents.size() > 0); }
+        
+    protected:
+        parent_set_type _lod_parents; //!< This individual's set of parents.
+    };
+
+    template <typename EA>
+	class population_lod : public EA {
+    public:
+        typedef EA base_type;
+        typedef boost::shared_ptr<population_lod> individual_ptr_type;
+        typedef std::set<individual_ptr_type> parent_set_type;
+        
+        //! Constructor.
+        population_lod() : base_type() {
+        }
+        
+        //! Copy constructor.
+        population_lod(const population_lod& that) : base_type(that) {
+        }
+        
+        //! Assignment operator.
+        population_lod& operator=(const population_lod& that) {
+            if(this != & that) {
+                base_type::operator=(that);
+                _lod_parents.clear();
+            }
+            return *this;
+        }
+        
+        //! Destructor.
+        virtual ~population_lod() {
+        }
+        
+        //! Retrieve the set of this individual's parents.
+        parent_set_type& lod_parents() { return _lod_parents; }
+        
+        //! Shorthand for asexual populations.
+        individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
         
         //! Returns true if this individual has parents.
         bool has_parents() { return (_lod_parents.size() > 0); }

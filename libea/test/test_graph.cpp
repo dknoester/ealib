@@ -18,14 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
-#include <ea/representations/graph.h>
+#include <ea/graph.h>
 #include "test.h"
 
 struct graph_fitness : public fitness_function<unary_fitness<double> > {
     template <typename Individual, typename EA>
     double operator()(Individual& ind, EA& ea) {
         typename EA::representation_type& G=ind.repr();
-        
         return 1.0;
     }
 };
@@ -37,15 +36,44 @@ struct graph_configuration : public abstract_configuration<EA> {
     }
 };
 
+typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, abstract_vertex< >, abstract_edge< > > Graph;
+
 typedef evolutionary_algorithm<
-boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, abstract_vertex< >, abstract_edge< > >,
+Graph,
 mutation::graph_mutation,
 graph_fitness,
 graph_configuration
 > graph_ea;
 
-
-BOOST_AUTO_TEST_CASE(test_graph_ea) {
+BOOST_AUTO_TEST_CASE(test_graph_mutations) {
 	using namespace ea;
-    graph_ea E;
+    namespace emd = ea::mutation::detail;
+    
+    graph_ea ea;
+    Graph G;
+    
+    emd::add_vertex(G,ea);
+    emd::add_vertex(G,ea);
+    BOOST_CHECK_EQUAL(num_vertices(G), 2);
+    
+    emd::add_edge(G,ea);
+    BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 1);
+    emd::remove_edge(G,ea);
+    BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 0);
+    emd::add_edge(G,ea);
+    
+    emd::duplicate_vertex(G,ea);
+    BOOST_CHECK_EQUAL(num_vertices(G), 3);
+    BOOST_CHECK_EQUAL(degree(vertex(2,G),G), 1);
+    BOOST_CHECK((degree(vertex(0,G),G)==2) || (degree(vertex(1,G),G)==2));
+
+    emd::merge_vertices(G,ea);
+    BOOST_CHECK_EQUAL(num_vertices(G), 2);
+    BOOST_CHECK((degree(vertex(0,G),G)>=1) && (degree(vertex(1,G),G)>=1));
+    
+    emd::remove_vertex(G,ea);
+    BOOST_CHECK_EQUAL(num_vertices(G), 1);
+    BOOST_CHECK((degree(vertex(0,G),G) == 0) || (degree(vertex(0,G),G) == 2)); // 2 is for self-loops as a result of a merge
 }
+
+

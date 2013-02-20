@@ -26,6 +26,37 @@
 
 namespace ann {
     namespace layout {
+
+        /*! Generates a multi-layer perceptron style graph.
+         
+         *f == number of neurons in this layer.
+         
+         */
+        template <typename Graph, typename ForwardIterator>
+        void mlp(Graph& g, ForwardIterator f, ForwardIterator l) {
+            typedef typename Graph::vertex_descriptor vertex_descriptor;
+            typedef std::vector<vertex_descriptor> vec_type;
+            typedef std::vector<vec_type> layer_type;
+            layer_type layers;
+            
+            // get all the vertex descriptors we'll need:
+            for(; f!=l; ++f) {
+                vec_type v;
+                for(std::size_t i=0; i<(*f); ++i) {
+                    v.push_back(boost::add_vertex(g));
+                }
+                layers.push_back(v);
+            }
+            
+            // and connect adjoining layers:
+            for(std::size_t i=0; i<(layers.size()-1); ++i) {
+                for(std::size_t j=0; j<layers[i].size(); ++j) {
+                    for(std::size_t k=0; k<layers[i+1].size(); ++k) {
+                        boost::add_edge(layers[i][j], layers[i+1][k], g);
+                    }
+                }
+            }
+        }
         
         /*! Generates a completely-connected graph.
          

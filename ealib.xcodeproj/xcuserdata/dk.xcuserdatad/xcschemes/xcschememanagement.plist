@@ -14,6 +14,11 @@
 			<key>orderHint</key>
 			<integer>14</integer>
 		</dict>
+		<key>libann_test.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>19</integer>
+		</dict>
 		<key>libea_test.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -23,11 +28,6 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>18</integer>
-		</dict>
-		<key>libnn_test.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>19</integer>
 		</dict>
 		<key>mkv.xcscheme</key>
 		<dict>

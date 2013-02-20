@@ -69,7 +69,7 @@ namespace ea {
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
     typename Encoding=directS,
     template <typename> class IndividualAttrs=default_ea_attributes,
-    template <typename,typename> class Individual=individual,
+    template <typename> class Individual=individual,
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
@@ -89,7 +89,7 @@ namespace ea {
         //! Attributes attached to individuals.
         typedef IndividualAttrs<evolutionary_algorithm> individual_attr_type;
         //! Individual type.
-        typedef Individual<representation_type,individual_attr_type> individual_type;
+        typedef Individual<evolutionary_algorithm> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Mutation operator type.

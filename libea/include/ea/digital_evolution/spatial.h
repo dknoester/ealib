@@ -120,11 +120,19 @@ namespace ea {
         typedef std::vector<resource_ptr_type> resource_list_type;
         resource_list_type _resources;
         
+        
+        /*! Type that is contained (and owned) by organisms to uniquely identify
+         their location in the environment.
+         
+         \warning: This type must be serializable.
+         */
+        typedef std::pair<std::size_t, std::size_t> location_handle_type;
+
         /*! Location type.
          
          While locations logically "live" inside organisms, they are interpreted 
          by the specific topology being used.  So, the topology "owns" the various
-         locations, but organisms have pointers to the specific location at which
+         locations, but organisms have handles to the specific location at which
          they reside.
          
          Locations also have a pointer to their organism, thus we can go betwixt
@@ -154,14 +162,31 @@ namespace ea {
                 heading = algorithm::roll(heading+h, 0, 7);
             }
             
+            location_handle_type handle() { return std::make_pair(x,y); }
+            
             individual_ptr_type p; //!< Individual (if any) at this location.
             int heading; //!< Heading of organism, in degrees.
-            int x,y; //!< X-Y coordinates of this location.
+            std::size_t x,y; //!< X-Y coordinates of this location.
             meta_data _md; //!< Meta-data container.
+
+            //! Serialize this location.
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+                // what to do about the individual pointer... hm...
+                ar & boost::serialization::make_nvp("heading", heading);
+                ar & boost::serialization::make_nvp("x", x);
+                ar & boost::serialization::make_nvp("y", y);
+                ar & boost::serialization::make_nvp("meta_data", _md);
+            }
         };
         
-        typedef location_type* location_ptr_type; //! Location type pointer.
+        typedef location_type* location_ptr_type;
+
         typedef boost::numeric::ublas::matrix<location_type> location_matrix_type; //! Container type for locations.
+        
+        location_ptr_type handle2ptr(const location_handle_type& handle) {
+            return &_locs(handle.first, handle.second);
+        }
         
         /*! Spatial neighborhood iterator.
          */
@@ -233,13 +258,13 @@ namespace ea {
         
         //! Retrieve the neighborhood of the given individual.
         std::pair<iterator,iterator> neighborhood(individual_ptr_type p, ea_type& ea) {
-            return std::make_pair(iterator(*p->location(),0,_locs,ea),
-                                  iterator(*p->location(),8,_locs,ea));
+            return std::make_pair(iterator(*handle2ptr(p->location()),0,_locs,ea),
+                                  iterator(*handle2ptr(p->location()),8,_locs,ea));
         }
         
         //! Retrieve the currently faced neighboring location of the given individual.
         iterator neighbor(individual_ptr_type p, ea_type& ea) {
-            return iterator(*p->location(),p->location()->heading,_locs,ea);            
+            return iterator(*handle2ptr(p->location()),handle2ptr(p->location())->heading,_locs,ea);
         }
         
         //! Given two orgs, rotate them to face one another.
@@ -307,7 +332,7 @@ namespace ea {
                 ea.events().death(*l.p,ea);
             }
             l.p = p;
-            p->location() = &l;
+            p->location() = l.handle();
         }
 
         //! Append individual x to the environment.
@@ -316,7 +341,7 @@ namespace ea {
                 throw std::out_of_range("spatial::append(individual_ptr_type x)");
             }
             _locs.data()[_append_count].p = p;
-            p->location() = &_locs.data()[_append_count];
+            p->location() = _locs.data()[_append_count].handle();
             ++_append_count;
         }
         
@@ -370,12 +395,33 @@ namespace ea {
             return _locs(y, x);
         }
         
-        //! Serialize this topology.
+        /*! Serialize this topology.
+         
+         \warning: this leaves the pointer to the individual (in each location)
+         unconnected.  this has to be fixed up after deserialization.
+         */
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
+            // each location in _locs has to be serialized.
+            // 
+//            for(std::size_t i=0; i<_locs.size1(); ++i) {
+//                for(std::size_t j=0; j<_locs.size2(); ++j) {
+//                    ar & boost::serialization::make_nvp("location", _locs(i,j));
+//                }
+//            }
         }
         
-             
+        /*! This is called after deserialization (load); the idea here is that we
+         need to iterate through the population, and link the locations to their
+         respective organisms.
+         */
+        void attach(ea_type& ea) {
+//            for(typename ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+//                handle2ptr((*i)->location())->p = *i;
+//            }
+        }
+        
+        
         std::size_t _append_count; //!< Number of locations that have been appended to.
         location_matrix_type _locs; //!< Matrix of all locations in this topology.
     };

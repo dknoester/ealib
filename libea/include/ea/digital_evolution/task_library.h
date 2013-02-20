@@ -1,4 +1,4 @@
-/* digital_evolution/digital_evolution.h 
+/* task_library.h 
  * 
  * This file is part of EALib.
  * 
@@ -17,9 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _EA_digital_evolution_TASK_LIBRARY_H_
-#define _EA_digital_evolution_TASK_LIBRARY_H_
+#ifndef _EA_DIGITAL_EVOLUTION_TASK_LIBRARY_H_
+#define _EA_DIGITAL_EVOLUTION_TASK_LIBRARY_H_
 
 #include <boost/shared_ptr.hpp>
 #include <string>

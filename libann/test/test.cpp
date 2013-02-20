@@ -29,9 +29,150 @@
 #include <ctime>
 #include <cmath>
 
-#include <nn/neural_network.h>
-#include <nn/back_propagation.h>
-#include <nn/layout.h>
+#include <ann/feed_forward.h>
+#include <ann/layout.h>
+
+BOOST_AUTO_TEST_CASE(test_ff_heaviside) {
+    using namespace ann;
+    typedef neural_network<feed_forward_neuron<heaviside> > ann_type;
+    ann_type nn(1,1); // 1 in, 1 out; vertex 0 & 1 are reserved
+    nn.synapse(nn.add_edge(2,3).first).weight=1.0;
+    nn.synapse(nn.edge(0,3).first).weight=0.0; // remove the bias (testing only)
+
+    nn.input(0) = 1.0;
+    nn.activate();
+    BOOST_CHECK_EQUAL(nn.output(0), 1.0);
+
+    nn.input(0) = 0.5;
+    nn.activate();
+    BOOST_CHECK_EQUAL(nn.output(0), 1.0);
+
+    nn.input(0) = 0.0;
+    nn.activate();
+    BOOST_CHECK_EQUAL(nn.output(0), 0.0);
+
+    nn.input(0) = -1.0;
+    nn.activate();
+    BOOST_CHECK_EQUAL(nn.output(0), 0.0);
+}
+
+BOOST_AUTO_TEST_CASE(test_ff_logistic) {
+    using namespace ann;
+    typedef neural_network<feed_forward_neuron<logistic> > ann_type;
+    ann_type nn(1,1); // 1 in, 1 out; vertex 0 & 1 are reserved
+    nn.synapse(nn.add_edge(2,3).first).weight=1.0;
+    nn.synapse(nn.edge(0,3).first).weight=0.0;
+    
+    nn.input(0) = 1.0;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), 0.99, 1.0);
+    
+    nn.input(0) = 0.5;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), 0.95, 1.0);
+    
+    nn.input(0) = 0.0;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), 0.5, 1.0);
+    
+    nn.input(0) = -1.0;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), 0.00247, 1.0);
+}
+
+BOOST_AUTO_TEST_CASE(test_ff_htan) {
+    using namespace ann;
+    typedef neural_network<feed_forward_neuron<hyperbolic_tangent> > ann_type;
+    ann_type nn(1,1); // 1 in, 1 out; vertex 0 & 1 are reserved
+    nn.synapse(nn.add_edge(2,3).first).weight=1.0;
+    nn.synapse(nn.edge(0,3).first).weight=0.0;
+
+    nn.input(0) = 1.0;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), 0.99, 1.0);
+    
+    nn.input(0) = 0.5;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), 0.90, 1.0);
+    
+    nn.input(0) = 0.0;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), 0.0, 1.0);
+    
+    nn.input(0) = -1.0;
+    nn.activate();
+    BOOST_CHECK_CLOSE(nn.output(0), -0.99, 1.0);
+}
+
+BOOST_AUTO_TEST_CASE(test_ff_clipping_htan) {
+    using namespace ann;
+    typedef neural_network<feed_forward_neuron<hyperbolic_tangent>,clip<double> > ann_type;
+    ann_type nn(1, 1, clip<double>(-0.95,-1.0,0.95,1.0)); // 1 in, 1 out, clip around +-0.95; vertex 0 & 1 are reserved
+    nn.synapse(nn.add_edge(2,3).first).weight=1.0;
+    nn.synapse(nn.edge(0,3).first).weight=0.0;
+
+    nn.input(0) = 1.0;
+    nn.activate(1);
+    BOOST_CHECK_CLOSE(nn.output(0), 1.0, 1.0);
+    
+    nn.input(0) = 0.5;
+    nn.activate(1);
+    BOOST_CHECK_CLOSE(nn.output(0), 0.90, 1.0);
+    
+    nn.input(0) = 0.0;
+    nn.activate(1);
+    BOOST_CHECK_CLOSE(nn.output(0), 0.0, 1.0);
+    
+    nn.input(0) = -0.5;
+    nn.activate(1);
+    BOOST_CHECK_CLOSE(nn.output(0), -0.90, 1.0);
+
+    nn.input(0) = -1.0;
+    nn.activate(1);
+    BOOST_CHECK_CLOSE(nn.output(0), -1.0, 1.0);
+}
+
+
+/*
+ write_graphviz(std::cout, nn);
+ 
+
+ //    std::size_t layers[] = {1,2,3,1};
+ //    layout::mlp(nn, layers, layers+4);
+ 
+ //
+ //    G[boost::vertex(1,G)].output = -1.0;
+ //    G[boost::vertex(2,G)].output = -1.0;
+ //    activate(1, boost::vertex(0,G), G);
+ //    if(G[boost::vertex(3,G)].output <= 0.0) {
+ //        f+=1;
+ //    }
+ //
+ //    G[boost::vertex(1,G)].output = -1.0;
+ //    G[boost::vertex(2,G)].output = 1.0;
+ //    activate(1, boost::vertex(0,G), G);
+ //    if(G[boost::vertex(3,G)].output > 0.0) {
+ //        f+=1;
+ //    }
+ //
+ //    G[boost::vertex(1,G)].output = 1.0;
+ //    G[boost::vertex(2,G)].output = -1.0;
+ //    activate(1, boost::vertex(0,G), G);
+ //    if(G[boost::vertex(3,G)].output > 0.0) {
+ //        f+=1;
+ //    }
+ //
+ //    G[boost::vertex(1,G)].output = 1.0;
+ //    G[boost::vertex(2,G)].output = 1.0;
+ //    activate(1, boost::vertex(0,G), G);
+ //    if(G[boost::vertex(3,G)].output <= 0.0) {
+ //        f+=1;
+ //    }
+ //
+ //
+ //
+ //
+ //    train(nn, 100000, data);
 
 template <typename NeuralNetwork>
 void train(NeuralNetwork& nn, std::size_t n, double data[][3]) {
@@ -58,8 +199,6 @@ void train(NeuralNetwork& nn, std::size_t n, double data[][3]) {
     }
 }
 
-/*!
- */
 BOOST_AUTO_TEST_CASE(test_neural_network) {
     
     using namespace nn;
@@ -130,3 +269,4 @@ BOOST_AUTO_TEST_CASE(test_neural_network) {
     train(nn, 100000, data);
     write_graphviz(std::cout, nn);	
 }
+*/

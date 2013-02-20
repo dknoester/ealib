@@ -18,9 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
-#include <ea/representations/graph.h>
-#include <ann/neural_network.h>
+#include <ea/neuroevolution.h>
+#include <ann/feed_forward.h>
+#include <ea/graph.h>
 #include "test.h"
+
+using namespace ann;
 
 struct graph_fitness : public fitness_function<unary_fitness<double> > {
     template <typename Individual, typename EA>
@@ -34,12 +37,12 @@ struct graph_fitness : public fitness_function<unary_fitness<double> > {
 template <typename EA>
 struct graph_configuration : public abstract_configuration<EA> {
     void initial_population(EA& ea) {
-        generate_ancestors(ancestors::random_graph(), get<POPULATION_SIZE>(ea), ea);
+        generate_ancestors(random_ann(), get<POPULATION_SIZE>(ea), ea);
     }
 };
 
 typedef evolutionary_algorithm<
-ann::neural_network<abstract_vertex<ann::recurrent_neuron< > >, abstract_edge<ann::recurrent_edge> >,
+neural_network<neuroevolution<feed_forward_neuron< > > >,
 mutation::graph_mutation,
 graph_fitness,
 graph_configuration

@@ -49,19 +49,19 @@ namespace ea {
 		typedef typename ea_type::representation_type representation_type;
         typedef typename ea_type::hardware_type hardware_type;
 		typedef typename ea_type::scheduler_type::priority_type priority_type;
-        typedef typename ea_type::environment_type::location_ptr_type location_ptr_type;
+        typedef typename ea_type::environment_type::location_handle_type location_handle_type;
 
         typedef int io_type; //!< Type for input and output values.
         typedef std::deque<io_type> iobuffer_type; //!< Type for buffering inputs and outputs.
 		typedef std::map<std::string, double> phenotype_map_type; //!< Type for storing phenotype information.
         
 		//! Constructor.
-		organism() : _name(0), _generation(0.0), _update(0), _alive(true), _location(NULL) {
+		organism() : _name(0), _generation(0.0), _update(0), _alive(true) {
 		}
         
 		//! Constructor that builds an organism from a representation.
 		organism(const representation_type& r) 
-        : _name(0), _generation(0.0), _update(0), _alive(true), _hw(r), _location(NULL) {
+        : _name(0), _generation(0.0), _update(0), _alive(true), _hw(r) {
 		}
         
         //! Copy constructor.
@@ -73,7 +73,7 @@ namespace ea {
             _priority = that._priority;
             _hw = that._hw;
             _md = that._md;
-            _location = NULL;
+            _location = that._location;
         }
         
         //! Assignment operator.
@@ -86,7 +86,7 @@ namespace ea {
                 _priority = that._priority;
                 _hw = that._hw;
                 _md = that._md;
-                _location = NULL;
+                _location = that._location;
             }
             return *this;
         }
@@ -146,7 +146,7 @@ namespace ea {
         phenotype_map_type& phenotype() { return _phenotype; }
         
         //! Retrieve a pointer to this organism's location.
-        location_ptr_type& location() { return _location; }
+        location_handle_type& location() { return _location; }
 
         //! Execute this organism for n cycles.
         template <typename AL>
@@ -165,7 +165,7 @@ namespace ea {
         iobuffer_type _inputs; //!< This organism's inputs.
         iobuffer_type _outputs; //!< This organism's outputs.
         phenotype_map_type _phenotype; //!< This organism's phenotype.
-        location_ptr_type _location; //!< This organism's location.
+        location_handle_type _location; //!< This organism's location.
 
 	private:
 		/* These enable serialization and de-serialization of organisms.
@@ -187,6 +187,7 @@ namespace ea {
             ar & boost::serialization::make_nvp("hardware", _hw);
             ar & boost::serialization::make_nvp("meta_data", _md);
             //ar & boost::serialization::make_nvp("io_buffer", _io);
+            ar & boost::serialization::make_nvp("location_handle", _location);
 		}
 		
 		template<class Archive>
@@ -205,7 +206,8 @@ namespace ea {
             ar & boost::serialization::make_nvp("hardware", _hw);
             ar & boost::serialization::make_nvp("meta_data", _md);
             //ar & boost::serialization::make_nvp("io_buffer", _io);
-		}
+            ar & boost::serialization::make_nvp("location_handle", _location);
+        }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};	
     

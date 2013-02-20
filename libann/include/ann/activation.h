@@ -22,26 +22,36 @@
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/visitors.hpp>
+#include <ann/sigmoid.h>
 
 namespace ann {
 	
 	/*! Neural network activation visitor.
 	 */
-	template <typename Graph>
-	struct neuron_activation_visitor : public boost::base_visitor<neuron_activation_visitor<Graph> > {
+	template <typename NeuralNetwork, typename Filter>
+	struct neuron_activation_visitor : public boost::base_visitor<neuron_activation_visitor<NeuralNetwork,Filter> > {
 		typedef boost::on_discover_vertex event_filter;
-		typedef Graph graph_type; //!< Underlying graph type of the neural network.
-		typedef typename graph_type::vertex_descriptor vertex_descriptor; //!< Vertex descriptor type.
+		typedef NeuralNetwork ann_type; //!< Underlying neural network type;
+		typedef typename ann_type::vertex_descriptor vertex_descriptor; //!< Vertex descriptor type.
+        typedef Filter filter_type;
 		
-		//! Constructor.
-		neuron_activation_visitor(graph_type& g) : _g(g) { }
-		
+        //! Constructor.
+        neuron_activation_visitor(ann_type& g, filter_type& f) : _g(g), _filt(f) { }
+
 		//! Called once for each vertex, in order of discovery.
-		void operator()(vertex_descriptor v, const graph_type&) {
-            _g[v].activate(v, _g);
+		void operator()(vertex_descriptor v, const ann_type&) {
+            typename ann_type::neuron_type& n=_g[v];
+            
+            if(n.inactive()) {
+                // when a neuron is inactive, we pass its input straight through:
+                n.output = n.input;
+            } else {
+                n.activate(v, _g, _filt);
+            }
 		}
 		
-		graph_type& _g; //!< Underlying graph of the neural network.
+		ann_type& _g; //!< Underlying graph of the neural network.
+        filter_type& _filt; //!< Filter that is applied to the output of each active neuron.
 	};
 	
 
@@ -57,18 +67,6 @@ namespace ann {
 		boost::breadth_first_search(g, v, boost::visitor(boost::make_bfs_visitor(av)));
 	}
 
-	
-	/*! Activate a neural network using the default activation visitor.
-	 
-	 Apply the inputs, activate the network, and read the outputs.
-	 */
-	template <typename Vertex, typename Graph>
-	void activate(unsigned int n, Vertex v, Graph& g) {
-        neuron_activation_visitor<Graph> av(g);
-        for( ; n>0; --n) {
-            activate(v, g, av);
-        }
-	}
 	
 } //nn
 

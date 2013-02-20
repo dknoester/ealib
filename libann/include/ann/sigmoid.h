@@ -21,18 +21,68 @@
 #define _ANN_SIGMOID_H_
 
 #include <cmath>
+#include <functional>
 
 namespace ann {
 
-	double step(double x, double lv=0.0, double uv=1.0) {
-        if(x > 0.0) {
-            return uv;
-        } 
-        return lv;
-    }
-	
+    template <typename T>
+    struct step : std::unary_function<T,T> {
+        typedef std::unary_function<T,T> base_type;
+        typedef typename base_type::argument_type argument_type;
+        typedef typename base_type::result_type result_type;
+
+        step(T lv, T ip, T uv) : _lv(lv), _ip(ip), _uv(uv) { }
+
+        result_type operator()(argument_type x) {
+            if(x > _ip) {
+                return _uv;
+            } else {
+                return _lv;
+            }
+        }
+        
+        T _lv, _ip, _uv; //!< lower value, inflection point, upper value
+    };
+
+    template <typename T>
+    struct clip : std::unary_function<T,T> {
+        typedef std::unary_function<T,T> base_type;
+        typedef typename base_type::argument_type argument_type;
+        typedef typename base_type::result_type result_type;
+        
+        clip(T lt, T lv, T ut, T uv) : _lt(lt), _lv(lv), _ut(ut), _uv(uv) {
+        }
+        
+        result_type operator()(argument_type x) {
+            if(x >= _ut) {
+                return _uv;
+            } else if(x <= _lt) {
+                return _lv;
+            } else {
+                return x;
+            }
+        }
+
+        T _lt, _lv, _ut, _uv; //!< lower and upper thresholds and values.
+    };
+
+    template <typename T>
+    struct identity : std::unary_function<T,T> {
+        typedef std::unary_function<T,T> base_type;
+        typedef typename base_type::argument_type argument_type;
+        typedef typename base_type::result_type result_type;
+      
+        result_type operator()(argument_type x) {
+            return x;
+        }
+    };
+    
+    
 	/*! Heaviside function (aka unit step), a binary activation sigmoid type.
      
+     Domain: [-1.0, 1.0]
+     Range: {0.0, 1.0}
+
      \warning The definition of H(0) can be significant; this was not selected
      with care.
 	 */
@@ -54,10 +104,15 @@ namespace ann {
 
     
 	/*! Logistic function, a type of sigmoid.
+     
+     Domain: [-1.0, 1.0]
+     Range: [0.0, 1.0]
+     
+     Lambda was selected to provides a nice sigmoid over the full domain.
 	 */
 	struct logistic {
 		//! Constructor.
-		logistic(double l=1.0) : lambda(l) {
+		logistic(double l=6.0) : lambda(l) {
 		}
 		
 		//! Calculate the logistic sigmoid of x.
@@ -76,6 +131,11 @@ namespace ann {
 	
 	
 	/*! Hyperbolic tangent function, a type of sigmoid.
+     
+     Domain: [-1.0, 1.0]
+     Range: [-1.0, 1.0]
+     
+     Lambda was selected to provides a nice sigmoid over the full domain.
 	 */
 	struct hyperbolic_tangent {
 		//! Constructor.
@@ -94,6 +154,6 @@ namespace ann {
         double _lambda; //!< Used to steepen the gradient of the sigmoid.
 	};
 	
-} // nn
+} // ann
 
 #endif

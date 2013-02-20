@@ -1,25 +1,26 @@
 /* recurrent.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef _ANN_RECURRENT_H_
 #define _ANN_RECURRENT_H_
 
+#include <ann/neural_network.h>
 #include <ann/sigmoid.h>
 
 
@@ -28,18 +29,28 @@ namespace ann {
 	/*! Recurrent neuron.
 	 */
 	template <typename Sigmoid=hyperbolic_tangent>
-	struct recurrent_neuron {
+	struct recurrent_neuron : public abstract_neuron {
 		typedef Sigmoid sigmoid_type; //!< Sigmoid type, used for activation.
 		
+        //! Synapse type for recurrent neurons.
+        struct synapse_type {
+            //! Constructor.
+            synapse_type(double w=1.0) : weight(w), t(0.0), t_minus1(0.0) { }
+            
+            double weight; //!< Weight of this link.
+            double t; //!< Value of this link at time t (present).
+            double t_minus1; //!< Value of this link at time t-1 (past).
+        };
+        
 		//! Constructor.
-		recurrent_neuron() : input(0.0), output(0.0) { }
+		recurrent_neuron() : abstract_neuron() { }
 		
 		/*! Recurrent activation.
 		 
-		 Recurrent neural networks (RNNs) are a slightly different beast than feed-forward 
+		 Recurrent neural networks (RNNs) are a slightly different beast than feed-forward
 		 neural networks in that activations proceed according to the following function:
 		 y_i(t) = f_i(net_i(t-1)),
-		 that is, the activation (output) at time t of any given neuron in the network depends 
+		 that is, the activation (output) at time t of any given neuron in the network depends
 		 on its inputs from time t-1.  Thus, activations proceed along edges, and asymmetries in
 		 the network serve as delays.
 		 
@@ -63,20 +74,20 @@ namespace ann {
 		 that that for feed-forward networks in order for the outputs to correlate to the inputs
 		 in a reasonable amount of time.  Since evaluation of a feed-forward network is complete
 		 (input signals propagate entirely to outputs), in RNNs input signals only propagate a
-		 single layer. 
+		 single layer.
 		 */
-		template <typename Vertex, typename Graph>
-		void activate(Vertex v, Graph& g) {
+		template <typename Vertex, typename Graph, typename Filter>
+		void activate(Vertex v, Graph& g, Filter& filt) {
             // for all incoming edges of this neuron, sum the link weights * link value(t-1):
             typename Graph::in_edge_iterator ei, ei_end;
-            double sum = 0.0;
+            input = 0.0;
             for(boost::tie(ei,ei_end)=boost::in_edges(v,g); ei!=ei_end; ++ei) {
-                sum += g[*ei].weight * g[*ei].t_minus1;
+                input += g[*ei].weight * g[*ei].t_minus1;
                 g[*ei].t_minus1 = g[*ei].t; // rotate present->past once it's been used.
             }
             
-            // the output of this vertex is the sigmoid of all the inputs:
-            output = sigmoid(sum+input);
+            // the output of this vertex is the sigmoid of all the inputs - threshold
+            output = filt(sigmoid(input));
             
             // update the outgoing edges:
             typename Graph::out_edge_iterator oi, oi_end;
@@ -86,24 +97,8 @@ namespace ann {
 		}
 		
 		sigmoid_type sigmoid; //<! Sigmoid for this neuron.
-		double input; //!< Input to this neuron.
-		double output; //!< Output from this neuron.
-	};
-	
-	
-	/*! Recurrent edge.
-     
-     Recurrent edges need to keep track of their past and present value.
-	 */
-	struct recurrent_edge {
-		//! Constructor.
-		recurrent_edge(double w=1.0) : weight(w), t(0.0), t_minus1(0.0) { }
-		
-		double weight; //!< Weight of this link.
-		double t; //!< Value of this link at time t (present).
-		double t_minus1; //!< Value of this link at time t-1 (past).
-	};
-    
-} // nn
+    };
+
+} // ann
 
 #endif

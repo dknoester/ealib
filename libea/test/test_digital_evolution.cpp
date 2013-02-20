@@ -270,6 +270,8 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     r[97] = al.isa()["nand"];
     r[98] = al.isa()["output"];
 
+    p->priority() = 1.0;
+    
     BOOST_CHECK(al.population().size()==1);
     
     put<SCHEDULER_TIME_SLICE>(100,al);
@@ -331,6 +333,7 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     r[98] = al.isa()["nop_a"];
     r[99] = al.isa()["nop_b"];
 
+    p->priority() = 1.0;
     BOOST_CHECK(al.population().size()==1);
     
     put<SCHEDULER_TIME_SLICE>(389,al);
@@ -367,10 +370,11 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     r[97] = al.isa()["nand"];
     r[98] = al.isa()["bc_msg"];
     
+    p->priority() = 1.0;
     BOOST_CHECK(al.population().size()==2);
     
     put<SCHEDULER_TIME_SLICE>(100,al);
     al.scheduler()(al.population(),al);
     
-    BOOST_CHECK(al.population()[1]->hw().msgs_queued()==1);    
+    BOOST_CHECK(al.population()[1]->hw().msgs_queued()>0);
 }

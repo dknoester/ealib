@@ -20,6 +20,7 @@
 #ifndef _ANN_CTRNN_H_
 #define _ANN_CTRNN_H_
 
+#include <ann/neural_network.h>
 #include <ann/sigmoid.h>
 
 
@@ -28,20 +29,29 @@ namespace ann {
 	/*! CTRNN neuron.
 	 */
 	template <typename Sigmoid=hyperbolic_tangent>
-	struct ctrnn_neuron {
+	struct ctrnn_neuron : public abstract_neuron {
 		typedef Sigmoid sigmoid_type; //!< Sigmoid type, used for activation.
-		
+
+        //! Synapse type for ctrnn neurons.
+        struct synapse_type {
+            //! Default constructor.
+            synapse_type(double w=1.0) : weight(w), t(0.0), t_minus1(0.0) { }
+            
+            double weight; //!< Weight of this link.
+            double t; //!< Value of this link at time t (present).
+            double t_minus1; //!< Value of this link at time t-1 (past).
+        };
+        
+        
 		//! Constructor.
-		ctrnn_neuron() : input(0.0), output(0.0), state(0.0), tau(1.0), gain(1.0) {
-		}
+		ctrnn_neuron() : abstract_neuron(), state(0.0), tau(1.0), gain(1.0) { }
 				
 		/*! Activation function for a CTRNN neuron.
 		 
-		 Activation of a CTRNN is based on the following equation:
-		 
+		 Activation of a CTRNN is based on the following equation:		 
 		 */
-		template <typename Vertex, typename Graph>
-		void activate(double delta_t, Vertex v, Graph& g) {
+		template <typename Vertex, typename Graph, typename Filter>
+		void activate(Vertex v, Graph& g, Filter& filt) {
 			// for all incoming edges of this neuron, sum the link weights * link value(t-1):
 			typename Graph::in_edge_iterator ei, ei_end;
 			input = 0.0;
@@ -54,7 +64,7 @@ namespace ann {
 			state += delta_t * tau * (input - state);
 			
 			// update the outgoing edges with this neuron's output:
-			output = sigmoid(gain * state);
+			output = filt(sigmoid(gain * state));
 
 			typename Graph::out_edge_iterator oi, oi_end;
 			for(boost::tie(oi,oi_end)=boost::out_edges(v,g); oi!=oi_end; ++oi) {
@@ -115,23 +125,9 @@ namespace ann {
 		}
 		
 		sigmoid_type sigmoid; //<! Sigmoid for this neuron.
-		double input; //!< Input to this neuron.
-		double output; //!< Output from this neuron.
 		double state; //!< State of this neuron.
 		double tau; //!< Time constant for this neuron.
 		double gain; //!< Gain for this neuron.
-	};
-	
-	
-	/*! Recurrent link.
-	 */
-	struct ctrnn_link {
-		//! Default constructor.
-		ctrnn_link(double w=1.0) : weight(w), t(0.0), t_minus1(0.0) { }
-		
-		double weight; //!< Weight of this link.
-		double t; //!< Value of this link at time t (present).
-		double t_minus1; //!< Value of this link at time t-1 (past).
 	};
 	
 } // ann

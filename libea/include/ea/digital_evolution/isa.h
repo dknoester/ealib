@@ -386,17 +386,17 @@ namespace ea {
         
         //! Rotate the organism to the heading in ?bx?.
         DIGEVO_INSTRUCTION_DECL(rotate) {
-            p->location()->set_heading(hw.getRegValue(hw.modifyRegister()));
+            ea.env().handle2ptr(p->location())->set_heading(hw.getRegValue(hw.modifyRegister()));
         }
         
         //! Rotate the organism clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_cw) {
-            p->location()->alter_heading(-1);
+            ea.env().handle2ptr(p->location())->alter_heading(-1);
         }
         
         //! Rotate the organism counter-clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_ccw) {
-            p->location()->alter_heading(1);
+            ea.env().handle2ptr(p->location())->alter_heading(1);
         }
         
         //! Execute the next instruction if ?bx? < ?cx?.

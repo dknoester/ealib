@@ -22,6 +22,7 @@
 
 #include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <ea/concepts.h>
@@ -258,13 +259,25 @@ namespace ea {
 
     private:
         friend class boost::serialization::access;
-        template<class Archive>
-        void serialize(Archive & ar, const unsigned int version) {
+		template<class Archive>
+		void save(Archive & ar, const unsigned int version) const {
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("environment", _env);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("meta_data", _md);
+		}
+		
+		template<class Archive>
+		void load(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("rng", _rng);
+            ar & boost::serialization::make_nvp("environment", _env);
+            ar & boost::serialization::make_nvp("population", _population);
+            ar & boost::serialization::make_nvp("meta_data", _md);
+            
+            // now we have to fix up the connection between the environment and organisms:
+            _env.attach(*this);
         }
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
 
 } // ea

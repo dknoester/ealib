@@ -23,6 +23,8 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
+#include <ann/abstract_neuron.h>
+#include <ann/sigmoid.h>
 #include <ann/activation.h>
 #include <ann/recurrent.h>
 #include <ann/layout.h>
@@ -31,24 +33,99 @@ namespace ann {
 	
 	/*! Neural network.
      
-     This is simply a convenience class that wraps a boost::graph, and provides
-     some of the common types for a neural network.
+     This class implements a generic neural network that is templated on neuron
+     type.  It inherits from a boost::graph, and provides functionality that makes
+     it easier to manipulate the network, as well as to activate it.
+     
+     \warning There are two "extra" neurons that are always added a neural network:
+     the bias neuron and the top neuron.  These are always the 0'th and 1st neuron 
+     in the network, respectively.
 	 */
-    template <typename Neuron, typename Edge>
-    class neural_network 
-    : public boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, Neuron, Edge> {
+    template <typename Neuron, typename Filter=identity<double>, typename Synapse=typename Neuron::synapse_type>
+    class neural_network
+    : public boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, Neuron, Synapse> {
     public:
-        typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, Neuron, Edge> base_type;
-
+        typedef Neuron neuron_type;
+        typedef Synapse synapse_type;
+        typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, Neuron, Synapse> base_type;
+        typedef typename base_type::vertex_descriptor vertex_descriptor;
+        typedef typename base_type::edge_descriptor edge_descriptor;
+        typedef Filter filter_type;
+        
         //! Default constructor.
-        neural_network() : base_type() {
+        neural_network() : base_type(0) {
         }
         
         //! Constructor.
-        neural_network(std::size_t n) : base_type(n) {
+        neural_network(std::size_t nin, std::size_t nout, const filter_type& f=filter_type())
+        : base_type(nin+nout+2), _nin(nin), _nout(nout), _filt(f) {
+            // vertex 0 is the "bias" neuron; it is automatically connected to all
+            // active neurons, and is itself inactive:
+            neuron(vertex(0)).flags(neuron::reserved | neuron::inactive | neuron::bias);
+            // we're not guaranteed that the bias will be visited during activation.
+            // it always outputs "1":
+            neuron(vertex(0)).input = 1.0;
+            neuron(vertex(0)).output = 1.0;
+            
+            // vertex 1 is the "top" neuron; activation is a BFS from this vertex:
+            neuron(vertex(1)).flags(neuron::reserved | neuron::inactive | neuron::top);
+            
+            // connect the top neuron to the inputs, mark them:
+            for(std::size_t i=2; i<(nin+2); ++i) {
+                add_edge(vertex(1), vertex(i));
+                neuron(vertex(i)).flags(neuron::reserved | neuron::inactive | neuron::input);
+            }
+            
+            // connect the output neurons to the bias, mark them:
+            for(std::size_t i=(nin+2); i<boost::num_vertices(*this); ++i) {
+                add_edge(vertex(0), vertex(i));
+                neuron(vertex(i)).flags(neuron::reserved | neuron::output);
+            }
+        }
+        
+        //! Copy constructor.
+        neural_network(const neural_network& that)
+        : base_type(that), _nin(that._nin), _nout(that._nout), _filt(that._filt) {
+        }
+        
+        //! Retrieve the neuron for vertex i.
+        neuron_type& neuron(vertex_descriptor i) { return (*this)[i]; }
+        
+        //! Retrieve the i'th input to this network (convenience method).
+        double& input(std::size_t i) { return neuron(vertex(i+2)).input; }
+
+        //! Retrieve the i'th output from this network (convenience method).
+        double& output(std::size_t i) { return neuron(vertex(i+_nin+2)).output; }
+
+        //! Retreive the i'th vertex descriptor.
+        vertex_descriptor vertex(std::size_t i) { return boost::vertex(i,*this); }
+
+        //! Add a vertex to this neural network, and connect it to the bias neuron:
+        vertex_descriptor add_vertex() { add_edge(vertex(0), boost::add_vertex(*this)); }
+
+        //! Retrieve the synapse for edge i.
+        synapse_type& synapse(edge_descriptor i) { return (*this)[i]; }
+        
+        //! Retrieve edge(u,v), if it exists.
+        std::pair<edge_descriptor,bool> edge(vertex_descriptor u, vertex_descriptor v) { return boost::edge(u,v,*this); }
+        
+        //! Add edge(u,v), if it does not already exist.
+        std::pair<edge_descriptor,bool> add_edge(vertex_descriptor u, vertex_descriptor v) { return boost::add_edge(u,v,*this); }
+        
+        //! Activate this neural network using a filtering activation visitor.
+        void activate(unsigned int n=1) {
+            neuron_activation_visitor<neural_network,filter_type> av(*this,_filt);
+            vertex_descriptor v=vertex(1);
+            for( ; n>0; --n) {
+                ann::activate(v, *this, av);
+            }
         }
         
     private:
+        filter_type _filt; //!< Filter to be applied to neuron activity levels.
+        std::size_t _nin; //!< Number of inputs.
+        std::size_t _nout; //!< Number of outputs.
+        
 		friend class boost::serialization::access;
         
 		template<class Archive>
@@ -60,6 +137,8 @@ namespace ann {
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
+
+    
 
 } // ann
 

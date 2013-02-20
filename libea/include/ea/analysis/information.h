@@ -201,6 +201,52 @@ namespace ea {
             return joint_entropy(xz) + joint_entropy(yz) - joint_entropy(xyz) - entropy(z);
         }
 
+        //! Calculates the conditional mutual information of event sequences x and y given z, I(x;y|z).
+        template <typename Sequence>
+        double conditional_mutual_information2(Sequence& X, Sequence& Y, Sequence& Z) {
+            using namespace boost::numeric::ublas;
+            
+            pmf<std::string> pz, pxz, pyz, pxyz;
+            
+            for(std::size_t i=0; i<X.size(); ++i) {
+                std::string z=boost::lexical_cast<std::string>(Z(i));
+                std::string xz=boost::lexical_cast<std::string>(X(i)) + " " + z;
+                std::string yz=boost::lexical_cast<std::string>(Y(i)) + " " + z;
+                std::string xyz=boost::lexical_cast<std::string>(X(i)) + " " + boost::lexical_cast<std::string>(Y(i)) + " " + z;
+
+                pz.add(z);
+                pxz.add(xz);
+                pyz.add(yz);
+                pxyz.add(xyz);
+            }
+            
+            pz.calc(); pxz.calc(); pyz.calc(); pxyz.calc();
+            
+            double Hz=0.0, Hxz=0.0, Hyz=0.0, Hxyz=0.0;
+            
+            for(typename pmf<std::string>::iterator i=pz.begin(); i!=pz.end(); ++i) {
+                Hz += (*i) * log2(*i);
+            }
+            Hz *= -1.0;
+
+            for(typename pmf<std::string>::iterator i=pxz.begin(); i!=pxz.end(); ++i) {
+                Hxz += (*i) * log2(*i);
+            }
+            Hxz *= -1.0;
+
+            for(typename pmf<std::string>::iterator i=pyz.begin(); i!=pyz.end(); ++i) {
+                Hyz += (*i) * log2(*i);
+            }
+            Hyz *= -1.0;
+
+            for(typename pmf<std::string>::iterator i=pxyz.begin(); i!=pxyz.end(); ++i) {
+                Hxyz += (*i) * log2(*i);
+            }
+            Hxyz *= -1.0;
+            
+            return Hxz + Hyz - Hxyz - Hz;
+        }
+
 
         //! Calculates the joint mutual information 
         template <typename Matrix, typename Sequence>

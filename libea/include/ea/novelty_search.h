@@ -98,7 +98,7 @@ namespace ea {
 	typename RecombinationOperator=recombination::two_point_crossover,
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
     template <typename> class IndividualAttrs=default_ns_attributes,
-    template <typename,typename> class Individual=individual,
+    template <typename> class Individual=individual,
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
@@ -118,7 +118,7 @@ namespace ea {
         //! Attributes attached to individuals.
         typedef IndividualAttrs<novelty_search> individual_attr_type;
         //! Individual type.
-        typedef Individual<representation_type,individual_attr_type> individual_type;
+        typedef Individual<novelty_search> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Mutation operator type.

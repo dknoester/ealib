@@ -20,6 +20,7 @@
 #ifndef _ANN_FEED_FORWARD_H_
 #define _ANN_FEED_FORWARD_H_
 
+#include <ann/neural_network.h>
 #include <ann/sigmoid.h>
 
 
@@ -28,19 +29,27 @@ namespace ann {
 	/*! Feed-forward neuron.
 	 */
 	template <typename Sigmoid=hyperbolic_tangent>
-	struct feed_forward_neuron {
+	struct feed_forward_neuron : public abstract_neuron {
 		typedef Sigmoid sigmoid_type; //!< Sigmoid type, used for activation.
+
+        //! Synapse type for feed forward neurons.
+        struct synapse_type {
+            //! Default constructor.
+            synapse_type(double w=1.0) : weight(w) { }
+            
+            double weight; //!< Weight of this edge.
+        };
 		
 		//! Constructor.
-		feed_forward_neuron() : input(0.0), output(0.0) { }
+		feed_forward_neuron() : abstract_neuron() { }
 		
 		/*! Feed-forward activation.
 		 
 		 This is fairly straightforward; the output of any given neuron is the sigmoid of
 		 the weighted-sum of its inputs.
 		 */
-		template <typename Vertex, typename Graph>
-		void activate(Vertex v, Graph& g) {
+		template <typename Vertex, typename Graph, typename Filter>
+		void activate(Vertex v, Graph& g, Filter& filt) {
 			// for all incoming edges of this neuron, sum the link weights * source neuron outputs:
 			typename Graph::in_edge_iterator ei, ei_end;
 			input = 0.0;
@@ -49,25 +58,12 @@ namespace ann {
 			}
 			
 			// the output of this neuron is the sigmoid of the input:
-			output = sigmoid(input);
+			output = filt(sigmoid(input));
 		}
 		
 		sigmoid_type sigmoid; //<! Sigmoid for this neuron.
-		double input; //!< Input to this neuron.
-		double output; //!< Output from this neuron.
 	};
 	
-	
-	/*! Feed-forward edge.
-	 */
-	struct feed_forward_edge {
-		//! Default constructor.
-		feed_forward_edge(double w=1.0) : weight(w) { }
-		
-		double weight; //!< Weight of this edge.
-	};
-	
-    
-}	// ann
+} // ann
 
 #endif
