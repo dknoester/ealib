@@ -434,8 +434,8 @@ namespace ea {
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx); 
                         
-            hw.setRegValue(rbx,p->location()->x);
-            hw.setRegValue(rcx,p->location()->y);
+            hw.setRegValue(rbx,ea.env().handle2ptr(p->location())->x);
+            hw.setRegValue(rcx,ea.env().handle2ptr(p->location())->y);
         }
         
         //! Get the organism's age
