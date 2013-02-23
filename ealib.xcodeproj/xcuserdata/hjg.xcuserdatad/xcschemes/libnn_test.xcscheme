@@ -14,8 +14,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-               BuildableName = "libnn_test"
-               BlueprintName = "libnn_test"
+               BuildableName = "libann_test"
+               BlueprintName = "libann_test"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,8 +32,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-            BuildableName = "libnn_test"
-            BlueprintName = "libnn_test"
+            BuildableName = "libann_test"
+            BlueprintName = "libann_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -44,14 +44,15 @@
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Debug"
+      ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-            BuildableName = "libnn_test"
-            BlueprintName = "libnn_test"
+            BuildableName = "libann_test"
+            BlueprintName = "libann_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -68,8 +69,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-            BuildableName = "libnn_test"
-            BlueprintName = "libnn_test"
+            BuildableName = "libann_test"
+            BlueprintName = "libann_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

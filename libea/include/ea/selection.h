@@ -32,10 +32,6 @@ namespace ea {
 	void select_n(Population& src, Population& dst, std::size_t n, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-
-        // selection may operate on absolute fitnesses, or on relative fitnesses.
-        // if relative fitnesses are being used, calculate them here:
-        relativize_fitness(src.begin(), src.end(), ea);
         
         if(src.size() <= n) {
             dst.insert(dst.end(), src.begin(), src.end());
