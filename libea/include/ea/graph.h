@@ -45,7 +45,7 @@ namespace ea {
             typename Representation::vertex_descriptor add_vertex(Representation& G, EA& ea) {
                 return boost::add_vertex(G);
             }
-
+            
             //! Remove a randomly selected vertex.
             template <typename Representation, typename EA>
             void remove_vertex(Representation& G, EA& ea) {
@@ -58,7 +58,7 @@ namespace ea {
             template <typename Representation, typename EA>
             typename Representation::edge_descriptor add_edge(Representation& G, EA& ea) {
                 std::size_t un,vn;
-                boost::tie(un,vn) = ea.rng().choose_two(0, static_cast<int>(boost::num_vertices(G)));                
+                boost::tie(un,vn) = ea.rng().choose_two(0, static_cast<int>(boost::num_vertices(G)));
                 typename Representation::vertex_descriptor u=boost::vertex(un,G);
                 typename Representation::vertex_descriptor v=boost::vertex(vn,G);
                 return boost::add_edge(u,v,G).first;
@@ -71,36 +71,48 @@ namespace ea {
                 boost::tie(ei,ei_end) = boost::edges(G);
                 boost::remove_edge(*ea.rng().choice(ei,ei_end), G);
             }
-
+            
+            //! Copy E_in(u) -> E_in(v).
+            template <typename VertexDescriptor, typename Graph>
+            void copy_in_edges(VertexDescriptor u, VertexDescriptor v, Graph& G) {
+                typedef std::vector<std::pair<typename Graph::vertex_descriptor,
+                typename Graph::edge_descriptor> > ve_list;
+                ve_list adjacent;
+                
+                typename Graph::inv_adjacency_iterator iai,iai_end;
+                for(boost::tie(iai,iai_end)=boost::inv_adjacent_vertices(u,G); iai!=iai_end; ++iai) {
+                    adjacent.push_back(std::make_pair(*iai, boost::edge(*iai,u,G).first));
+                }
+                for(typename ve_list::iterator i=adjacent.begin(); i!=adjacent.end(); ++i) {
+                    boost::add_edge(i->first, v, G[i->second], G);
+                }
+            }
+            
+            //! Copy E_out(u) -> E_out(v)
+            template <typename VertexDescriptor, typename Graph>
+            void copy_out_edges(VertexDescriptor u, VertexDescriptor v, Graph& G) {
+                typedef std::vector<std::pair<typename Graph::vertex_descriptor,
+                typename Graph::edge_descriptor> > ve_list;
+                ve_list adjacent;
+                
+                typename Graph::adjacency_iterator ai,ai_end;
+                for(boost::tie(ai,ai_end)=boost::adjacent_vertices(u,G); ai!=ai_end; ++ai) {
+                    adjacent.push_back(std::make_pair(*ai, boost::edge(u,*ai,G).first));
+                }
+                for(typename ve_list::iterator i=adjacent.begin(); i!=adjacent.end(); ++i) {
+                    boost::add_edge(v, i->first, G[i->second], G);
+                }
+            }
+            
             //! Duplicate a randomly selected vertex.
             template <typename Representation, typename EA>
             void duplicate_vertex(Representation& G, EA& ea) {
                 typename Representation::vertex_descriptor u=boost::vertex(ea.rng()(boost::num_vertices(G)),G);
                 typename Representation::vertex_descriptor v=boost::add_vertex(G[u],G);
-
-                // need to store the vertex / edge descriptors as modifying the
-                // graph invalidates our adjacency iterators:
-                typedef std::vector<std::pair<typename Representation::vertex_descriptor,
-                typename Representation::edge_descriptor> > ve_list;
-                ve_list adjacent;
-                
-                // outgoing edges:
-                typename Representation::adjacency_iterator ai,ai_end;
-                for(boost::tie(ai,ai_end)=boost::adjacent_vertices(u,G); ai!=ai_end; ++ai) {
-                    adjacent.push_back(std::make_pair(*ai, boost::edge(u,*ai,G).first));
-                }
-
-                // incoming edges:
-                typename Representation::inv_adjacency_iterator iai,iai_end;
-                for(boost::tie(iai,iai_end)=boost::inv_adjacent_vertices(u,G); iai!=iai_end; ++iai) {
-                    adjacent.push_back(std::make_pair(*iai, boost::edge(u,*iai,G).first));
-                }
-                
-                for(typename ve_list::iterator i=adjacent.begin(); i!=adjacent.end(); ++i) {
-                    boost::add_edge(v, i->first, G[i->second], G);
-                }
+                copy_in_edges(u,v,G);
+                copy_out_edges(u,v,G);
             }
-
+            
             //! Merge two randomly selected vertices.
             template <typename Representation, typename EA>
             void merge_vertices(Representation& G, EA& ea) {
@@ -108,28 +120,10 @@ namespace ea {
                 boost::tie(un,vn) = ea.rng().choose_two(0, static_cast<int>(boost::num_vertices(G)));
                 typename Representation::vertex_descriptor u=boost::vertex(un,G);
                 typename Representation::vertex_descriptor v=boost::vertex(vn,G);
-
-                // edges incident to v are copied to u; v is then cleared and erased.
-                typedef std::vector<std::pair<typename Representation::vertex_descriptor,
-                typename Representation::edge_descriptor> > ve_list;
-                ve_list adjacent;
                 
-                // outgoing edges:
-                typename Representation::adjacency_iterator ai,ai_end;
-                for(boost::tie(ai,ai_end)=boost::adjacent_vertices(v,G); ai!=ai_end; ++ai) {
-                    adjacent.push_back(std::make_pair(*ai, boost::edge(v,*ai,G).first));
-                }
-
-                // incoming edges:
-                typename Representation::inv_adjacency_iterator iai,iai_end;
-                for(boost::tie(iai,iai_end)=boost::inv_adjacent_vertices(v,G); iai!=iai_end; ++iai) {
-                    adjacent.push_back(std::make_pair(*iai, boost::edge(v,*iai,G).first));
-                }
-
-                for(typename ve_list::iterator i=adjacent.begin(); i!=adjacent.end(); ++i) {
-                    boost::add_edge(u, i->first, G[i->second], G);
-                }
-
+                // edges incident to v are copied to u; v is then cleared and erased.
+                copy_in_edges(v,u,G);
+                copy_out_edges(v,u,G);
                 boost::clear_vertex(v,G);
                 boost::remove_vertex(v,G);
             }
@@ -146,7 +140,7 @@ namespace ea {
                 typename Representation::edge_iterator ei,ei_end;
                 boost::tie(ei,ei_end) = boost::edges(G);
                 G[*ea.rng().choice(ei,ei_end)].mutate(ea);
-            }            
+            }
         } // detail
         
         
@@ -184,7 +178,7 @@ namespace ea {
                         detail::merge_vertices(G,ea);
                     }
                 }
-
+                
                 if(ea.rng().p(get<GRAPH_MUTATION_EVENT_P>(ea))) {
                     if(ea.rng().p(get<GRAPH_MUTATION_VERTEX_P>(ea))) {
                         detail::mutate_vertex(G,ea);
@@ -193,11 +187,11 @@ namespace ea {
                     }
                 }
             }
-        };        
+        };
     } // mutation
     
     namespace ancestors {
-
+        
         /*! Generates a random graph-based individual based on a minimum graph size
          and a configurable number of calls to the graph mutation operator.
          */
@@ -209,7 +203,7 @@ namespace ea {
                     gm(G,ea);
                 }
             }
-
+            
             template <typename EA>
             typename EA::representation_type operator()(EA& ea) {
                 typename EA::representation_type G(get<GRAPH_MIN_SIZE>(ea));
@@ -219,7 +213,7 @@ namespace ea {
             
         };
     } // ancestors
-
+    
     namespace detail {
         struct null_type { };
     }
@@ -230,13 +224,13 @@ namespace ea {
         //! Constructor.
         abstract_vertex() : Vertex() {
         }
-
+        
         //! Mutate this vertex.
         template <typename EA>
         void mutate(EA& ea) {
         }
     };
-
+    
     //! Abstract type for edges.
     template <typename Edge=detail::null_type>
     struct abstract_edge : Edge {
