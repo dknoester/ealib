@@ -19,6 +19,7 @@
  */
 #include <boost/test/unit_test.hpp>
 
+#include <ea/cmdline_interface.h>
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/population_founder.h>
 #include <ea/line_of_descent.h>
@@ -118,6 +119,43 @@ struct mp_founder_configuration : public abstract_configuration<EA> {
     }
 };
 
+template <typename EA>
+struct test_population_lod_tool : public ea::analysis::unary_function<EA> {
+    static const char* name() { return "test_population_lod_tool"; }
+    
+    virtual void operator()(EA& ea) {
+        using namespace ea;
+        using namespace ea::analysis;
+        
+        line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
+        typename line_of_descent<EA>::iterator i=lod.begin(); ++i;
+        
+        for( ; i!=lod.end(); ++i) {
+            typename EA::individual_ptr_type control_ea = ea.make_individual();
+            typename EA::individual_type::individual_ptr_type o = (*i)->make_individual((*i)->founder().repr());
+            o->hw().initialize();
+            control_ea->append(o);
+        }
+    }
+};
+
+
+template <typename EA>
+class cli : public cmdline_interface<EA> {
+public:
+    virtual void gather_options() {
+    }
+    
+    virtual void gather_tools() {
+        add_tool<test_population_lod_tool>(this);
+    }
+    
+    virtual void gather_events(EA& ea) {
+        add_event<mrca_lineage_datafile>(this,ea);
+        add_event<population_founder_event>(this,ea);
+    };
+};
+
 
 //! A variety of digital evolution / artificial life simulation definitions.
 BOOST_AUTO_TEST_CASE(test_digevo_types) {
@@ -136,6 +174,9 @@ BOOST_AUTO_TEST_CASE(test_digevo_types) {
     //! Meta-population, with founders and LOD tracking:
     typedef meta_population<population_lod<population_founder<ea_type1> >, mp_founder_configuration> mea_type3;
     mea_type3 mea3;
+    cli<mea_type3> cli3;
+//    boost::program_options::variables_map vm;
+//    cli3.run(vm);
 }
 
 

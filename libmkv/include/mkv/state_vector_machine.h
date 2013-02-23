@@ -1,4 +1,4 @@
-/* svm.h
+/* state_vector_machine.h
  *
  * This file is part of EALib.
  *

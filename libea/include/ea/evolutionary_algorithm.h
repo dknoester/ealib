@@ -135,9 +135,7 @@ namespace ea {
 
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
-            // initial fitness & statistics recording:
-            calculate_fitness(_population.begin(), _population.end(), *this);
-            _events.record_statistics(*this);
+            begin_epoch();
             
             for( ; n>0; --n) {
                 update();
@@ -146,6 +144,12 @@ namespace ea {
             _events.end_of_epoch(*this);
         }
         
+        //! Called once at the beginning of each epoch.
+        void begin_epoch() {
+            calculate_fitness(_population.begin(), _population.end(), *this);
+            _events.record_statistics(*this);
+        }
+
         //! Advance this EA by one update.
         void update() {
             if(!_population.empty()) {

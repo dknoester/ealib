@@ -95,22 +95,21 @@ namespace ea {
     template <typename EA>
 	class population_lod : public EA {
     public:
-        typedef EA base_type;
-        typedef boost::shared_ptr<population_lod> individual_ptr_type;
-        typedef std::set<individual_ptr_type> parent_set_type;
+        typedef boost::shared_ptr<population_lod> parent_ptr_type;
+        typedef std::set<parent_ptr_type> parent_set_type;
         
         //! Constructor.
-        population_lod() : base_type() {
+        population_lod() : EA() {
         }
         
         //! Copy constructor.
-        population_lod(const population_lod& that) : base_type(that) {
+        population_lod(const population_lod& that) : EA(that) {
         }
         
         //! Assignment operator.
         population_lod& operator=(const population_lod& that) {
             if(this != & that) {
-                base_type::operator=(that);
+                EA::operator=(that);
                 _lod_parents.clear();
             }
             return *this;
@@ -124,7 +123,7 @@ namespace ea {
         parent_set_type& lod_parents() { return _lod_parents; }
         
         //! Shorthand for asexual populations.
-        individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
+        parent_ptr_type lod_parent() { return *_lod_parents.begin(); }
         
         //! Returns true if this individual has parents.
         bool has_parents() { return (_lod_parents.size() > 0); }

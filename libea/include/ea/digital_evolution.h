@@ -153,6 +153,7 @@ namespace ea {
 
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
+            begin_epoch();
             for( ; n>0; --n) {
                 update();
             }
@@ -160,12 +161,18 @@ namespace ea {
             _events.end_of_epoch(*this);
         }
         
+        //! Called once at the beginning of each epoch.
+        void begin_epoch() {
+            _events.record_statistics(*this);
+        }
+        
         //! Advance this EA by one update.
         void update() {
-            _events.record_statistics(*this);
             _scheduler(_population, *this);
-            _scheduler.next_update();
             _events.end_of_update(*this);
+            // update counter and statistics are handled *between* updates:
+            _scheduler.next_update();
+            _events.record_statistics(*this);
         }
         
         //! Build an individual from the given representation.

@@ -1,4 +1,4 @@
-/* test.cpp
+/* test_mkv.cpp
  * 
  * This file is part of EALib.
  * 
@@ -163,19 +163,19 @@ BOOST_AUTO_TEST_CASE(test_layers) {
     int* in;
     
 	in=tc0;
-    update(net, 2, in);
+    net.update(2, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
     
 	in=tc1;
-    update(net, 2, in);
+    net.update(2, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
     
 	in=tc2;
-    update(net, 2, in);
+    net.update(2, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
 	
 	in=tc3;
-    update(net, 2, in);
+    net.update(2, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
 }
 

@@ -176,6 +176,17 @@ namespace ea {
             return entropy(X) + entropy(Y) - joint_entropy(M);
         }
 
+        //! Calculates the mutual information between two columns in matrix M.
+        template <typename Matrix>
+        double mutual_information(Matrix& M) {
+            using namespace boost::numeric::ublas;
+            typedef matrix_column<Matrix> Column;
+            
+            Column X(M,0);
+            Column Y(M,1);
+            
+            return entropy(X) + entropy(Y) - joint_entropy(M);
+        }
         
         //! Calculates the conditional mutual information of event sequences x and y given z, I(x;y|z).
         template <typename Sequence>

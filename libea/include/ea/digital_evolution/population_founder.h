@@ -31,7 +31,6 @@ namespace ea {
         typedef EA base_type;
         typedef typename base_type::individual_type founder_type;
         typedef typename base_type::individual_ptr_type founder_ptr_type;
-//        typedef typename base_type::individual_attr_tye
         
         //! Constructor.
         population_founder() : base_type() {
@@ -74,14 +73,14 @@ namespace ea {
     /*! Chains together offspring and their parents, called for every inheritance event.
      */
     template <typename EA>
-    struct founder_event : inheritance_event<EA> {
+    struct population_founder_event : inheritance_event<EA> {
         
         //! Constructor.
-        founder_event(EA& ea) : inheritance_event<EA>(ea) {
+        population_founder_event(EA& ea) : inheritance_event<EA>(ea) {
         }
         
         //! Destructor.
-        virtual ~founder_event() {
+        virtual ~population_founder_event() {
         }
         
         //! Called for every inheritance event.

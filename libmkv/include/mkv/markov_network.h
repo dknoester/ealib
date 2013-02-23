@@ -25,6 +25,7 @@
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <vector>
+#include <deque>
 
 #include <ea/algorithm.h>
 #include <ea/rng.h>
@@ -32,12 +33,14 @@
 
 
 namespace mkv {
-
+    
+    class markov_network;
+    
     namespace detail {
         
         typedef std::vector<std::size_t> index_list_type; //!< Type for a list of indices.
         typedef std::vector<double> weight_vector_type; //!< Type for feedback weights vector.
-
+        
         /*! Abstract gate.
          */
         struct abstract_gate {
@@ -54,7 +57,7 @@ namespace mkv {
             index_list_type outputs; //!< Output indices from this node.
         };
         
-
+        
         /*! Logic gate.
          */
         struct logic_gate : abstract_gate {
@@ -66,7 +69,7 @@ namespace mkv {
                     M[i] = *f;
                 }
             }
-
+            
             //! Destructor.
             virtual ~logic_gate() {
             }
@@ -95,11 +98,11 @@ namespace mkv {
             //! Destructor.
             virtual ~markov_gate() {
             }
-
+            
             matrix_type M; //!< Probability table.
         };
         
-
+        
         /*! Adaptive Markov gate.
          */
         struct adaptive_gate : abstract_gate {
@@ -107,7 +110,7 @@ namespace mkv {
             typedef boost::numeric::ublas::matrix_column<matrix_type> column_type; //!< Column type.
             typedef boost::numeric::ublas::matrix_row<matrix_type> row_type; //!< Row type.
             typedef std::deque<std::pair<std::size_t, std::size_t> > history_type;//!< Type for tracking history of decisions.
-
+            
             //! Constructor.
             template <typename ForwardIterator>
             adaptive_gate(std::size_t hn,
@@ -124,28 +127,28 @@ namespace mkv {
             //! Destructor.
             virtual ~adaptive_gate() {
             }
-
+            
             //! Scale the probability of output (i,j) by s.
             void scale(std::size_t i, std::size_t j, double s) {
                 M(i,j) *= 1.0 + s;
                 row_type row(M, i);
                 ea::algorithm::normalize(row.begin(), row.end(), row.begin(), 1.0);
             }
-
+            
             //! Reinforce the recent behavior of this gate.
             void reinforce() {
                 for(std::size_t i=0; (i<P.size()) && (i<H.size()); ++i) {
                     scale(H[i].first, H[i].second, P[i]);
                 }
             }
-
+            
             //! Inhibit the recent behavior of this gate.
             void inhibit() {
                 for(std::size_t i=0; (i<N.size()) && (i<H.size()); ++i) {
                     scale(H[i].first, H[i].second, N[i]);
                 }
             }
-          
+            
             std::size_t h; //!< Size of history to keep.
             history_type H; //!< History of decisions made by this node.
             std::size_t p; //!< Index of positive feedback state.
@@ -157,8 +160,8 @@ namespace mkv {
 
     } // detail
     
-
     typedef boost::variant<detail::logic_gate, detail::markov_gate, detail::adaptive_gate> variant_gate_type; //!< Variant gate type.
+    
     
     /*! Markov Network that contains gates, a state vector machine, and an underlying geometry of
      inputs, outputs, and hidden states.
@@ -171,7 +174,7 @@ namespace mkv {
         typedef state_vector_machine<state_type> svm_type; //!< State vector machine type.
         typedef std::vector<variant_gate_type> base_type; //!< List of gates.
         typedef ea::default_rng_type rng_type; //!< Random number generator type.
-
+        
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, const rng_type& rng)
         : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(rng), _threshold(0) {
@@ -181,7 +184,7 @@ namespace mkv {
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
         : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed), _threshold(0) {
         }
-
+        
         //! Constructs a Markov network with the given seed.
         markov_network(const desc_type& desc, unsigned int seed=0)
         : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(seed), _threshold(0) {
@@ -191,7 +194,7 @@ namespace mkv {
         markov_network(const desc_type& desc, const rng_type& rng)
         : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(rng), _threshold(0) {
         }
-
+        
         //! Retrieve this network's underlying random number generator.
         rng_type& rng() { return _rng; }
         
@@ -211,7 +214,7 @@ namespace mkv {
         
         //! Retrieve the size of this network, in number of gates.
         std::size_t ngates() const { return size(); }
-                
+        
         //! Clear the network.
         void clear() { _svm.clear(); }
         
@@ -248,7 +251,7 @@ namespace mkv {
                 _svm.state_t(i-_desc.get<IN>()) |= v;
             }
         }
-
+        
     protected:
         desc_type _desc; //!< Geometry descriptor for this Markov Network.
         svm_type _svm; //!< State vector machine for the hidden & output states.
@@ -258,7 +261,7 @@ namespace mkv {
     
     
     namespace detail {
-        
+
         /*! Visitor, used to trigger updates on different gate types.
          */
         template <typename RandomAccessIterator>
@@ -353,9 +356,8 @@ namespace mkv {
             markov_network& _net;
             RandomAccessIterator _f;
         };
-        
+
     } // detail
-    
     
     /*! Update a Markov Network n times with inputs given by f.
      */

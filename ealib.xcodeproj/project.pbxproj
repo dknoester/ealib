@@ -40,6 +40,8 @@
 		423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDFB157D0E450003A644 /* test_rng.cpp */; };
 		423CBE75157D10C80003A644 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		4245004716D3BA8F007827D7 /* test_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4245004516D3BA8E007827D7 /* test_types.cpp */; };
+		426064C716D7BFC600C5B117 /* test_convolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426064C516D7BFC600C5B117 /* test_convolution.cpp */; };
+		426064C916D8F6F000C5B117 /* runner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF1157D0E450003A644 /* runner.cpp */; };
 		42681E19166E441F00665BD1 /* tutorial_1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42681E18166E441F00665BD1 /* tutorial_1.cpp */; };
 		42681E29166E451000665BD1 /* tutorial_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42681E28166E451000665BD1 /* tutorial_2.cpp */; };
 		42681E38166E45E300665BD1 /* tutorial_3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42681E37166E45E300665BD1 /* tutorial_3.cpp */; };
@@ -323,6 +325,8 @@
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		4245006416D53E22007827D7 /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
 		425E833416602B5A003B6867 /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
+		426064C416D7B70600C5B117 /* convolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convolution.h; sourceTree = "<group>"; };
+		426064C516D7BFC600C5B117 /* test_convolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_convolution.cpp; sourceTree = "<group>"; };
 		42681E0C166E43A000665BD1 /* tutorial_1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tutorial_1; sourceTree = BUILT_PRODUCTS_DIR; };
 		42681E18166E441F00665BD1 /* tutorial_1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tutorial_1.cpp; sourceTree = "<group>"; };
 		42681E26166E44F300665BD1 /* tutorial_1 copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "tutorial_1 copy"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -830,6 +834,7 @@
 		42841C3B15ADA06B00AB18BE /* mkv */ = {
 			isa = PBXGroup;
 			children = (
+				426064C416D7B70600C5B117 /* convolution.h */,
 				42841C3C15ADA06B00AB18BE /* markov_network.h */,
 				425E833416602B5A003B6867 /* deep_markov_network.h */,
 				42720FB1163C0957008C8E63 /* graph.h */,
@@ -844,6 +849,7 @@
 			children = (
 				42841C4215ADA06B00AB18BE /* test.h */,
 				42841C4115ADA06B00AB18BE /* test_mkv.cpp */,
+				426064C516D7BFC600C5B117 /* test_convolution.cpp */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -1137,6 +1143,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				426064C916D8F6F000C5B117 /* runner.cpp in Sources */,
 				423CBE63157D0FF50003A644 /* test_checkpoint.cpp in Sources */,
 				423CBE66157D0FF50003A644 /* test_meta_data.cpp in Sources */,
 				423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */,
@@ -1229,6 +1236,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				42841C6515ADA42B00AB18BE /* test_mkv.cpp in Sources */,
+				426064C716D7BFC600C5B117 /* test_convolution.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
