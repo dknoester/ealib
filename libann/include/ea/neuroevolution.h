@@ -26,6 +26,7 @@
 
 LIBEA_MD_DECL(ANN_INPUTS_N, "ann.inputs.n", int);
 LIBEA_MD_DECL(ANN_OUTPUTS_N, "ann.outputs.n", int);
+LIBEA_MD_DECL(ANN_RANDOMIZE_N, "ann.randomize.n", int);
 
 
 namespace ea {
@@ -40,11 +41,26 @@ namespace ea {
             
             // and randomize it some:
             ancestors::random_graph rg;
-            rg.randomize(G,ea);
+            rg.randomize(G, get<ANN_RANDOMIZE_N>(ea), ea);
             return G;
         }
     };
-    
+
+    /*! Generates a minimal random artificial neural network.
+     */
+    struct minimal_random_ann {
+        template <typename EA>
+        typename EA::representation_type operator()(EA& ea) {
+            // build the network:
+            typename EA::representation_type G(get<ANN_INPUTS_N>(ea), get<ANN_OUTPUTS_N>(ea));
+            
+            ancestors::random_graph rg;
+            while(boost::num_vertices(G) < get<ANN_RANDOMIZE_N>(ea)) {
+                rg.randomize(G,1,ea);
+            }
+            return G;
+        }
+    };
 
     /*! Type for vertices.
      */

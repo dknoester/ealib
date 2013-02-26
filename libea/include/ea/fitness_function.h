@@ -233,7 +233,7 @@ namespace ea {
         template <typename FitnessFunction, typename EA>
         void initialize_fitness_function(FitnessFunction& ff, stochasticS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            next<FF_INITIAL_RNG_SEED>(ea);
+            ea::next<FF_INITIAL_RNG_SEED>(ea);
             typename EA::rng_type rng(get<FF_INITIAL_RNG_SEED>(ea)+1); // +1 to avoid clock
             ff.initialize(rng, ea);
         }

@@ -64,8 +64,8 @@ namespace ann {
             neuron(vertex(0)).flags(neuron::reserved | neuron::inactive | neuron::bias);
             // we're not guaranteed that the bias will be visited during activation.
             // it always outputs "1":
-            neuron(vertex(0)).input = 1.0;
-            neuron(vertex(0)).output = 1.0;
+            neuron(vertex(0)).input = -1.0;
+            neuron(vertex(0)).output = -1.0;
             
             // vertex 1 is the "top" neuron; activation is a BFS from this vertex:
             neuron(vertex(1)).flags(neuron::reserved | neuron::inactive | neuron::top);
@@ -101,7 +101,11 @@ namespace ann {
         vertex_descriptor vertex(std::size_t i) { return boost::vertex(i,*this); }
 
         //! Add a vertex to this neural network, and connect it to the bias neuron:
-        vertex_descriptor add_vertex() { add_edge(vertex(0), boost::add_vertex(*this)); }
+        vertex_descriptor add_vertex() {
+            vertex_descriptor v = boost::add_vertex(*this);
+            add_edge(vertex(0), v);
+            return v;
+        }
 
         //! Retrieve the synapse for edge i.
         synapse_type& synapse(edge_descriptor i) { return (*this)[i]; }
@@ -137,8 +141,6 @@ namespace ann {
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
-
-    
 
 } // ann
 

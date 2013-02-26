@@ -34,7 +34,7 @@ LIBEA_MD_DECL(GRAPH_DUPLICATE_EVENT_P, "graph.duplicate.event.p", double);
 LIBEA_MD_DECL(GRAPH_DUPLICATE_VERTEX_P, "graph.duplicate.vertex.p", double);
 LIBEA_MD_DECL(GRAPH_MUTATION_EVENT_P, "graph.mutation.event.p", double);
 LIBEA_MD_DECL(GRAPH_MUTATION_VERTEX_P, "graph.mutation.vertex.p", double);
-LIBEA_MD_DECL(RANDOM_GRAPH_N, "random_graph.n", int);
+LIBEA_MD_DECL(RANDOM_GRAPH_N, "ea.ancestors.random_graph.n", int);
 
 namespace ea {
     namespace mutation {
@@ -43,7 +43,7 @@ namespace ea {
             //! Add a vertex.
             template <typename Representation, typename EA>
             typename Representation::vertex_descriptor add_vertex(Representation& G, EA& ea) {
-                return boost::add_vertex(G);
+                return G.add_vertex();
             }
             
             //! Remove a randomly selected vertex.
@@ -157,7 +157,7 @@ namespace ea {
             void operator()(Representation& G, EA& ea) {
                 if(ea.rng().p(get<GRAPH_VERTEX_EVENT_P>(ea))) {
                     if(ea.rng().p(get<GRAPH_VERTEX_ADDITION_P>(ea))) {
-                        detail::add_vertex(G,ea);
+                        G[detail::add_vertex(G,ea)].mutate(ea);
                     } else if(boost::num_vertices(G) > get<GRAPH_MIN_SIZE>(ea)) {
                         detail::remove_vertex(G,ea);
                     }
@@ -165,15 +165,21 @@ namespace ea {
                 
                 if(ea.rng().p(get<GRAPH_EDGE_EVENT_P>(ea))) {
                     if(ea.rng().p(get<GRAPH_EDGE_ADDITION_P>(ea))) {
-                        detail::add_edge(G,ea);
+                        if(boost::num_vertices(G) > 1) {
+                            G[detail::add_edge(G,ea)].mutate(ea);
+                        }
                     } else {
-                        detail::remove_edge(G,ea);
+                        if(boost::num_edges(G) > 0) {
+                            detail::remove_edge(G,ea);
+                        }
                     }
                 }
                 
                 if(ea.rng().p(get<GRAPH_DUPLICATE_EVENT_P>(ea))) {
                     if(ea.rng().p(get<GRAPH_DUPLICATE_VERTEX_P>(ea))) {
-                        detail::duplicate_vertex(G,ea);
+                        if(boost::num_vertices(G) > 0) {
+                            detail::duplicate_vertex(G,ea);
+                        }
                     } else if(boost::num_vertices(G) > get<GRAPH_MIN_SIZE>(ea)) {
                         detail::merge_vertices(G,ea);
                     }
@@ -181,9 +187,13 @@ namespace ea {
                 
                 if(ea.rng().p(get<GRAPH_MUTATION_EVENT_P>(ea))) {
                     if(ea.rng().p(get<GRAPH_MUTATION_VERTEX_P>(ea))) {
-                        detail::mutate_vertex(G,ea);
+                        if(boost::num_vertices(G) > 0) {
+                            detail::mutate_vertex(G,ea);
+                        }
                     } else {
-                        detail::mutate_edge(G,ea);
+                        if(boost::num_edges(G) > 0) {
+                            detail::mutate_edge(G,ea);
+                        }
                     }
                 }
             }
@@ -197,9 +207,9 @@ namespace ea {
          */
         struct random_graph {
             template <typename EA>
-            void randomize(typename EA::representation_type& G, EA& ea) {
+            void randomize(typename EA::representation_type& G, int n, EA& ea) {
                 mutation::graph_mutation gm;
-                for(int i=0; i<get<RANDOM_GRAPH_N>(ea); ++i) {
+                for(int i=0; i<n; ++i) {
                     gm(G,ea);
                 }
             }
@@ -207,7 +217,7 @@ namespace ea {
             template <typename EA>
             typename EA::representation_type operator()(EA& ea) {
                 typename EA::representation_type G(get<GRAPH_MIN_SIZE>(ea));
-                randomize(G,ea);
+                randomize(G,get<RANDOM_GRAPH_N>(ea), ea);
                 return G;
             }
             

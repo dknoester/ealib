@@ -274,6 +274,35 @@ namespace ea {
             return joint_entropy(x) + entropy(y) - joint_entropy(xy);
         }
 
+        //! Calculates the variation of information d(X,Y) = H(X,Y) - I(X;Y).
+        template <typename Matrix>
+        double information_variation(Matrix& M) {
+            using namespace boost::numeric::ublas;
+            typedef matrix_column<Matrix> Column;
+            
+            Column X(M,0);
+            Column Y(M,1);
+            
+            double hxy = joint_entropy(M);
+            return hxy - (entropy(X) + entropy(Y) - hxy);
+        }
+        
+        /*! Calculates the information distance D(X,Y) = 1 - I(X;Y) / H(X,Y).
+         
+         X and Y are columns 0 and 1 in matrix M.
+         */
+        template <typename Matrix>
+        double information_distance(Matrix& M) {
+            using namespace boost::numeric::ublas;
+            typedef matrix_column<Matrix> Column;
+            
+            Column X(M,0);
+            Column Y(M,1);
+            
+            double hxy = joint_entropy(M);
+            return 1.0 - (entropy(X) + entropy(Y) - hxy) / hxy;
+        }
+        
     } // analysis
 } // ea
 
