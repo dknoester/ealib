@@ -32,9 +32,9 @@ namespace ann {
          *f == number of neurons in this layer.
          
          */
-        template <typename Graph, typename ForwardIterator>
-        void mlp(Graph& g, ForwardIterator f, ForwardIterator l) {
-            typedef typename Graph::vertex_descriptor vertex_descriptor;
+        template <typename NeuralNetwork, typename ForwardIterator>
+        void mlp(NeuralNetwork& G, ForwardIterator f, ForwardIterator l) {
+            typedef typename NeuralNetwork::vertex_descriptor vertex_descriptor;
             typedef std::vector<vertex_descriptor> vec_type;
             typedef std::vector<vec_type> layer_type;
             layer_type layers;
@@ -43,17 +43,32 @@ namespace ann {
             for(; f!=l; ++f) {
                 vec_type v;
                 for(std::size_t i=0; i<(*f); ++i) {
-                    v.push_back(boost::add_vertex(g));
+                    v.push_back(G.add_vertex());
                 }
                 layers.push_back(v);
             }
+            std::size_t last=layers.size()-1;
             
-            // and connect adjoining layers:
-            for(std::size_t i=0; i<(layers.size()-1); ++i) {
+            // connect inputs to layer 0:
+            for(std::size_t i=0; i<G.ninputs(); ++i) {
+                for(std::size_t j=0; j<layers[0].size(); ++j) {
+                    G.add_edge(G.input_vertex(i), layers[0][j]);
+                }
+            }
+            
+            // connect adjoining layers:
+            for(std::size_t i=0; i<last; ++i) {
                 for(std::size_t j=0; j<layers[i].size(); ++j) {
                     for(std::size_t k=0; k<layers[i+1].size(); ++k) {
-                        boost::add_edge(layers[i][j], layers[i+1][k], g);
+                        G.add_edge(layers[i][j], layers[i+1][k]);
                     }
+                }
+            }
+            
+            // connect last layer to outputs:
+            for(std::size_t i=0; i<layers[last].size(); ++i) {
+                for(std::size_t j=0; j<G.noutputs(); ++j) {
+                    G.add_edge(layers[last][j], G.output_vertex(j));
                 }
             }
         }

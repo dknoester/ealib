@@ -41,10 +41,12 @@ namespace ann {
 		//! Called once for each vertex, in order of discovery.
 		void operator()(vertex_descriptor v, const ann_type&) {
             typename ann_type::neuron_type& n=_g[v];
-            
-            if(n.inactive()) {
-                // when a neuron is inactive, we pass its input straight through:
-                n.output = n.input;
+
+            if(n.getf(neuron::top) || n.getf(neuron::bias)) {
+                return;
+            } else if(n.getf(neuron::input)) {
+                // input neurons are filtered and passed-through:
+                n.output = _filt(n.input);
             } else {
                 n.activate(v, _g, _filt);
             }

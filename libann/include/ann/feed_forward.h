@@ -35,7 +35,7 @@ namespace ann {
         //! Synapse type for feed forward neurons.
         struct synapse_type {
             //! Default constructor.
-            synapse_type(double w=1.0) : weight(w) { }
+            synapse_type(double w=0.05) : weight(w) { }
             
             double weight; //!< Weight of this edge.
         };

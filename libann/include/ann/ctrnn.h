@@ -35,7 +35,7 @@ namespace ann {
         //! Synapse type for ctrnn neurons.
         struct synapse_type {
             //! Default constructor.
-            synapse_type(double w=1.0) : weight(w), t(0.0), t_minus1(0.0) { }
+            synapse_type(double w=0.0) : weight(w), t(0.0), t_minus1(0.0) { }
             
             double weight; //!< Weight of this link.
             double t; //!< Value of this link at time t (present).

@@ -51,9 +51,20 @@ namespace ann {
         typedef typename base_type::vertex_descriptor vertex_descriptor;
         typedef typename base_type::edge_descriptor edge_descriptor;
         typedef Filter filter_type;
-        
+        typedef neuron_activation_visitor<neural_network,filter_type> activation_visitor_type;
+
         //! Default constructor.
-        neural_network() : base_type(0) {
+        neural_network() : base_type(2), _nin(0), _nout(0) {
+            // vertex 0 is the "bias" neuron; it is automatically connected to all
+            // active neurons, and is itself inactive:
+            neuron(vertex(0)).flags(neuron::reserved | neuron::bias);
+            // we're not guaranteed that the bias will be visited during activation.
+            // it always outputs "1":
+            neuron(vertex(0)).input = -1.0;
+            neuron(vertex(0)).output = -1.0;
+            
+            // vertex 1 is the "top" neuron; activation is a BFS from this vertex:
+            neuron(vertex(1)).flags(neuron::reserved | neuron::top);
         }
         
         //! Constructor.
@@ -61,19 +72,19 @@ namespace ann {
         : base_type(nin+nout+2), _nin(nin), _nout(nout), _filt(f) {
             // vertex 0 is the "bias" neuron; it is automatically connected to all
             // active neurons, and is itself inactive:
-            neuron(vertex(0)).flags(neuron::reserved | neuron::inactive | neuron::bias);
+            neuron(vertex(0)).flags(neuron::reserved | neuron::bias);
             // we're not guaranteed that the bias will be visited during activation.
             // it always outputs "1":
             neuron(vertex(0)).input = -1.0;
             neuron(vertex(0)).output = -1.0;
             
             // vertex 1 is the "top" neuron; activation is a BFS from this vertex:
-            neuron(vertex(1)).flags(neuron::reserved | neuron::inactive | neuron::top);
+            neuron(vertex(1)).flags(neuron::reserved | neuron::top);
             
             // connect the top neuron to the inputs, mark them:
             for(std::size_t i=2; i<(nin+2); ++i) {
                 add_edge(vertex(1), vertex(i));
-                neuron(vertex(i)).flags(neuron::reserved | neuron::inactive | neuron::input);
+                neuron(vertex(i)).flags(neuron::reserved | neuron::input);
             }
             
             // connect the output neurons to the bias, mark them:
@@ -88,6 +99,12 @@ namespace ann {
         : base_type(that), _nin(that._nin), _nout(that._nout), _filt(that._filt) {
         }
         
+        //! Retrieve the number of inputs.
+        std::size_t ninputs() { return _nin; }
+        
+        //! Retrieve the number of outputs.
+        std::size_t noutputs() { return _nout; }
+
         //! Retrieve the neuron for vertex i.
         neuron_type& neuron(vertex_descriptor i) { return (*this)[i]; }
         
@@ -100,9 +117,16 @@ namespace ann {
         //! Retreive the i'th vertex descriptor.
         vertex_descriptor vertex(std::size_t i) { return boost::vertex(i,*this); }
 
-        //! Add a vertex to this neural network, and connect it to the bias neuron:
+        //! Retreive the i'th output vertex descriptor.
+        vertex_descriptor output_vertex(std::size_t i) { return boost::vertex(i+_nin+2,*this); }
+
+        //! Retreive the i'th output vertex descriptor.
+        vertex_descriptor input_vertex(std::size_t i) { return boost::vertex(i+2,*this); }
+
+        //! Add a vertex to this neural network, mark it as hidden, and connect it to the bias neuron.
         vertex_descriptor add_vertex() {
             vertex_descriptor v = boost::add_vertex(*this);
+            (*this)[v].setf(neuron::hidden);
             add_edge(vertex(0), v);
             return v;
         }
@@ -116,13 +140,22 @@ namespace ann {
         //! Add edge(u,v), if it does not already exist.
         std::pair<edge_descriptor,bool> add_edge(vertex_descriptor u, vertex_descriptor v) { return boost::add_edge(u,v,*this); }
         
+        //! Retrieve the filter for this NeuralNetwork.
+        filter_type& filter() { return _filt; }
+        
         //! Activate this neural network using a filtering activation visitor.
-        void activate(unsigned int n=1) {
-            neuron_activation_visitor<neural_network,filter_type> av(*this,_filt);
+        template <typename ActivationVisitor>
+        void activate(ActivationVisitor& av, unsigned int n=1) {
             vertex_descriptor v=vertex(1);
             for( ; n>0; --n) {
                 ann::activate(v, *this, av);
             }
+        }
+
+        //! Activate this neural network using a filtering activation visitor.
+        void activate(unsigned int n=1) {
+            activation_visitor_type av(*this,_filt);
+            activate(av,n);
         }
         
     private:

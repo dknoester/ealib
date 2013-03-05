@@ -21,7 +21,7 @@
 #define BOOST_TEST_MAIN
 #include "test.h"
 
-#include <boost/graph/graphviz.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -31,6 +31,7 @@
 
 #include <ann/feed_forward.h>
 #include <ann/layout.h>
+#include <ann/back_propagation.h>
 
 BOOST_AUTO_TEST_CASE(test_ff_heaviside) {
     using namespace ann;
@@ -133,76 +134,9 @@ BOOST_AUTO_TEST_CASE(test_ff_clipping_htan) {
 }
 
 
-/*
- write_graphviz(std::cout, nn);
- 
-
- //    std::size_t layers[] = {1,2,3,1};
- //    layout::mlp(nn, layers, layers+4);
- 
- //
- //    G[boost::vertex(1,G)].output = -1.0;
- //    G[boost::vertex(2,G)].output = -1.0;
- //    activate(1, boost::vertex(0,G), G);
- //    if(G[boost::vertex(3,G)].output <= 0.0) {
- //        f+=1;
- //    }
- //
- //    G[boost::vertex(1,G)].output = -1.0;
- //    G[boost::vertex(2,G)].output = 1.0;
- //    activate(1, boost::vertex(0,G), G);
- //    if(G[boost::vertex(3,G)].output > 0.0) {
- //        f+=1;
- //    }
- //
- //    G[boost::vertex(1,G)].output = 1.0;
- //    G[boost::vertex(2,G)].output = -1.0;
- //    activate(1, boost::vertex(0,G), G);
- //    if(G[boost::vertex(3,G)].output > 0.0) {
- //        f+=1;
- //    }
- //
- //    G[boost::vertex(1,G)].output = 1.0;
- //    G[boost::vertex(2,G)].output = 1.0;
- //    activate(1, boost::vertex(0,G), G);
- //    if(G[boost::vertex(3,G)].output <= 0.0) {
- //        f+=1;
- //    }
- //
- //
- //
- //
- //    train(nn, 100000, data);
-
-template <typename NeuralNetwork>
-void train(NeuralNetwork& nn, std::size_t n, double data[][3]) {
-    using namespace nn;
-    for(std::size_t i=0; i<n; ++i) {
-        double err=0.0;
-        for(int j=0; j<4; ++j) {
-            typename NeuralNetwork::neuron_map_type im, em;
-            im[nn.input(0)] = data[j][0];
-            im[nn.input(1)] = data[j][1];
-            em[nn.output(0)] = data[j][2];
-            //			im[nn.input(0)] = inputs[j][0];
-            //			im[nn.input(1)] = inputs[j][1];
-            //			em[nn.output(0)] = outputs[j];
-            //			im[nn.input(0)] = xord[j][0];
-            //			im[nn.input(1)] = xord[j][1];
-            //			em[nn.output(0)] = xord[j][2];
-            //			im[nn.input(0)] = oneone[j][0];
-            //			em[nn.output(0)] = oneone[j][1];
-            
-            err += back_propagate(nn, im, em);
-        }
-        std::cout << i << " " << err << std::endl;
-    }
-}
-
 BOOST_AUTO_TEST_CASE(test_neural_network) {
-    
-    using namespace nn;
-    
+    using namespace ann;
+    /*
     double inputs[][2] = {
         { 0.72, 0.82 }, { 0.91, -0.69 }, { 0.46, 0.80 },
         { 0.03, 0.93 }, { 0.12, 0.25 }, { 0.96, 0.47 },
@@ -219,7 +153,7 @@ BOOST_AUTO_TEST_CASE(test_neural_network) {
     double outputs[] = {
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-    
+    */
     double data[][3] = {
         {0.10, 0.03, 0},
         {0.11, 0.11, 0},
@@ -261,12 +195,20 @@ BOOST_AUTO_TEST_CASE(test_neural_network) {
     double oneone[][3] = {
         {1,1},
         {0,0}};
+
+    // 2x2x1 ANN
+    neural_network<feed_forward_neuron< > > nn(2,1);
+    std::size_t layers[] = {2};
+    layout::mlp(nn, layers, layers+1);
     
-    neural_network<feed_forwardS> nn;
-    std::size_t layers[] = {2, 2, 1};
-    layout::mlp(nn, layers, layers+3);
-        
-    train(nn, 100000, data);
-    write_graphviz(std::cout, nn);	
+    typedef boost::numeric::ublas::matrix<double> matrix_type;
+    matrix_type inputs(30,2), expected(30,1);
+
+    for(std::size_t i=0; i<30; ++i) {
+        inputs(i,0) = data[i][0];
+        inputs(i,1) = data[i][1];
+        expected(i,0) = data[i][2];
+    }
+    
+    BOOST_CHECK_CLOSE(back_propagate(nn, inputs, expected, 1000), 3.538, 1.0);
 }
-*/

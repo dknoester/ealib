@@ -24,7 +24,7 @@ namespace ann {
     
     namespace neuron {
         //! Flag bits for neurons.
-        enum neuron_flags { reserved=0x01, input=0x02, output=0x04, inactive=0x08, bias=0x010, top=0x020 };
+        enum neuron_flags { reserved=0x01, top=0x02, bias=0x04, input=0x08, output=0x010, hidden=0x020 };
     }
     
     typedef unsigned int neuron_flags;
@@ -36,11 +36,10 @@ namespace ann {
 		//! Constructor.
 		abstract_neuron() : input(0.0), output(0.0), _flags(0) { }
         
+        bool getf(neuron_flags f) { return _flags & f; }
+        void setf(neuron_flags f) { _flags |= f; }
         neuron_flags flags() { return _flags; }
         neuron_flags flags(neuron_flags f) { _flags = f; return _flags; }
-        
-        bool reserved() { return _flags & neuron::reserved; }
-        bool inactive() { return _flags & neuron::inactive; }
         
         neuron_flags _flags; //!< Flags set for this neuron.
         double input; //!< Input to this neuron.

@@ -204,6 +204,18 @@ namespace ea {
 			return std::make_pair(static_cast<T>(one), static_cast<T>(two));
 		}
 		
+		/*! Choose two different random numbers from [min,max) and return them in arbitrary order.
+		 */
+		template <typename T>
+		std::pair<T,T> choose_two_ns(T min, T max) {
+			int_rng_type irng = uniform_integer_rng(static_cast<int>(min), static_cast<int>(max));
+			int one=irng();	int two=irng();
+			while(one == two) {
+				two = irng();
+			}
+			return std::make_pair(static_cast<T>(one), static_cast<T>(two));
+		}        
+        
 		/*! Choose two different iterators from the range [f,l), and return them in sorted order (r.first occurs before r.second).
 		 */
 		template <typename ForwardIterator>
