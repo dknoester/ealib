@@ -27,7 +27,29 @@
 
 namespace ea {
 	namespace algorithm {
-
+        
+        /*! Roulette wheel selection.
+		 
+		 Returns the index and iterator selected from the range [f,l), based on the sum of values
+		 of the items in the sequence.
+		 
+		 If a value could not be found, return l.
+		 */
+		template <typename ForwardIterator>
+        std::pair<std::size_t, ForwardIterator> roulette_wheel(const typename ForwardIterator::value_type& target, ForwardIterator f, ForwardIterator l) {
+			typename ForwardIterator::value_type running=0.0;
+            std::size_t i=0;
+			for( ; f!=l; ++f, ++i) {
+				running += *f;
+				if(running >= target) {
+					return std::make_pair(i,f);
+				}
+			}
+            // if we get here, then target > sum(f,l); this is either a floating point
+            // or logical error.  we'll return the final index and l; be warned.
+			return std::make_pair(i-1,l);
+		}
+        
         /*! Assign sequentially increasing values to a range.
 		 */
 		template <typename ForwardIterator, typename T>
@@ -54,7 +76,7 @@ namespace ea {
         }
         
         
-        //! Normalize the range [f,l) to v in-place and return an iterator to the end of the range.
+        //! Normalize the range [f,l) to v, outputting results to o, and return an iterator to the end of the range.
         template <typename ForwardIterator, typename OutputIterator>
         ForwardIterator normalize(ForwardIterator f, ForwardIterator l, OutputIterator o, double v) {
             typedef typename OutputIterator::value_type value_type;
@@ -69,6 +91,12 @@ namespace ea {
                 *o++ = offset + static_cast<double>(*f) * v / s;
             }
             return f;
+        }
+        
+        //! Normalize the range [f,l) to v in-place and return an iterator to the end of the range.
+        template <typename ForwardIterator>
+        ForwardIterator normalize(ForwardIterator f, ForwardIterator l, double v) {
+            return normalize(f, l, f, v);
         }
 
         template <typename T>

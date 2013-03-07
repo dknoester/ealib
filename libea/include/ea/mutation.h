@@ -21,6 +21,7 @@
 #define _EA_MUTATION_H_
 
 #include <ea/algorithm.h>
+#include <ea/concepts.h>
 #include <ea/meta_data.h>
 
 

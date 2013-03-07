@@ -23,6 +23,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
+#include <ea/graph.h>
 #include <ann/abstract_neuron.h>
 #include <ann/sigmoid.h>
 #include <ann/activation.h>
@@ -167,6 +168,8 @@ namespace ann {
         
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
+            std::string g=ea::graph::graph2string(*this);
+            ar & boost::serialization::make_nvp("neural_network", g);
 		}
 		
 		template<class Archive>
@@ -174,7 +177,7 @@ namespace ann {
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
-
+    
 } // ann
 
 #endif

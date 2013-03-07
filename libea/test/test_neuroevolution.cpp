@@ -43,7 +43,7 @@ struct graph_configuration : public abstract_configuration<EA> {
 
 typedef evolutionary_algorithm<
 neural_network<neuroevolution<feed_forward_neuron< > > >,
-mutation::graph_mutation,
+mutation::graph_mutator,
 graph_fitness,
 graph_configuration
 > graph_ea;

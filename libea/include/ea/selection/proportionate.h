@@ -89,29 +89,6 @@ namespace ea {
 			double _sum; //!< Sum of fitnesses in the population being selected from.
             double _offset; //!< Amount by which to offset the attribute being selected over.
 		};
-		
-        
-        
-        /*! Roulette wheel selection.
-		 
-		 Returns an iterator selected from the range [f,l), based on the sum of values
-		 of the items in the sequence.
-		 
-		 If a value could not be found, return l.
-		 */
-		template <typename T, typename InputIterator, typename EA>
-		InputIterator roulette_wheel(const T& target, InputIterator f, InputIterator l, EA& ea) {
-			T running=0.0;
-			for( ; f!=l; ++f) {
-				running += static_cast<T>(ind(f,ea).fitness());
-				if(running >= target) {
-					return f;
-				}
-			}			
-			return l;
-		}
-        
-        
         
 	} // selection
 } // ealib

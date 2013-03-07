@@ -36,44 +36,57 @@ struct graph_configuration : public abstract_configuration<EA> {
     }
 };
 
-typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, abstract_vertex< >, abstract_edge< > > Graph;
+typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::colored_vertex<mutation::mutable_vertex< > >, mutation::mutable_edge< > > Graph;
 
 typedef evolutionary_algorithm<
 Graph,
-mutation::graph_mutation,
+mutation::graph_mutator,
 graph_fitness,
 graph_configuration
 > graph_ea;
 
 BOOST_AUTO_TEST_CASE(test_graph_mutations) {
 	using namespace ea;
-    namespace emd = ea::mutation::detail;
+    namespace eg = ea::graph;
     
     graph_ea ea;
+    put<GRAPH_MIN_SIZE>(0,ea);
     Graph G;
     
-    emd::add_vertex(G,ea);
-    emd::add_vertex(G,ea);
+    eg::add_vertex(G,ea);
+    eg::add_vertex(G,ea);
     BOOST_CHECK_EQUAL(num_vertices(G), 2);
     
-    emd::add_edge(G,ea);
+    eg::add_edge(G,ea);
     BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 1);
-    emd::remove_edge(G,ea);
+    eg::remove_edge(G,ea);
     BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 0);
-    emd::add_edge(G,ea);
+    eg::add_edge(G,ea);
     
-    emd::duplicate_vertex(G,ea);
+    eg::duplicate_vertex(G,ea);
     BOOST_CHECK_EQUAL(num_vertices(G), 3);
     BOOST_CHECK_EQUAL(degree(vertex(2,G),G), 1);
     BOOST_CHECK((degree(vertex(0,G),G)==2) || (degree(vertex(1,G),G)==2));
 
-    emd::merge_vertices(G,ea);
+    eg::merge_vertices(G,ea);
     BOOST_CHECK_EQUAL(num_vertices(G), 2);
     BOOST_CHECK((degree(vertex(0,G),G)>=1) && (degree(vertex(1,G),G)>=1));
     
-    emd::remove_vertex(G,ea);
+    eg::remove_vertex(G,ea);
     BOOST_CHECK_EQUAL(num_vertices(G), 1);
     BOOST_CHECK((degree(vertex(0,G),G) == 0) || (degree(vertex(0,G),G) == 2)); // 2 is for self-loops as a result of a merge
 }
 
 
+BOOST_AUTO_TEST_CASE(test_graph_growth) {
+	using namespace ea;
+    using namespace ea::graph;
+    growth_descriptor desc;
+    desc.Pc[conditional::p] = 0.5;
+    desc.Pc[conditional::q] = 0.8;
+    desc.Pc[conditional::r] = 0.75;
+    default_rng_type rng(1);
+    Graph G;
+    graph::grow_network(G, 100, desc, rng);
+//    std::cout << graph2string(G) << std::endl;
+}

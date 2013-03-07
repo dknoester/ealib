@@ -125,7 +125,7 @@ namespace ea {
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
                 for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
-                    *i = ea.rng().uniform_integer(get<INITIALIZATION_UNIFORM_INT_MIN>(ea), get<INITIALIZATION_UNIFORM_INT_MAX>(ea));
+                    *i = ea.rng().uniform_integer(get<MUTATION_UNIFORM_INT_MIN>(ea), get<MUTATION_UNIFORM_INT_MAX>(ea));
                 }
                 return r;
             }
@@ -140,7 +140,7 @@ namespace ea {
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
                 for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
-                    *i = ea.rng().uniform_real(get<INITIALIZATION_UNIFORM_REAL_MIN>(ea), get<INITIALIZATION_UNIFORM_REAL_MAX>(ea));
+                    *i = ea.rng().uniform_real(get<MUTATION_UNIFORM_REAL_MIN>(ea), get<MUTATION_UNIFORM_REAL_MAX>(ea));
                 }
                 return r;
             }

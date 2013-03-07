@@ -308,12 +308,6 @@ namespace ea {
     LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.meta_population.size", unsigned int);
     LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.meta_population.competition_period", unsigned int);
 
-    // ea.initialization.*
-    LIBEA_MD_DECL(INITIALIZATION_UNIFORM_INT_MIN, "ea.initialization.uniform_integer.min", int);
-    LIBEA_MD_DECL(INITIALIZATION_UNIFORM_INT_MAX, "ea.initialization.uniform_integer.max", int);
-    LIBEA_MD_DECL(INITIALIZATION_UNIFORM_REAL_MIN, "ea.initialization.uniform_real.min", double);
-    LIBEA_MD_DECL(INITIALIZATION_UNIFORM_REAL_MAX, "ea.initialization.uniform_real.max", double);
-    
 	// ea.selection.*
 	LIBEA_MD_DECL(TOURNAMENT_SELECTION_N, "ea.selection.tournament.n", int);
 	LIBEA_MD_DECL(TOURNAMENT_SELECTION_K, "ea.selection.tournament.k", int);

@@ -125,6 +125,9 @@ namespace ea {
 		 */
 		bool p(double prob) { assert((prob >= 0.0) && (prob <= 1.0)); return (*_p)() < prob; }
 
+        //! Returns a probability.
+        double p() { return (*_p)(); }
+        
 		//! Returns a random bit.
 		bool bit() { return (*_bit)(); }
 		
@@ -317,6 +320,16 @@ namespace ea {
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};
 	
+    /*! STL-compatible generator for probabilities.
+     */
+    template <typename RNG>
+    struct probability_generator {
+        typedef double result_type;
+        probability_generator(RNG& rng) : _rng(rng) { }
+        result_type operator()() { return _rng.p(); }
+        RNG& _rng;
+    };
+    
 	//! Default random number generation type.
 	typedef rng<boost::mt19937> default_rng_type;
 
