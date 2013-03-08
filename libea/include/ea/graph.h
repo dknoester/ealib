@@ -485,6 +485,7 @@ namespace ea {
                 sm(repr.Pe, ea);
                 sm(repr.Pc, ea);
                 sm(repr.Pm, ea);
+                sm(repr.M.data(), ea);
                 
                 // P of changing # of modules is persite / #modules
                 if(ea.rng().p(get<MUTATION_PER_SITE_P>(ea)/static_cast<double>(repr.Pm.size()))) {

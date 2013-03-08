@@ -83,6 +83,7 @@ namespace ea {
         
         //! Constructor.
         neuroevolution() : base_type() {
+            base_type::setf(ann::neuron::hidden); // neurons default to hidden.
         }
         
         //! Returns true if the requested mutation type is allowed.
