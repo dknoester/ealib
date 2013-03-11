@@ -21,8 +21,9 @@
 #define _ANN_NEURAL_NETWORK_H_
 
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/adj_list_serialize.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/base_object.hpp>
 #include <ea/graph.h>
 #include <ann/abstract_neuron.h>
 #include <ann/sigmoid.h>
@@ -163,19 +164,14 @@ namespace ann {
         filter_type _filt; //!< Filter to be applied to neuron activity levels.
         std::size_t _nin; //!< Number of inputs.
         std::size_t _nout; //!< Number of outputs.
-        
+
 		friend class boost::serialization::access;
-        
-		template<class Archive>
-		void save(Archive & ar, const unsigned int version) const {
-            std::string g=ea::graph::graph2string(*this);
-            ar & boost::serialization::make_nvp("neural_network", g);
-		}
-		
-		template<class Archive>
-		void load(Archive & ar, const unsigned int version) {
-		}
-		BOOST_SERIALIZATION_SPLIT_MEMBER();
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("graph", boost::serialization::base_object<base_type>(*this));
+            ar & boost::serialization::make_nvp("ninput", _nin);
+            ar & boost::serialization::make_nvp("noutput", _nout);
+        }
     };
     
 } // ann

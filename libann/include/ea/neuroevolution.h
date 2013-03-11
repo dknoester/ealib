@@ -65,9 +65,9 @@ namespace ea {
     /*! Type for vertices.
      */
     template <typename Neuron>
-    struct neuroevolution : Neuron {
-        typedef Neuron base_type;
-        typedef typename base_type::synapse_type base_synapse_type;
+    struct neuroevolution : graph::mutable_vertex<Neuron> {
+        typedef graph::mutable_vertex<Neuron> base_type;
+        typedef graph::mutable_edge<typename base_type::synapse_type> base_synapse_type;
         
         struct synapse_type : base_synapse_type {
             //! Constructor.
@@ -105,6 +105,9 @@ namespace ea {
                 }
                 case graph_operation::target: {
                     return base_type::getf(neuron::hidden) || base_type::getf(neuron::output);
+                }
+                case graph_operation::mutate: {
+                    return !base_type::getf(neuron::reserved);
                 }
             }
         }

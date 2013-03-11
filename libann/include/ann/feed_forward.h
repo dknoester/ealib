@@ -33,11 +33,10 @@ namespace ann {
 		typedef Sigmoid sigmoid_type; //!< Sigmoid type, used for activation.
 
         //! Synapse type for feed forward neurons.
-        struct synapse_type {
+        struct synapse_type : public abstract_neuron::abstract_synapse {
+            typedef abstract_neuron::abstract_synapse base_type;
             //! Default constructor.
-            synapse_type(double w=0.05) : weight(w) { }
-            
-            double weight; //!< Weight of this edge.
+            synapse_type(double w=0.05) : base_type(w) { }
         };
 		
 		//! Constructor.

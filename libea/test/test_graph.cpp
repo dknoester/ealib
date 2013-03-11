@@ -36,7 +36,7 @@ struct graph_configuration : public abstract_configuration<EA> {
     }
 };
 
-typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::colored_vertex<mutation::mutable_vertex< > >, mutation::mutable_edge< > > Graph;
+typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex< >, graph::mutable_edge< > > Graph;
 
 typedef evolutionary_algorithm<
 Graph,
@@ -50,29 +50,28 @@ BOOST_AUTO_TEST_CASE(test_graph_mutations) {
     namespace eg = ea::graph;
     
     graph_ea ea;
-    put<GRAPH_MIN_SIZE>(0,ea);
     Graph G;
     
-    eg::add_vertex(G,ea);
-    eg::add_vertex(G,ea);
+    eg::add_vertex(G,ea.rng());
+    eg::add_vertex(G,ea.rng());
     BOOST_CHECK_EQUAL(num_vertices(G), 2);
     
-    eg::add_edge(G,ea);
+    eg::add_edge(G,ea.rng());
     BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 1);
-    eg::remove_edge(G,ea);
+    eg::remove_edge(G,ea.rng());
     BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 0);
-    eg::add_edge(G,ea);
+    eg::add_edge(G,ea.rng());
     
-    eg::duplicate_vertex(G,ea);
+    eg::duplicate_vertex(G,ea.rng());
     BOOST_CHECK_EQUAL(num_vertices(G), 3);
     BOOST_CHECK_EQUAL(degree(vertex(2,G),G), 1);
     BOOST_CHECK((degree(vertex(0,G),G)==2) || (degree(vertex(1,G),G)==2));
 
-    eg::merge_vertices(G,ea);
+    eg::merge_vertices(G,ea.rng());
     BOOST_CHECK_EQUAL(num_vertices(G), 2);
     BOOST_CHECK((degree(vertex(0,G),G)>=1) && (degree(vertex(1,G),G)>=1));
     
-    eg::remove_vertex(G,ea);
+    eg::remove_vertex(G,ea.rng());
     BOOST_CHECK_EQUAL(num_vertices(G), 1);
     BOOST_CHECK((degree(vertex(0,G),G) == 0) || (degree(vertex(0,G),G) == 2)); // 2 is for self-loops as a result of a merge
 }
