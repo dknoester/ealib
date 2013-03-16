@@ -94,6 +94,10 @@ namespace ea {
             return *this;
         }		
 
+        bool operator==(const rng& that) {
+            return _eng == that._eng;
+        }
+        
 		//! Reset this random number generator with the specified seed.
 		void reset(unsigned int s) {
 			if(s == 0) {

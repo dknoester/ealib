@@ -26,14 +26,26 @@
 namespace ann {
     //! Flag bits for neurons.
     namespace neuron {
-        enum neuron_flags { reserved=0x01, top=0x02, bias=0x04, input=0x08, output=0x010, hidden=0x020 };
+        enum flags { reserved=0x01, top=0x02, bias=0x04, input=0x08, output=0x010, hidden=0x020 };
     }
     
-    typedef unsigned int neuron_flags;
+    typedef unsigned int flag_type;
+    
+    /*! Convenience struct to hold flags for a vertex.
+     */
+    struct neuron_flags {
+        neuron_flags() : _flags(0) { }
+        bool getf(flag_type f) { return _flags & f; }
+        void setf(flag_type f) { _flags |= f; }
+        flag_type flags() { return _flags; }
+        flag_type flags(flag_type f) { _flags = f; return _flags; }
+
+        flag_type _flags; //!< Flags.
+    };
     
 	/*! Abstract base class for neurons.
 	 */
-	struct abstract_neuron {
+	struct abstract_neuron : public neuron_flags {
         
         //! Synapse type for feed forward neurons.
         struct abstract_synapse {
@@ -49,14 +61,8 @@ namespace ann {
             double weight; //!< Weight of this edge.
         };
 
-        
 		//! Constructor.
-		abstract_neuron() : input(0.0), output(0.0), _flags(0) { }
-        
-        bool getf(neuron_flags f) { return _flags & f; }
-        void setf(neuron_flags f) { _flags |= f; }
-        neuron_flags flags() { return _flags; }
-        neuron_flags flags(neuron_flags f) { _flags = f; return _flags; }
+		abstract_neuron() : input(0.0), output(0.0) { }
         
         //! Serializer for abstract neuron types.
         template<class Archive>
@@ -66,7 +72,6 @@ namespace ann {
             ar & BOOST_SERIALIZATION_NVP(output);
         }
 
-        neuron_flags _flags; //!< Flags set for this neuron.
         double input; //!< Input to this neuron.
 		double output; //!< Output from this neuron.
 	};

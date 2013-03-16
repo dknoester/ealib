@@ -116,6 +116,11 @@ namespace ea {
 			return *this;
 		}
 		
+        //! Operator==
+        bool operator==(const meta_data& that) {
+            return std::equal(_strings.begin(), _strings.end(), that._strings.begin());
+        }
+        
         //! Returns a reference to this meta-data object (for compatibiliy with the get & set methods below).
         meta_data& md() { return *this; }
         

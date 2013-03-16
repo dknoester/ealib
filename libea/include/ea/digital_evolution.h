@@ -251,6 +251,51 @@ namespace ea {
         //! Retrieves this AL's scheduler.
         scheduler_type& scheduler() { return _scheduler; }
         
+        //! Return the n'th individual in the population.
+        individual_type& operator[](std::size_t n) {
+            return *_population[n];
+        }
+        
+        //! Returns a begin iterator to the population.
+        iterator begin() {
+            return iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population.
+        iterator end() {
+            return iterator(_population.end());
+        }
+        
+        //! Returns a begin iterator to the population (const-qualified).
+        const_iterator begin() const {
+            return const_iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population (const-qualified).
+        const_iterator end() const {
+            return const_iterator(_population.end());
+        }
+        
+        //! Returns a reverse begin iterator to the population.
+        reverse_iterator rbegin() {
+            return reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population.
+        reverse_iterator rend() {
+            return reverse_iterator(_population.rend());
+        }
+        
+        //! Returns a reverse begin iterator to the population (const-qualified).
+        const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population (const-qualified).
+        const_reverse_iterator rend() const {
+            return const_reverse_iterator(_population.rend());
+        }
+        
     protected:
         unsigned long _name;
         double _generation;
@@ -270,6 +315,7 @@ namespace ea {
 		void save(Archive & ar, const unsigned int version) const {
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("environment", _env);
+            ar & boost::serialization::make_nvp("scheduler", _scheduler);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("meta_data", _md);
 		}
@@ -278,6 +324,7 @@ namespace ea {
 		void load(Archive & ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("environment", _env);
+            ar & boost::serialization::make_nvp("scheduler", _scheduler);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("meta_data", _md);
             

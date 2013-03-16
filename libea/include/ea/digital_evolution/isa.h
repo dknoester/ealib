@@ -337,7 +337,7 @@ namespace ea {
         
         //! Send a message to the currently-faced neighbor.
         DIGEVO_INSTRUCTION_DECL(tx_msg) {
-            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);            
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);
             if(l.occupied()) {
                 int rbx = hw.modifyRegister();
                 int rcx = hw.nextRegister(rbx);

@@ -32,7 +32,7 @@ namespace ea {
      */
     struct first_neighbor {
         template <typename EA>
-        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
+        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
             return std::make_pair(ea.env().neighborhood(parent,ea).first, true);
         }
     };
@@ -43,7 +43,7 @@ namespace ea {
      */
     struct random_neighbor {
         template <typename EA>
-        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
+        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
             typedef typename EA::environment_type::iterator location_iterator;
             std::pair<location_iterator, location_iterator> i = ea.env().neighborhood(parent,ea);
             return std::make_pair(ea.rng().choice(i.first, i.second), true);
@@ -59,7 +59,7 @@ namespace ea {
      */
     struct empty_neighbor {
         template <typename EA>
-        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type& parent, EA& ea) {
+        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
             typedef typename EA::environment_type::iterator location_iterator;
             std::pair<location_iterator, location_iterator> i = ea.env().neighborhood(parent,ea);
             

@@ -71,7 +71,7 @@ namespace ann {
         
         //! Constructor.
         neural_network(std::size_t nin, std::size_t nout, const filter_type& f=filter_type())
-        : base_type(nin+nout+2), _nin(nin), _nout(nout), _filt(f) {
+        : base_type(nin+nout+2), _filt(f), _nin(nin), _nout(nout) {
             // vertex 0 is the "bias" neuron; it is automatically connected to all
             // active neurons, and is itself inactive:
             neuron(vertex(0)).flags(neuron::reserved | neuron::bias);
@@ -98,7 +98,7 @@ namespace ann {
         
         //! Copy constructor.
         neural_network(const neural_network& that)
-        : base_type(that), _nin(that._nin), _nout(that._nout), _filt(that._filt) {
+        : base_type(that), _filt(that._filt), _nin(that._nin), _nout(that._nout) {
         }
         
         //! Retrieve the number of inputs.

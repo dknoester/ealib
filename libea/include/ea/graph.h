@@ -64,43 +64,48 @@ namespace ea {
             enum probability { p=0, q, r };
         }
 
-        namespace detail {
-            //! Null-type; used as a type placeholder for "plain" graphs.
-            struct null_type { };
-        }
-        
-        //! Mutable vertex adaptor.
-        template <typename Vertex=detail::null_type>
-        struct mutable_vertex : Vertex {
+        //! Adaptor to add color to vertices.
+        struct colored_vertex {
             typedef int color_type;
+            colored_vertex() : color(0) { }
+            color_type color; //!< Color of this vertex, used to assign modularity.
+        };
+        
+        //! Mix-in vertex type for graphs that are grown.
+        struct grown_vertex : colored_vertex {
+            //! Default constructor.
+            grown_vertex() { }
 
-            //! Constructor.
-            mutable_vertex() : Vertex(), color(0) {
-            }
-            
-            //! Returns true if the given graph mutation is allowed.
+            //! Returns true if the given graph operation is allowed.
             bool allows(graph::graph_operation::flag m) {
                 return true;
+            }
+        };
+
+        //! Mix-in vertex type for graphs that are grown.
+        struct grown_edge {
+            //! Returns true if the given graph operation is allowed.
+            bool allows(graph::graph_operation::flag m) {
+                return true;
+            }
+        };
+        
+        //! Mix-in for mutable vertices.
+        struct mutable_vertex : grown_vertex {
+            //! Constructor.
+            mutable_vertex() {
             }
             
             //! Mutate this vertex.
             template <typename EA>
             void mutate(EA& ea) {
             }
-            
-            color_type color;
         };
         
-        //! Mutable edge adaptor.
-        template <typename Edge=detail::null_type>
-        struct mutable_edge : Edge {
+        //! Mix-in for mutable edges.
+        struct mutable_edge : grown_edge {
             //! Constructor.
-            mutable_edge() : Edge() {
-            }
-            
-            //! Returns true if the given graph mutation is allowed.
-            bool allows(graph::graph_operation::flag m) {
-                return true;
+            mutable_edge() {
             }
             
             //! Mutate this edge.

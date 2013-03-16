@@ -70,6 +70,40 @@ namespace ea {
         hardware(const representation_type& repr) : _repr(repr) {
             initialize();
         }
+
+        //! Copy constructor.
+        hardware(const hardware& that) {
+            initialize();
+            _repr = that._repr;
+            std::copy(that._head_position, that._head_position+NUM_HEADS, _head_position);
+            std::copy(that._regfile, that._regfile+NUM_REGISTERS, _regfile);
+            _label_stack = that._label_stack;
+            _age = that._age;
+            _mem_extended = that._mem_extended;
+            _cost = that._cost;
+            _orig_size = that._orig_size;
+            _stack = that._stack;
+            _msgs = that._msgs;
+        }
+        
+        //! Assignment operator.
+        hardware& operator=(const hardware& that) {
+            if(this != &that) {
+                initialize();
+                _repr = that._repr;
+                std::copy(that._head_position, that._head_position+NUM_HEADS, _head_position);
+                std::copy(that._regfile, that._regfile+NUM_REGISTERS, _regfile);
+                _label_stack = that._label_stack;
+                _age = that._age;
+                _mem_extended = that._mem_extended;
+                _cost = that._cost;
+                _orig_size = that._orig_size;
+                _stack = that._stack;
+                _msgs = that._msgs;
+            }
+            return *this;
+        }
+
         
         //! Destructor.
         ~hardware() {
@@ -77,14 +111,16 @@ namespace ea {
         
         //! Returns true if hardware(s) are equivalent.
         bool operator==(const hardware& that) {
-            return (_repr == that._repr)
-            && std::equal(_head_position, _head_position+NUM_HEADS, that._head_position)
-            && std::equal(_regfile, _regfile+NUM_REGISTERS, that._regfile)
-            && std::equal(_label_stack.begin(), _label_stack.end(), that._label_stack.begin())
-            && (_age == that._age)
-            && (_mem_extended == that._mem_extended)
-            && (_stack == that._stack)
-            && (_msgs == that._msgs);
+            bool r = (_repr == that._repr);
+            r = r && std::equal(_head_position, _head_position+NUM_HEADS, that._head_position);
+            r = r && std::equal(_regfile, _regfile+NUM_REGISTERS, that._regfile);
+            r = r && std::equal(_label_stack.begin(), _label_stack.end(), that._label_stack.begin());
+            r = r && (_age == that._age);
+            r = r && (_mem_extended == that._mem_extended);
+            r = r && (_cost== that._cost);
+            r = r && (_stack == that._stack);
+            r = r && (_msgs == that._msgs);
+            return r;
         }
         
         //! (Re-) Initialize this hardware.
@@ -354,7 +390,7 @@ namespace ea {
         std::size_t _cost;
         std::size_t _orig_size;
         std::deque<int> _stack;
-        std::deque<std::pair<int,int> > _msgs;            
+        std::deque<std::pair<int,int> > _msgs;
         
     private:
         friend class boost::serialization::access;

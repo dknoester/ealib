@@ -36,7 +36,7 @@ struct graph_configuration : public abstract_configuration<EA> {
     }
 };
 
-typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex< >, graph::mutable_edge< > > Graph;
+typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex, graph::mutable_edge> Graph;
 
 typedef evolutionary_algorithm<
 Graph,

@@ -43,14 +43,14 @@ namespace ea {
     struct weighted_round_robin : generational_models::generational_model {
         typedef EA ea_type;
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-        
+        typedef std::vector<long> exc_list;
+
         void initialize(ea_type& ea) {
         }
                
         template <typename Population>
-        void operator()(Population& population, ea_type& ea) {
-            typedef std::vector<std::size_t> exc_list;
-            exc_list live;
+        exc_list operator()(Population& population, ea_type& ea) {
+            exc_list live, names;
             int last=population.size();
             for(std::size_t i=0; i<population.size(); ++i) {
                 int r=static_cast<int>(population[i]->priority());
@@ -74,6 +74,7 @@ namespace ea {
                 
                 typename ea_type::individual_ptr_type p=population[live[i]];
                 i = (i+1) % live.size();
+                names.push_back(p->name());
 
                 if(p->alive()) {
                     p->execute(1,p,ea);
@@ -91,6 +92,7 @@ namespace ea {
                 }
             }
             std::swap(population, next);
+            return names;
         }
     };
     

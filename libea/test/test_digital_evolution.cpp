@@ -20,6 +20,7 @@
 #include "test.h"
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/spatial.h>
+//#include <ea/digital_evolution/well_mixed.h>
 
 template <typename EA>
 struct test_configuration : public abstract_configuration<EA> {
@@ -61,9 +62,7 @@ struct test_configuration : public abstract_configuration<EA> {
     
     void initialize(EA& ea) {
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
-        
         resource_ptr_type resA = make_resource("resA", ea);
-        
         task_nand->consumes(resA);
     }
     
@@ -73,7 +72,6 @@ typedef digital_evolution<
 test_configuration,
 spatial
 > al_type;
-
 
 /*!
  */
@@ -377,4 +375,46 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     al.scheduler()(al.population(),al);
     
     BOOST_CHECK(al.population()[1]->hw().msgs_queued()>0);
+}
+
+BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
+    al_type al, al2;
+    
+    put<POPULATION_SIZE>(100,al);
+	put<REPRESENTATION_SIZE>(100,al);
+	put<MUTATION_PER_SITE_P>(0.0075,al);
+    put<SPATIAL_X>(10,al);
+    put<SPATIAL_Y>(10,al);
+    put<MUTATION_UNIFORM_INT_MIN>(0,al);
+    put<MUTATION_UNIFORM_INT_MAX>(20,al);
+    put<SCHEDULER_TIME_SLICE>(30,al);
+    put<MUTATION_PER_SITE_P>(0.0075,al);
+    put<CHECKPOINT_PREFIX>("checkpoint",al);
+    put<RNG_SEED>(1,al);
+    put<RECORDING_PERIOD>(10,al);
+    
+    al.initialize();
+    generate_ancestors(repro_ancestor(), 1, al);
+    typename al_type::individual_ptr_type p = al.population()[0];
+    p->priority() = 1.0;
+    al.advance_epoch(400);
+    BOOST_CHECK(al.population().size()>1);
+    
+    std::ostringstream out;
+    checkpoint_save(al, out);
+    
+    std::istringstream in(out.str());
+    checkpoint_load(al2, in);
+    al2.initialize();
+
+    BOOST_CHECK(al.population() == al2.population());
+    BOOST_CHECK(al.env() == al2.env());
+    BOOST_CHECK(al.rng() == al2.rng());
+
+    al.advance_epoch(10);
+    al2.advance_epoch(10);
+
+    BOOST_CHECK(al.population() == al2.population());
+    BOOST_CHECK(al.env() == al2.env());
+    BOOST_CHECK(al.rng() == al2.rng());
 }

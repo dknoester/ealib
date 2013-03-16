@@ -143,6 +143,23 @@ namespace ea {
             location_type() : heading(0), x(0), y(0) {
             }
             
+            //! Operator ==
+            bool operator==(const location_type& that) {
+                if((p==0) == (that.p!=0)) { // pointer xor...
+                    return false;
+                }
+                
+                bool r=true;
+                if(p != 0) {
+                    r = ((*p) == (*that.p));
+                }
+                
+                return r && (heading==that.heading)
+                && (x==that.x)
+                && (y==that.y)
+                && (_md==that._md);
+            }
+            
             //! Location meta-data.
             meta_data& md() { return _md; }
             
@@ -162,7 +179,7 @@ namespace ea {
                 heading = algorithm::roll(heading+h, 0, 7);
             }
             
-            location_handle_type handle() { return std::make_pair(x,y); }
+            location_handle_type handle() { return std::make_pair(y,x); }
             
             individual_ptr_type p; //!< Individual (if any) at this location.
             int heading; //!< Heading of organism, in degrees.
@@ -172,7 +189,6 @@ namespace ea {
             //! Serialize this location.
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
-                // what to do about the individual pointer... hm...
                 ar & boost::serialization::make_nvp("heading", heading);
                 ar & boost::serialization::make_nvp("x", x);
                 ar & boost::serialization::make_nvp("y", y);
@@ -245,9 +261,27 @@ namespace ea {
         spatial() : _append_count(0) {
         }
         
+        //! Operator==.
+        bool operator==(const spatial& that) {
+            if(_locs.size1() != that._locs.size1())
+                return false;
+            if(_locs.size2() != that._locs.size2())
+                return false;
+            bool r=true;
+            for(std::size_t i=0; i<_locs.size1(); ++i) {
+                for(std::size_t j=0; j<_locs.size2(); ++j) {
+                    r = r && (_locs(i,j) == that._locs(i,j));
+                    if(!r) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
         //! Initialize this topology.
         void initialize(ea_type& ea) {
-            _locs.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea), false);
+            _locs.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea), true);
             for(std::size_t i=0; i<_locs.size1(); ++i) {
                 for(std::size_t j=0; j<_locs.size2(); ++j) {
                     _locs(i,j).x = j;
@@ -402,13 +436,8 @@ namespace ea {
          */
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            // each location in _locs has to be serialized.
-            // 
-//            for(std::size_t i=0; i<_locs.size1(); ++i) {
-//                for(std::size_t j=0; j<_locs.size2(); ++j) {
-//                    ar & boost::serialization::make_nvp("location", _locs(i,j));
-//                }
-//            }
+            ar & boost::serialization::make_nvp("locations", _locs);
+            ar & boost::serialization::make_nvp("append_count", _append_count);
         }
         
         /*! This is called after deserialization (load); the idea here is that we
@@ -416,18 +445,14 @@ namespace ea {
          respective organisms.
          */
         void attach(ea_type& ea) {
-//            for(typename ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-//                handle2ptr((*i)->location())->p = *i;
-//            }
+            for(typename ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+                handle2ptr((*i)->location())->p = *i;
+            }
         }
-        
-        
+
         std::size_t _append_count; //!< Number of locations that have been appended to.
         location_matrix_type _locs; //!< Matrix of all locations in this topology.
     };
-    
-    
-    
 } // ea
 
 #endif

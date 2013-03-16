@@ -62,54 +62,71 @@ namespace ea {
     };
 
 
-    /*! Type for vertices.
+    /*! Adaptor to add evolvability to a Neuron.
+     
+     We assume that evolving a neural network means that mutations operate directly
+     on the neural network.  The mutation operator in ea/graph.h requires that a color
+     be assigned to vertices, which is the reason for inheritance from graph::colored_vertex.
+     
+     If other mutation types are explored, e.g., ones that do not require a color,
+     revisit this.
      */
     template <typename Neuron>
-    struct neuroevolution : graph::mutable_vertex<Neuron> {
-        typedef graph::mutable_vertex<Neuron> base_type;
-        typedef graph::mutable_edge<typename base_type::synapse_type> base_synapse_type;
+    struct neuroevolution : Neuron, graph::colored_vertex {
+        typedef Neuron neuron_type;
         
-        struct synapse_type : base_synapse_type {
+        //! Synapse type for this network.
+        struct synapse_type : neuron_type::synapse_type {
+            typedef typename neuron_type::synapse_type base_type;
+            
             //! Constructor.
-            synapse_type() : base_synapse_type() {
+            synapse_type() {
+            }
+            
+            //! Returns true if the requested graph operation is allowed.
+            bool allows(graph::graph_operation::flag m) {
+                return true;
             }
             
             //! Mutate this synapse, adding weight drawn from a standard normal distribution (can be negative).
             template <typename EA>
             void mutate(EA& ea) {
-                base_synapse_type::weight += ea.rng().normal_real(0, 1.0);
+                base_type::weight += ea.rng().normal_real(0, 1.0);
             }
         };
         
         //! Constructor.
-        neuroevolution() : base_type() {
-            base_type::setf(ann::neuron::hidden); // neurons default to hidden.
+        neuroevolution() {
+            neuron_type::setf(ann::neuron::hidden); // neurons default to hidden.
         }
         
-        //! Returns true if the requested mutation type is allowed.
+        //! Returns true if the requested graph operation is allowed.
         bool allows(graph::graph_operation::flag m) {
             using namespace graph;
             using namespace ann;
             switch(m) {
                 case graph_operation::remove: {
-                    return !base_type::getf(neuron::reserved);
+                    return !neuron_type::getf(neuron::reserved);
                 }
                 case graph_operation::merge: {
-                    return !base_type::getf(neuron::reserved);
+                    return !neuron_type::getf(neuron::reserved);
                 }
                 case graph_operation::duplicate: {
-                    return !base_type::getf(neuron::reserved);
+                    return !neuron_type::getf(neuron::reserved);
                 }
                 case graph_operation::source: {
-                    return base_type::getf(neuron::input) || base_type::getf(neuron::output) || base_type::getf(neuron::hidden) || base_type::getf(neuron::bias);
+                    return neuron_type::getf(neuron::input) || neuron_type::getf(neuron::output) || neuron_type::getf(neuron::hidden) || neuron_type::getf(neuron::bias);
                 }
                 case graph_operation::target: {
-                    return base_type::getf(neuron::hidden) || base_type::getf(neuron::output);
+                    return neuron_type::getf(neuron::hidden) || neuron_type::getf(neuron::output);
                 }
                 case graph_operation::mutate: {
-                    return !base_type::getf(neuron::reserved);
+                    return !neuron_type::getf(neuron::reserved);
                 }
+                default:
+                    assert(false);
             }
+            return false;
         }
         
         //! Mutate this neuron.
@@ -117,8 +134,6 @@ namespace ea {
         void mutate(EA& ea) {
         }
     };
-    
-    
 } // ea
 
 #endif

@@ -108,6 +108,24 @@ namespace ea {
             return _f < that._f;
         }
 
+        //! Operator ==
+        bool operator==(const unary_fitness& that) {
+            if(is_null()) {
+                return that.is_null();
+            } else {
+                return _f == that._f;
+            }
+        }
+
+        //! Operator == for doubles.
+        bool operator==(const value_type v) {
+            if(is_null()) {
+                return std::isnan(v);
+            } else {
+                return _f == v;
+            }
+        }
+
         //! Value-type cast operator.
         operator value_type() { return _f; }
 

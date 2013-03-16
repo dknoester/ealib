@@ -24,6 +24,8 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/deque.hpp>
+#include <boost/serialization/map.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <fstream>
@@ -73,6 +75,9 @@ namespace ea {
             _priority = that._priority;
             _hw = that._hw;
             _md = that._md;
+            _inputs = that._inputs;
+            _outputs = that._outputs;
+            _phenotype = that._phenotype;
             _location = that._location;
         }
         
@@ -86,9 +91,27 @@ namespace ea {
                 _priority = that._priority;
                 _hw = that._hw;
                 _md = that._md;
+                _inputs = that._inputs;
+                _outputs = that._outputs;
+                _phenotype = that._phenotype;
                 _location = that._location;
             }
             return *this;
+        }
+
+        //! Returns true if hardware(s) are equivalent.
+        bool operator==(const organism& that) {
+            return (_name == that._name)
+            && (_generation == that._generation)
+            && (_update == that._update)
+            && (_alive == that._alive)
+            && (_priority == that._priority)
+            && (_hw == that._hw)
+            && (_md == that._md)
+            && (_inputs == that._inputs)
+            && (_outputs == that._outputs)
+            && (_phenotype == that._phenotype)
+            && (_location == that._location);
         }
 
         //! Retrieve this organism's name.
@@ -186,7 +209,9 @@ namespace ea {
 			}
             ar & boost::serialization::make_nvp("hardware", _hw);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            //ar & boost::serialization::make_nvp("io_buffer", _io);
+            ar & boost::serialization::make_nvp("inputs", _inputs);
+            ar & boost::serialization::make_nvp("outputs", _outputs);
+            ar & boost::serialization::make_nvp("phenotype", _phenotype);
             ar & boost::serialization::make_nvp("location_handle", _location);
 		}
 		
@@ -205,7 +230,9 @@ namespace ea {
 			}
             ar & boost::serialization::make_nvp("hardware", _hw);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            //ar & boost::serialization::make_nvp("io_buffer", _io);
+            ar & boost::serialization::make_nvp("inputs", _inputs);
+            ar & boost::serialization::make_nvp("outputs", _outputs);
+            ar & boost::serialization::make_nvp("phenotype", _phenotype);
             ar & boost::serialization::make_nvp("location_handle", _location);
         }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();

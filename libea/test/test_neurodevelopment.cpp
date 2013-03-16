@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
-#include <ea/neuroevolution.h>
+#include <ea/neurodevelopment.h>
 #include <ann/feed_forward.h>
 #include <ea/graph.h>
 #include "test.h"
@@ -28,7 +28,8 @@ using namespace ann;
 struct graph_fitness : public fitness_function<unary_fitness<double> > {
     template <typename Individual, typename EA>
     double operator()(Individual& ind, EA& ea) {
-        typename EA::representation_type& G=ind.repr();
+        neural_network<feed_forward_neuron< > > G;
+        delta_growth(G, get<DEV_VERTICES_N>(ea), ind.repr());
         return 1.0;
     }
 };
@@ -36,19 +37,19 @@ struct graph_fitness : public fitness_function<unary_fitness<double> > {
 template <typename EA>
 struct graph_configuration : public abstract_configuration<EA> {
     void initial_population(EA& ea) {
-        generate_ancestors(random_ann(), get<POPULATION_SIZE>(ea), ea);
+//        generate_ancestors(random_ann(), get<POPULATION_SIZE>(ea), ea);
     }
 };
 
 typedef evolutionary_algorithm<
-neural_network<neuroevolution<feed_forward_neuron< > > >,
+developmental_network,
 mutation::graph_mutator,
 graph_fitness,
 graph_configuration
 > graph_ea;
 
 
-BOOST_AUTO_TEST_CASE(test_neuroevolution) {
+BOOST_AUTO_TEST_CASE(test_neurodevelopment) {
 	using namespace ea;
     graph_ea E;
 }

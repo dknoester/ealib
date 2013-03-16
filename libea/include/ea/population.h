@@ -20,6 +20,7 @@
 #ifndef _EA_POPULATION_H_
 #define _EA_POPULATION_H_
 
+#include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/split_member.hpp>
@@ -60,6 +61,13 @@ namespace ea {
         //! Initializing constructor.
         template <typename ForwardIterator>
         population(ForwardIterator f, ForwardIterator l) : base_type(f,l) {
+        }
+        
+        //! Operator ==
+        bool operator==(const population& that) {
+            typedef boost::indirect_iterator<const_iterator> ici;
+            return (base_type::size() == that.size())
+            && std::equal(ici(base_type::begin()), ici(base_type::end()), ici(that.begin()));
         }
         
         //! Destructor.
