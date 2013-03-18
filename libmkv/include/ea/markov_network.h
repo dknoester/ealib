@@ -416,13 +416,13 @@ namespace mkv {
 
     /*! Convenience method to build a Markov Network.
      */
-    template <typename Individual, typename RNG, typename EA>
-    markov_network make_markov_network(const markov_network::desc_type& desc, Individual& ind, RNG& rng, EA& ea) {
+    template <typename ForwardIterator, typename RNG, typename EA>
+    markov_network make_markov_network(const markov_network::desc_type& desc,
+                                       ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
         markov_network net(desc, rng);
-        build_markov_network(net, ind.repr().begin(), ind.repr().end(), ea);
+        build_markov_network(net, f, l, ea);
         return net;
     }
-
     
 //    /*! Save the dominant individual in graphviz format.
 //     */
