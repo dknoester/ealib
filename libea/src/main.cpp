@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 #include <ea/exceptions.h>
 #include <ea/cmdline_interface.h>
@@ -66,7 +67,17 @@ int main(int argc, char* argv[]) {
         string cfgfile(vm["config"].as<string>());
         ifstream ifs(cfgfile.c_str());
         if(ifs.good()) {
-            po::store(po::parse_config_file(ifs, ea_options), vm);
+            po::parsed_options opt=po::parse_config_file(ifs, ea_options, true);
+            vector<string> unrec = po::collect_unrecognized(opt.options, po::exclude_positional);
+            if(!unrec.empty()) {
+                cout << "Unrecognized options were found in " << cfgfile << ":" << endl;
+                for(std::size_t i=0; i<unrec.size(); ++i) {
+                    cout << "\t" << unrec[i] << endl;
+                }
+                cout << "Exiting..." << endl;
+                return -1;
+            }
+            po::store(opt, vm);
             ifs.close();
         }
         
