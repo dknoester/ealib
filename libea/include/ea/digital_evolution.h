@@ -154,10 +154,9 @@ namespace ea {
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
             begin_epoch();
-            for( ; n>0; --n) {
+            for( ; n>=0; --n) {
                 update();
             }
-            _events.record_statistics(*this);
             _events.end_of_epoch(*this);
         }
         
@@ -170,6 +169,7 @@ namespace ea {
         void update() {
             _scheduler(_population, *this);
             _events.end_of_update(*this);
+
             // update counter and statistics are handled *between* updates:
             _scheduler.next_update();
             _events.record_statistics(*this);
