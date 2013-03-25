@@ -28,6 +28,24 @@
 namespace ea {
 	namespace algorithm {
         
+        template <typename ForwardIterator>
+        unsigned int hamming_distance(ForwardIterator f1, ForwardIterator l1, ForwardIterator f2) {
+            unsigned int d=0;
+            for( ; f1!=l1; ++f1, ++f2) {
+                if((*f1) != (*f2)) {
+                    ++d;
+                }
+            }
+            return d;
+        }
+        
+        struct hamming_distance_functor {
+            template <typename Individual, typename EA>
+            unsigned int operator()(Individual& i1, Individual& i2, EA& ea) {
+                return hamming_distance(i1.repr().begin(), i1.repr().end(), i2.repr().begin());
+            }
+        };
+        
         /*! Roulette wheel selection.
 		 
 		 Returns the index and iterator selected from the range [f,l), based on the sum of values

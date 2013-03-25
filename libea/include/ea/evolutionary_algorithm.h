@@ -136,7 +136,7 @@ namespace ea {
         //! Advance the epoch of this EA by n updates.
         void advance_epoch(std::size_t n) {
             begin_epoch();
-            for( ; n>=0; --n) {
+            for(++n; n>0; --n) {
                 update();
             }
             _events.end_of_epoch(*this);

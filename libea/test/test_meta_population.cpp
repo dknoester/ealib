@@ -1,4 +1,4 @@
-/* test_novelty_search.cpp
+/* test_meta_population.cpp
  *
  * This file is part of EALib.
  *
@@ -18,8 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "test.h"
+#include <ea/generational_models/crowding.h>
+#include <ea/generational_models/qhfc.h>
 #include <ea/meta_population.h>
 
+template <typename EA>
+struct mp_configuration : public abstract_configuration<EA> {
+};
+
 BOOST_AUTO_TEST_CASE(test_meta_population) {
-    using namespace ea;
+    typedef meta_population<all_ones_ea, mp_configuration> mea_type;
+    
+    mea_type M;
 }
+
+
+BOOST_AUTO_TEST_CASE(test_qhfc) {
+    typedef evolutionary_algorithm<
+    bitstring,
+    mutation::per_site<mutation::bit>,
+    all_ones,
+    configuration,
+    recombination::two_point_crossover,
+    generational_models::deterministic_crowding< > > ea_type;
+    
+    typedef meta_population<ea_type, mp_configuration, generational_models::qhfc> mea_type;
+    
+    mea_type M;
+}
+

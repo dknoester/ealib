@@ -390,6 +390,8 @@
 		42B55B701641C2C500F240C5 /* test_information.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_information.cpp; sourceTree = "<group>"; };
 		42B55B711641C2C500F240C5 /* test_novelty_search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_novelty_search.cpp; sourceTree = "<group>"; };
 		42BF1F6A165D162A0075D664 /* parse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parse.h; sourceTree = "<group>"; };
+		42C7730E16FF6F9B00EAFD8F /* qhfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = qhfc.h; sourceTree = "<group>"; };
+		42C7730F16FF6FDD00EAFD8F /* crowding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crowding.h; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
 		42D93B2F16CFC14700E7E5E9 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		42EA57941623257C007BCF51 /* meta_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_population.h; sourceTree = "<group>"; };
@@ -668,8 +670,10 @@
 		423CBDD6157D0E450003A644 /* generational_models */ = {
 			isa = PBXGroup;
 			children = (
+				42C7730F16FF6FDD00EAFD8F /* crowding.h */,
 				423CBDD7157D0E450003A644 /* death_birth_process.h */,
 				423CBDD8157D0E450003A644 /* nsga2.h */,
+				42C7730E16FF6F9B00EAFD8F /* qhfc.h */,
 				423CBDD9157D0E450003A644 /* steady_state.h */,
 			);
 			path = generational_models;

@@ -34,10 +34,31 @@
 #include <ea/rng.h>
 
 namespace ea {
+    namespace generational_models {
+        
+        /*! Default generational model for a metapopulation EA, where all
+         subpopulations are updated in lock-step.
+         */
+		struct meta_population : public generational_model {
+			//! Apply this generational model to the meta_population EA.
+			template <typename Population, typename EA>
+			void operator()(Population& population, EA& ea) {
+				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
+				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+                for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
+                    (*i)->update();
+                }
+            }
+        };        
+    }
     
+    /*! Metapopulation evolutionary algorithm, where individuals in the population
+     are themselves evolutionary algorithms.
+     */
     template <
     typename EA,
     template <typename> class ConfigurationStrategy,
+    typename GenerationalModel=generational_models::meta_population,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ea::default_rng_type>
@@ -51,6 +72,8 @@ namespace ea {
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
         typedef ea::population<individual_type,individual_ptr_type> population_type;
+        //! Generational model.
+        typedef GenerationalModel generational_model_type;
         //! Event handler.
         typedef EventHandler<meta_population> event_handler_type;
         //! Meta-data type.
@@ -67,8 +90,7 @@ namespace ea {
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
 
         //! Construct a meta-population EA.
-        meta_population() : _update(0) {
-            // hjg: commented out locally...
+        meta_population() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<individual_type>));
             _configurator.construct(*this);
@@ -207,26 +229,32 @@ namespace ea {
         
         //! Advance this EA by one update.
         void update() {
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->update();
+            if(!_population.empty()) {
+                _generational_model(_population, *this);
             }
             _events.end_of_update(*this);
 
-            // update counter and statistics are handled between updates:
-            ++_update;
+            // update counter and statistics are handled *between* updates:
+            _generational_model.next_update();
             _events.record_statistics(*this);
         }
         
+        //! Accessor for the generational model object.
+        generational_model_type& generational_model() { return _generational_model; }
+        
         //! Returns the current update of this EA.
         unsigned long current_update() {
-            return _update;
+            return _generational_model.current_update();
         }
-                
+
+        //! Returns the configuration object.
+        configuration_type& configuration() { return _configurator; }
+        
     protected:
-        unsigned long _update; //!< Meta-population update.
         rng_type _rng; //!< Random number generator.
         meta_data _md; //!< Meta-data for the meta-population.
-        event_handler_type _events; //!< Event handler.        
+        generational_model_type _generational_model; //!< Generational model instance.
+        event_handler_type _events; //!< Event handler.
         population_type _population; //!< List of EAs in this meta-population.
         configuration_type _configurator; //!< Configuration object.
 
@@ -235,9 +263,9 @@ namespace ea {
         
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
-            ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("generational_model", _generational_model);
             
             std::size_t s = size();
             ar & boost::serialization::make_nvp("meta_population_size", s);
@@ -248,10 +276,10 @@ namespace ea {
 		
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            
+            ar & boost::serialization::make_nvp("generational_model", _generational_model);
+
             std::size_t s;
             ar & boost::serialization::make_nvp("meta_population_size", s);
             for(std::size_t i=0; i<s; ++i) {

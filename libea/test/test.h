@@ -32,8 +32,6 @@
 
 using namespace ea;
 
-
-
 template <typename EA>
 struct configuration : public abstract_configuration<EA> {
     //! Called to generate the initial EA population.
