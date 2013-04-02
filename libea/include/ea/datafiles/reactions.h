@@ -23,7 +23,7 @@
 #include <ea/datafile.h>
 #include <ea/events.h>
 
-namespace ea {
+namespace ealib {
     namespace datafiles {
         
         /*! Datafile for reactions.

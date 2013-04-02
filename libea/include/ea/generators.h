@@ -24,7 +24,7 @@
 #include <ea/meta_data.h>
 
 
-namespace ea {
+namespace ealib {
 	
 	/*! Adapter to make a selection strategy behave like a std::generator.
 	 */

@@ -46,7 +46,7 @@
 
 
 
-namespace ea {    
+namespace ealib {    
     
     /*! Artificial life top-level evolutionary algorithm.
      
@@ -86,7 +86,7 @@ namespace ea {
 	template <typename, typename> class Population=population,
 	template <typename> class EventHandler=alife_event_handler,
 	typename MetaData=meta_data,
-	typename RandomNumberGenerator=ea::default_rng_type>
+	typename RandomNumberGenerator=ealib::default_rng_type>
     class digital_evolution {
     public:
         //! Configuration object type.
@@ -134,47 +134,51 @@ namespace ea {
 
         //! Default constructor.
         digital_evolution() : _name(0), _generation(0.0) {
-            //BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
-            _configurator.construct(*this);
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
         }
-                
+        
+        //! Configure this EA.
+        void configure() {
+            _configurator.configure(*this);
+        }
+        
+        //! Build the initial population.
+        void initial_population() {
+            _configurator.initial_population(*this);
+        }
+        
         //! Initialize this EA.
         void initialize() {
             _env.initialize(*this);
             _scheduler.initialize(*this);
             _isa.initialize(*this);
             _configurator.initialize(*this);
-        } 
-        
-        //! Generates the initial population.
-        void generate_initial_population() {
-            _configurator.initial_population(*this);
         }
 
-        //! Advance the epoch of this EA by n updates.
-        void advance_epoch(std::size_t n) {
-            begin_epoch();
-            for(++n; n>0; --n) {
-                update();
-            }
-            _events.end_of_epoch(*this);
+        //! Reset the population.
+        void reset() {
+            _configurator.reset(*this);
         }
-        
-        //! Called once at the beginning of each epoch.
+
+        //! Begin a new epoch.
         void begin_epoch() {
             _events.record_statistics(*this);
+        }
+
+        //! End an epoch.
+        void end_epoch() {
         }
         
         //! Advance this EA by one update.
         void update() {
             _scheduler(_population, *this);
             _events.end_of_update(*this);
-
+            
             // update counter and statistics are handled *between* updates:
             _scheduler.next_update();
             _events.record_statistics(*this);
         }
-        
+
         //! Build an individual from the given representation.
         individual_ptr_type make_individual(const representation_type& r) {
             individual_ptr_type p(new individual_type(r));
@@ -205,11 +209,6 @@ namespace ea {
                 _population.insert(_population.end(), offspring);
                 _events.birth(*offspring, *parent, *this);
             }
-        }
-        
-        //! Reset this EA.
-        void reset() {
-            _configurator.reset(*this);
         }
         
         //! Returns the current update of this EA.

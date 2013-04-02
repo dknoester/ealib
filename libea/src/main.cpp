@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
         ("with-time", "output the instantaneous and mean wall-clock time per update");
 	    
         po::options_description ea_options("Configuration file and command-line options");
-        ea::registrar::instance()->gather_options(ea_options);
+        ealib::registrar::instance()->gather_options(ea_options);
 		
         po::options_description all_options;
         all_options.add(cmdline_only_options).add(ea_options);
@@ -88,11 +88,11 @@ int main(int argc, char* argv[]) {
         }
         
         if(vm.count("analyze")) {
-            ea::registrar::instance()->analyze(vm);
+            ealib::registrar::instance()->analyze(vm);
         } else if(vm.count("checkpoint")) {
-            ea::registrar::instance()->continue_checkpoint(vm);
+            ealib::registrar::instance()->continue_checkpoint(vm);
         } else {
-            ea::registrar::instance()->run(vm);
+            ealib::registrar::instance()->run(vm);
         }
     } catch(const po::unknown_option& ex) {
         cerr << "Unknown option: " << ex.get_option_name() << endl;
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
     } catch(const po::error& ex) {
         cerr << "Program option error: " << ex.what() << endl;
         return -1;
-	} catch(const ea::ealib_exception& ex) {
+	} catch(const ealib::ealib_exception& ex) {
 		cerr << "Caught exception: " << ex.msg << endl;
 		return -1;
 	}

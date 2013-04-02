@@ -25,7 +25,7 @@
 #include <boost/serialization/nvp.hpp>
 
 
-namespace ea {
+namespace ealib {
     namespace generational_models {
         
         /*! Abstract generational model.

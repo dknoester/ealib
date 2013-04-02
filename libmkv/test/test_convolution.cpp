@@ -28,7 +28,7 @@
 BOOST_AUTO_TEST_CASE(test_convolution) {
     using namespace mkv;
 	using namespace mkv::detail;
-    using namespace ea;
+    using namespace ealib;
     using namespace boost::numeric::ublas;
 
     typedef matrix<double> Matrix;

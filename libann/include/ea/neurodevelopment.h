@@ -25,10 +25,11 @@
 #include <ea/algorithm.h>
 #include <ea/graph.h>
 #include <ea/meta_data.h>
+#include <ea/neuroevolution.h>
 
 LIBEA_MD_DECL(DEV_VERTICES_N, "development.vertices.n", int);
 
-namespace ea {
+namespace ealib {
     
     /* The following code develops a graph from a "developmental template," which 
      is itself a graph that defines a high-level topology.
@@ -141,7 +142,7 @@ namespace ea {
         {
             typename Graph::vertex_iterator vi,vi_end;
             for(boost::tie(vi,vi_end)=boost::vertices(G); vi!=vi_end; ++vi) {
-                M_extant[boost::vertex(G[*vi].color)].insert(*vi);
+                M_extant[boost::vertex(G[*vi]).color].insert(*vi);
             }
         }
 

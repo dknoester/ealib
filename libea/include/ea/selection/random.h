@@ -23,7 +23,7 @@
 #include <iterator>
 #include <ea/selection.h>
 
-namespace ea {	
+namespace ealib {	
 	namespace selection {
 		
 		/*! Random selection.

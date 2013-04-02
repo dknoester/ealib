@@ -21,7 +21,7 @@
 #ifndef _EA_ANALYSIS_TOOL_H_
 #define _EA_ANALYSIS_TOOL_H_
 
-namespace ea {
+namespace ealib {
     namespace analysis {
         template <typename EA>
         struct unary_function {

@@ -24,7 +24,7 @@
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <ea/algorithm.h>
 
-namespace ea {
+namespace ealib {
     namespace analysis {
 
         //! Probability mass function.
@@ -98,7 +98,7 @@ namespace ea {
             pmf<event_type> p;
             for(unsigned i=0; i<m.size1(); ++i) {
                 boost::numeric::ublas::matrix_row<Matrix> r(m,i);
-                std::string s=ea::algorithm::vcat(r.begin(), r.end());
+                std::string s=ealib::algorithm::vcat(r.begin(), r.end());
                 p.add(s);
             }
             p.calc();

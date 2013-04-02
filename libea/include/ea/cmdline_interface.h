@@ -33,14 +33,16 @@
 #include <string>
 #include <map>
 #include <iostream>
+
+#include <ea/algorithm.h>
 #include <ea/concepts.h>
 #include <ea/events.h>
 #include <ea/meta_data.h>
 #include <ea/checkpoint.h>
 #include <ea/analysis.h>
+#include <ea/lifecycle.h>
 
-
-namespace ea {
+namespace ealib {
     
     /*! Datafile for run statistics.
      */
@@ -201,9 +203,9 @@ namespace ea {
     class cmdline_interface : public ea_interface {
     public:
         typedef EA ea_type; //!< Type of the EA being used.
-        typedef ea::analysis::unary_function<ea_type> tool_type; //!< Type for analysis tools.
+        typedef ealib::analysis::unary_function<ea_type> tool_type; //!< Type for analysis tools.
         typedef pointer_map<tool_type> tool_registry; //!< Storage for analysis tools.
-        typedef std::vector<boost::shared_ptr<ea::event> > event_list; //!< Storage for events.
+        typedef std::vector<boost::shared_ptr<ealib::event> > event_list; //!< Storage for events.
         
         //! Constructor.
         cmdline_interface() {
@@ -228,6 +230,7 @@ namespace ea {
         //! Analyze an EA instance.
 		virtual void analyze(boost::program_options::variables_map& vm) {
 			ea_type ea;
+            ea.configure();
             load_if(vm, ea);
             apply(vm, ea);
             ea.initialize();
@@ -238,6 +241,7 @@ namespace ea {
         //! Continue a previously-checkpointed EA.
 		virtual void continue_checkpoint(boost::program_options::variables_map& vm) {
             ea_type ea;
+            ea.configure();
             load(vm, ea);
             
             // conditionally apply command-line and/or file parameters:
@@ -262,20 +266,22 @@ namespace ea {
 		//! Run the EA.
 		virtual void run(boost::program_options::variables_map& vm) {
 			ea_type ea;
+            ea.configure();
             apply(vm, ea);
             
             if(exists<RNG_SEED>(ea)) {
                 ea.rng().reset(get<RNG_SEED>(ea));
             }
             
+            ea.initial_population();
+            
             ea.initialize();
             gather_events(ea);
-            
+
             if(vm.count("with-time")) {
                 add_event<run_statistics>(this,ea);
             }
             
-            ea.generate_initial_population();
             execute(ea);
         }
         
@@ -313,33 +319,18 @@ namespace ea {
                 throw fatal_error_exception("required checkpoint file not found.");
             }
             std::string cpfile(vm["checkpoint"].as<std::string>());
-            std::ifstream ifs(cpfile.c_str());
-            if(!ifs.good()) {
-                throw file_io_exception("could not open " + cpfile + " for reading.");
-            }
-            std::cerr << "loading " << cpfile << "... ";
-            
-            // is this a gzipped file?  test by checking file extension...
-            static const boost::regex e(".*\\.gz$");
-            if(boost::regex_match(cpfile, e)) {
-                namespace bio = boost::iostreams;
-                bio::filtering_stream<bio::input> f;
-                f.push(bio::gzip_decompressor());
-                f.push(ifs);
-                checkpoint_load(ea, f);
-            } else {
-                checkpoint_load(ea, ifs);
-            }
-            std::cerr << "done." << std::endl;
+            lifecycle::load_checkpoint(cpfile, ea);
         }
         
         //! Execute the EA for the configured number of epochs.
         void execute(ea_type& ea) {
 			// and run it!
 			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
-                ea.advance_epoch(get<RUN_UPDATES>(ea));
+                lifecycle::advance_epoch(get<RUN_UPDATES>(ea), ea);
                 if(!get<CHECKPOINT_OFF>(ea,0)) {
-                    checkpoint(ea);
+                    std::ostringstream filename;
+                    filename << get<CHECKPOINT_PREFIX>(ea) << "-" << ea.current_update() << ".xml";
+                    lifecycle::save_checkpoint(filename.str(), ea);
                 }
 			}
 		}

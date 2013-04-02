@@ -33,7 +33,7 @@
 #include <ea/algorithm.h>
 
 
-namespace ea {
+namespace ealib {
 	
 	/*! Provides useful abstractions for dealing with random numbers.
 	 

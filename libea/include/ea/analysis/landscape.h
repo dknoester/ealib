@@ -30,7 +30,7 @@
 #include <ea/analysis/tool.h>
 
 
-namespace ea {
+namespace ealib {
     namespace analysis {
 
         /*! Sample the fitness landscape, and write fitness values to a file.

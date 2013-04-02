@@ -33,7 +33,7 @@
 #include <ea/events.h>
 #include <ea/rng.h>
 
-namespace ea {
+namespace ealib {
     namespace generational_models {
         
         /*! Default generational model for a metapopulation EA, where all
@@ -61,7 +61,7 @@ namespace ea {
     typename GenerationalModel=generational_models::meta_population,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
-	typename RandomNumberGenerator=ea::default_rng_type>
+	typename RandomNumberGenerator=ealib::default_rng_type>
     class meta_population {
     public:
         //! Configuration object type.
@@ -71,7 +71,7 @@ namespace ea {
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
-        typedef ea::population<individual_type,individual_ptr_type> population_type;
+        typedef ealib::population<individual_type,individual_ptr_type> population_type;
         //! Generational model.
         typedef GenerationalModel generational_model_type;
         //! Event handler.
@@ -93,7 +93,81 @@ namespace ea {
         meta_population() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<individual_type>));
-            _configurator.construct(*this);
+        }
+        
+        //! Configure this EA.
+        void configure() {
+            _configurator.configure(*this);
+        }
+ 
+        //! Generates the initial subpopulations, and generate *their* populations.
+        void initial_population() {
+            for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
+                individual_ptr_type p(new individual_type());
+                p->configure();
+                p->md() = md();
+                put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
+                p->rng().reset(get<RNG_SEED>(*p));
+                p->initial_population();
+                _population.push_back(p);
+            }
+            _configurator.initial_population(*this);
+        }
+
+        //! Initialize this and all embedded EAs.
+        void initialize() {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->initialize();
+            }
+            _configurator.initialize(*this);
+        }
+
+        //! Reset all populations.
+        void reset() {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->reset();
+            }
+            _configurator.reset(*this);
+        }
+        
+        //! Begin an epoch.
+        void begin_epoch() {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->begin_epoch();
+            }
+            _events.record_statistics(*this);
+        }
+        
+        //! End an epoch.
+        void end_epoch() {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->events().end_of_epoch(*i); // don't checkpoint!
+            }
+            
+            _events.end_of_epoch(*this); // checkpoint!
+        }
+        
+        //! Advance this EA by one update.
+        void update() {
+            if(!_population.empty()) {
+                _generational_model(_population, *this);
+            }
+            _events.end_of_update(*this);
+            
+            // update counter and statistics are handled *between* updates:
+            _generational_model.next_update();
+            _events.record_statistics(*this);
+        }
+        
+        //! Called to build a new empty, but initialized, subpopulation.
+        individual_ptr_type make_individual() {
+            individual_ptr_type p(new individual_type());
+            p->configure();
+            p->md() = md();
+            put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
+            p->rng().reset(get<RNG_SEED>(*p));
+            p->initialize();
+            return p;
         }
         
         //! Accessor for the random number generator.
@@ -158,85 +232,6 @@ namespace ea {
         //! Returns a reverse end iterator to the embedded EAs (const-qualified).
         const_reverse_iterator rend() const {
             return const_reverse_iterator(_population.rend());
-        }
-        
-        //! Called to build a new (empty) subpopulation.
-        individual_ptr_type make_individual() {
-            individual_ptr_type p(new individual_type());
-            p->md() = md();
-            put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
-            p->rng().reset(get<RNG_SEED>(*p));
-            p->initialize();
-            return p;
-        }
-        
-        //! Initialize this and all embedded EAs, if we have any.
-        void initialize() {
-            // ok, if we have embedded eas, they've been loaded via a checkpoint.
-            // they need to be initialized, but we don't need to create any more.
-            // if we don't have any, create & initialize them.
-            if(_population.empty()) {
-                for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
-                    _population.push_back(make_individual()); // this also initializes!
-                }                
-            } else {
-                for(iterator i=begin(); i!=end(); ++i) {
-                    i->initialize();
-                }
-            }
-            _configurator.initialize(*this);
-        }        
-        
-        /*! Generates the initial population.  This does nothing at the 
-         meta-population level, but it does generate the initial populations at
-         the sub-population level.
-         */
-        void generate_initial_population() {
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->generate_initial_population();
-            }
-            _configurator.initial_population(*this);
-        }
-        
-        //! Reset all populations.
-        void reset() {
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->reset();
-            }
-            _configurator.reset(*this);
-        }
-        
-        //! Advance the epoch of this EA by n updates.
-        void advance_epoch(std::size_t n) {
-            // top of the epoch:
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->begin_epoch();
-            }
-            _events.record_statistics(*this);
-            
-            // update all the EAs:
-            for( ; n>0; --n) {
-                update();
-            }
-            
-            // signal end-of-epoch:
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->events().end_of_epoch(*i); // don't checkpoint!
-            }
-            
-            _events.end_of_epoch(*this); // checkpoint!
-        }
-        
-        //! Advance this EA by one update.
-        void update() {
-            if(!_population.empty()) {
-                _generational_model(_population, *this);
-            }
-            _events.end_of_update(*this);
-
-            // update counter and statistics are handled *between* updates:
-            _generational_model.next_update();
-            _events.record_statistics(*this);
         }
         
         //! Accessor for the generational model object.

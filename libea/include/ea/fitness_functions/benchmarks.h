@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <ea/fitness_function.h>
 
-namespace ea {
+namespace ealib {
     
     /* All of the benchmark fitness functions contained in this file are courtesy
      of GENITOR: http://www.cs.colostate.edu/~genitor/functions.html

@@ -29,7 +29,7 @@
 #include <ea/datafile.h>
 
 
-namespace ea {
+namespace ealib {
     
     /*! An event that performs periodic competition among metapopulations, based upon
      some attribute accessor.

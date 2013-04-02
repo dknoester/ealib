@@ -27,7 +27,7 @@
 #include <ea/datafile.h>
 #include <ea/events.h>
 
-namespace ea {
+namespace ealib {
     namespace datafiles {
         
         template <typename EA>

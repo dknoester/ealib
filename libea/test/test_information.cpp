@@ -29,7 +29,7 @@
 /*! Tests of entropy.
  */
 BOOST_AUTO_TEST_CASE(entropy_functional) {
-    using namespace ea::analysis;
+    using namespace ealib::analysis;
     using namespace boost::numeric::ublas;
     typedef matrix<unsigned int> Matrix;
     typedef matrix_column<Matrix> Column;
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(entropy_functional) {
 /*! Tests of information.
  */
 BOOST_AUTO_TEST_CASE(information_functional) {
-    using namespace ea::analysis;
+    using namespace ealib::analysis;
     using namespace boost::numeric::ublas;
     typedef matrix<unsigned int> Matrix;
     typedef matrix_column<Matrix> Column;
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(information_functional) {
 /*! Probability mass function tests.
  */
 BOOST_AUTO_TEST_CASE(pmf_functional) {
-    using namespace ea::analysis;
+    using namespace ealib::analysis;
     
     unsigned int x[]={0,0,1,1};
     pmf<unsigned int> p = probability_mass_function(x,&x[4]);

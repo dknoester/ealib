@@ -30,7 +30,7 @@
 #include <ea/meta_data.h>
 
 
-namespace ea {
+namespace ealib {
 	
 	/*! Canonical numeric representation for genetic algorithms.
 	 */

@@ -34,19 +34,19 @@
 #include <ea/analysis/modularity.h>
 
 
-namespace ea {
+namespace ealib {
     namespace analysis {
         
         /*! Produce a datafile describing the origination time, fixation time, and
          size (number of loci) of mutational events along the LoD.
          */
         template <typename EA>
-        struct lod_fixation_times : public ea::analysis::unary_function<EA> {
+        struct lod_fixation_times : public ealib::analysis::unary_function<EA> {
             static const char* name() { return "lod_fixation_times"; }
             
             virtual void operator()(EA& ea) {
-                using namespace ea;
-                using namespace ea::analysis;
+                using namespace ealib;
+                using namespace ealib::analysis;
                 using namespace boost::accumulators;
                 
                 line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
@@ -84,12 +84,12 @@ namespace ea {
          genome along the line of descent.
          */
         template <typename EA>
-        struct lod_epistasis : public ea::analysis::unary_function<EA> {
+        struct lod_epistasis : public ealib::analysis::unary_function<EA> {
             static const char* name() { return "lod_epistasis"; }
 
             virtual void operator()(EA& ea) {
-                using namespace ea;
-                using namespace ea::analysis;
+                using namespace ealib;
+                using namespace ealib::analysis;
                 using namespace boost::accumulators;
                 
                 line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);

@@ -28,8 +28,9 @@ using namespace ann;
 struct graph_fitness : public fitness_function<unary_fitness<double> > {
     template <typename Individual, typename EA>
     double operator()(Individual& ind, EA& ea) {
-        neural_network<feed_forward_neuron< > > G;
-        delta_growth(G, get<DEV_VERTICES_N>(ea), ind.repr());
+//        neural_network<neuroevolution<feed_forward_neuron< > > > G;
+//
+//        delta_growth(G, get<DEV_VERTICES_N>(ea), ind.repr(), ea.rng());
         return 1.0;
     }
 };
@@ -45,11 +46,12 @@ typedef evolutionary_algorithm<
 developmental_network,
 mutation::graph_mutator,
 graph_fitness,
-graph_configuration
+graph_configuration,
+recombination::asexual
 > graph_ea;
 
 
 BOOST_AUTO_TEST_CASE(test_neurodevelopment) {
-	using namespace ea;
+	using namespace ealib;
     graph_ea E;
 }

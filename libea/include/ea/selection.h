@@ -22,7 +22,7 @@
 
 #include <ea/fitness_function.h>
 
-namespace ea {
+namespace ealib {
 
     /*! Select at most n individuals from src into dst using the given selector type.
      This is "survivor selection" -- The near-final step of most generational models,

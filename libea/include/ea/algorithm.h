@@ -25,7 +25,7 @@
 #include <numeric>
 #include <boost/lexical_cast.hpp>
 
-namespace ea {
+namespace ealib {
 	namespace algorithm {
         
         template <typename ForwardIterator>

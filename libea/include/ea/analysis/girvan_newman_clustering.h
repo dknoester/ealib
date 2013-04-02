@@ -26,7 +26,7 @@
 #include <boost/graph/iteration_macros.hpp>
 #include <vector>
 
-namespace ea {
+namespace ealib {
     namespace analysis {
         
         //! Always returns true, used to exhaust edges for clustering.

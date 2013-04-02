@@ -19,4 +19,4 @@
  */
 #include <ea/cmdline_interface.h>
 
-ea::registrar* ea::registrar::_instance=0;
+ealib::registrar* ealib::registrar::_instance=0;

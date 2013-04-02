@@ -37,7 +37,7 @@
 #include <ea/individual.h>
 
 
-namespace ea {
+namespace ealib {
 
     /*! Wrapper class for individuals to enable line of descent (lod) tracking.
      

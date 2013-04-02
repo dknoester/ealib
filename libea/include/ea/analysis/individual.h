@@ -26,7 +26,7 @@
 #include <ea/meta_data.h>
 #include <ea/analysis/tool.h>
 
-namespace ea {
+namespace ealib {
     namespace analysis {
 
         /*! Retest an individual.
@@ -44,7 +44,7 @@ namespace ea {
             typename EA::population_type& pop = ea.population();
             typename EA::population_type::iterator mi=pop.begin();
             for(typename EA::population_type::iterator i=pop.begin(); i!=pop.end(); ++i) {
-                if(ea::fitness(**i) > ea::fitness(**mi)) {
+                if(ealib::fitness(**i) > ealib::fitness(**mi)) {
                     mi = i;
                 }
             }
@@ -56,7 +56,7 @@ namespace ea {
             typename EA::population_type& pop = ea.population();
             typename EA::population_type::iterator mi=pop.begin();            
             for(typename EA::population_type::iterator i=pop.begin(); i!=pop.end(); ++i) {
-                if(ea::fitness(**i) > ea::fitness(**mi)) {
+                if(ealib::fitness(**i) > ealib::fitness(**mi)) {
                     mi = i;
                 }
             }

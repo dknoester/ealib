@@ -24,7 +24,7 @@
 #include <ea/analysis/tool.h>
 
 
-namespace ea {
+namespace ealib {
     namespace analysis {
       
         template <typename EA>

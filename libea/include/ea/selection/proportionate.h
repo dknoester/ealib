@@ -24,7 +24,7 @@
 
 #include <ea/selection.h>
 
-namespace ea {
+namespace ealib {
 	namespace selection {
         
 		/*! Proportionate selection.

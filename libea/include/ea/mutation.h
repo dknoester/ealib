@@ -25,7 +25,7 @@
 #include <ea/meta_data.h>
 
 
-namespace ea {
+namespace ealib {
     
 	/*! Unconditionally mutate an individual.
 	 */	

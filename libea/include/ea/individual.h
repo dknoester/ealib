@@ -23,7 +23,7 @@
 #include <boost/serialization/nvp.hpp>
 #include <ea/meta_data.h>
 
-namespace ea {
+namespace ealib {
 
 	/*! Definition of EALib individuals.
      

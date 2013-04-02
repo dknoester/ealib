@@ -25,7 +25,7 @@
 #include "test.h"
 
 BOOST_AUTO_TEST_CASE(rng_functional) {
-	using namespace ea;
+	using namespace ealib;
 	default_rng_type rng1(1), rng2(1);
 
 	// make sure that they each generate the same bits
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(rng_functional) {
 
 
 BOOST_AUTO_TEST_CASE(rng_serialization) {
-	using namespace ea;	
+	using namespace ealib;	
 	default_rng_type rng1(1), rng2(2);
 
 	std::ostringstream out;

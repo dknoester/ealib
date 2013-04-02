@@ -41,7 +41,7 @@ LIBEA_MD_DECL(GRAPH_DUPLICATE_VERTEX_P, "graph.duplicate.vertex.p", double);
 LIBEA_MD_DECL(GRAPH_MUTATION_EVENT_P, "graph.mutation.event.p", double);
 LIBEA_MD_DECL(GRAPH_MUTATION_VERTEX_P, "graph.mutation.vertex.p", double);
 
-namespace ea {
+namespace ealib {
     namespace graph {
         //! These are the different graph operations that are allowed.
         namespace graph_operation {

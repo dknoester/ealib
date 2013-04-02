@@ -40,7 +40,7 @@
 #include <ea/events.h>
 #include <ea/rng.h>
 
-namespace ea {
+namespace ealib {
     
     /*! Default attributes for an evolutionary_algorithm individual.
      */
@@ -67,21 +67,18 @@ namespace ea {
     template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::two_point_crossover,
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-    typename Encoding=directS,
     template <typename> class IndividualAttrs=default_ea_attributes,
     template <typename> class Individual=individual,
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
-	typename RandomNumberGenerator=ea::default_rng_type>
+	typename RandomNumberGenerator=ealib::default_rng_type>
 	class evolutionary_algorithm {
     public:        
         //! Configuration object type.
         typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
         //! Representation type.
         typedef Representation representation_type;
-        //! Encoding type
-        typedef Encoding encoding_tag;
         //! Fitness function type.
         typedef FitnessFunction fitness_function_type;
         //! Fitness type.
@@ -119,33 +116,39 @@ namespace ea {
         evolutionary_algorithm() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
             BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
-            _configurator.construct(*this);
+        }
+        
+        //! Configure this EA.
+        void configure() {
+            _configurator.configure(*this);
+        }
+        
+        //! Build the initial population.
+        void initial_population() {
+            _configurator.initial_population(*this);
         }
                 
         //! Initialize this EA.
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
             _configurator.initialize(*this);
-        }        
-        
-        //! Generates the initial population.
-        void generate_initial_population() {
-            _configurator.initial_population(*this);
-        }
-
-        //! Advance the epoch of this EA by n updates.
-        void advance_epoch(std::size_t n) {
-            begin_epoch();
-            for(++n; n>0; --n) {
-                update();
-            }
-            _events.end_of_epoch(*this);
         }
         
-        //! Called once at the beginning of each epoch.
+        //! Reset the population.
+        void reset() {
+            nullify_fitness(_population.begin(), _population.end(), *this);
+            _configurator.reset(*this);
+        }
+        
+        //! Begin an epoch.
         void begin_epoch() {
             calculate_fitness(_population.begin(), _population.end(), *this);
             _events.record_statistics(*this);
+        }
+        
+        //! End an epoch.
+        void end_epoch() {
+            _events.end_of_epoch(*this);
         }
 
         //! Advance this EA by one update.
@@ -189,12 +192,6 @@ namespace ea {
         //! Erase the given individual from the population.
         void erase(iterator i) {
             _population.erase(i.base());
-        }
-        
-        //! Reset the population.
-        void reset() {
-            nullify_fitness(_population.begin(), _population.end(), *this);
-            _configurator.reset(*this);
         }
         
         //! Returns the current update of this EA.
@@ -289,6 +286,6 @@ namespace ea {
         }
     };
     
-}
+} // ea
 
 #endif

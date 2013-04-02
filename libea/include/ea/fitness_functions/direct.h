@@ -24,7 +24,7 @@
 
 #include <ea/fitness_functions/ff_base.h>
 
-namespace ea {
+namespace ealib {
 	
 	/*! Fitness function that simply accumulates the value of each loci.
      

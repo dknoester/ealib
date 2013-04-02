@@ -26,7 +26,7 @@
 #include <numeric>
 #include <vector>
 
-namespace ea {
+namespace ealib {
     namespace analysis {
         
         struct modularity_edge_properties {

@@ -29,7 +29,7 @@ LIBEA_MD_DECL(ANN_INPUTS_N, "ann.inputs.n", int);
 LIBEA_MD_DECL(ANN_OUTPUTS_N, "ann.outputs.n", int);
 
 
-namespace ea {
+namespace ealib {
 
     /*! Generates a random artificial neural network.
      */

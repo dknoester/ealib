@@ -42,12 +42,13 @@ typedef evolutionary_algorithm<
 Graph,
 mutation::graph_mutator,
 graph_fitness,
-graph_configuration
+graph_configuration,
+recombination::asexual
 > graph_ea;
 
 BOOST_AUTO_TEST_CASE(test_graph_mutations) {
-	using namespace ea;
-    namespace eg = ea::graph;
+	using namespace ealib;
+    namespace eg = ealib::graph;
     
     graph_ea ea;
     Graph G;
@@ -78,8 +79,8 @@ BOOST_AUTO_TEST_CASE(test_graph_mutations) {
 
 
 BOOST_AUTO_TEST_CASE(test_graph_growth) {
-	using namespace ea;
-    using namespace ea::graph;
+	using namespace ealib;
+    using namespace ealib::graph;
     growth_descriptor desc;
     desc.Pc[conditional::p] = 0.5;
     desc.Pc[conditional::q] = 0.8;

@@ -24,7 +24,7 @@
 #include <boost/signal.hpp>
 #include <ea/meta_data.h>
 
-namespace ea {
+namespace ealib {
 
     /*! Contains event handlers for generic events of interest within an evolutionary
 	 algorithm.

@@ -38,7 +38,7 @@
 // "reboot" lowest population
 // parent selection scheme
 
-namespace ea {
+namespace ealib {
     // ea.alps*
     
     LIBEA_MD_DECL(GM_AGE, "ea.alps.genetic_material_age", unsigned int);
@@ -99,7 +99,7 @@ namespace ea {
                 std::sort(ea[i+1].population().begin(), ea[i+1].population().end(), comparators::fitness());
                 for(typename MEA::individual_type::population_type::iterator tf=f; tf!=l; ++tf) {
                     if((ea[i+1].population().size() < get<POPULATION_SIZE>(ea[i+1]))
-                       || (ea::fitness(**tf) > ea::fitness(*ea[i+1].population().front()))) {
+                       || (ealib::fitness(**tf) > ealib::fitness(*ea[i+1].population().front()))) {
                         ea[i+1].population().insert(ea[i+1].population().end(), *tf);
                     }
                 }
@@ -146,7 +146,7 @@ namespace ea {
                     
                     for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
                         age(get<GM_AGE>(**j,0.0));
-                        fit(static_cast<double>(ea::fitness(**j)));
+                        fit(static_cast<double>(ealib::fitness(**j)));
                     }
                     
                     _df.write(mean(age))

@@ -23,7 +23,7 @@
 #include <boost/concept_check.hpp>
 #include <utility>
 
-namespace ea {
+namespace ealib {
 	namespace detail {
         //! Concept checking helper to ensure that two parameters are the same type.
 		template <typename T> void same_type(const T&, const T&);
@@ -54,7 +54,7 @@ namespace ea {
      
      <b>Refinement of:</b>
 	 
-	 <b>Models:</b> ea::meta_data.
+	 <b>Models:</b> ealib::meta_data.
      */
     template <typename X>
 	struct MetaDataConcept : boost::Assignable<X> {
@@ -107,7 +107,7 @@ namespace ea {
      
      <b>Refinement of:</b>
 	 
-	 <b>Models:</b> ea::individual, ea::organism.
+	 <b>Models:</b> ealib::individual, ealib::organism.
      */
 	template <typename X>
 	struct IndividualConcept {
@@ -167,7 +167,7 @@ namespace ea {
 
      <b>Refinement of:</b>
 	 
-	 <b>Models:</b> ea::population.
+	 <b>Models:</b> ealib::population.
      */
 	template <typename X>
 	struct PopulationConcept : boost::CopyConstructible<X>, boost::RandomAccessContainer<X>, boost::BackInsertionSequence<X> {
@@ -188,7 +188,7 @@ namespace ea {
      
      <b>Refinement of:</b>
 	 
-	 <b>Models:</b> ea::rng.
+	 <b>Models:</b> ealib::rng.
      */
     template <typename X>
 	struct RNGConcept : boost::Assignable<X> {
@@ -225,8 +225,8 @@ namespace ea {
 	 
 	 <b>Refinement of:</b>
 	 
-	 <b>Models:</b> ea::evolutionary_algorithm, ea::digital_evolution, 
-     ea::novelty_search, ea::meta_population.
+	 <b>Models:</b> ealib::evolutionary_algorithm, ealib::digital_evolution, 
+     ealib::novelty_search, ealib::meta_population.
 	 
 	 */
 	template <typename X>
@@ -245,17 +245,48 @@ namespace ea {
             BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
             BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
             BOOST_CONCEPT_ASSERT((SuppliesRNGConcept<X>));
+
+            // lifecycle methods; see lifecycle.h
+            x.configure();
+            x.initial_population();
+            x.initialize();
+            x.reset();
+            x.begin_epoch();
+            x.end_epoch();
+            x.update();
             
             detail::same_type(p, x.population());
 		}
         
+        //! Configure this EA.
+        void configure();
+        
+        //! Build the initial population.
+        void initial_population();
+        
+        //! Initialize this EA.
+        void initialize();
+        
+        //! Reset the population.
+        void reset();
+        
+        //! Begin an epoch.
+        void begin_epoch();
+        
+        //! End an epoch.
+        void end_epoch();
+        
+        //! Advance this EA by one update.
+        void update();
+        
         //! Retrieve the current population.
         population_type& population();
-         
+        
 	private:
 		X x;
         population_type p;
-	};	
+        individual_ptr_type ind;
+	};
     
     
 	/*! Selection strategy concept.
@@ -274,7 +305,7 @@ namespace ea {
 	 
 	 <b>Valid expressions:</b> See member functions.
 	 
-	 <b>Models:</b> ea::tournament, ea::elitism, ea::fitness_proportionate, ea::truncation, ea::random
+	 <b>Models:</b> ealib::tournament, ealib::elitism, ealib::fitness_proportionate, ealib::truncation, ealib::random
 	 */
 	template <typename X, typename Population, typename EA>
 	struct SelectionStrategyConcept {
@@ -342,7 +373,7 @@ namespace ea {
 	 
 	 <b>Valid expressions:</b> See member functions.
 	 
-	 <b>Models:</b> ea::steady_state
+	 <b>Models:</b> ealib::steady_state
 	 */
 	template <typename X, typename Population, typename EA>
 	struct GenerationalModelConcept {
@@ -372,7 +403,7 @@ namespace ea {
 	
 	
 	/*! Fitness function concept, used to check that fitness function types passed as a template
-	 parameter to an ea::evolutionary_algorithm are valid.
+	 parameter to an ealib::evolutionary_algorithm are valid.
 	 
 	 Fitness functions are responsible for translating a representation to a less-than comparable
 	 value that can be used as input to a selection strategy.	 
@@ -383,8 +414,8 @@ namespace ea {
 	 
 	 <b>Valid expressions:</b> See member functions.
 	 
-	 <b>Models:</b> ea::all_ones, ea::strong_all_ones, ea::royal_road, ea::royal_road_with_ditches,
-	 ea::unit_fitness
+	 <b>Models:</b> ealib::all_ones, ealib::strong_all_ones, ealib::royal_road, ealib::royal_road_with_ditches,
+	 ealib::unit_fitness
 	 */
 	template <typename X, typename R, typename EA>
 	struct FitnessFunctionConcept {
@@ -424,7 +455,7 @@ namespace ea {
 
 	
 	/*! Replacement strategy concept, used to check that replacement strategy types passed as
-	 template parameters to an ea::evolutionary_algorithm are valid.
+	 template parameters to an ealib::evolutionary_algorithm are valid.
 	 
 	 <b>Refinement of:</b> SelectionStrategyConcept
 	 
@@ -432,7 +463,7 @@ namespace ea {
 	 
 	 <b>Valid expressions:</b> See member functions.
 	 
-	 <b>Models:</b>ea::truncation, ea::elitism
+	 <b>Models:</b>ealib::truncation, ealib::elitism
 	 */
 	template <typename X, typename EA>
 	struct ReplacementStrategyConcept {

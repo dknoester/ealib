@@ -23,14 +23,19 @@
 #include <boost/serialization/nvp.hpp>
 #include <ea/meta_data.h>
 
-namespace ea {
+namespace ealib {
     
     //! Fitness accessor method.
     template <typename T>
     typename T::attr_type::fitness_type& fitness(T& t) {
         return t.attr().fitness();
     }
-    
+
+    template <typename T, typename EA>
+    typename T::attr_type::fitness_type& fitness(T& t, EA& ea) {
+        return t.attr().fitness();
+    }
+
     namespace attr {
 
         //! Fitness attribute.
@@ -56,7 +61,7 @@ namespace ea {
         struct fitness_accessor {
             template <typename T>
             typename T::attr_type::fitness_type& operator()(T& t) {
-                return ea::fitness(t);
+                return ealib::fitness(t);
             }
         };
         
@@ -65,7 +70,7 @@ namespace ea {
         struct meta_data {
             template <typename Individual>
             typename MDType::value_type operator()(Individual& x) {
-                return ea::get<MDType>(x);
+                return ealib::get<MDType>(x);
             }
         };
         

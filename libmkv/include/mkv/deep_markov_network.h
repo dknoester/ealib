@@ -45,7 +45,7 @@ namespace mkv {
     public:
         typedef std::vector<markov_network::desc_type> desc_type; //!< Type for geometry of Deep Markov Network.
         typedef std::vector<markov_network> base_type; //!< Base type container for Deep Markov Networks.
-        typedef ea::default_rng_type rng_type; //!< Random number generator type.
+        typedef ealib::default_rng_type rng_type; //!< Random number generator type.
 
         //! Constructs a Deep Markov network with a copy of the given random number generator.
         deep_markov_network(const desc_type& desc, const rng_type& rng) : _desc(desc), _rng(rng) {

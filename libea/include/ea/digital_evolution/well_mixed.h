@@ -27,7 +27,7 @@
 #include <vector>
 #include <ea/meta_data.h>
 
-namespace ea {
+namespace ealib {
     
     /*! Well-mixed topology.
      */

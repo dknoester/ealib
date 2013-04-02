@@ -98,7 +98,7 @@ namespace ann {
         void K(Graph& g, RNG& rng) {
             for(std::size_t i=0; i<boost::num_vertices(g); ++i) {
                 std::vector<std::size_t> v(boost::num_vertices(g));
-                ea::algorithm::iota(v.begin(), v.end());
+                ealib::algorithm::iota(v.begin(), v.end());
                 std::random_shuffle(v.begin(), v.end(), rng);
                 
                 for(std::size_t j=0; j<v.size(); ++j) {

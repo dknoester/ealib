@@ -25,7 +25,7 @@
 #include <ea/algorithm.h>
 #include <ea/comparators.h>
 
-namespace ea {
+namespace ealib {
 	namespace selection {
 		
 		/*! Truncation selection.

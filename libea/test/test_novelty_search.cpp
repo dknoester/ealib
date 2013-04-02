@@ -22,8 +22,8 @@
 
 //! Novelty search.
 BOOST_AUTO_TEST_CASE(test_novelty_search) {
-    using namespace ea;
+    using namespace ealib;
     
-    novelty_search<bitstring, mutation::bitflip, all_ones, all_ones> E;
+    novelty_search<bitstring, mutation::per_site<mutation::bitflip>, all_ones, all_ones> E;
 
 }

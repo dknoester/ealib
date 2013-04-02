@@ -25,7 +25,7 @@
 #include <ea/generators.h>
 
 
-namespace ea {
+namespace ealib {
     
     /*! Generates an ancestral population of size n into the given EA.
      

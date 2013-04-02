@@ -44,11 +44,12 @@ typedef evolutionary_algorithm<
 neural_network<neuroevolution<feed_forward_neuron< > > >,
 mutation::graph_mutator,
 graph_fitness,
-graph_configuration
+graph_configuration,
+recombination::asexual
 > graph_ea;
 
 
 BOOST_AUTO_TEST_CASE(test_neuroevolution) {
-	using namespace ea;
+	using namespace ealib;
     graph_ea E;
 }

@@ -26,7 +26,7 @@
 #include <ea/comparators.h>
 #include <ea/meta_data.h>
 
-namespace ea {
+namespace ealib {
 
 	namespace selection {
 		

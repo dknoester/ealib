@@ -30,7 +30,7 @@
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
 
-namespace ea {
+namespace ealib {
     
     struct empty { };
     

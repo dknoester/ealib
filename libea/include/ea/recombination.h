@@ -24,7 +24,7 @@
 #include <utility>
 
 
-namespace ea {
+namespace ealib {
     
     /*! Common inheritance details.
      */

@@ -35,7 +35,7 @@
 BOOST_AUTO_TEST_CASE(test_layers) {
     using namespace mkv;
 	using namespace mkv::detail;
-    using namespace ea;
+    using namespace ealib;
 	
     //	 | 0  | 1  | 2  | 3  | 4  |
     //	 | 0i | 1i | 0o | 1o | 0h |
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(test_layers) {
 BOOST_AUTO_TEST_CASE(test_graph_conversion) {
     using namespace mkv;
     using namespace mkv::detail;
-    using namespace ea;
+    using namespace ealib;
     
     int data[76] = {
         5, 0,
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(test_graph_conversion) {
 BOOST_AUTO_TEST_CASE(test_logic_gate) {
     using namespace mkv;
 	using namespace mkv::detail;
-    using namespace ea;
+    using namespace ealib;
 	
     //	 | 0  | 1  | 2  | 3  | 4  |
     //	 | 0i | 1i | 0o | 1o | 0h |
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
 BOOST_AUTO_TEST_CASE(test_markov_gate) {
     using namespace mkv;
 	using namespace mkv::detail;
-    using namespace ea;
+    using namespace ealib;
 	
     //	 | 0  | 1  | 2  | 3  | rng
     //	 | 0i | 1i | 0o | 1o |
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(test_markov_gate) {
 BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
     using namespace mkv;
     using namespace mkv::detail;
-    using namespace ea;
+    using namespace ealib;
     
     int data[76] = {
         5, 0,

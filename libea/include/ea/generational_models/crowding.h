@@ -27,7 +27,7 @@
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 
-namespace ea {
+namespace ealib {
 	namespace generational_models {
 		
 		/*! Deterministic crowding.
@@ -68,13 +68,13 @@ namespace ea {
                         std::swap(offspring[0], offspring[1]);
                     }
                     
-                    if(ea::fitness(parents[0],ea) > ea::fitness(offspring[0],ea)) {
+                    if(ealib::fitness(*parents[0],ea) > ealib::fitness(*offspring[0],ea)) {
                         next_gen.push_back(parents[0]);
                     } else {
                         next_gen.push_back(offspring[0]);
                     }
 
-                    if(ea::fitness(parents[1],ea) > ea::fitness(offspring[1],ea)) {
+                    if(ealib::fitness(*parents[1],ea) > ealib::fitness(*offspring[1],ea)) {
                         next_gen.push_back(parents[1]);
                     } else {
                         next_gen.push_back(offspring[1]);

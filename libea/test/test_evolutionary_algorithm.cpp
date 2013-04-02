@@ -22,8 +22,8 @@
 
 //! "Standard" evolutionary algorithm.
 BOOST_AUTO_TEST_CASE(test_evolutionary_algorithm) {
-    using namespace ea;
+    using namespace ealib;
     
-    evolutionary_algorithm<bitstring, mutation::bitflip, all_ones> E;
+    evolutionary_algorithm<bitstring, mutation::per_site<mutation::bitflip>, all_ones> E;
     
 }

@@ -34,7 +34,7 @@ struct digevo_configuration : public abstract_configuration<EA> {
     
     //! Called as the final step of EA construction (must not depend on configuration parameters).
     void construct(EA& ea) {
-        using namespace ea::instructions;
+        using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
         append_isa<nop_c>(0,ea);
@@ -120,12 +120,12 @@ struct mp_founder_configuration : public abstract_configuration<EA> {
 };
 
 template <typename EA>
-struct test_population_lod_tool : public ea::analysis::unary_function<EA> {
+struct test_population_lod_tool : public ealib::analysis::unary_function<EA> {
     static const char* name() { return "test_population_lod_tool"; }
     
     virtual void operator()(EA& ea) {
-        using namespace ea;
-        using namespace ea::analysis;
+        using namespace ealib;
+        using namespace ealib::analysis;
         
         line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
         typename line_of_descent<EA>::iterator i=lod.begin(); ++i;
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_digevo_types) {
 
 
 BOOST_AUTO_TEST_CASE(test_types) {
-	using namespace ea;
+	using namespace ealib;
     
     {
         evolutionary_algorithm<
@@ -199,7 +199,6 @@ BOOST_AUTO_TEST_CASE(test_types) {
         abstract_configuration,
         recombination::two_point_crossover,
         generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-        directS,
         default_ea_attributes,
         individual_lod
         > ea;

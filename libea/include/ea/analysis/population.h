@@ -25,13 +25,13 @@
 
 
 
-namespace ea {
+namespace ealib {
     namespace analysis {
 
         /*! Save the fitness values of all individuals in the population.
          */
         template <typename EA>
-        struct population_fitness : public ea::analysis::unary_function<EA> {
+        struct population_fitness : public ealib::analysis::unary_function<EA> {
             static const char* name() { return "population_fitness"; }
             
             virtual void operator()(EA& ea) {

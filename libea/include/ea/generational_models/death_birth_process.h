@@ -27,7 +27,7 @@
 #include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>
 
-namespace ea {
+namespace ealib {
     
 	namespace generational_models {
 		

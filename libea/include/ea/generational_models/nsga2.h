@@ -30,7 +30,7 @@
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 
-namespace ea {
+namespace ealib {
     
     //! Attributes that must be added to individuals to support NSGA2.
     template <typename EA>

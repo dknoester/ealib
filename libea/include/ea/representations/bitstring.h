@@ -22,7 +22,7 @@
 
 #include <ea/representations/numeric_vector.h>
 
-namespace ea {
+namespace ealib {
 
     //! Bitstring representation type.
 	typedef numeric_vector<int> bitstring;

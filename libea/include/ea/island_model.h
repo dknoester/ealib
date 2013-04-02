@@ -24,7 +24,7 @@
 #include <ea/events.h>
 #include <ea/meta_data.h>
 
-namespace ea {
+namespace ealib {
     LIBEA_MD_DECL(ISLAND_MIGRATION_PERIOD, "ea.island_model.migration_period", int);
     LIBEA_MD_DECL(ISLAND_MIGRATION_RATE, "ea.island_model.migration_rate", double);
     

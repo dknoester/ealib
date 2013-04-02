@@ -24,7 +24,7 @@
 #include <ea/meta_data.h>
 #include <ea/generational_model.h>
 
-namespace ea {
+namespace ealib {
 	namespace generational_models {
 		
 		/*! Steady-state generational model.

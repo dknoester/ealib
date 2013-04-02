@@ -22,7 +22,7 @@
 #include "test.h"
 
 BOOST_AUTO_TEST_CASE(test_circular_vector) {
-	using namespace ea;
+	using namespace ealib;
 
     int data[33]={
 		44, 255-44, // start

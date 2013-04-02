@@ -29,7 +29,7 @@
 #include <ea/representations/circular_genome.h>
 
 
-namespace ea {
+namespace ealib {
     
     /*! Digital evolution hardware.
      

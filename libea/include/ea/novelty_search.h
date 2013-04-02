@@ -41,7 +41,7 @@
 #include <ea/events.h>
 #include <ea/rng.h>
 
-namespace ea {
+namespace ealib {
     
     //! Novelty attribute.
     template <typename EA>
@@ -102,7 +102,7 @@ namespace ea {
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
-	typename RandomNumberGenerator=ea::default_rng_type>
+	typename RandomNumberGenerator=ealib::default_rng_type>
 	class novelty_search {
     public:
         //! Configuration object type.
@@ -150,28 +150,62 @@ namespace ea {
             BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
         }
         
-        //! Initialize this EA.
-        void initialize() {
-            _fitness_function.initialize(*this);
+        //! Configure this EA.
+        void configure() {
+            _configurator.configure(*this);
         }
         
-        //! Advance the epoch of this EA by n updates.
-        void advance_epoch(std::size_t n) {
+        //! Genesis; create the initial population.
+        void initial_population() {
+            _configurator.initial_population(*this);
+        }
+        
+        //! Initialize this EA.
+        void initialize() {
+            initialize_fitness_function(_fitness_function, *this);
+            _configurator.initialize(*this);
+        }
+        
+        //! Reset the population.
+        void reset() {
+            _configurator.reset(*this);
+        }
+        
+        //! Begin an epoch.
+        void begin_epoch() {
             calculate_fitness(_population.begin(), _population.end(), *this);
             relativize_fitness(_population.begin(), _population.end(), *this);
-            for( ; n>0; --n) {
-                update();
-            }
             _events.record_statistics(*this);
+        }
+        
+        //! End an epoch.
+        void end_epoch() {
             _events.end_of_epoch(*this);
         }
         
         //! Advance this EA by one update.
         void update() {
-            _events.record_statistics(*this);
-            _generational_model(_population, *this);
-            _generational_model.next_update();
+            if(!_population.empty()) {
+                _generational_model(_population, *this);
+            }
             _events.end_of_update(*this);
+            
+            // update counter, fitness, and statistics are handled *between* updates:
+            _generational_model.next_update();
+            calculate_fitness(_population.begin(), _population.end(), *this);
+            _events.record_statistics(*this);
+        }
+        
+        //! Build an individual from the given representation.
+        individual_ptr_type make_individual(const representation_type& r) {
+            individual_ptr_type p(new individual_type(r));
+            return p;
+        }
+        
+        //! Build a copy of an individual.
+        individual_ptr_type make_individual(const individual_type& r) {
+            individual_ptr_type p(new individual_type(r));
+            return p;
         }
         
         //! Retrieve the current update number.
@@ -271,7 +305,10 @@ namespace ea {
         
         //! Retrieve the event handler.
         event_handler_type& events() { return _events; }
-        
+
+        //! Returns the configuration object.
+        configuration_type& configuration() { return _configurator; }
+
     protected:
         rng_type _rng;                                  //!< Random number generator.
         fitness_function_type _fitness_function;        //!< Fitness function object.
@@ -279,6 +316,7 @@ namespace ea {
         md_type _md;                                    //!< Meta-data for this evolutionary algorithm instance.
         generational_model_type _generational_model;    //!< Generational model instance.
         event_handler_type _events;                     //!< Event handler.
+        configuration_type _configurator; //!< Configuration object.
         population_type _archive;                       //!< Archive of novel individuals.
         population_type _fittest;                       //!< List of objectively fittest individuals.
         

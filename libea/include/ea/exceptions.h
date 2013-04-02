@@ -24,7 +24,7 @@
 #include <string>
 
 
-namespace ea {
+namespace ealib {
 
 	//! EAlib exception base class.
 	struct ealib_exception {

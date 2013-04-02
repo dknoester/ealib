@@ -30,7 +30,7 @@
 
 #include <ea/exceptions.h>
 
-namespace ea {
+namespace ealib {
     
     //! ABC for attribute types.
     struct abstract_attribute {
@@ -116,6 +116,18 @@ namespace ea {
 			return *this;
 		}
 		
+        //! Copy meta-data from that to this (may overwrite this).
+        meta_data& operator+=(const meta_data& that) {
+            if(this != &that) {
+                flush();
+                _values.clear();
+                for(md_string_type::const_iterator i=that._strings.begin(); i!=that._strings.end(); ++i) {
+                    _strings.insert(*i);
+                }
+            }
+            return *this;
+        }
+        
         //! Operator==
         bool operator==(const meta_data& that) {
             return std::equal(_strings.begin(), _strings.end(), that._strings.begin());
@@ -264,11 +276,11 @@ namespace ea {
 
 /* This macro defines a new attribute. */
 #define LIBEA_MD_DECL( name, key_string, type ) \
-struct name : ea::attribute<type> { \
+struct name : ealib::attribute<type> { \
     inline static const char* key() { return key_string; } \
 }
 
-namespace ea {
+namespace ealib {
     // ea.novelty_search.*
     LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);
     LIBEA_MD_DECL(NOVELTY_NEIGHBORHOOD_SIZE, "ea.novelty_search.neighborhood.size", int);

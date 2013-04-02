@@ -25,25 +25,25 @@ BOOST_AUTO_TEST_CASE(ealib_checkpoint) {
     all_ones_ea ea1, ea2;
     add_std_meta_data(ea1);
     ea1.initialize();
-    ea1.generate_initial_population();
+    ea1.initial_population();
     
     // run and checkpoint ea1:
-    ea1.advance_epoch(10);
+    lifecycle::advance_epoch(10,ea1);
     std::ostringstream out;
-    checkpoint_save(ea1, out);
+    lifecycle::save_checkpoint(out, ea1);
     
     // load the saved state into ea2:
     std::istringstream in(out.str());
-    checkpoint_load(ea2, in);
+    lifecycle::load_checkpoint(in, ea2);
     
     // run each a little longer:
-    ea1.advance_epoch(10);
+    lifecycle::advance_epoch(10,ea1);
     //	BOOST_CHECK_NE(ea1, ea2);
-    ea2.advance_epoch(10);
+    lifecycle::advance_epoch(10,ea2);
     
     // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
-        BOOST_CHECK(ea::fitness(*i) == ea::fitness(*j));
+        BOOST_CHECK(ealib::fitness(*i) == ealib::fitness(*j));
         BOOST_CHECK(i->name() == j->name());
     }
 }

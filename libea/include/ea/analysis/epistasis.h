@@ -33,7 +33,7 @@
 #include <ea/analysis/modularity.h>
 #include <ea/analysis/tool.h>
 
-namespace ea {
+namespace ealib {
     namespace analysis {
         
         //! Epistasis edges.
@@ -120,7 +120,7 @@ namespace ea {
             // get a copy:
             typename EA::individual_type ind=find_most_fit_individual(ea);
             epistasis_graph g = epistasis(ind, get<NK_MODEL_K>(ea), ea);
-            ea::datafile df("epistasis.dot");
+            ealib::datafile df("epistasis.dot");
             write_circular_graph(g, df);
         }
         // LIBEA_ANALYSIS_TOOL(epistasis, "calculate epistasis among all loci in a genome")

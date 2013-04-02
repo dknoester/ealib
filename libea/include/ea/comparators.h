@@ -22,14 +22,14 @@
 
 #include <ea/attributes.h>
 
-namespace ea {
+namespace ealib {
     namespace comparators {
 
         //! Compare individual pointers based on the natural order of their fitnesses in ascending order.
         struct fitness {
             template <typename IndividualPtr>
             bool operator()(IndividualPtr x, IndividualPtr y) {
-                return ea::fitness(*x) < ea::fitness(*y);
+                return ealib::fitness(*x) < ealib::fitness(*y);
             }
         };
         
@@ -37,7 +37,7 @@ namespace ea {
         struct fitness_desc {
             template <typename IndividualPtr>
             bool operator()(IndividualPtr x, IndividualPtr y) {
-                return ea::fitness(*x) > ea::fitness(*y);
+                return ealib::fitness(*x) > ealib::fitness(*y);
             }
         };
 
@@ -45,7 +45,7 @@ namespace ea {
       struct meta_data {
         template <typename IndividualPtr>
         bool operator()(IndividualPtr x, IndividualPtr y) {
-          return ea::get<MDType>(*x) < ea::get<MDType>(*y);
+          return ealib::get<MDType>(*x) < ealib::get<MDType>(*y);
         }
       };
       

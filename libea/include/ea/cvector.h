@@ -23,7 +23,7 @@
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <vector>
 
-namespace ea {
+namespace ealib {
 
     /*! Iterator class for cvector.
      

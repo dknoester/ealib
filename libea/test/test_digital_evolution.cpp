@@ -29,8 +29,8 @@ struct test_configuration : public abstract_configuration<EA> {
     typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
     
     //! Called as the final step of EA construction.
-    void construct(EA& ea) {
-        using namespace ea::instructions;
+    void configure(EA& ea) {
+        using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
         append_isa<nop_c>(0,ea);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    al.initialize();
+    lifecycle::prepare(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    al.initialize();
+    lifecycle::prepare(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    al.initialize();
+    lifecycle::prepare(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -213,15 +213,15 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
 
 BOOST_AUTO_TEST_CASE(test_logic9_environment) {
     // test input/output
-    ea::tasks::task_not tnot; 
-    ea::tasks::task_nand tnand;
-    ea::tasks::task_and tand;
-    ea::tasks::task_ornot tornot;
-    ea::tasks::task_or tor;
-    ea::tasks::task_andnot tandnot;
-    ea::tasks::task_nor tnor;
-    ea::tasks::task_xor txor;
-    ea::tasks::task_equals tequals;
+    ealib::tasks::task_not tnot; 
+    ealib::tasks::task_nand tnand;
+    ealib::tasks::task_and tand;
+    ealib::tasks::task_ornot tornot;
+    ealib::tasks::task_or tor;
+    ealib::tasks::task_andnot tandnot;
+    ealib::tasks::task_nor tnor;
+    ealib::tasks::task_xor txor;
+    ealib::tasks::task_equals tequals;
     
     // numbers 9, 10 
     int x = 9;
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
 
-    al.initialize();
+    lifecycle::prepare(al);
     generate_ancestors(repro_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -283,11 +283,11 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     
     // now let's check serialization...
     std::ostringstream out;
-    checkpoint_save(al, out);
+    lifecycle::save_checkpoint(out, al);
     
     al_type al2;
     std::istringstream in(out.str());
-    checkpoint_load(al2, in);
+    lifecycle::load_checkpoint(in,al2);
     
     al_type::individual_type& i1=*al.population()[0];
     al_type::individual_type& i2=*al2.population()[0];
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
     
-    al.initialize();
+    lifecycle::prepare(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -356,7 +356,7 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    al.initialize();
+    lifecycle::prepare(al);
     generate_ancestors(nopx_ancestor(), 2, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -393,26 +393,27 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
     put<RNG_SEED>(1,al);
     put<RECORDING_PERIOD>(10,al);
     
-    al.initialize();
+    lifecycle::prepare(al);
     generate_ancestors(repro_ancestor(), 1, al);
     typename al_type::individual_ptr_type p = al.population()[0];
     p->priority() = 1.0;
-    al.advance_epoch(400);
+    lifecycle::advance_epoch(400,al);
     BOOST_CHECK(al.population().size()>1);
     
     std::ostringstream out;
-    checkpoint_save(al, out);
-    
+    lifecycle::save_checkpoint(out, al);
+
     std::istringstream in(out.str());
-    checkpoint_load(al2, in);
-    al2.initialize();
+    lifecycle::prepare_checkpoint(in,al2);
+//    
+//    al2.initialize();
 
     BOOST_CHECK(al.population() == al2.population());
     BOOST_CHECK(al.env() == al2.env());
     BOOST_CHECK(al.rng() == al2.rng());
 
-    al.advance_epoch(10);
-    al2.advance_epoch(10);
+    lifecycle::advance_epoch(10,al);
+    lifecycle::advance_epoch(10,al2);
 
     BOOST_CHECK(al.population() == al2.population());
     BOOST_CHECK(al.env() == al2.env());

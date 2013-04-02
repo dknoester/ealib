@@ -22,7 +22,7 @@
 #define _EA_DIGITAL_EVOLUTION_REPLICATION_H_
 
 
-namespace ea {
+namespace ealib {
     
     /*! Selects the location of the first neighbor to the parent as the location
      for an offspring.

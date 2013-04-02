@@ -393,6 +393,7 @@
 		42C7730E16FF6F9B00EAFD8F /* qhfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = qhfc.h; sourceTree = "<group>"; };
 		42C7730F16FF6FDD00EAFD8F /* crowding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crowding.h; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
+		42D6A6011705CB650043EBB1 /* lifecycle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lifecycle.h; sourceTree = "<group>"; };
 		42D93B2F16CFC14700E7E5E9 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		42EA57941623257C007BCF51 /* meta_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_population.h; sourceTree = "<group>"; };
 		42F4B6191580EA0B0075D6EF /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
@@ -612,6 +613,7 @@
 				423CBDDA157D0E450003A644 /* generators.h */,
 				42D93B2F16CFC14700E7E5E9 /* graph.h */,
 				423CBDDB157D0E450003A644 /* individual.h */,
+				42D6A6011705CB650043EBB1 /* lifecycle.h */,
 				423CBDDF157D0E450003A644 /* line_of_descent.h */,
 				4220F31115CD940E005750F1 /* island_model.h */,
 				423CBDE0157D0E450003A644 /* meta_data.h */,

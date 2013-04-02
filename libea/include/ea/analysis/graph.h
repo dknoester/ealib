@@ -24,7 +24,7 @@
 #include <ostream>
 #include <boost/graph/connected_components.hpp>
 
-namespace ea {
+namespace ealib {
     namespace analysis {
         
         /*! Calculates the difference d of graphs g and h: d = g - h.

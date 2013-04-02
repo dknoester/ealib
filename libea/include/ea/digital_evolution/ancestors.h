@@ -25,7 +25,7 @@
 #include <ea/meta_data.h>
 
 
-namespace ea {
+namespace ealib {
     
     //! Generates a representation for a repro ancestor.
     struct repro_ancestor {

@@ -29,7 +29,7 @@
 #include <ea/attributes.h>
 
 
-namespace ea {
+namespace ealib {
     namespace datafiles {
         
         /*! Datafile for mean generation, and mean & max fitness.
@@ -53,7 +53,7 @@ namespace ea {
                 
                 for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
                     gen((*i)->generation());
-                    fit(static_cast<double>(ea::fitness(**i)));
+                    fit(static_cast<double>(ealib::fitness(**i)));
                 }
                 
                 _df.write(ea.current_update())
@@ -104,9 +104,9 @@ namespace ea {
 
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         gen(j->generation());
-                        fit(static_cast<double>(ea::fitness(*j)));
+                        fit(static_cast<double>(ealib::fitness(*j)));
                         mpgen(j->generation());
-                        mpfit(static_cast<double>(ea::fitness(*j)));
+                        mpfit(static_cast<double>(ealib::fitness(*j)));
                     }
                     
                     _df.write(mean(gen))

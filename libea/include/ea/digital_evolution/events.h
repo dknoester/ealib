@@ -22,7 +22,7 @@
 
 #include <ea/events.h>
 
-namespace ea {    
+namespace ealib {    
   
   /*! Alife event handler.
    */

@@ -26,7 +26,7 @@
 #include <ea/meta_data.h>
 #include <ea/digital_evolution/events.h>
 
-namespace ea {
+namespace ealib {
     
     /*! Abstract base class for all task types.
      

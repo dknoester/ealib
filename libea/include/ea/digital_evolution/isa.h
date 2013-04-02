@@ -27,13 +27,13 @@
 
 #define DIGEVO_INSTRUCTION_DECL(name) \
 template <typename Hardware, typename EA> \
-struct name : ea::instructions::abstract_instruction<Hardware,EA> { \
-name(std::size_t cost) : ea::instructions::abstract_instruction<Hardware,EA>(#name,cost) { } \
+struct name : ealib::instructions::abstract_instruction<Hardware,EA> { \
+name(std::size_t cost) : ealib::instructions::abstract_instruction<Hardware,EA>(#name,cost) { } \
 virtual void operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea); }; \
 template<typename Hardware,typename EA> void name<Hardware,EA>::operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea)
 
 
-namespace ea {
+namespace ealib {
     
     /*! This namespace contains all the instructions that are common features of
      digital evolution.  Project specific instructions should NOT go here.

@@ -24,7 +24,7 @@
 #include <limits>
 #include <cmath>
 
-namespace ea {
+namespace ealib {
 	
     //! Tag for arithmetic NK landscape.
     struct nk_arithmetic_t { };

@@ -22,7 +22,7 @@
 
 #include <ea/events.h>
 
-namespace ea {
+namespace ealib {
     
     // pre-dec
     template <typename EA> class abstract_configuration;
@@ -46,12 +46,16 @@ namespace ea {
     template <typename EA>
     class abstract_configuration {
     public:
-        typedef std::vector<boost::shared_ptr<ea::event> > event_list; //!< Storage for events.
+        typedef std::vector<boost::shared_ptr<ealib::event> > event_list; //!< Storage for events.
         
-        //! Called as the final step of EA construction.
-        virtual void construct(EA& ea) {
+        //! Called as the first step of an EA's lifecycle.
+        virtual void configure(EA& ea) {
         }
         
+        //! Called to generate the initial EA population.
+        virtual void initial_population(EA& ea) {
+        }
+
         //! Called as the final step of EA initialization.
         virtual void initialize(EA& ea) {
         }
@@ -60,10 +64,6 @@ namespace ea {
         virtual void reset(EA& ea) {
         }
 
-        //! Called to generate the initial EA population.
-        virtual void initial_population(EA& ea) {
-        }
-        
     protected:
         template <template <typename> class T, typename U> friend void add_event(abstract_configuration<U>* config, U& u);
         event_list _events; //!< List of all the events attached to an EA.

@@ -27,7 +27,7 @@
 #include <ea/cvector.h>
 
 
-namespace ea {
+namespace ealib {
 	
 	/*! Canonical numeric representation for genetic algorithms.
 	 */

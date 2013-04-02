@@ -29,7 +29,7 @@
 #include <ea/algorithm.h>
 #include <ea/exceptions.h>
 
-namespace ea {
+namespace ealib {
     
     /*! Provides convenient facilities for writing datafiles.
      */

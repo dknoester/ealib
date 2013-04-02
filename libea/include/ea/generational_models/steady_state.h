@@ -26,7 +26,7 @@
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 
-namespace ea {
+namespace ealib {
 	namespace generational_models {
 		
 		/*! Steady-state generational model.

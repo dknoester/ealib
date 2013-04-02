@@ -91,7 +91,7 @@ namespace mkv {
             : abstract_gate(ins, outs), M(1<<inputs.size(), 1<<outputs.size()) {
                 for(std::size_t i=0; i<M.size1(); ++i) {
                     row_type row(M, i);
-                    f = ea::algorithm::normalize(f, f+M.size2(), row.begin(), 1.0);
+                    f = ealib::algorithm::normalize(f, f+M.size2(), row.begin(), 1.0);
                 }
             }
             
@@ -120,7 +120,7 @@ namespace mkv {
             : abstract_gate(ins, outs), h(hn), p(posf), P(poswv), n(negf), N(negwv), M(1<<inputs.size(), 1<<outputs.size()) {
                 for(std::size_t i=0; i<M.size1(); ++i) {
                     row_type row(M, i);
-                    f = ea::algorithm::normalize(f, f+M.size2(), row.begin(), 1.0);
+                    f = ealib::algorithm::normalize(f, f+M.size2(), row.begin(), 1.0);
                 }
             }
             
@@ -132,7 +132,7 @@ namespace mkv {
             void scale(std::size_t i, std::size_t j, double s) {
                 M(i,j) *= 1.0 + s;
                 row_type row(M, i);
-                ea::algorithm::normalize(row.begin(), row.end(), row.begin(), 1.0);
+                ealib::algorithm::normalize(row.begin(), row.end(), row.begin(), 1.0);
             }
             
             //! Reinforce the recent behavior of this gate.
@@ -173,7 +173,7 @@ namespace mkv {
         typedef int state_type; //!< Type for states.
         typedef state_vector_machine<state_type> svm_type; //!< State vector machine type.
         typedef std::vector<variant_gate_type> base_type; //!< List of gates.
-        typedef ea::default_rng_type rng_type; //!< Random number generator type.
+        typedef ealib::default_rng_type rng_type; //!< Random number generator type.
         
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, const rng_type& rng)

@@ -23,7 +23,7 @@
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/hardware.h>
 
-namespace ea {
+namespace ealib {
     
     template <typename EA>
     class population_founder : public EA {

@@ -33,7 +33,7 @@
 #include <ea/events.h>
 #include <ea/rng.h>
 
-namespace ea {
+namespace ealib {
 
     /*! Coevolutionary algorithm.
      
@@ -48,7 +48,7 @@ namespace ea {
     template <typename> class ConfigurationStrategy,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
-	typename RandomNumberGenerator=ea::default_rng_type>
+	typename RandomNumberGenerator=ealib::default_rng_type>
     class coevolutionary_algorithm {
     public:
         //! Configuration object type.
@@ -58,7 +58,7 @@ namespace ea {
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
-        typedef ea::population<individual_type,individual_ptr_type> population_type;
+        typedef ealib::population<individual_type,individual_ptr_type> population_type;
         //! Event handler.
         typedef EventHandler<meta_population> event_handler_type;
         //! Selector of groups for fitness evaluation.

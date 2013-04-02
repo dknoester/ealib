@@ -26,7 +26,7 @@
 #include <ea/generational_model.h>
 #include <ea/fitness_function.h>
 
-namespace ea {    
+namespace ealib {    
     
     LIBEA_MD_DECL(SCHEDULER_TIME_SLICE, "ea.scheduler.time_slice", unsigned int);
     

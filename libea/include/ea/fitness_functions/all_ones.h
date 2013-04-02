@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <ea/fitness_function.h>
 
-namespace ea {
+namespace ealib {
 	
 	/*! Fitness function that rewards for the number of ones in the genome.
 	 
