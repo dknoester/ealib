@@ -31,15 +31,15 @@ namespace ealib {
     namespace datafiles {
         
         template <typename EA>
-        struct generation_priority : record_statistics_event<EA> {
-            generation_priority(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
+        struct priority : record_statistics_event<EA> {
+            priority(EA& ea) : record_statistics_event<EA>(ea), _df("priority.dat") {
                 _df.add_field("update")
                 .add_field("mean_generation")
                 .add_field("mean_priority")
                 .add_field("max_priority");
             }
             
-            virtual ~generation_priority() {
+            virtual ~priority() {
             }
             
             virtual void operator()(EA& ea) {
@@ -48,8 +48,8 @@ namespace ealib {
                 accumulator_set<double, stats<tag::mean, tag::max> > fit;
                 
                 for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    gen(ind(i,ea).generation());                
-                    fit(static_cast<double>(ind(i,ea).priority()));
+                    gen((*i)->generation());
+                    fit(static_cast<double>(ealib::priority(**i,ea)));
                 }
                 
                 _df.write(ea.current_update())

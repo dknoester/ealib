@@ -31,7 +31,6 @@
 #include <ea/individual.h>
 #include <ea/fitness_function.h>
 #include <ea/ancestors.h>
-
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
 #include <ea/selection.h>
@@ -42,17 +41,6 @@
 
 namespace ealib {
     
-    /*! Default attributes for an evolutionary_algorithm individual.
-     */
-    template <typename EA>
-    struct default_ea_attributes : attr::fitness_attribute<EA> {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
-        }
-    };
-    
-
 	/*! Generic evolutionary algorithm class.
 	 
 	 This class is designed to be generic, such that all the main features of evolutionary
@@ -67,7 +55,7 @@ namespace ealib {
     template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::two_point_crossover,
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-    template <typename> class IndividualAttrs=default_ea_attributes,
+    template <typename> class IndividualAttrs=default_attributes,
     template <typename> class Individual=individual,
 	template <typename,typename> class Population=population,
 	template <typename> class EventHandler=event_handler,
@@ -140,9 +128,13 @@ namespace ealib {
             _configurator.reset(*this);
         }
         
+        //! Remove all individuals in this EA.
+        void clear() {
+            _population.clear();
+        }
+        
         //! Begin an epoch.
         void begin_epoch() {
-            calculate_fitness(_population.begin(), _population.end(), *this);
             _events.record_statistics(*this);
         }
         
@@ -158,9 +150,7 @@ namespace ealib {
             }
             _events.end_of_update(*this);
 
-            // update counter, fitness, and statistics are handled *between* updates:
             _generational_model.next_update();
-            calculate_fitness(_population.begin(), _population.end(), *this);
             _events.record_statistics(*this);
         }
         
@@ -176,16 +166,14 @@ namespace ealib {
             return p;
         }
         
-        //! Insert individual x into the population.
+        //! Append individual x to the population.
         void append(individual_ptr_type x) {
-            calculate_fitness(*x, *this);
             _population.insert(_population.end(), x);
         }
         
-        //! Insert the range of individuals [f,l) into the population.
+        //! Append the range of individuals [f,l) to the population.
         template <typename ForwardIterator>
         void append(ForwardIterator f, ForwardIterator l) {
-            calculate_fitness(f, l, *this);
             _population.insert(_population.end(), f, l);
         }
         
@@ -193,18 +181,41 @@ namespace ealib {
         void erase(iterator i) {
             _population.erase(i.base());
         }
-        
-        //! Returns the current update of this EA.
-        unsigned long current_update() { 
-            return _generational_model.current_update();
+
+        //! Erase the given range from the population.
+        void erase(iterator f, iterator l) {
+            _population.erase(f.base(), l.base());
         }
         
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
         
+        //! Accessor for this EA's meta-data.
+        md_type& md() { return _md; }
+        
+        //! Accessor for the fitness function object.
+        fitness_function_type& fitness_function() { return _fitness_function; }
+        
+        //! Accessor for the generational model object.
+        generational_model_type& generational_model() { return _generational_model; }
+        
+        //! Returns the current update of this EA.
+        unsigned long current_update() { return _generational_model.current_update(); }
+        
+        //! Returns the event handler.
+        event_handler_type& events() { return _events; }
+
+        //! Returns the configuration object.
+        configuration_type& configuration() { return _configurator; }
+        
         //! Accessor for the population model object.
         population_type& population() { return _population; }
         
+        //! Return the number of individuals in this EA.
+        std::size_t size() const {
+            return _population.size();
+        }
+
         //! Return the n'th individual in the population.
         individual_type& operator[](std::size_t n) {
             return *_population[n];
@@ -249,30 +260,15 @@ namespace ealib {
         const_reverse_iterator rend() const {
             return const_reverse_iterator(_population.rend());
         }
-        
-        //! Accessor for this EA's meta-data.
-        md_type& md() { return _md; }
-        
-        //! Accessor for the fitness function object.
-        fitness_function_type& fitness_function() { return _fitness_function; }
-        
-        //! Accessor for the generational model object.
-        generational_model_type& generational_model() { return _generational_model; }
-        
-        //! Returns the event handler.
-        event_handler_type& events() { return _events; }
 
-        //! Returns the configuration object.
-        configuration_type& configuration() { return _configurator; }
-        
     protected:
         rng_type _rng; //!< Random number generator.
         fitness_function_type _fitness_function; //!< Fitness function object.
-        population_type _population; //!< Population instance.
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
         configuration_type _configurator; //!< Configuration object.
+        population_type _population; //!< Population instance.
 
     private:
         friend class boost::serialization::access;

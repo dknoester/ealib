@@ -28,6 +28,13 @@
 namespace ealib {
 	namespace algorithm {
         
+        template <typename Sequence, typename RNG>
+        void random_split(Sequence& x, Sequence& y, std::size_t n, RNG& rng) {
+            std::random_shuffle(x.begin(), x.end(), rng);
+            y.insert(y.end(), x.begin(), x.begin()+n);
+            x.erase(x.begin(), x.begin()+n);
+        }
+        
         template <typename ForwardIterator>
         unsigned int hamming_distance(ForwardIterator f1, ForwardIterator l1, ForwardIterator f2) {
             unsigned int d=0;

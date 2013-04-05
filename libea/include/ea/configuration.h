@@ -63,7 +63,7 @@ namespace ealib {
         //! Called to reset the state of this population (usually during meta-population experiments).
         virtual void reset(EA& ea) {
         }
-
+        
     protected:
         template <template <typename> class T, typename U> friend void add_event(abstract_configuration<U>* config, U& u);
         event_list _events; //!< List of all the events attached to an EA.

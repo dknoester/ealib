@@ -160,6 +160,11 @@ namespace ealib {
             _configurator.reset(*this);
         }
 
+        //! Clear the population.
+        void clear() {
+            _population.clear();
+        }
+
         //! Begin a new epoch.
         void begin_epoch() {
             _events.record_statistics(*this);
@@ -174,7 +179,6 @@ namespace ealib {
             _scheduler(_population, *this);
             _events.end_of_update(*this);
             
-            // update counter and statistics are handled *between* updates:
             _scheduler.next_update();
             _events.record_statistics(*this);
         }
@@ -211,11 +215,6 @@ namespace ealib {
             }
         }
         
-        //! Returns the current update of this EA.
-        unsigned long current_update() {
-            return _scheduler.current_update();
-        }
-        
         //! Retrieve this population's name.
         unsigned long& name() {
             return _name;
@@ -228,9 +227,6 @@ namespace ealib {
         
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
-        
-        //! Accessor for the population model object.
-        population_type& population() { return _population; }
         
         //! Retrieves this AL's meta-data.
         md_type& md() { return _md; }
@@ -250,6 +246,17 @@ namespace ealib {
         //! Retrieves this AL's scheduler.
         scheduler_type& scheduler() { return _scheduler; }
         
+        //! Returns the current update of this EA.
+        unsigned long current_update() { return _scheduler.current_update(); }
+        
+        //! Accessor for the population model object.
+        population_type& population() { return _population; }
+        
+        //! Return the number of individuals in this EA.
+        std::size_t size() const {
+            return _population.size();
+        }
+
         //! Return the n'th individual in the population.
         individual_type& operator[](std::size_t n) {
             return *_population[n];

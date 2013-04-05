@@ -45,10 +45,10 @@ namespace ealib {
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
                 assert(src.size() >= n);
-                std::sort(src.begin(), src.end(), comparators::fitness());
+                std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
                 typename Population::reverse_iterator rl=src.rbegin();
                 std::advance(rl, n);
-                dst.append(src.rbegin(), rl);
+                dst.insert(dst.end(), src.rbegin(), rl);
 			}
 		};
 

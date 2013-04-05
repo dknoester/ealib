@@ -22,46 +22,26 @@
 
 #include <boost/serialization/nvp.hpp>
 #include <ea/meta_data.h>
+#include <ea/fitness_function.h>
 
 namespace ealib {
-    
-    //! Fitness accessor method.
-    template <typename T>
-    typename T::attr_type::fitness_type& fitness(T& t) {
-        return t.attr().fitness();
-    }
 
-    template <typename T, typename EA>
-    typename T::attr_type::fitness_type& fitness(T& t, EA& ea) {
-        return t.attr().fitness();
-    }
-
-    namespace attr {
-
-        //! Fitness attribute.
-        template <typename EA>
-        struct fitness_attribute {
-            typedef typename EA::fitness_type fitness_type;
-            
-            fitness_type& fitness() { return _v; }
-            
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
-                ar & boost::serialization::make_nvp("fitness_attr", _v);
-            }
-            
-            fitness_type _v;
-        };
-        
-    }
+    //! Default attributes for a individuals in an evolutionary algorithm.
+    template <typename EA>
+    struct default_attributes : attr::fitness_attribute<EA> {
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
+        }
+    };
     
     namespace access {
         
         //! Fitness accessor functor.
         struct fitness_accessor {
-            template <typename T>
-            typename T::attr_type::fitness_type& operator()(T& t) {
-                return ealib::fitness(t);
+            template <typename EA>
+            typename EA::individual_type::attr_type::fitness_type& operator()(typename EA::individual_type& ind, EA& ea) {
+                return fitness(ind,ea);
             }
         };
         
@@ -75,7 +55,6 @@ namespace ealib {
         };
         
     } // access
-    
 } // ea
 
 #endif

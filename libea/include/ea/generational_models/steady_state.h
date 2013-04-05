@@ -64,9 +64,6 @@ namespace ealib {
 				// mutate them:
 				mutate(offspring.begin(), offspring.end(), ea);
 				
-                // make sure the offspring have their fitness calculated:
-                calculate_fitness(offspring.begin(), offspring.end(), ea);
-
 				// add the offspring to the current population:
 				population.insert(population.end(), offspring.begin(), offspring.end());
                 

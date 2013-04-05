@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(test_types) {
         abstract_configuration,
         recombination::two_point_crossover,
         generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-        default_ea_attributes,
+        default_attributes,
         individual_lod
         > ea;
     }

@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare(al);
+    lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare(al);
+    lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare(al);
+    lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
 
-    lifecycle::prepare(al);
+    lifecycle::prepare_new(al);
     generate_ancestors(repro_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
     
-    lifecycle::prepare(al);
+    lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -356,7 +356,7 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare(al);
+    lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 2, al);
     
     typename al_type::individual_ptr_type p = al.population()[0];
@@ -393,7 +393,7 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
     put<RNG_SEED>(1,al);
     put<RECORDING_PERIOD>(10,al);
     
-    lifecycle::prepare(al);
+    lifecycle::prepare_new(al);
     generate_ancestors(repro_ancestor(), 1, al);
     typename al_type::individual_ptr_type p = al.population()[0];
     p->priority() = 1.0;

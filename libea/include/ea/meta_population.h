@@ -61,7 +61,7 @@ namespace ealib {
     typename GenerationalModel=generational_models::meta_population,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
-	typename RandomNumberGenerator=ealib::default_rng_type>
+	typename RandomNumberGenerator=default_rng_type>
     class meta_population {
     public:
         //! Configuration object type.
@@ -71,7 +71,11 @@ namespace ealib {
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
-        typedef ealib::population<individual_type,individual_ptr_type> population_type;
+        typedef population<individual_type,individual_ptr_type> population_type;
+        //! Type of the population container used by the subpopulations:
+        typedef typename individual_type::population_type subpopulation_type;
+        //! Type of the individual used by the subpopulations:
+        typedef typename individual_type::individual_type subindividual_type;
         //! Generational model.
         typedef GenerationalModel generational_model_type;
         //! Event handler.
@@ -88,7 +92,7 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator for embedded EAs.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-
+        
         //! Construct a meta-population EA.
         meta_population() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
@@ -100,14 +104,15 @@ namespace ealib {
             _configurator.configure(*this);
         }
  
-        //! Generates the initial subpopulations, and generate *their* populations.
+        //! Generates the initial subpopulations, initializes them, and generates *their* populations.
         void initial_population() {
             for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
                 individual_ptr_type p(new individual_type());
                 p->configure();
-                p->md() = md();
+                p->md() += md();
                 put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
                 p->rng().reset(get<RNG_SEED>(*p));
+                p->initialize();
                 p->initial_population();
                 _population.push_back(p);
             }
@@ -128,6 +133,11 @@ namespace ealib {
                 i->reset();
             }
             _configurator.reset(*this);
+        }
+        
+        //! Clear the population.
+        void clear() {
+            _population.clear();
         }
         
         //! Begin an epoch.
@@ -163,7 +173,7 @@ namespace ealib {
         individual_ptr_type make_individual() {
             individual_ptr_type p(new individual_type());
             p->configure();
-            p->md() = md();
+            p->md() += md();
             put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
             p->rng().reset(get<RNG_SEED>(*p));
             p->initialize();
@@ -176,18 +186,23 @@ namespace ealib {
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }
         
+        //! Accessor for the generational model object.
+        generational_model_type& generational_model() { return _generational_model; }
+        
+        //! Returns the current update of this EA.
+        unsigned long current_update() { return _generational_model.current_update(); }
+
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
         
-        //! Return the number of embedded EAs.
-        std::size_t size() const {
-            return _population.size();
-        }
-        
+        //! Returns the configuration object.
+        configuration_type& configuration() { return _configurator; }        
+
         //! Return the population.
-        population_type& population() {
-            return _population;
-        }
+        population_type& population() { return _population; }
+        
+        //! Return the number of embedded EAs.
+        std::size_t size() const { return _population.size(); }
         
         //! Return the n'th embedded EAs.
         individual_type& operator[](std::size_t n) {
@@ -233,25 +248,14 @@ namespace ealib {
         const_reverse_iterator rend() const {
             return const_reverse_iterator(_population.rend());
         }
-        
-        //! Accessor for the generational model object.
-        generational_model_type& generational_model() { return _generational_model; }
-        
-        //! Returns the current update of this EA.
-        unsigned long current_update() {
-            return _generational_model.current_update();
-        }
 
-        //! Returns the configuration object.
-        configuration_type& configuration() { return _configurator; }
-        
     protected:
         rng_type _rng; //!< Random number generator.
         meta_data _md; //!< Meta-data for the meta-population.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
-        population_type _population; //!< List of EAs in this meta-population.
         configuration_type _configurator; //!< Configuration object.
+        population_type _population; //!< List of EAs in this meta-population.
 
     private:
         friend class boost::serialization::access;

@@ -29,6 +29,7 @@
 #include <ea/attributes.h>
 #include <ea/concepts.h>
 #include <ea/configuration.h>
+#include <ea/comparators.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
 #include <ea/fitness_function.h>
@@ -59,9 +60,10 @@ namespace ealib {
     };
     
     //! Novelty accessor method.
-    template <typename T>
-    typename T::attr_type::novelty_type& novelty(T& t) {
-        return t.attr().novelty();
+    template <typename EA>
+    typename EA::individual_type::attr_type::novelty_type& novelty(typename EA::individual_type& ind, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        return ind.attr().novelty();
     }
     
     //! Default attributes for a novelty_search individual.
@@ -74,14 +76,6 @@ namespace ealib {
         }
     };
     
-    //! Compare individual pointers based on the natural order of their fitnesses in descending order.
-    struct objective_fitness_desc {
-        template <typename IndividualPtr>
-        bool operator()(IndividualPtr x, IndividualPtr y) {
-            return x->objective_fitness() > y->objective_fitness();
-        }
-    };
-        
     /*! Novelty search evolutionary algorithm.
      
      In contrast to traditional evolutionary algorithms, novelty search is
@@ -170,11 +164,14 @@ namespace ealib {
         void reset() {
             _configurator.reset(*this);
         }
-        
+
+        //! Clear the population.
+        void clear() {
+            _population.clear();
+        }
+
         //! Begin an epoch.
         void begin_epoch() {
-            calculate_fitness(_population.begin(), _population.end(), *this);
-            relativize_fitness(_population.begin(), _population.end(), *this);
             _events.record_statistics(*this);
         }
         
@@ -192,7 +189,7 @@ namespace ealib {
             
             // update counter, fitness, and statistics are handled *between* updates:
             _generational_model.next_update();
-            calculate_fitness(_population.begin(), _population.end(), *this);
+            relativize();
             _events.record_statistics(*this);
         }
         
@@ -208,68 +205,145 @@ namespace ealib {
             return p;
         }
         
+        //! Append individual x to the population.
+        void append(individual_ptr_type x) {
+            _population.insert(_population.end(), x);
+        }
+        
+        //! Append the range of individuals [f,l) to the population.
+        template <typename ForwardIterator>
+        void append(ForwardIterator f, ForwardIterator l) {
+            _population.insert(_population.end(), f, l);
+        }
+        
+        //! Erase the given individual from the population.
+        void erase(iterator i) {
+            _population.erase(i.base());
+        }
+        
+        //! Retrieve the random number generator.
+        rng_type& rng() { return _rng; }
+        
+        //! Retrieve this EA's meta-data.
+        md_type& md() { return _md; }
+        
+        //! Retrieve the fitness function.
+        fitness_function_type& fitness_function() { return _fitness_function; }
+        
+        //! Retrieve the generational model object.
+        generational_model_type& generational_model() { return _generational_model; }
+        
         //! Retrieve the current update number.
-        unsigned long current_update() {
-            return _generational_model.current_update();
+        unsigned long current_update() { return _generational_model.current_update(); }
+
+        //! Retrieve the event handler.
+        event_handler_type& events() { return _events; }
+
+        //! Returns the configuration object.
+        configuration_type& configuration() { return _configurator; }
+        
+        //! Retrieve the archive of novel individuals.
+        population_type& archive() { return _archive; }
+        
+        //! Retrieve the list of objectively fittest individuals.
+        population_type& fittest() { return _fittest; }
+
+        //! Retrieve the population.
+        population_type& population() { return _population; }
+
+        //! Return the number of individuals in this EA.
+        std::size_t size() const {
+            return _population.size();
         }
         
-        //! Calculate fitness (non-stochastic).
-        void evaluate_fitness(individual_type& indi) {
-            indi.fitness().nullify();
-            indi.novelty_point().clear();
-            indi.objective_fitness() = _fitness_function(indi, *this);
+        //! Return the n'th individual in the population.
+        individual_type& operator[](std::size_t n) {
+            return *_population[n];
         }
         
-        //! Calculate fitness (stochastic).
-        void evaluate_fitness(individual_type& indi, rng_type& rng) {
-            indi.fitness().nullify();
-            indi.novelty_point().clear();
-            indi.objective_fitness() = _fitness_function(indi, rng, *this);
+        //! Returns a begin iterator to the population.
+        iterator begin() {
+            return iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population.
+        iterator end() {
+            return iterator(_population.end());
+        }
+        
+        //! Returns a begin iterator to the population (const-qualified).
+        const_iterator begin() const {
+            return const_iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population (const-qualified).
+        const_iterator end() const {
+            return const_iterator(_population.end());
+        }
+        
+        //! Returns a reverse begin iterator to the population.
+        reverse_iterator rbegin() {
+            return reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population.
+        reverse_iterator rend() {
+            return reverse_iterator(_population.rend());
+        }
+        
+        //! Returns a reverse begin iterator to the population (const-qualified).
+        const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population (const-qualified).
+        const_reverse_iterator rend() const {
+            return const_reverse_iterator(_population.rend());
         }
 
+    protected:
+
         //! Relativize fitness values of individuals in the range [f,l).
-        template <typename ForwardIterator>
-        void relativize(ForwardIterator f, ForwardIterator l) {
-            
+        void relativize() {
             int archive_add_count = 0;
             double fitness_sum = 0.0;
             
-            for(ForwardIterator i=f; i!=l; ++i) {
-                std::vector<double> nearest_neighbors(_archive.size() + std::distance(f, l));
+            for(typename population_type::iterator i=_population.begin(); i!=_population.end(); ++i) {
+                std::vector<double> nearest_neighbors(_archive.size() + _population.size());
                 
-                for(ForwardIterator j=f; j!=l; ++j) {
+                for(typename population_type::iterator j=_population.begin(); i!=_population.end(); ++j) {
                     if (i != j) {
-                        nearest_neighbors.push_back(algorithm::vdist(ind(i, *this).novelty_point().begin(),
-                                                                     ind(i, *this).novelty_point().end(),
-                                                                     ind(j, *this).novelty_point().begin(),
-                                                                     ind(j, *this).novelty_point().end()));
+                        nearest_neighbors.push_back(algorithm::vdist((**i).attr().novelty().begin(),
+                                                                     (**i).attr().novelty().end(),
+                                                                     (**j).attr().novelty().begin(),
+                                                                     (**j).attr().novelty().end()));
                     }
                 }
                 
                 for(typename population_type::iterator j=_archive.begin(); j!=_archive.end(); ++j) {
-                    nearest_neighbors.push_back(algorithm::vdist(ind(i, *this).novelty_point().begin(),
-                                                                 ind(i, *this).novelty_point().end(),
-                                                                 ind(j, *this).novelty_point().begin(),
-                                                                 ind(j, *this).novelty_point().end()));
+                    nearest_neighbors.push_back(algorithm::vdist((**i).attr().novelty().begin(),
+                                                                 (**i).attr().novelty().end(),
+                                                                 (**j).attr().novelty().begin(),
+                                                                 (**j).attr().novelty().end()));
                 }
                 
                 // sort novelty distances ascending
                 std::sort(nearest_neighbors.begin(), nearest_neighbors.end());
                 
-                ind(i, *this).fitness() = algorithm::vmean(nearest_neighbors.begin(),
-                                                           nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
-                                                           0.0);
-
+                fitness(**i,*this) = algorithm::vmean(nearest_neighbors.begin(),
+                                                      nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
+                                                      0.0);
+                
                 // add highly novel individuals to the archive:
-                if(ind(i, *this).fitness() > get<NOVELTY_THRESHOLD>(*this)) {
-                    _archive.append(i);
+                if(fitness(**i,*this) > get<NOVELTY_THRESHOLD>(*this)) {
+                    _archive.insert(_archive.end(),*i);
                     ++archive_add_count;
                 }
-
+                
                 // update the fittest list -- base this on objective fitness
-                _fittest.append(i);
+                _fittest.insert(_fittest.end(),*i);
                 if(_fittest.size() > get<NOVELTY_FITTEST_SIZE>(*this)) {
-                    std::sort(_fittest.begin(), _fittest.end(), objective_fitness_desc());
+                    std::sort(_fittest.begin(), _fittest.end(), comparators::fitness_desc<novelty_search>(*this));
                     _fittest.resize(get<NOVELTY_FITTEST_SIZE>(*this));
                 }
             }
@@ -281,44 +355,16 @@ namespace ealib {
                 get<NOVELTY_THRESHOLD>(*this) *= 0.9;
             }
         }
-        
-        //! Retrieve the random number generator.
-        rng_type& rng() { return _rng; }
-        
-        //! Retrieve the population.
-        population_type& population() { return _population; }
-        
-        //! Retrieve the archive of novel individuals.
-        population_type& archive() { return _archive; }
-        
-        //! Retrieve the list of objectively fittest individuals.
-        population_type& fittest() { return _fittest; }
-        
-        //! Retrieve this EA's meta-data.
-        md_type& md() { return _md; }
-        
-        //! Retrieve the fitness function.
-        fitness_function_type& fitness_function() { return _fitness_function; }
-        
-        //! Retrieve the generational model object.
-        generational_model_type& generational_model() { return _generational_model; }
-        
-        //! Retrieve the event handler.
-        event_handler_type& events() { return _events; }
 
-        //! Returns the configuration object.
-        configuration_type& configuration() { return _configurator; }
-
-    protected:
-        rng_type _rng;                                  //!< Random number generator.
-        fitness_function_type _fitness_function;        //!< Fitness function object.
-        population_type _population;                    //!< Population instance.
-        md_type _md;                                    //!< Meta-data for this evolutionary algorithm instance.
-        generational_model_type _generational_model;    //!< Generational model instance.
-        event_handler_type _events;                     //!< Event handler.
+        rng_type _rng; //!< Random number generator.
+        fitness_function_type _fitness_function; //!< Fitness function object.
+        population_type _population; //!< Population instance.
+        md_type _md; //!< Meta-data for this evolutionary algorithm instance.
+        generational_model_type _generational_model; //!< Generational model instance.
+        event_handler_type _events; //!< Event handler.
         configuration_type _configurator; //!< Configuration object.
-        population_type _archive;                       //!< Archive of novel individuals.
-        population_type _fittest;                       //!< List of objectively fittest individuals.
+        population_type _archive; //!< Archive of novel individuals.
+        population_type _fittest; //!< List of objectively fittest individuals.
         
     private:
         friend class boost::serialization::access;

@@ -38,9 +38,9 @@ namespace ealib {
          - Match offspring with the parent to which it is most similar
          - Most fit of both (parent,offspring) pairs survives
 		 */
-        template <typename SimilarityMeasure=algorithm::hamming_distance_functor>
+        template <typename DistanceMeasure=algorithm::hamming_distance_functor>
 		struct deterministic_crowding : public generational_model {
-            typedef SimilarityMeasure similarity_measure_type;
+            typedef DistanceMeasure distance_measure_type;
 			
 			//! Apply this generational model to the EA to produce a single new generation.
 			template <typename Population, typename EA>
@@ -48,7 +48,8 @@ namespace ealib {
 				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
 				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
                 
-                similarity_measure_type smt;
+                assert(population.size() % 2 == 0);
+                distance_measure_type dmt;
                 
                 // random pairs of parents:
                 std::random_shuffle(population.begin(), population.end(), ea.rng());
@@ -57,14 +58,13 @@ namespace ealib {
                 for(typename Population::iterator i=population.begin(); i!=population.end(); ) {
                     Population parents, offspring;
                     parents.push_back(*i++);
-                    parents.push_back(*i++);// FIX; pop size might be wrong
+                    parents.push_back(*i++);
 
                     recombine(parents, offspring, typename EA::recombination_operator_type(), ea);
                     mutate(offspring.begin(), offspring.end(), ea);
-                    calculate_fitness(offspring.begin(), offspring.end(), ea);
                     
                     // which offspring goes w/ which parent?
-                    if(smt(*parents[0], *offspring[0], ea) < smt(*parents[0], *offspring[1], ea)) {
+                    if(dmt(*parents[0], *offspring[0], ea) > dmt(*parents[0], *offspring[1], ea)) {
                         std::swap(offspring[0], offspring[1]);
                     }
                     

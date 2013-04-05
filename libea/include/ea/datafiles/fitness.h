@@ -53,7 +53,7 @@ namespace ealib {
                 
                 for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
                     gen((*i)->generation());
-                    fit(static_cast<double>(ealib::fitness(**i)));
+                    fit(static_cast<double>(ealib::fitness(**i,ea)));
                 }
                 
                 _df.write(ea.current_update())
@@ -104,9 +104,9 @@ namespace ealib {
 
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         gen(j->generation());
-                        fit(static_cast<double>(ealib::fitness(*j)));
+                        fit(static_cast<double>(ealib::fitness(*j,*i)));
                         mpgen(j->generation());
-                        mpfit(static_cast<double>(ealib::fitness(*j)));
+                        mpfit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
                     
                     _df.write(mean(gen))

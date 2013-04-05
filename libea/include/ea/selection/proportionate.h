@@ -46,7 +46,7 @@ namespace ealib {
 			template <typename Population, typename EA>
 			proportionate(std::size_t n, Population& src, EA& ea) : _sum(0.0), _offset(0.0) {
                 for(typename Population::iterator i=src.begin(); i!=src.end(); ++i) {
-                    _sum += static_cast<double>(_acc(**i));
+                    _sum += static_cast<double>(_acc(**i,ea));
                 }
                 if(_sum == 0.0) {
                     _sum = src.size();
@@ -69,14 +69,14 @@ namespace ealib {
                 // since the fsum is monotonically increasing, all we need to do is scale
                 // the current rnum by the fraction of fitness we're currently looking at:
                 typename Population::iterator p=src.begin();
-                double running=static_cast<double>(_acc(**p) + _offset);
+                double running=static_cast<double>(_acc(**p,ea) + _offset);
                 for(std::vector<double>::iterator i=rnums.begin(); i!=rnums.end(); ++i) {
                     // while our (the fraction of) running fitness is strictly less than the current
                     // random number, go to the next individual in the population:
                     while((running/_sum) < (*i)) {
                         ++p;
                         assert(p!=src.end());
-                        running += static_cast<double>(_acc(**p) + _offset);
+                        running += static_cast<double>(_acc(**p,ea) + _offset);
                     }
                     
                     // ok, running fitness is >= random number; select the p'th

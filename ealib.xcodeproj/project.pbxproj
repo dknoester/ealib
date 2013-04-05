@@ -320,7 +320,6 @@
 		423CBDFB157D0E450003A644 /* test_rng.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_rng.cpp; sourceTree = "<group>"; };
 		423CBE57157D0FCC0003A644 /* libea_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libea_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
-		423FAA6316C2A9A700D832FB /* coevolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coevolutionary_algorithm.h; sourceTree = "<group>"; };
 		4245002E16D2655B007827D7 /* back_propagation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = back_propagation.h; sourceTree = "<group>"; };
 		4245003016D26866007827D7 /* abstract_neuron.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_neuron.h; sourceTree = "<group>"; };
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
@@ -596,7 +595,6 @@
 				42015A8115D6BEDC0020F594 /* digital_evolution */,
 				423CBDC6157D0E450003A644 /* checkpoint.h */,
 				423CBDC8157D0E450003A644 /* cmdline_interface.h */,
-				423FAA6316C2A9A700D832FB /* coevolutionary_algorithm.h */,
 				42F4B6191580EA0B0075D6EF /* comparators.h */,
 				423CBDC9157D0E450003A644 /* concepts.h */,
 				42279CA915D5309E00DD63BB /* configuration.h */,

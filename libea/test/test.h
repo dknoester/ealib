@@ -39,6 +39,11 @@ struct configuration : public abstract_configuration<EA> {
     void initial_population(EA& ea) {
         generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea), ea);
     }
+    
+    //! Called to generate n individuals into the given population.
+    void fill_population(EA& ea) {
+        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea)-ea.size(), ea);
+    }
 };
 
 typedef evolutionary_algorithm<

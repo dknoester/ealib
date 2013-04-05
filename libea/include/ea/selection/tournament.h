@@ -36,7 +36,7 @@ namespace ealib {
 		 
 		 <b>Model of:</b> SelectionStrategyConcept.
 		 */
-        template <typename Comparator=comparators::fitness>
+        template <template <typename> class Comparator=comparators::fitness>
 		struct tournament {
             //! Initializing constructor.
 			template <typename Population, typename EA>
@@ -53,7 +53,7 @@ namespace ealib {
 					std::insert_iterator<Population> tii(tourney,tourney.end());
 					ea.rng().sample_without_replacement(src.begin(), src.end(), tii, N);
 					
-                    std::sort(tourney.begin(), tourney.end(), Comparator());
+                    std::sort(tourney.begin(), tourney.end(), Comparator<EA>(ea));
                     typename Population::reverse_iterator rl=tourney.rbegin();
                     std::size_t copy_size = std::min(n,K);
                     std::advance(rl, copy_size);

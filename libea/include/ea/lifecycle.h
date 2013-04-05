@@ -37,6 +37,13 @@ namespace ealib {
      an EA's lifecycle.  Where appropriate, these states correspond to methods
      defined below.
      
+     There are two main paths to get to the "ready-to-run" state, a new EA and an
+     EA loaded from a checkpoint.  You could handle these pieces yourself, or
+     use the handy "prepare_*" methods defined below.  (Use the prepare methods.)
+     
+     After calling prepare_*, use advance_epoch to run the EA for a specified number
+     of updates.
+     
      object construction
      |
      v
@@ -44,17 +51,19 @@ namespace ealib {
      |     \
      |      v
      |      meta-data assignment
-     |       |
-     v       v
-     load    initial_population
+     |          |
+     v          |
+     load       |
      |          |
      override   |
      meta-data? |
      |          |
      v          v
      initialization (final resource preparation, event attachment, etc.)
-     |
-     v
+     |          |
+     |    initial_population
+     |        |
+     v        v
      begin epoch
      |
      v
@@ -123,16 +132,15 @@ namespace ealib {
             save_checkpoint(filename.str(), ea);
         }
         
-        
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
          state.
          */
         template <typename EA>
-        void prepare(EA& ea, const meta_data& md=meta_data()) {
+        void prepare_new(EA& ea, const meta_data& md=meta_data()) {
             ea.configure();
             ea.md() += md;
-            ea.initial_population();
             ea.initialize();
+            ea.initial_population();
         }
         
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run

@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 #include <ea/algorithm.h>
-#include <ea/attributes.h>
+#include <ea/concepts.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
 
@@ -42,12 +42,6 @@ namespace ealib {
     
     //! Indicates that fitness may change between evaluations, and should not be cached.
     struct nonstationaryS { };
-    
-    //! Indicates that fitness of an individual is absolute.
-    struct absoluteS { };
-
-    //! Indicates that fitness of an individual is relative to the population.
-    struct relativeS { };
     
     //! Indicates that fitness is deterministic, and does not require its own RNG.
     struct deterministicS { };
@@ -167,7 +161,7 @@ namespace ealib {
     };
     
     
-    /*! Multivalued fitness.
+    /*! Multivalued fitness object.
      */
     template <typename T>
     struct multivalued_fitness {
@@ -246,23 +240,22 @@ namespace ealib {
         
     } // detail
     
+    //! Initialize the fitness function; called prior to any fitness evaluation, but after meta-data.
     template <typename FitnessFunction, typename EA>
     void initialize_fitness_function(FitnessFunction& ff, EA& ea) {
         detail::initialize_fitness_function(ff, typename FitnessFunction::stability_tag(), ea);
     }
 
     /*! Convenience struct to define typedefs and empty initialization and serialization
-     methods.
+     methods for fitness function objects.
      */
     template <typename T, 
     typename ConstantTag=constantS,
-    typename RelativeTag=absoluteS,
     typename StabilityTag=deterministicS>
     struct fitness_function {
         typedef T fitness_type;
         typedef typename fitness_type::value_type value_type;
         typedef ConstantTag constant_tag;
-        typedef RelativeTag relative_tag;
         typedef StabilityTag stability_tag;
         
         //! Initialize this (deterministic) fitness function.
@@ -282,14 +275,33 @@ namespace ealib {
     };
     
     
+    namespace attr {
+        
+        //! Fitness attribute.
+        template <typename EA>
+        struct fitness_attribute {
+            typedef typename EA::fitness_type fitness_type;
+            
+            //! Retrieve fitness.
+            fitness_type& fitness() { return _v; }
+            
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+                ar & boost::serialization::make_nvp("fitness_attr", _v);
+            }
+            
+            fitness_type _v;
+        };
+        
+    } // attr
+    
     namespace detail {
         
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            fitness(i) = ea.fitness_function()(i, ea);
+            i.attr().fitness() = ea.fitness_function()(i, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
@@ -300,14 +312,14 @@ namespace ealib {
             next<FF_RNG_SEED>(ea);
             typename EA::rng_type rng(get<FF_RNG_SEED>(ea)+1); // +1 to avoid clock
             put<FF_RNG_SEED>(get<FF_RNG_SEED>(ea), i); // save the seed that was used to evaluate this individual
-            fitness(i) = ea.fitness_function()(i, rng, ea);
+            i.attr().fitness() = ea.fitness_function()(i, rng, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
         //! Constant: calculate fitness only if this individual has not yet been evaluated.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
-            if(ealib::fitness(i).is_null()) {
+            if(i.attr().fitness().is_null()) {
                 calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
             }
         }
@@ -317,30 +329,16 @@ namespace ealib {
         void calculate_fitness(typename EA::individual_type& i, nonstationaryS, EA& ea) {
             calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
         }
-        
-        //! Absolute: do nothing.
-        template <typename ForwardIterator, typename EA>
-        void relativize_fitness(ForwardIterator first, ForwardIterator last, absoluteS, EA& ea) {
-        }
-        
-        //! Relative: relativize(?) fitness.
-        template <typename ForwardIterator, typename EA>
-        void relativize_fitness(ForwardIterator first, ForwardIterator last, relativeS, EA& ea) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            ea.relativize(first, last);
-        }
     } // detail
-
-    /*! Calculate the fitness of an individual, respecting various fitness function tags.
-     */
+    
+    //! Calculate the fitness of an individual.
     template <typename EA>
     void calculate_fitness(typename EA::individual_type& i, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         detail::calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
     }
     
-    /*! Calculate fitness for the range [f,l).
-	 */
+    //! Calculate fitness for the range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void calculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
@@ -349,51 +347,42 @@ namespace ealib {
 		}
 	}
 
-    /*! Nullify fitness for the range [f,l).
-	 */
+    //! Fitness attribute accessor (may calculate if null).
+    template <typename EA>
+    typename EA::individual_type::attr_type::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
+        return ind.attr().fitness();
+    }
+
+    //! Nullify the fitness of an individual.
+    template <typename EA>
+    void nullify_fitness(typename EA::individual_type& ind, EA& ea) {
+		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        ind.attr().fitness().nullify();
+    }
+
+    //! Nullify fitness for the population range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-            ealib::fitness(**first).nullify();
+            (**first).attr().fitness().nullify();
 		}
 	}
 
-    /*! Unconditionally recalculate fitness for the range [f,l).
-     */
+    //! Unconditionally recalculate fitness for the range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void recalculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-            ealib::fitness(**first).nullify();
+            nullify_fitness(**first,ea);
 			calculate_fitness(**first,ea);
 		}
     }    
-    
-    /*! Calculate relative fitness for the range [f,l).
-	 */
-	template <typename ForwardIterator, typename EA>
-	void relativize_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        detail::relativize_fitness(first, last, typename EA::fitness_function_type::relative_tag(), ea);
-	}
 
-    /*! Accumulated the fitness for a range of individuals, calculating it if needed.
-     */
-    template <typename ForwardIterator, typename EA>
-    typename EA::fitness_type accumulate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        typename EA::fitness_type sum=0.0;
-        for(; first!=last; ++first) {
-            calculate_fitness(ind(first,ea),ea);
-            sum += ind(first,ea).fitness();
-        }
-        return sum;
-    }
-    
-    
-    /*! This event periodically (re-)initializes the fitness function for the 
+    /*! This event periodically (re-)initializes the fitness function for the
      entire population.
      
      Note that this triggers a fitness reevaluation for all individuals in
