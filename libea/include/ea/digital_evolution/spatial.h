@@ -303,58 +303,56 @@ namespace ealib {
         
         //! Given two orgs, rotate them to face one another.
         void face_org(individual_type& p1, individual_type& p2) {
-            location_ptr_type l1 = p1.location();
-            location_ptr_type l2 = p2.location();
-        
+            location_ptr_type l1 = handle2ptr(p1.location());
+            location_ptr_type l2 = handle2ptr(p2.location());
+            
             // Make sure everyone has a location...
             if ((l1 == NULL) || (l2 == NULL)) {
                 return;
             }
             
-           
             // think in terms of x,y. sort out later.
             if ((l1->x < l2->x) && (l1->y < l2->y)) {
-                p1.location()->set_heading(1);
-                p2.location()->set_heading(5);
+                l1->set_heading(1);
+                l2->set_heading(5);
                 // l1 heading = 1
                 // l2 heading = 5
             } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
                 // l1 heading = 5
                 // l2 heading = 1
-                p1.location()->set_heading(5);
-                p2.location()->set_heading(1);
+                l1->set_heading(5);
+                l2->set_heading(1);
             } else if ((l1->x < l2->x) && (l1->y > l2->y)) {
                 // l1 heading = 7
                 // l2 heading = 3
-                p1.location()->set_heading(7);
-                p2.location()->set_heading(3);
+                l1->set_heading(7);
+                l2->set_heading(3);
             } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
                 // l1 heading = 3
                 // l2 heading = 7
-                p1.location()->set_heading(3);
-                p2.location()->set_heading(7);
+                l1->set_heading(3);
+                l2->set_heading(7);
             } else if ((l1->x < l2->x) && (l1->y == l2->y)) {
                 // l1 heading = 0
                 // l2 heading = 4
-                p1.location()->set_heading(0);
-                p2.location()->set_heading(4);
+                l1->set_heading(0);
+                l2->set_heading(4);
             } else if ((l1->x > l2->x) && (l1->y == l2->y)) {
                 // l1 heading = 4
                 // l2 heading = 0
-                p1.location()->set_heading(4);
-                p2.location()->set_heading(0);
+                l1->set_heading(4);
+                l2->set_heading(0);
             } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
                 // l1 heading = 2
                 // l2 heading = 6
-                p1.location()->set_heading(2);
-                p2.location()->set_heading(6);
+                l1->set_heading(2);
+                l2->set_heading(6);
             } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
                 // l1 heading = 6
                 // l2 heading = 2
-                p1.location()->set_heading(6);
-                p2.location()->set_heading(2);
+                l1->set_heading(6);
+                l2->set_heading(2);
             }
-            
         }
         
         //! Replace the organism (if any) living in location l with p.
