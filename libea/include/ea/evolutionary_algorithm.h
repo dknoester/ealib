@@ -57,7 +57,7 @@ namespace ealib {
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
     template <typename> class IndividualAttrs=default_attributes,
     template <typename> class Individual=individual,
-	template <typename,typename> class Population=population,
+	template <typename,typename> class Population=ealib::population,
 	template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ealib::default_rng_type>

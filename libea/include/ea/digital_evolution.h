@@ -83,7 +83,7 @@ namespace ealib {
     template <typename> class InstructionSetArchitecture=isa,
 	typename MutationOperator=mutation::per_site<mutation::uniform_integer>,
     template <typename> class Individual=organism,
-	template <typename, typename> class Population=population,
+	template <typename, typename> class Population=ealib::population,
 	template <typename> class EventHandler=alife_event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ealib::default_rng_type>

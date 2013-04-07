@@ -430,7 +430,7 @@ namespace mkv {
     template <typename ForwardIterator, typename RNG, typename EA>
     markov_network make_markov_network(ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
         markov_network::desc_type desc;
-        parse_desc(get<MKV_DESC>(ea), desc);
+        parse_desc(ealib::get<MKV_DESC>(ea), desc);
         markov_network net(desc, rng);
         build_markov_network(net, f, l, ea);
         return net;

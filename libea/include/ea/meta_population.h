@@ -71,7 +71,7 @@ namespace ealib {
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Type of population container.
-        typedef population<individual_type,individual_ptr_type> population_type;
+        typedef ealib::population<individual_type,individual_ptr_type> population_type;
         //! Type of the population container used by the subpopulations:
         typedef typename individual_type::population_type subpopulation_type;
         //! Type of the individual used by the subpopulations:
