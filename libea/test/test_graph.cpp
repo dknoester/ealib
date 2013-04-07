@@ -24,7 +24,7 @@
 struct graph_fitness : public fitness_function<unary_fitness<double> > {
     template <typename Individual, typename EA>
     double operator()(Individual& ind, EA& ea) {
-        typename EA::representation_type& G=ind.repr();
+//        typename EA::representation_type& G=ind.repr();
         return 1.0;
     }
 };

@@ -21,6 +21,7 @@
 #define _EA_COMPARATORS_H_
 
 #include <ea/attributes.h>
+#include <ea/fitness_function.h>
 
 namespace ealib {
     namespace comparators {

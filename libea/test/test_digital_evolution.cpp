@@ -90,9 +90,9 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
     lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
-    typename al_type::individual_ptr_type p = al.population()[0];
-    typename al_type::representation_type& r = p->repr();
-    typename al_type::hardware_type& hw = p->hw();
+    al_type::individual_ptr_type p = al.population()[0];
+    al_type::representation_type& r = p->repr();
+    al_type::hardware_type& hw = p->hw();
     
     r[8] = isa["nop_a"];
     r[9] = isa["nop_b"];
@@ -139,9 +139,9 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
-    typename al_type::individual_ptr_type p = al.population()[0];
-    typename al_type::representation_type& r = p->repr();
-    typename al_type::hardware_type& hw = p->hw();
+    al_type::individual_ptr_type p = al.population()[0];
+    al_type::representation_type& r = p->repr();
+    al_type::hardware_type& hw = p->hw();
 
     r[4] = isa["nop_a"];
     r[5] = isa["nop_b"];
@@ -189,8 +189,8 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
-    typename al_type::individual_ptr_type p = al.population()[0];
-    typename al_type::representation_type& r = p->repr();
+    al_type::individual_ptr_type p = al.population()[0];
+    al_type::representation_type& r = p->repr();
     
     // check that h_alloc increases the size of the organism's memory:
     isa(isa["h_alloc"], p->hw(), p, al);
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
 
 
 BOOST_AUTO_TEST_CASE(test_al_type) {
-    typedef typename al_type::tasklib_type::task_ptr_type task_ptr_type;
+    typedef al_type::tasklib_type::task_ptr_type task_ptr_type;
     al_type al;
     
     put<POPULATION_SIZE>(100,al);
@@ -259,8 +259,8 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     lifecycle::prepare_new(al);
     generate_ancestors(repro_ancestor(), 1, al);
     
-    typename al_type::individual_ptr_type p = al.population()[0];
-    typename al_type::representation_type& r = p->repr();
+    al_type::individual_ptr_type p = al.population()[0];
+    al_type::representation_type& r = p->repr();
     
     r[94] = al.isa()["nop_c"];
     r[95] = al.isa()["input"];
@@ -311,8 +311,8 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
-    typename al_type::individual_ptr_type p = al.population()[0];
-    typename al_type::representation_type& r = p->repr();
+    al_type::individual_ptr_type p = al.population()[0];
+    al_type::representation_type& r = p->repr();
 
     r[0] = al.isa()["h_alloc"];
     r[1] = al.isa()["nop_c"];
@@ -359,8 +359,8 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     lifecycle::prepare_new(al);
     generate_ancestors(nopx_ancestor(), 2, al);
     
-    typename al_type::individual_ptr_type p = al.population()[0];
-    typename al_type::representation_type& r = p->repr();
+    al_type::individual_ptr_type p = al.population()[0];
+    al_type::representation_type& r = p->repr();
 
     r[94] = al.isa()["nop_c"];
     r[95] = al.isa()["input"];
@@ -395,7 +395,7 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
     
     lifecycle::prepare_new(al);
     generate_ancestors(repro_ancestor(), 1, al);
-    typename al_type::individual_ptr_type p = al.population()[0];
+    al_type::individual_ptr_type p = al.population()[0];
     p->priority() = 1.0;
     lifecycle::advance_epoch(400,al);
     BOOST_CHECK(al.population().size()>1);

@@ -41,7 +41,7 @@ namespace ealib {
         struct fitness_accessor {
             template <typename EA>
             typename EA::individual_type::attr_type::fitness_type& operator()(typename EA::individual_type& ind, EA& ea) {
-                return fitness(ind,ea);
+                return ealib::fitness(ind,ea);
             }
         };
         

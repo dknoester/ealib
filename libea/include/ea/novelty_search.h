@@ -306,7 +306,7 @@ namespace ealib {
         //! Relativize fitness values of individuals in the range [f,l).
         void relativize() {
             int archive_add_count = 0;
-            double fitness_sum = 0.0;
+//            double fitness_sum = 0.0;
             
             for(typename population_type::iterator i=_population.begin(); i!=_population.end(); ++i) {
                 std::vector<double> nearest_neighbors(_archive.size() + _population.size());
@@ -330,19 +330,19 @@ namespace ealib {
                 // sort novelty distances ascending
                 std::sort(nearest_neighbors.begin(), nearest_neighbors.end());
                 
-                fitness(**i,*this) = algorithm::vmean(nearest_neighbors.begin(),
+                ealib::fitness(**i,*this) = algorithm::vmean(nearest_neighbors.begin(),
                                                       nearest_neighbors.begin() + get<NOVELTY_NEIGHBORHOOD_SIZE>(*this),
                                                       0.0);
                 
                 // add highly novel individuals to the archive:
-                if(fitness(**i,*this) > get<NOVELTY_THRESHOLD>(*this)) {
+                if(ealib::fitness(**i,*this) > get<NOVELTY_THRESHOLD>(*this)) {
                     _archive.insert(_archive.end(),*i);
                     ++archive_add_count;
                 }
                 
                 // update the fittest list -- base this on objective fitness
                 _fittest.insert(_fittest.end(),*i);
-                if(_fittest.size() > get<NOVELTY_FITTEST_SIZE>(*this)) {
+                if(_fittest.size() > static_cast<std::size_t>(get<NOVELTY_FITTEST_SIZE>(*this))) {
                     std::sort(_fittest.begin(), _fittest.end(), comparators::fitness_desc<novelty_search>(*this));
                     _fittest.resize(get<NOVELTY_FITTEST_SIZE>(*this));
                 }
