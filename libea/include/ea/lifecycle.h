@@ -136,7 +136,7 @@ namespace ealib {
          state.
          */
         template <typename EA>
-        void prepare_new(EA& ea, const meta_data& md=meta_data()) {
+        void prepare_new(EA& ea, meta_data& md) {
             ea.configure();
             ea.md() += md;
             ea.initialize();
@@ -147,10 +147,30 @@ namespace ealib {
          state using a checkpoint.
          */
         template <typename Checkpoint, typename EA>
-        void prepare_checkpoint(Checkpoint& cp, EA& ea, const meta_data& md=meta_data()) {
+        void prepare_checkpoint(Checkpoint& cp, EA& ea, meta_data& md) {
             ea.configure();
             load_checkpoint(cp, ea);
             ea.md() += md;
+            ea.initialize();
+        }
+        
+        /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
+         state.
+         */
+        template <typename EA>
+        void prepare_new(EA& ea) {
+            ea.configure();
+            ea.initialize();
+            ea.initial_population();
+        }
+        
+        /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
+         state using a checkpoint.
+         */
+        template <typename Checkpoint, typename EA>
+        void prepare_checkpoint(Checkpoint& cp, EA& ea) {
+            ea.configure();
+            load_checkpoint(cp, ea);
             ea.initialize();
         }
         

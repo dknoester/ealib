@@ -36,9 +36,9 @@ LIBEA_MD_DECL(QHFC_CATCHUP_GEN, "ea.qhfc.catchup_gen", double);
 LIBEA_MD_DECL(QHFC_PERCENT_REFILL, "ea.qhfc.percent_refill", double);
 LIBEA_MD_DECL(QHFC_BREED_TOP_FREQ, "ea.qhfc.breed_top_freq", double);
 LIBEA_MD_DECL(QHFC_NO_PROGRESS_GEN, "ea.qhfc.no_progess_gen", double);
-LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.qhfc.admission_level", double);
 
 // run time only:
+LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.qhfc.admission_level", double);
 LIBEA_MD_DECL(QHFC_LAST_PROGRESS_GEN, "ea.qhfc.last_progess_gen", double);
 LIBEA_MD_DECL(QHFC_LAST_PROGRESS_MAX, "ea.qhfc.last_progess_max", double);
 
@@ -92,6 +92,10 @@ namespace ealib {
                 // clean up if there are extras, and set the admission level for sp0:
                 std::copy(all.begin(), all.end(), ea[0].population().begin()+spsize);
                 put<QHFC_ADMISSION_LEVEL>(mean_fitness, ea[0]);
+
+                // finally, initialize last progress gen and fitness:
+                put<QHFC_LAST_PROGRESS_GEN>(0.0, ea);
+                put<QHFC_LAST_PROGRESS_MAX>(0.0, ea);
             }
             
             /*! Adjust the admission level of each subpopulation.
@@ -110,7 +114,7 @@ namespace ealib {
                     double fmin = get<QHFC_ADMISSION_LEVEL>(ea[0]);
                     double fmax = max(topfit);
                     
-                    for(std::size_t i=1; ea.size(); ++i) {
+                    for(std::size_t i=1; i<ea.size(); ++i) {
                         double fkadm = fmin + i*(fmax-fmin)/static_cast<double>(ea.size());
                         put<QHFC_ADMISSION_LEVEL>(fkadm, ea[i]);
                     }
@@ -202,9 +206,9 @@ namespace ealib {
                         spfit(static_cast<double>(ealib::fitness(*j,top)));
                     }
                     if(max(spfit) > get<QHFC_LAST_PROGRESS_MAX>(ea)) {
-                        put<QHFC_LAST_PROGRESS_GEN>(top.current_update(), top);
+                        put<QHFC_LAST_PROGRESS_GEN>(top.current_update(), ea);
                     }
-                    if((top.current_update() - get<QHFC_LAST_PROGRESS_GEN>(top)) >= get<QHFC_NO_PROGRESS_GEN>(top)) {
+                    if((top.current_update() - get<QHFC_LAST_PROGRESS_GEN>(ea)) >= get<QHFC_NO_PROGRESS_GEN>(ea)) {
                         typename EA::subpopulation_type imports = import_from_below(ea.rbegin(),
                                                                                     ea.rend(),
                                                                                     static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(ea)*top.size()), ea);
@@ -234,7 +238,7 @@ namespace ealib {
                 std::size_t idx=ea.size()-2;
                 for(typename EA::reverse_iterator i=ea.rbegin()+1; (i+1)!=ea.rend(); ++i,--idx) { // subpop
                     if(!potency_testing(idx,ea)) {
-                        typename EA::subpopulation_type imports = import_from_below(i+1, ea.rend(), static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(ea)*i->size()), ea);
+                        typename EA::subpopulation_type imports = import_from_below(i+1, ea.rend(), static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(*i)*i->size()), ea);
                         std::random_shuffle(i->begin(), i->end(), ea.rng());
                         i->population().resize(get<POPULATION_SIZE>(*i)-imports.size());
                         i->append(imports.begin(), imports.end());

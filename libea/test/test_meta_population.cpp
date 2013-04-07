@@ -45,5 +45,20 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     typedef meta_population<ea_type, mp_configuration, generational_models::qhfc> mea_type;
     
     mea_type M;
+    M.configure();
+    put<POPULATION_SIZE>(50,M);
+    put<META_POPULATION_SIZE>(5,M);
+	put<REPRESENTATION_SIZE>(100,M);
+	put<MUTATION_PER_SITE_P>(0.0005,M);
+	put<ELITISM_N>(1,M);
+    put<QHFC_BREED_TOP_FREQ>(2,M);
+    put<QHFC_DETECT_EXPORT_NUM>(2,M);
+    put<QHFC_PERCENT_REFILL>(0.25,M);
+    put<QHFC_CATCHUP_GEN>(20,M);
+    put<QHFC_NO_PROGRESS_GEN>(2,M);
+
+    M.initialize();
+    M.initial_population();
+    lifecycle::advance_epoch(10,M);    
 }
 
