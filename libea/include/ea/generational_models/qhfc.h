@@ -25,22 +25,24 @@
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 #include <algorithm>
+#include <ea/datafile.h>
 #include <ea/meta_data.h>
+#include <ea/attributes.h>
 #include <ea/generational_model.h>
 #include <ea/selection/elitism.h>
 #include <ea/selection/random.h>
 #include <ea/generational_models/crowding.h>
 
-LIBEA_MD_DECL(QHFC_DETECT_EXPORT_NUM, "ea.qhfc.detect_export_num", double);
-LIBEA_MD_DECL(QHFC_CATCHUP_GEN, "ea.qhfc.catchup_gen", double);
-LIBEA_MD_DECL(QHFC_PERCENT_REFILL, "ea.qhfc.percent_refill", double);
-LIBEA_MD_DECL(QHFC_BREED_TOP_FREQ, "ea.qhfc.breed_top_freq", double);
-LIBEA_MD_DECL(QHFC_NO_PROGRESS_GEN, "ea.qhfc.no_progess_gen", double);
+LIBEA_MD_DECL(QHFC_DETECT_EXPORT_NUM, "ea.generational_model.qhfc.detect_export_num", double);
+LIBEA_MD_DECL(QHFC_CATCHUP_GEN, "ea.generational_model.qhfc.catchup_gen", double);
+LIBEA_MD_DECL(QHFC_PERCENT_REFILL, "ea.generational_model.qhfc.percent_refill", double);
+LIBEA_MD_DECL(QHFC_BREED_TOP_FREQ, "ea.generational_model.qhfc.breed_top_freq", double);
+LIBEA_MD_DECL(QHFC_NO_PROGRESS_GEN, "ea.generational_model.qhfc.no_progess_gen", double);
 
 // run time only:
-LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.qhfc.admission_level", double);
-LIBEA_MD_DECL(QHFC_LAST_PROGRESS_GEN, "ea.qhfc.last_progess_gen", double);
-LIBEA_MD_DECL(QHFC_LAST_PROGRESS_MAX, "ea.qhfc.last_progess_max", double);
+LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.generational_model.qhfc.admission_level", double);
+LIBEA_MD_DECL(QHFC_LAST_PROGRESS_GEN, "ea.generational_model.qhfc.last_progess_gen", double);
+LIBEA_MD_DECL(QHFC_LAST_PROGRESS_MAX, "ea.generational_model.qhfc.last_progess_max", double);
 
 
 namespace ealib {
@@ -92,7 +94,7 @@ namespace ealib {
                 // clean up if there are extras, and set the admission level for sp0:
                 std::copy(all.begin(), all.end(), ea[0].population().begin()+spsize);
                 put<QHFC_ADMISSION_LEVEL>(mean_fitness, ea[0]);
-
+                
                 // finally, initialize last progress gen and fitness:
                 put<QHFC_LAST_PROGRESS_GEN>(0.0, ea);
                 put<QHFC_LAST_PROGRESS_MAX>(0.0, ea);
@@ -137,7 +139,7 @@ namespace ealib {
                     typename EA::subpopulation_type imports = import_from_below(f+1, l, n, ea);
                     f->append(imports.begin(), imports.end());
                 }
-
+                
                 return exports;
             }
             
@@ -150,10 +152,10 @@ namespace ealib {
                 
                 while((catchup_eval++ < (get<QHFC_CATCHUP_GEN>(ea)*ea[i].size()))
                       && (exports.size() < get<QHFC_DETECT_EXPORT_NUM>(ea))) {
-
+                    
                     // grab two parents at random and perform deterministic crowding:
                     typename EA::subpopulation_type pop;
-
+                    
                     algorithm::random_split(ea[i].population(), pop, 2, ea.rng());
                     generational_models::deterministic_crowding< > dc;
                     dc(pop, ea[i]);
@@ -164,7 +166,7 @@ namespace ealib {
                         // good fitness
                         if(ealib::fitness(**j,ea[i]) > get<QHFC_ADMISSION_LEVEL>(ea[i+1])) {
                             exports.push_back(*j);
-                             // -2 to account for the riterator & next lowest level
+                            // -2 to account for the riterator & next lowest level
                             typename EA::subpopulation_type imports = import_from_below(ea.rbegin() + (ea.size() - i - 2),
                                                                                         ea.rend(),
                                                                                         1, ea);
@@ -177,7 +179,7 @@ namespace ealib {
                 }
                 // detect (im)potency
                 bool potent = (exports.size() >= get<QHFC_DETECT_EXPORT_NUM>(ea));
-
+                
                 // export the exports to i+1 subpopulation
                 typename EA::subpopulation_type next;
                 selection::elitism<selection::random> sel(ea[i+1].size()-exports.size(), ea[i+1].population(), ea[i+1]);
@@ -198,7 +200,7 @@ namespace ealib {
             void breed_top(EA& ea) {
                 using namespace boost::accumulators;
                 typename EA::individual_type& top=*ea.rbegin();
-
+                
                 for(std::size_t i=0; i<get<QHFC_BREED_TOP_FREQ>(ea); ++i) {
                     top.update();
                     accumulator_set<double, stats<tag::max> > spfit;
@@ -230,7 +232,7 @@ namespace ealib {
                 if(ea.current_update() == 0) {
                     initialize(ea);
                 }
-
+                
                 breed_top(ea);
                 adjust_admission_levels(ea);
                 
@@ -249,6 +251,56 @@ namespace ealib {
         };
         
     } // generational_models
-} // ea
+    
+    namespace datafiles {
+        
+        /*! QHFC datafile.
+         */
+        template <typename EA>
+        struct qhfc : record_statistics_event<EA> {
+            qhfc(EA& ea)
+            : record_statistics_event<EA>(ea)
+            , _fitness("qhfc_fitness.dat")
+            , _admission("qhfc_admission.dat") {
+                _fitness.add_field("update");
+                _admission.add_field("update");
+                
+                for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                    _fitness.add_field("max_fitness_sp" + boost::lexical_cast<std::string>(i));
+                    _fitness.add_field("mean_fitness_sp" + boost::lexical_cast<std::string>(i));
+                    _admission.add_field("admission_level_sp" + boost::lexical_cast<std::string>(i));
+                }
+            }
+            
+            virtual ~qhfc() {
+            }
+            
+            virtual void operator()(EA& ea) {
+                using namespace boost::accumulators;
+                
+                _fitness.write(ea.current_update());
+                _admission.write(ea.current_update());
+                
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                    
+                    for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
+                        fit(static_cast<double>(ealib::fitness(*j,*i)));
+                    }
+                
+                    _fitness.write(max(fit)).write(mean(fit));
+                    _admission.write(get<QHFC_ADMISSION_LEVEL>(*i,0.0));
+                }
+
+                _fitness.endl();
+                _admission.endl();
+            }
+        
+            datafile _fitness;
+            datafile _admission;
+        };
+    
+    } // datafiles
+} // ealib
 
 #endif
