@@ -91,7 +91,7 @@ namespace ealib {
             
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                 for(typename EA::individual_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
-                    fit(static_cast<double>(ealib::fitness(**j)));
+                    fit(static_cast<double>(ealib::fitness(**j,*i)));
                 }
             }
             
@@ -106,7 +106,7 @@ namespace ealib {
             accumulator_set<double, stats<tag::mean, tag::max, tag::variance> > fit; 
             
             for(typename EA::individual_type::population_type::iterator j=ea.rbegin()->population().begin(); j!=ea.rbegin()->population().end(); ++j) {
-                fit(static_cast<double>(ealib::fitness(**j)));
+                fit(static_cast<double>(ealib::fitness(**j,*ea.rbegin())));
             }
             
             double mean_base_one_fit = get<ADMISSION_LEVEL>(ea[1]);
@@ -137,14 +137,14 @@ namespace ealib {
                 double next_admission = get<ADMISSION_LEVEL>(ea[i+1]);
                 
                 // sort ascending by fitness:
-                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::fitness());
+                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::fitness<EA>(ea));
 
                 // find the first individual w/ fitness >= next_admission, but make sure to leave some behind
                 typename EA::individual_type::population_type::iterator f=ea[i].population().begin();
                 std::advance(f, static_cast<std::size_t>(get<MIN_REMAIN>(ea)*get<POPULATION_SIZE>(ea)));
                 typename EA::individual_type::population_type::iterator l=ea[i].population().end();
                 for( ; f!=l; ++f) {
-                    if(ealib::fitness(**f) > next_admission) {
+                    if(ealib::fitness(**f,ea[i]) > next_admission) {
                         break;
                     }
                 }
@@ -155,7 +155,7 @@ namespace ealib {
                 ea[i].population().erase(f,l);
             }
             
-            ea[0].generate_initial_population();
+            ea[0].initial_population();
         }
     };
     
@@ -188,7 +188,7 @@ namespace ealib {
                 _df.write(get<ADMISSION_LEVEL>(ea[i], 0.0));
                           
                 for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
-                    fit(static_cast<double>(ealib::fitness(**j)));
+                    fit(static_cast<double>(ealib::fitness(**j,ea[i])));
                 }
                 
                 _df.write(mean(fit))

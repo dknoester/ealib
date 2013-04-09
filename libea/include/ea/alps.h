@@ -22,7 +22,7 @@
 
 
 #include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics/stats.h pp>
+#include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
@@ -64,7 +64,7 @@ namespace ealib {
         virtual void inheritance(typename EA::population_type& parents,
                                  typename EA::individual_type& offspring,
                                  EA& ea) {
-            std::sort(parents.begin(), parents.end(), comparators::meta_data<GM_AGE>());
+            std::sort(parents.begin(), parents.end(), comparators::meta_data<GM_AGE,MEA>());
             put<GM_AGE>(get<GM_AGE>(*parents.back(),-1)+1, offspring);
         }
         
@@ -83,7 +83,7 @@ namespace ealib {
                 double next_admission = get<ADMISSION_AGE>(ea[i+1]);
 
                 // sort ascending by age:
-                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::meta_data<GM_AGE>());
+                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::meta_data<GM_AGE,MEA>());
                 
                 // find the first individual w/ age >= next_admission:
                 typename MEA::individual_type::population_type::iterator f=ea[i].population().begin();
@@ -96,10 +96,10 @@ namespace ealib {
                 
                 // now, move all individuals w/ fitness >= next_admission AND fitness greater
                 // than min to the next pop:
-                std::sort(ea[i+1].population().begin(), ea[i+1].population().end(), comparators::fitness());
+                std::sort(ea[i+1].population().begin(), ea[i+1].population().end(), comparators::fitness<typename MEA::individual_type>(ea[i+1]));
                 for(typename MEA::individual_type::population_type::iterator tf=f; tf!=l; ++tf) {
                     if((ea[i+1].population().size() < get<POPULATION_SIZE>(ea[i+1]))
-                       || (ealib::fitness(**tf) > ealib::fitness(*ea[i+1].population().front()))) {
+                       || (ealib::fitness(**tf,ea[i+1]) > ealib::fitness(*ea[i+1].population().front(),ea[i+1]))) {
                         ea[i+1].population().insert(ea[i+1].population().end(), *tf);
                     }
                 }
@@ -107,7 +107,7 @@ namespace ealib {
                 ea[i].population().erase(f,l);
             }
             
-            ea[0].generate_initial_population();
+            ea[0].initial_population();
         }
         
         std::vector<boost::signals::scoped_connection> _inheritance_conn;

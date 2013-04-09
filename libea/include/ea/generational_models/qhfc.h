@@ -162,7 +162,7 @@ namespace ealib {
                     
                     // now, see if any individuals in pop have fitness > than the
                     // admission level of the next higest subpop:
-                    for(typename EA::subpopulation_type::iterator j=pop.begin(); j!=pop.end(); ++j) {
+                    for(typename EA::subpopulation_type::iterator j=pop.begin(); (j!=pop.end()) && (exports.size() < get<QHFC_DETECT_EXPORT_NUM>(ea)); ++j) {
                         // good fitness
                         if(ealib::fitness(**j,ea[i]) > get<QHFC_ADMISSION_LEVEL>(ea[i+1])) {
                             exports.push_back(*j);
@@ -179,6 +179,7 @@ namespace ealib {
                 }
                 // detect (im)potency
                 bool potent = (exports.size() >= get<QHFC_DETECT_EXPORT_NUM>(ea));
+                assert(exports.size() < ea[i+1].size());
                 
                 // export the exports to i+1 subpopulation
                 typename EA::subpopulation_type next;
@@ -209,6 +210,7 @@ namespace ealib {
                     }
                     if(max(spfit) > get<QHFC_LAST_PROGRESS_MAX>(ea)) {
                         put<QHFC_LAST_PROGRESS_GEN>(top.current_update(), ea);
+                        put<QHFC_LAST_PROGRESS_MAX>(max(spfit), ea);
                     }
                     if((top.current_update() - get<QHFC_LAST_PROGRESS_GEN>(ea)) >= get<QHFC_NO_PROGRESS_GEN>(ea)) {
                         typename EA::subpopulation_type imports = import_from_below(ea.rbegin(),
