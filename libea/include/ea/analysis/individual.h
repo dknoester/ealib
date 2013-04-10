@@ -18,27 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_ANALYSIS_MAX_FIT_INDIVIDUAL_H_
-#define _EA_ANALYSIS_MAX_FIT_INDIVIDUAL_H_
+#ifndef _EA_ANALYSIS_INDIVIDUAL_H_
+#define _EA_ANALYSIS_INDIVIDUAL_H_
 
-#include <iostream>
-#include <ea/attributes.h>
-#include <ea/meta_data.h>
-#include <ea/analysis/tool.h>
+#include <algorithm>
+#include <ea/comparators.h>
 
 namespace ealib {
     namespace analysis {
 
+        /*! Returns a reference to the dominant (most fit) individual in the given
+         EA's population.
+         */
         template <typename EA>
         typename EA::individual_type& find_dominant(EA& ea) {
             typename EA::population_type& pop = ea.population();
-            typename EA::population_type::iterator mi=pop.begin();
-            for(typename EA::population_type::iterator i=pop.begin(); i!=pop.end(); ++i) {
-                if(ealib::fitness(**i,ea) > ealib::fitness(**mi,ea)) {
-                    mi = i;
-                }
-            }
-            return **mi;
+            return **std::max_element(pop.begin(), pop.end(), comparators::fitness<EA>(ea));
         }
 
     } // analysis

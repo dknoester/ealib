@@ -259,7 +259,6 @@ namespace ealib {
             if(vm.count("with-time")) {
                 add_event<run_statistics>(this,ea);
             }
-            
             execute(ea);
         }        
         
@@ -273,15 +272,12 @@ namespace ealib {
                 ea.rng().reset(get<RNG_SEED>(ea));
             }
             
-            ea.initial_population();
-            
             ea.initialize();
             gather_events(ea);
-
             if(vm.count("with-time")) {
                 add_event<run_statistics>(this,ea);
             }
-            
+            ea.initial_population();
             execute(ea);
         }
         
