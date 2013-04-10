@@ -184,7 +184,6 @@ namespace ealib {
                             f->append(*j);
                         }
                     }
-                    
                 }
                 
                 // detect (im)potency

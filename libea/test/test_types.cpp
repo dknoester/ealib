@@ -23,6 +23,7 @@
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/population_founder.h>
 #include <ea/line_of_descent.h>
+#include <ea/generational_models/nsga2.h>
 #include <ea/meta_population.h>
 #include "test.h"
 
@@ -175,8 +176,6 @@ BOOST_AUTO_TEST_CASE(test_digevo_types) {
     typedef meta_population<population_lod<population_founder<ea_type1> >, mp_founder_configuration> mea_type3;
     mea_type3 mea3;
     cli<mea_type3> cli3;
-//    boost::program_options::variables_map vm;
-//    cli3.run(vm);
 }
 
 
@@ -184,14 +183,14 @@ BOOST_AUTO_TEST_CASE(test_digevo_types) {
 BOOST_AUTO_TEST_CASE(test_types) {
 	using namespace ealib;
     
-    {
+    { // default
         evolutionary_algorithm<
         bitstring,
         mutation::per_site<mutation::bit>,
         all_ones> ea;
     }
     
-    {
+    { // steady state
         evolutionary_algorithm<
         bitstring,
         mutation::per_site<mutation::bit>,
@@ -202,5 +201,17 @@ BOOST_AUTO_TEST_CASE(test_types) {
         default_attributes,
         individual_lod
         > ea;
+    }
+    
+    { // nsga2
+        evolutionary_algorithm<
+        bitstring,
+        mutation::per_site<mutation::bit>,
+        multi_all_ones,
+        abstract_configuration,
+        recombination::two_point_crossover,
+        generational_models::nsga2,
+        nsga2_attributes
+        > ea;        
     }
 }

@@ -28,7 +28,6 @@ struct mp_configuration : public abstract_configuration<EA> {
 
 BOOST_AUTO_TEST_CASE(test_meta_population) {
     typedef meta_population<all_ones_ea, mp_configuration> mea_type;
-    
     mea_type M;
 }
 
@@ -61,4 +60,3 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     M.initial_population();
     lifecycle::advance_epoch(10,M);    
 }
-

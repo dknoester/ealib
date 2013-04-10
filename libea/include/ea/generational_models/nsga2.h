@@ -29,21 +29,23 @@
 #include <ea/comparators.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
+#include <ea/fitness_function.h>
 
 namespace ealib {
     
     //! Attributes that must be added to individuals to support NSGA2.
     template <typename EA>
-    struct nsga2_attrs {
+    struct nsga2_attributes : attr::fitness_attribute<EA> {
         typedef typename EA::population_type population_type;
         
         //! Constructor.
-        nsga2_attrs() : n(0), rank(0), distance(0.0) {
+        nsga2_attributes() : n(0), rank(0), distance(0.0) {
         }
         
         //! Serialize some of these attributes.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
             ar & BOOST_SERIALIZATION_NVP(rank);
             ar & BOOST_SERIALIZATION_NVP(distance);
         }
@@ -61,13 +63,19 @@ namespace ealib {
      If a has the same rank as b, but greater crowding distance, return true.
      Otherwise, return false.
      */
+    template <typename EA>
     struct crowding_comparator {
-        template <typename IndividualPtr>
-        bool operator()(IndividualPtr a, IndividualPtr b) {
+        //! Constructor.
+        crowding_comparator(EA& ea) : _ea(ea) {
+        }
+        
+        //! Returns true if a <_n b, false otherwise.
+        bool operator()(typename EA::individual_ptr_type a, typename EA::individual_ptr_type b) {
             return (a->attr().rank < b->attr().rank) || ((a->attr().rank == b->attr().rank) && (a->attr().distance > b->attr().distance));
         }
+        
+        EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
     };
-    
     
     namespace selection {
         
@@ -81,10 +89,10 @@ namespace ealib {
             }
             
             //! Returns true if a dominates b.
-            template <typename Individual>
-            bool dominates(Individual& a, Individual& b) {
-                const typename Individual::fitness_type& fa=a.fitness();
-                const typename Individual::fitness_type& fb=b.fitness();
+            template <typename Individual, typename EA>
+            bool dominates(Individual& a, Individual& b, EA& ea) {
+                const typename Individual::attr_type::fitness_type& fa=ealib::fitness(a,ea);
+                const typename Individual::attr_type::fitness_type& fb=ealib::fitness(b,ea);
                 assert(fa.size() == fb.size());
                 
                 bool any=false, all=true;
@@ -103,16 +111,16 @@ namespace ealib {
                     (*i)->attr().distance = 0.0;
                 }
                 
-                std::size_t M = (*I.begin())->fitness().size(); // how many objectives?
+                std::size_t M = ealib::fitness(**I.begin(),ea).size(); // how many objectives?
                 
                 for(std::size_t m=0; m<M; ++m) {
-                    std::sort(I.begin(), I.end(), comparators::objective(m));
+                    std::sort(I.begin(), I.end(), comparators::objective<EA>(m,ea));
                     
                     (*I.begin())->attr().distance = std::numeric_limits<double>::max();
                     (*I.rbegin())->attr().distance = std::numeric_limits<double>::max();
                     
                     for(std::size_t i=1; i<(I.size()-1); ++i) {
-                        I[i]->attr().distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
+                        I[i]->attr().distance += (I[i+1]->attr().fitness()[m] - I[i-1]->attr().fitness()[m]) / ea.fitness_function().range(m);
                     }
                 }
             }
@@ -121,20 +129,20 @@ namespace ealib {
             template <typename Population, typename PopulationMap, typename EA>
             void nondominated_sort(Population& P, std::size_t n, PopulationMap& F, EA& ea) {
                 for(typename Population::iterator p=P.begin(); p!=P.end(); ++p) {
-                    attr(p,ea).S.clear();
-                    attr(p,ea).n = 0;
+                    (*p)->attr().S.clear();
+                    (*p)->attr().n = 0;
                     
                     for(typename Population::iterator q=P.begin(); q!=P.end(); ++q) {
                         if(p!=q) {
-                            if(dominates(**p,**q)) {
-                                attr(p,ea).S.push_back(*q);
-                            } else if(dominates(**q,**p)) {
-                                ++attr(p,ea).n;
+                            if(dominates(**p,**q,ea)) {
+                                (*p)->attr().S.push_back(*q);
+                            } else if(dominates(**q,**p,ea)) {
+                                ++(*p)->attr().n;
                             }
                         }
                     }
-                    if(attr(p,ea).n == 0) {
-                        attr(p,ea).rank = 0;
+                    if((*p)->attr().n == 0) {
+                        (*p)->attr().rank = 0;
                         F[0].push_back(*p);
                     }
                 }
@@ -143,10 +151,10 @@ namespace ealib {
                 while((!F[i].empty()) && (n>0)) {
                     Population Q;
                     for(typename Population::iterator p=F[i].begin(); p!=F[i].end(); ++p) {
-                        for(typename Population::iterator q=attr(p,ea).S.begin(); q!=attr(p,ea).S.end(); ++q) {
-                            --attr(q,ea).n;
-                            if(attr(q,ea).n == 0) {
-                                attr(q,ea).rank = i+1;
+                        for(typename Population::iterator q=(*p)->attr().S.begin(); q!=(*p)->attr().S.end(); ++q) {
+                            --(*q)->attr().n;
+                            if((*q)->attr().n == 0) {
+                                (*q)->attr().rank = i+1;
                                 Q.push_back(*q);
                             }
                         }
