@@ -23,6 +23,7 @@
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/storage.hpp>
 #include <algorithm>
+#include <ea/algorithm.h>
 
 namespace mkv {
 
@@ -40,9 +41,40 @@ namespace mkv {
             return t;
         }
     };
-    
 
-    /*! 2-dimensional (r x c) convolution of unary matrix function F over matrix 
+    /*! Random access Matrix iterator, used to bridge Matrix input to a random
+     access iterator suitable for Markov networks.
+     */
+    template <typename Matrix>
+    struct ra_matrix_iterator {
+        ra_matrix_iterator(Matrix& M) : _M(M) {
+        }
+        
+        typename Matrix::value_type operator[](std::size_t i) {
+            return _M(i/_M.size2(), i % _M.size2());
+        }
+        
+        Matrix& _M;
+    };
+
+    /*! Unary matrix function that calls a Markov network on Matrix M.
+     */
+    template <typename Network>
+    struct call_network {
+        call_network(Network& net, int n) : _net(net), _n(n) {
+        }
+        
+        template <typename Matrix>
+        typename Matrix::value_type operator()(Matrix& M) {
+            mkv::update(_net, _n, ra_matrix_iterator<Matrix>(M));
+            return ealib::algorithm::range_pair2int(_net.begin_output(), _net.end_output());
+        }
+        
+        Network& _net; //!< Network to be called on a matrix.
+        int _n; //!< Number of times to update the network.
+    };
+
+    /*! 2-dimensional (r x c) convolution of unary matrix function F over matrix
      M, producing Matrix P.
      
      While r_skip and c_skip default to 1, they can be set to different values,

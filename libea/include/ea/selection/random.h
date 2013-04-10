@@ -28,8 +28,8 @@ namespace ealib {
 		
 		/*! Random selection.
 		 
-		 This selection method selects individuals randomly with replacement (that is,
-		 the same individual may be selected more than once.)
+		 This selection method selects individuals randomly without replacement
+         (that is, the same individual will not be selected more than once.)
 		 
 		 <b>Model of:</b> SelectionStrategyConcept.
 		 */

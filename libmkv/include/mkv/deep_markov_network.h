@@ -139,6 +139,12 @@ namespace mkv {
         rng_type _rng; //<! Random number generator.
     };
 
+    /*! Update a Deep Markov Network n times with inputs given by f.
+     */
+    template <typename RandomAccessIterator>
+    void update(deep_markov_network& net, std::size_t n, RandomAccessIterator f) {
+        net.update(n,f);
+    }
     
 } // mkv
 
