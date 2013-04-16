@@ -30,13 +30,10 @@
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
 
+LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
+LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
+
 namespace ealib {
-    
-    struct empty { };
-    
-    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
-    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
-    
     
     namespace resources {
         //! Abstract resource type.

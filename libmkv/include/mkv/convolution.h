@@ -1,4 +1,4 @@
-/* convolve.h
+/* convolve_data.h
  *
  * This file is part of EALib.
  *
@@ -81,7 +81,7 @@ namespace mkv {
      e.g., in the case of max-pooling r_skip and c_skip should be set to r and c.
      */
     template <typename InputMatrix, typename OutputMatrix, typename UnaryMatrixFunction>
-    void convolve2d(InputMatrix& M, std::size_t r, std::size_t c, UnaryMatrixFunction F, OutputMatrix& P, std::size_t r_skip=1, std::size_t c_skip=1) {
+    void convolve_data2d(InputMatrix& M, std::size_t r, std::size_t c, UnaryMatrixFunction F, OutputMatrix& P, std::size_t r_skip=1, std::size_t c_skip=1) {
         using namespace boost::numeric::ublas;
         
         std::size_t ar = M.size1()-r+1; // number of possible anchor rows

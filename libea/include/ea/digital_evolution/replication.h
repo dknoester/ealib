@@ -87,6 +87,7 @@ namespace ealib {
         // parent is always reprioritized...
         ea.tasklib().prioritize(*p,ea);
         
+        // this handles prioritizing the offspring:
         ea.replace(*parents.begin(), *offspring.begin());
     }
 

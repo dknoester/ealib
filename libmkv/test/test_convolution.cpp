@@ -41,14 +41,14 @@ BOOST_AUTO_TEST_CASE(test_convolution) {
         }
     }
     
-    convolve2d(M, 3, 3, max_pool(), P);    
+    convolve_data2d(M, 3, 3, max_pool(), P);    
     BOOST_CHECK_EQUAL(P.size1(), 6);
     BOOST_CHECK_EQUAL(P.size2(), 8);
     BOOST_CHECK_EQUAL(P(0,0), 22);
     BOOST_CHECK_EQUAL(P(0,1), 23);
     BOOST_CHECK_EQUAL(P(1,0), 32);
     
-    convolve2d(M, 2, 2, max_pool(), P, 2, 2);
+    convolve_data2d(M, 2, 2, max_pool(), P, 2, 2);
     BOOST_CHECK_EQUAL(P.size1(), 3);
     BOOST_CHECK_EQUAL(P.size2(), 4);
     BOOST_CHECK_EQUAL(P(0,0), 11);

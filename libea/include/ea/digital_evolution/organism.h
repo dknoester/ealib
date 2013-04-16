@@ -58,12 +58,12 @@ namespace ealib {
 		typedef std::map<std::string, double> phenotype_map_type; //!< Type for storing phenotype information.
         
 		//! Constructor.
-		organism() : _name(0), _generation(0.0), _update(0), _alive(true) {
+		organism() : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0) {
 		}
         
 		//! Constructor that builds an organism from a representation.
 		organism(const representation_type& r) 
-        : _name(0), _generation(0.0), _update(0), _alive(true), _hw(r) {
+        : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0), _hw(r) {
 		}
         
         //! Copy constructor.

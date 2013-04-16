@@ -34,6 +34,7 @@ namespace ealib {
         struct priority : record_statistics_event<EA> {
             priority(EA& ea) : record_statistics_event<EA>(ea), _df("priority.dat") {
                 _df.add_field("update")
+                .add_field("population_size")
                 .add_field("mean_generation")
                 .add_field("mean_priority")
                 .add_field("max_priority");
@@ -53,6 +54,7 @@ namespace ealib {
                 }
                 
                 _df.write(ea.current_update())
+                .write(ea.size())
                 .write(mean(gen))
                 .write(mean(fit))
                 .write(max(fit))

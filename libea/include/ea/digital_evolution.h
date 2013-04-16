@@ -95,14 +95,14 @@ namespace ealib {
         typedef Hardware hardware_type;
         //! Representation type.
         typedef typename hardware_type::representation_type representation_type;
+        typedef Individual<digital_evolution> individual_type;
+        //! Individual pointer type.
+        typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Scheduler type.
         typedef Scheduler<digital_evolution> scheduler_type;
         //! Scheduler fitness type.
         typedef typename scheduler_type::priority_type priority_type;
         //! Individual type.
-        typedef Individual<digital_evolution> individual_type;
-        //! Individual pointer type.
-        typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! ISA type.
         typedef InstructionSetArchitecture<digital_evolution> isa_type;
         //! Replacment strategy type.
