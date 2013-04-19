@@ -28,11 +28,11 @@ namespace ealib {
    */
   template <typename EA>
 	struct alife_event_handler : event_handler<EA> {
-    //! Called when an individual performs a task.
+    //! Called when an individual participates in a reaction.
     boost::signal<void(typename EA::individual_type&, // individual
                        typename EA::tasklib_type::task_ptr_type, // task pointer
                        double r, // resources consumed
-                       EA&)> task_performed;
+                       EA&)> reaction;
     
     //! Called when an individual is "born" (immediately after it is placed in the population).
     boost::signal<void(typename EA::individual_type&, // individual offspring
@@ -46,14 +46,14 @@ namespace ealib {
   
   
   template <typename EA>
-  struct task_performed_event : event {
-    task_performed_event(EA& ea) {
-      conn = ea.events().task_performed.connect(boost::bind(&task_performed_event::operator(), this, _1, _2, _3, _4));
+  struct reaction_event : event {
+    reaction_event(EA& ea) {
+      conn = ea.events().reaction.connect(boost::bind(&reaction_event::operator(), this, _1, _2, _3, _4));
     }
-    virtual ~task_performed_event() { }
+    virtual ~reaction_event() { }
     virtual void operator()(typename EA::individual_type&, // individual
                             typename EA::tasklib_type::task_ptr_type, // task pointer
-                            double r, // resources consumed
+                            double, // resources consumed
                             EA&) = 0;
   };
   

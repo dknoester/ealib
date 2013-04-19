@@ -1,4 +1,4 @@
-/* generation_fitness.h
+/* reactions.h
  * 
  * This file is part of EALib.
  * 
@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_digital_evolution_DATAFILES_REACTIONS_H_
-#define _EA_digital_evolution_DATAFILES_REACTIONS_H_
+#ifndef _EA_DATAFILES_REACTIONS_H_
+#define _EA_DATAFILES_REACTIONS_H_
 
 #include <ea/datafile.h>
 #include <ea/events.h>
@@ -29,8 +29,8 @@ namespace ealib {
         /*! Datafile for reactions.
          */
         template <typename EA>
-        struct record_reactions_event : record_statistics_event<EA> {
-            record_reactions_event(EA& ea) : record_statistics_event<EA>(ea), _df("reactions.dat") {
+        struct reactions : record_statistics_event<EA> {
+            reactions(EA& ea) : record_statistics_event<EA>(ea), _df("reactions.dat") {
                 _df.add_field("update")
                 .add_field("not")
                 .add_field("nand")
@@ -42,18 +42,17 @@ namespace ealib {
                 .add_field("xor")
                 .add_field("equals");
                 
-                _conn2 = ea.events().task_performed.connect(boost::bind(&record_reactions_event::record_task, this, _1, _2, _3, _4));
+                _conn2 = ea.events().reaction.connect(boost::bind(&reactions::on_task, this, _1, _2, _3, _4));
             }
             
-            virtual ~record_reactions_event() {
+            virtual ~reactions() {
             }
             
-            
-            void record_task(typename EA::individual_type& ind, // individual
-                             double r, // amount of resource consumed
-                             const std::string& task, // task name
-                             EA& ea) {
-                _tasks[task] += r;
+            void on_task(typename EA::individual_type& ind, // individual
+                         typename EA::tasklib_type::task_ptr_type t, // task pointer
+                         double r, // resources consumed
+                         EA& ea) {
+                _tasks[t->name()] += r;
             }
             
             virtual void operator()(EA& ea) {
@@ -71,9 +70,9 @@ namespace ealib {
                 _tasks.clear();
             }
             
-            boost::signals::scoped_connection _conn2;
             datafile _df;
-            std::map<std::string, unsigned int> _tasks;
+            boost::signals::scoped_connection _conn2;
+            std::map<std::string, double> _tasks;
         };
 
     } // datafiles

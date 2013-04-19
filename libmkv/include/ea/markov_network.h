@@ -40,6 +40,7 @@
 // meta-data
 LIBEA_MD_DECL(MKV_DESC, "markov_network.desc", std::string);
 LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
+LIBEA_MD_DECL(MKV_WRITABLE, "markov_network.writable_inputs", int);
 LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
 LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", int);
 LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", unsigned int);
@@ -362,6 +363,7 @@ namespace mkv {
                                                  ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
         deep_markov_network net(desc, rng);
         build_deep_markov_network(net, f, l, ea);
+        net.writable_inputs(get<MKV_WRITABLE>(ea,0));
         return net;
     }
     
@@ -422,6 +424,7 @@ namespace mkv {
                                        ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
         markov_network net(desc, rng);
         build_markov_network(net, f, l, ea);
+        net.writable_inputs(get<MKV_WRITABLE>(ea,0));
         return net;
     }
     
@@ -433,6 +436,7 @@ namespace mkv {
         parse_desc(ealib::get<MKV_DESC>(ea), desc);
         markov_network net(desc, rng);
         build_markov_network(net, f, l, ea);
+        net.writable_inputs(get<MKV_WRITABLE>(ea,0));
         return net;
     }
     

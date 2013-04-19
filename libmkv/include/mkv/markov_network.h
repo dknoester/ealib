@@ -177,22 +177,22 @@ namespace mkv {
         
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, const rng_type& rng)
-        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(rng), _threshold(0) {
+        : _desc(nin, nout, nhid), _svm(nout+nhid), _inputs(nin), _rng(rng), _threshold(0), _writable(0) {
         }
         
         //! Constructs a Markov network with the given seed.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
-        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed), _threshold(0) {
+        : _desc(nin, nout, nhid), _svm(nout+nhid), _inputs(nin), _rng(seed), _threshold(0), _writable(0) {
         }
         
         //! Constructs a Markov network with the given seed.
         markov_network(const desc_type& desc, unsigned int seed=0)
-        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(seed), _threshold(0) {
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _inputs(desc.get<IN>()), _rng(seed), _threshold(0), _writable(0) {
         }
         
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(const desc_type& desc, const rng_type& rng)
-        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(rng), _threshold(0) {
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _inputs(desc.get<IN>()), _rng(rng), _threshold(0), _writable(0) {
         }
         
         //! Retrieve this network's underlying random number generator.
@@ -216,10 +216,10 @@ namespace mkv {
         std::size_t ngates() const { return size(); }
         
         //! Clear the network.
-        void clear() { _svm.clear(); }
+        void clear() { _svm.clear(); _inputs.clear(); }
         
         //! Rotate t and t-1 state vectors.
-        void rotate() { _svm.rotate(); }
+        void rotate() { _svm.rotate(); _inputs.rotate(); }
         
         //! Retrieve an iterator to the beginning of the svm outputs at time t.
         svm_type::iterator begin_output() { return _svm.t().begin(); }
@@ -232,31 +232,39 @@ namespace mkv {
         
         /*! Retrieve the value of input i.  Markov networks treat any state variable
          as input, so we need to check to see if the requested input comes from
-         the range of inputs, or if it's an internal state variable.
+         the range of inputs, or if it's an internal state variable.  If it's an
+         input, there's also the possibility that it's been locally overridden.
          */
         template <typename RandomAccessIterator>
         state_type input(RandomAccessIterator f, std::size_t i) {
             if(i < _desc.get<IN>()) {
-                return (f[i] > _threshold);
+                return (f[i] > _threshold) || _inputs.state_tminus1(i);
             } else {
                 return _svm.state_tminus1(i-_desc.get<IN>());
             }
         }
         
-        /*! Update output i with value v.  In this version, we disallow writing
-         to the input space.
+        /*! Update output i with value v.  If i refers to an input variable, then
+         use the local _inputs SVM to store its value, IF allowed.
          */
         void output(std::size_t i, const state_type& v) {
             if(i >= _desc.get<IN>()) {
                 _svm.state_t(i-_desc.get<IN>()) |= v;
+            } else {
+                _inputs.state_t(i) |= (_writable && v);
             }
         }
+        
+        //! Set whether this Markov network is able to write into its inputs.
+        void writable_inputs(bool w) { _writable = w; }
         
     protected:
         desc_type _desc; //!< Geometry descriptor for this Markov Network.
         svm_type _svm; //!< State vector machine for the hidden & output states.
+        svm_type _inputs; //!< State vector machine for inputs that have been written to.
         rng_type _rng; //<! Random number generator.
         state_type _threshold; //!< Threshold value above which an input is considered a "1".
+        int _writable; //!< Whether inputs are writable, 1==yes.
     };
     
     

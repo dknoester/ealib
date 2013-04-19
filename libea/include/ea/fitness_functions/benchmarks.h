@@ -166,6 +166,50 @@ namespace ealib {
             return sum;
         }
     };
+    
+    
+    /*! benchmarks - this fitness function allows you to select which fitness function to use - BENCHMARKS_FUNCTION
+     */
+    LIBEA_MD_DECL(BENCHMARKS_FUNCTION, "ea.fitness_function.benchmarks_function", int);
+    
+    struct benchmarks : public fitness_function<unary_fitness<double> > {
+        template <typename Individual, typename EA>
+		double operator()(Individual& ind, EA& ea) {
+            double val = 0.0;
+            int func = get<BENCHMARKS_FUNCTION>(ea,-1);
+            
+            switch (func) {
+                case 0: {
+                    rana r;
+                    val = r(ind, ea);
+                    break;
+                }
+                case 1: {
+                    griewangk g;
+                    val = g(ind, ea);
+                    break;
+                }
+                case 2: {
+                    rosenbrock r2;
+                    val = r2(ind,ea);
+                    break;
+                }
+                case 3: {
+                    schwefel s;
+                    val = s(ind, ea);
+                    break;
+                }
+                case 4: {
+                    f101 r3;
+                    val = r3(ind, ea);
+                    break;
+                }
+            }
+            
+            return val;
+        }
+        
+    };
 
 }
 

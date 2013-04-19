@@ -36,6 +36,8 @@ namespace ealib {
     struct abstract_task {
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type; //!< Pointer to resource for this task.
         
+        abstract_task() : _limit(0.0) { }
+        
         //! Returns the name of this task.
         virtual const std::string& name() = 0;
         
@@ -43,7 +45,7 @@ namespace ealib {
         virtual bool check(int in0, int in1, int out0) = 0;
 
         //! Configure this task to consume resource r.
-        virtual void consumes(resource_ptr_type r) = 0;
+        virtual abstract_task* consumes(resource_ptr_type r) = 0;
         
         //! Return the resource consumed by this task.
         virtual resource_ptr_type consumed_resource() = 0;
@@ -52,7 +54,16 @@ namespace ealib {
         virtual double catalyze(double r, double p) = 0;
         
         //! Retrieve the meta-data associated with this task.
-        virtual meta_data& md() = 0;        
+        virtual meta_data& md() = 0;
+        
+        //! Returns true if this task is limited.
+        virtual bool is_limited() { return _limit > 0.0; }
+        
+        virtual double limit() { return _limit; }
+
+        virtual abstract_task* limit(double lim) { _limit = lim; return this; }
+        
+        double _limit;
     };
     
 
@@ -87,8 +98,9 @@ namespace ealib {
         }
         
         //! Configure this task to consume resource r.
-        void consumes(resource_ptr_type r) { 
-            _consumed = r; 
+        abstract_task<EA>* consumes(resource_ptr_type r) {
+            _consumed = r;
+            return this;
         }
         
         //! Return the resource consumed by this task.
@@ -156,11 +168,11 @@ namespace ealib {
                 for(typename tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
                     abstract_task_type& task=(**i);
                     if(task.check(inputs[0], inputs[1], outputs[0])) {
-                        // ok, task was performed, trigger the reaction consumption:
-                        double r = ea.env().reaction(task.consumed_resource(), org, ea);
-                        
-                        org.phenotype()[task.name()] += r;
-                        ea.events().task_performed(org, *i, r, ea);
+                        if(!task.is_limited() || (org.phenotype()[task.name()] < task.limit())) {
+                            double r = ea.env().reaction(task.consumed_resource(), org, ea);
+                            org.phenotype()[task.name()] += r;
+                            ea.events().reaction(org, *i, r, ea);
+                        }
                     }
                 }
             }
@@ -181,7 +193,6 @@ namespace ealib {
         
     
     namespace tasks {
-        
 
         //! Not: returns true if z == !x or z == !y. 
         struct task_not{
@@ -260,7 +271,7 @@ namespace ealib {
         template <int T>
         struct additive {
             double operator()(double r, double p) {
-                return p + T;
+                return p + r * T;
             }
         };
     } // catalysts

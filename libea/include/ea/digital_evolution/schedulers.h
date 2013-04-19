@@ -85,10 +85,16 @@ namespace ealib {
             // split them into runlevels:
             runlevelq_type q;
             for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
-                q[static_cast<int>(priority(**i,ea))].push_back(*i);
+                // we have to take the ceiling of the priority here; otherwise, an organism
+                // that consumes only a small amount is effectively the same as an organism
+                // that consumes none; this creates a relavitely large subset of the population
+                // that can drift while the rest of the population competes for resources.
+                q[ceil(priority(**i,ea))].push_back(*i);
             }
             
             // have to fill in the runlevels between priorities, if any:
+            // not sure about this, actually.  the problem is that scheduling slows **way**
+            // down if the priority distribution is sparse.
             for(int i=1; i<q.rbegin()->first; ++i) {
                 q[i]; // "touch"; constructs if needed.
             }
@@ -143,6 +149,70 @@ namespace ealib {
         }
     };
     
+
+    /*! Priority-proportional scheduler.
+     
+     Grants all organisms an amount of CPU time proportional to their priority,
+     where priority is defined as the multiple of cycles above an org that has 
+     priority 1.0.
+     */
+    template <typename EA>
+    struct priority_proportional : generational_models::generational_model {
+        typedef EA ea_type;
+        typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
+        typedef std::vector<long> exc_list;
+        
+        void initialize(ea_type& ea) {
+        }
+        
+        template <typename Population>
+        exc_list operator()(Population& population, ea_type& ea) {
+            exc_list live, names;
+            int last=population.size();
+            for(std::size_t i=0; i<population.size(); ++i) {
+                int r=static_cast<int>(population[i]->priority());
+                for(int j=0; j<r; ++j) {
+                    live.push_back(i);
+                }
+            }
+            
+            std::random_shuffle(live.begin(), live.end(), ea.rng());
+            
+            unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
+            long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
+            double delta_t = 1.0/get<SCHEDULER_TIME_SLICE>(ea);
+            
+            std::size_t i=0;
+            int deadcount=0;
+            while((budget > 0) && (deadcount<last)) {
+                if((budget % eff_population_size) == 0) {
+                    ea.env().partial_update(delta_t, ea);
+                }
+                
+                typename ea_type::individual_ptr_type p=population[live[i]];
+                i = (i+1) % live.size();
+                names.push_back(p->name());
+                
+                if(p->alive()) {
+                    p->execute(1,p,ea);
+                    --budget;
+                } else {
+                    ++deadcount;
+                }
+            }
+            
+            Population next;
+            for(std::size_t i=0; i<population.size(); ++i) {
+                typename ea_type::individual_ptr_type p=population[i];
+                if(p->alive()) {
+                    next.push_back(p);
+                }
+            }
+            std::swap(population, next);
+            return names;
+        }
+    };
+
     
     /*! Weighted round-robin scheduler.
      

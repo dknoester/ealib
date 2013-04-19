@@ -133,6 +133,13 @@ namespace mkv {
                 }
             }
         }
+        
+        //! Set whether this Markov network is able to write into its inputs.
+        void writable_inputs(bool w) {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->writable_inputs(w);
+            }
+        }
 
     private:
         desc_type _desc; //!< Description of the geometries of each successive layer of DMKVs.

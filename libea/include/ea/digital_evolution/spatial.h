@@ -44,7 +44,9 @@ namespace ealib {
             //! Consume resources.
             virtual double consume() = 0;
             virtual void reset() = 0;
-            
+            virtual double level() = 0;
+            virtual const std::string& name() { return _name; }
+
             std::string _name;
         };
         
@@ -54,6 +56,7 @@ namespace ealib {
             void update(double) { }
             double consume() { return 1.0; }
             void reset() { }
+            double level() { return 1.0; }
         };
         
         //! Limited resource type.
@@ -69,14 +72,14 @@ namespace ealib {
             
             double consume() {
                 double r = std::max(0.0, _level*_consume);
-                _level = std::max (0.0, _level-r);
+                _level = std::max(0.0, _level-r);
                 return r;
             }
             
-            void reset() {
-                _level = _initial; 
-            }
+            void reset() {  _level = _initial; }
 
+            double level() { return _level; }
+            
             double _initial; //!< Initial resource level
             double _level; //!< Current resource level.
             double _inflow; //!< Amount of resource flowing in per update.
@@ -117,6 +120,7 @@ namespace ealib {
         typedef std::vector<resource_ptr_type> resource_list_type;
         resource_list_type _resources;
         
+        resource_list_type& resources() { return _resources; }
         
         /*! Type that is contained (and owned) by organisms to uniquely identify
          their location in the environment.

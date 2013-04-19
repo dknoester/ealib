@@ -324,6 +324,7 @@
 		4245003016D26866007827D7 /* abstract_neuron.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_neuron.h; sourceTree = "<group>"; };
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		4245006416D53E22007827D7 /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
+		425A6DC3171EF1790096FD75 /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
 		425E833416602B5A003B6867 /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
 		426064C416D7B70600C5B117 /* convolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convolution.h; sourceTree = "<group>"; };
 		426064C516D7BFC600C5B117 /* test_convolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_convolution.cpp; sourceTree = "<group>"; };
@@ -651,6 +652,7 @@
 			children = (
 				42279CA515D52E2A00DD63BB /* priority.h */,
 				42279CA615D52E2A00DD63BB /* reactions.h */,
+				425A6DC3171EF1790096FD75 /* resources.h */,
 				423CBDCC157D0E450003A644 /* fitness.h */,
 			);
 			path = datafiles;
