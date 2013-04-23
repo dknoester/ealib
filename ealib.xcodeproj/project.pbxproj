@@ -323,6 +323,7 @@
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		4245006416D53E22007827D7 /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
 		425A6DC3171EF1790096FD75 /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
+		425A6E0D1726CDB90096FD75 /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		425E833416602B5A003B6867 /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
 		426064C416D7B70600C5B117 /* convolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convolution.h; sourceTree = "<group>"; };
 		426064C516D7BFC600C5B117 /* test_convolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_convolution.cpp; sourceTree = "<group>"; };
@@ -586,6 +587,7 @@
 				42841D1515B2F35300AB18BE /* adaptive_hfc.h */,
 				423CBDAE157D0E450003A644 /* algorithm.h */,
 				3E1F5FCE160CC5C100406D80 /* alps.h */,
+				425A6E0D1726CDB90096FD75 /* analysis.h */,
 				423CBDAF157D0E450003A644 /* analysis */,
 				423CBDDC157D0E450003A644 /* ancestors.h */,
 				42F4B63215822A7B0075D6EF /* attributes.h */,

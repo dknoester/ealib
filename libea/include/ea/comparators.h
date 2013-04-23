@@ -60,7 +60,7 @@ namespace ealib {
         template <typename MDType, typename EA>
         struct meta_data {
             //! Constructor.
-            meta_data(EA& ea) : _ea(ea) {
+            meta_data() {
             }
 
             //! Returns true if meta_data(x) > meta_data(y), false otherwise.
@@ -68,7 +68,7 @@ namespace ealib {
                 return get<MDType>(*x) < get<MDType>(*y);
             }
             
-            EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
+//            EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
         
         //! Compare individuals based on the natural order of their i'th objective.
