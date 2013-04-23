@@ -68,7 +68,6 @@ namespace ann {
 	void activate(Vertex v, Graph& g, ActivationVisitor& av) {
 		boost::breadth_first_search(g, v, boost::visitor(boost::make_bfs_visitor(av)));
 	}
-
 	
 } //nn
 

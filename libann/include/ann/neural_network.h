@@ -147,7 +147,7 @@ namespace ann {
         
         //! Activate this neural network using a filtering activation visitor.
         template <typename ActivationVisitor>
-        void activate(ActivationVisitor& av, unsigned int n=1) {
+        void activate(ActivationVisitor& av, unsigned int n) {
             vertex_descriptor v=vertex(1);
             for( ; n>0; --n) {
                 ann::activate(v, *this, av);
@@ -155,7 +155,7 @@ namespace ann {
         }
 
         //! Activate this neural network using a filtering activation visitor.
-        void activate(unsigned int n=1) {
+        void activate(unsigned int n) {
             activation_visitor_type av(*this,_filt);
             activate(av,n);
         }

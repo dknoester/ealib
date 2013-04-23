@@ -27,7 +27,7 @@
 
 LIBEA_MD_DECL(ANN_INPUTS_N, "ann.inputs.n", int);
 LIBEA_MD_DECL(ANN_OUTPUTS_N, "ann.outputs.n", int);
-
+LIBEA_MD_DECL(ANN_ACTIVATION_N, "ann.activation.n", int);
 
 namespace ealib {
 
@@ -47,16 +47,37 @@ namespace ealib {
         }
     };
     
-
+    /*! Generates an MLP.
+     */
     struct mlp_ann {
         template <typename EA>
         typename EA::representation_type operator()(EA& ea) {
             // build the network:
             typename EA::representation_type G(get<ANN_INPUTS_N>(ea), get<ANN_OUTPUTS_N>(ea));
             
-            std::size_t layers[] = {3};
+            std::size_t layers[2] = {0,0};
+            layers[0] = ea.rng()(std::max(get<ANN_INPUTS_N>(ea), get<ANN_OUTPUTS_N>(ea)));
             ann::layout::mlp(G, layers, layers+1);
 
+            return G;
+        }
+    };
+
+    /*! Generates an MLP and then randomizes it slightly.
+     */
+    struct random_mlp_ann {
+        template <typename EA>
+        typename EA::representation_type operator()(EA& ea) {
+            typename EA::representation_type G(get<ANN_INPUTS_N>(ea), get<ANN_OUTPUTS_N>(ea));
+            
+            std::size_t layers[2] = {0,0};
+            layers[0] = ea.rng()(std::max(get<ANN_INPUTS_N>(ea), get<ANN_OUTPUTS_N>(ea)));
+            ann::layout::mlp(G, layers, layers+1);
+            
+            mutation::graph_mutator gm;
+            for(int i=0; i<get<GRAPH_EVENTS_N>(ea); ++i) {
+                gm(G,ea);
+            }
             return G;
         }
     };

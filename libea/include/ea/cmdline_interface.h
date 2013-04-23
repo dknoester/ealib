@@ -39,7 +39,7 @@
 #include <ea/events.h>
 #include <ea/meta_data.h>
 #include <ea/checkpoint.h>
-#include <ea/analysis.h>
+#include <ea/analysis/tool.h>
 #include <ea/lifecycle.h>
 
 namespace ealib {

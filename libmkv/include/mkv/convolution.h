@@ -57,6 +57,24 @@ namespace mkv {
         Matrix& _M;
     };
 
+//    /*! Max-pooling sequence iterator.
+//     
+//     ** THIS IS HOW WE HANDLE LAZY EVALUATION OF DEEP NETWORKS. (through iterators)**
+//     */
+//    template <typename Sequence>
+//    struct mp_sequence_iterator {
+//        mp_sequence_iterator(Seqeunce& S, int i, int j, int r) : _S(S), _i(i), _j(j), _r(r) {
+//        }
+//        
+//        typename Sequence::value_type operator[](std::size_t i) {
+//            **warning**
+//            return _M(i/_M.size2(), i % _M.size2());
+//        }
+//        
+//        Sequence& _S;
+//        int _i, _j, _r;
+//    };
+
     /*! Unary matrix function that calls a Markov network on Matrix M.
      */
     template <typename Network>

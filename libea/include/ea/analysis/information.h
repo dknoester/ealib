@@ -22,6 +22,7 @@
 #define _EA_ANALYSIS_INFORMATION_H_
 
 #include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <map>
 #include <ea/algorithm.h>
 
 namespace ealib {

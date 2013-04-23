@@ -277,8 +277,6 @@
 		423CBDB6157D0E450003A644 /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
 		423CBDB7157D0E450003A644 /* modularity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = modularity.h; sourceTree = "<group>"; };
 		423CBDB8157D0E450003A644 /* population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population.h; sourceTree = "<group>"; };
-		423CBDB9157D0E450003A644 /* tool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tool.h; sourceTree = "<group>"; };
-		423CBDBA157D0E450003A644 /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		423CBDC6157D0E450003A644 /* checkpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkpoint.h; sourceTree = "<group>"; };
 		423CBDC7157D0E450003A644 /* cvector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cvector.h; sourceTree = "<group>"; };
 		423CBDC8157D0E450003A644 /* cmdline_interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cmdline_interface.h; sourceTree = "<group>"; };
@@ -588,7 +586,6 @@
 				42841D1515B2F35300AB18BE /* adaptive_hfc.h */,
 				423CBDAE157D0E450003A644 /* algorithm.h */,
 				3E1F5FCE160CC5C100406D80 /* alps.h */,
-				423CBDBA157D0E450003A644 /* analysis.h */,
 				423CBDAF157D0E450003A644 /* analysis */,
 				423CBDDC157D0E450003A644 /* ancestors.h */,
 				42F4B63215822A7B0075D6EF /* attributes.h */,
@@ -642,7 +639,6 @@
 				42EA57941623257C007BCF51 /* meta_population.h */,
 				423CBDB7157D0E450003A644 /* modularity.h */,
 				423CBDB8157D0E450003A644 /* population.h */,
-				423CBDB9157D0E450003A644 /* tool.h */,
 			);
 			path = analysis;
 			sourceTree = "<group>";
