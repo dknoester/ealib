@@ -62,13 +62,11 @@ namespace ealib {
             //! Constructor.
             meta_data() {
             }
-
+            
             //! Returns true if meta_data(x) > meta_data(y), false otherwise.
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
                 return get<MDType>(*x) < get<MDType>(*y);
             }
-            
-//            EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
         
         //! Compare individuals based on the natural order of their i'th objective.
