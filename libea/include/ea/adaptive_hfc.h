@@ -137,7 +137,7 @@ namespace ealib {
                 double next_admission = get<ADMISSION_LEVEL>(ea[i+1]);
                 
                 // sort ascending by fitness:
-                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::fitness<EA>(ea));
+                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::fitness<typename EA::individual_type>(ea[i]));
 
                 // find the first individual w/ fitness >= next_admission, but make sure to leave some behind
                 typename EA::individual_type::population_type::iterator f=ea[i].population().begin();

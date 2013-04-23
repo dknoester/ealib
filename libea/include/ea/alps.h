@@ -64,7 +64,7 @@ namespace ealib {
         virtual void inheritance(typename EA::population_type& parents,
                                  typename EA::individual_type& offspring,
                                  EA& ea) {
-            std::sort(parents.begin(), parents.end(), comparators::meta_data<GM_AGE,MEA>());
+            std::sort(parents.begin(), parents.end(), comparators::meta_data<GM_AGE,EA>());
             put<GM_AGE>(get<GM_AGE>(*parents.back(),-1)+1, offspring);
         }
         
@@ -83,7 +83,7 @@ namespace ealib {
                 double next_admission = get<ADMISSION_AGE>(ea[i+1]);
 
                 // sort ascending by age:
-                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::meta_data<GM_AGE,MEA>());
+                std::sort(ea[i].population().begin(), ea[i].population().end(), comparators::meta_data<GM_AGE,typename MEA::individual_type>());
                 
                 // find the first individual w/ age >= next_admission:
                 typename MEA::individual_type::population_type::iterator f=ea[i].population().begin();
@@ -146,7 +146,7 @@ namespace ealib {
                     
                     for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
                         age(get<GM_AGE>(**j,0.0));
-                        fit(static_cast<double>(ealib::fitness(**j)));
+                        fit(static_cast<double>(ealib::fitness(**j,ea[i])));
                     }
                     
                     _df.write(mean(age))
