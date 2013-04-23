@@ -363,7 +363,7 @@ namespace mkv {
                                                  ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
         deep_markov_network net(desc, rng);
         build_deep_markov_network(net, f, l, ea);
-        net.writable_inputs(get<MKV_WRITABLE>(ea,0));
+        net.writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
         return net;
     }
     
