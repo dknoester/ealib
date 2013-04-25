@@ -47,6 +47,7 @@ namespace ealib {
                 sum += (p1* sin(sqrt(fabs(p2+1.0-p1)))* cos(sqrt(fabs(p1+p2+1.0))) +
                         (p2+1.0)* cos(sqrt(fabs(p2+1.0-p1)))* sin(sqrt(fabs(p1+p2+1.0))));
             }
+            
             return sum;
         }
     };
@@ -146,11 +147,11 @@ namespace ealib {
                 p1 = params[i];
                 p2 = params[i+1];
                 
-                vector<double> f2_args;
+                std::vector<double> f2_args;
                 f2_args.push_back( p1 );
                 f2_args.push_back( p2 );
                 
-                double f2_res = rosenbrock_eval( f2_args );
+                double f2_res = 0; // rosenbrock_eval( f2_args );
                 
                 // Shift/Scale range of F2 to be the domain of F8
                 // Range of F2 ~ [0, 3900]
@@ -158,10 +159,10 @@ namespace ealib {
                 f2_res *= 1024;
                 f2_res -= 512;
                 
-                vector<double> f8_args;
+                std::vector<double> f8_args;
                 f8_args.push_back( f2_res );
                 
-                sum += griewangk_eval( f8_args );
+                //sum += griewangk_eval( f8_args );
             }
             return sum;
         }
