@@ -226,6 +226,9 @@ namespace mkv {
         
         //! Retrieve an iterator to the end of the svm outputs at time t.
         svm_type::iterator end_output() { return _svm.t().begin()+_desc.get<OUT>(); }
+
+        //! Retrieve the value of output i at time t.
+        state_type output(std::size_t i) { return _svm.state_t(i); }
         
         //! Retrieve the threshold for inputs to be considered a "1".
         int& threshold() { return _threshold; }
