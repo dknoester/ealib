@@ -36,7 +36,7 @@ namespace ealib {
     struct abstract_task {
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type; //!< Pointer to resource for this task.
         
-        abstract_task() : _limit(0.0) { }
+        abstract_task() : _limit(0.0), _exclusive(false) { }
         
         //! Returns the name of this task.
         virtual const std::string& name() = 0;
@@ -63,7 +63,33 @@ namespace ealib {
 
         virtual abstract_task* limit(double lim) { _limit = lim; return this; }
         
+        virtual bool is_exclusive() { return _exclusive; }
+
+        virtual abstract_task* exclusive(bool t) { _exclusive = t; return this; }
+
+        //! Returns true if the reaction associated with this task is allowed to occur, false otherwise.
+        bool reaction_occurs(typename EA::individual_type& ind, EA& ea) {
+            bool r=true;
+            
+            // check to see if consumption of the associated resource is limited:
+            if(is_limited() && (ind.phenotype()[name()] >= limit())) {
+                r = false;
+            }
+            
+            // check to see if this task is exclusive:
+            if(r && is_exclusive()) {
+                for(typename EA::individual_type::phenotype_map_type::iterator i=ind.phenotype().begin(); i!=ind.phenotype().end(); ++i) {
+                    if((i->first != name()) && (i->second > 0.0)) {
+                        r = false;
+                    }
+                }
+            }
+
+            return r;
+        }
+        
         double _limit;
+        bool _exclusive;
     };
     
 
@@ -168,10 +194,18 @@ namespace ealib {
                 for(typename tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
                     abstract_task_type& task=(**i);
                     if(task.check(inputs[0], inputs[1], outputs[0])) {
-                        if(!task.is_limited() || (org.phenotype()[task.name()] < task.limit())) {
+                        // ok, the *task* was performed.
+                        ea.events().task(org, *i, ea);
+                        
+                        if(task.reaction_occurs(org,ea)) {
+                            // if the reaction occurs, consume resources:
                             double r = ea.env().reaction(task.consumed_resource(), org, ea);
                             org.phenotype()[task.name()] += r;
                             ea.events().reaction(org, *i, r, ea);
+                        } else {
+                            // if the reaction did not occur, let's still update the
+                            // phenotype to indicate that the task was performed:
+                            org.phenotype()[task.name()] += 0.0;
                         }
                     }
                 }

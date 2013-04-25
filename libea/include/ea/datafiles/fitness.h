@@ -65,7 +65,39 @@ namespace ealib {
             
             datafile _df;
         };
-        
+
+        /*! Datafile for fitness evaluations.
+         */
+        template <typename EA>
+        struct fitness_evaluations : record_statistics_event<EA> {
+            fitness_evaluations(EA& ea) : record_statistics_event<EA>(ea), _df("fitness_evaluations.dat"), _instantaneous(0), _total(0) {
+                _df.add_field("update")
+                .add_field("instantaneous")
+                .add_field("total");
+                _conn2 = ea.events().fitness_evaluated.connect(boost::bind(&fitness_evaluations::on_fitness_evaluation, this, _1, _2));
+            }
+            
+            virtual ~fitness_evaluations() {
+            }
+            
+            virtual void on_fitness_evaluation(typename EA::individual_type& ind, EA& ea) {
+                ++_instantaneous;
+                ++_total;
+            }
+
+            virtual void operator()(EA& ea) {
+                _df.write(ea.current_update())
+                .write(_instantaneous)
+                .write(_total)
+                .endl();
+                _instantaneous = 0;
+            }
+            
+            datafile _df;
+            long _instantaneous;
+            long _total;
+            boost::signals::scoped_connection _conn2;
+        };
 
         /*! Datafile for mean generation, and mean & max fitness.
          */

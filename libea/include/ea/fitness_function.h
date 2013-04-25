@@ -49,6 +49,12 @@ namespace ealib {
     //! Indicates that fitness is stochastic, and requires its own RNG.
     struct stochasticS { };
 
+    //! Indicates that fitness should be maximized.
+    struct maximizeS { };
+    
+    //! Indicates that fitness should be minimized.
+    struct minimizeS { };
+    
     /* While fitnesses are typically thought of as a single real value (e.g., a
      double), treating them as an object has numerous benefits, especially for
      multiobjective problems.  Here is the unary fitness value:
@@ -221,7 +227,6 @@ namespace ealib {
     };
 
     namespace detail {
-
         //! Deterministic initialization (no RNG needed).
         template <typename FitnessFunction, typename EA>
         void initialize_fitness_function(FitnessFunction& ff, deterministicS, EA& ea) {
@@ -237,7 +242,6 @@ namespace ealib {
             typename EA::rng_type rng(get<FF_INITIAL_RNG_SEED>(ea)+1); // +1 to avoid clock
             ff.initialize(rng, ea);
         }
-        
     } // detail
     
     //! Initialize the fitness function; called prior to any fitness evaluation, but after meta-data.
@@ -251,12 +255,14 @@ namespace ealib {
      */
     template <typename T, 
     typename ConstantTag=constantS,
-    typename StabilityTag=deterministicS>
+    typename StabilityTag=deterministicS,
+    typename DirectionTag=maximizeS>
     struct fitness_function {
         typedef T fitness_type;
         typedef typename fitness_type::value_type value_type;
         typedef ConstantTag constant_tag;
         typedef StabilityTag stability_tag;
+        typedef DirectionTag direction_tag;
         
         //! Initialize this (deterministic) fitness function.
         template <typename EA>
@@ -276,7 +282,6 @@ namespace ealib {
     
     
     namespace attr {
-        
         //! Fitness attribute.
         template <typename EA>
         struct fitness_attribute {
@@ -292,7 +297,6 @@ namespace ealib {
             
             fitness_type _v;
         };
-        
     } // attr
     
     namespace detail {
