@@ -175,11 +175,6 @@ namespace mkv {
         typedef std::vector<variant_gate_type> base_type; //!< List of gates.
         typedef ealib::default_rng_type rng_type; //!< Random number generator type.
         
-        //! Constructs a Markov network with a copy of the given random number generator.
-        markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, const rng_type& rng)
-        : _desc(nin, nout, nhid), _svm(nout+nhid), _inputs(nin), _rng(rng), _threshold(0), _writable(0) {
-        }
-        
         //! Constructs a Markov network with the given seed.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
         : _desc(nin, nout, nhid), _svm(nout+nhid), _inputs(nin), _rng(seed), _threshold(0), _writable(0) {
@@ -217,6 +212,9 @@ namespace mkv {
         
         //! Clear the network.
         void clear() { _svm.clear(); _inputs.clear(); }
+        
+        //! Reset the network.
+        void reset(int seed) { clear(); _rng.reset(seed); }
         
         //! Rotate t and t-1 state vectors.
         void rotate() { _svm.rotate(); _inputs.rotate(); }

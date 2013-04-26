@@ -123,6 +123,12 @@ namespace ealib {
 			return uniform_integer_rng(0,std::numeric_limits<argument_type>::max())();
 		}
 
+        /*! Returns a random number in the range [1,maxint-1), suitable for generation of random number seeds.
+         */
+        result_type seed() {
+            return 1 + uniform_integer_rng(0,std::numeric_limits<argument_type>::max()-1)();
+		}
+
 		/*! Test a probability.
 		 
 		 Returns true if P < prob, false if P >= prob.  Prob must be in the range [0,1].

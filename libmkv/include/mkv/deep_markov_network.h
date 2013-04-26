@@ -47,17 +47,10 @@ namespace mkv {
         typedef std::vector<markov_network> base_type; //!< Base type container for Deep Markov Networks.
         typedef ealib::default_rng_type rng_type; //!< Random number generator type.
 
-        //! Constructs a Deep Markov network with a copy of the given random number generator.
-        deep_markov_network(const desc_type& desc, const rng_type& rng) : _desc(desc), _rng(rng) {
-            for(desc_type::iterator i=_desc.begin(); i!=_desc.end(); ++i) {
-                push_back(markov_network(*i, _rng()));
-            }
-        }
-        
         //! Constructs a Deep Markov network with a given seed.
         deep_markov_network(const desc_type& desc, unsigned int seed=0) : _desc(desc), _rng(seed) {
             for(desc_type::iterator i=_desc.begin(); i!=_desc.end(); ++i) {
-                push_back(markov_network(*i, _rng()));
+                push_back(markov_network(*i, _rng.seed()));
             }
         }
         
@@ -97,6 +90,14 @@ namespace mkv {
         //! Clear the network.
         void clear() {
             std::for_each(begin(), end(), bl::bind(&markov_network::clear, bl::_1));
+        }
+        
+        //! Reset the network.
+        void reset(int seed) {
+            _rng.reset(seed);
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->reset(_rng.seed());
+            }
         }
         
         //! Rotate t and t-1 state vectors.
