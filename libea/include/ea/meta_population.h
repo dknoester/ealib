@@ -104,7 +104,11 @@ namespace ealib {
             _configurator.configure(*this);
         }
  
-        //! Generates the initial populations.
+        /*! Generates the initial population.
+         
+         In a meta-population EA, we define the "initial population" as the individuals
+         in each subpopulation, not the subpopulations themselves.
+         */
         void initial_population() {
             for(iterator i=begin(); i!=end(); ++i) {
                 i->initial_population();
@@ -112,8 +116,12 @@ namespace ealib {
             _configurator.initial_population(*this);
         }
 
-        //! Initialize this and all embedded EAs.
+        /*! Construct and initialize the entire population structure, including the
+         meta-population and all subpopulations.
+         */
         void initialize() {
+            // if this is a new EA, population size is 0.  if we came from a checkpoint,
+            // then don't build more subpopulations!
             for(std::size_t i=_population.size(); i<get<META_POPULATION_SIZE>(*this); ++i) {
                 individual_ptr_type p(new individual_type());
                 p->configure();
@@ -122,7 +130,7 @@ namespace ealib {
                 p->rng().reset(get<RNG_SEED>(*p));
                 _population.push_back(p);
             }
-            
+            // initialize everything:
             for(iterator i=begin(); i!=end(); ++i) {
                 i->initialize();
             }

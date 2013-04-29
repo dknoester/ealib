@@ -355,19 +355,6 @@ namespace mkv {
         }
     }
     
-    
-    /*! Convenience method to build a Deep Markov Network.
-     */
-    template <typename ForwardIterator, typename RNG, typename EA>
-    deep_markov_network make_deep_markov_network(const deep_markov_network::desc_type& desc,
-                                                 ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
-        deep_markov_network net(desc, rng);
-        build_deep_markov_network(net, f, l, ea);
-        net.writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
-        return net;
-    }
-    
-    
     /*! Build a Markov network from the genome [f,l), with the given meta data.
      */
     template <typename ForwardIterator, typename MetaData>
@@ -419,10 +406,10 @@ namespace mkv {
     
     /*! Convenience method to build a Markov Network.
      */
-    template <typename ForwardIterator, typename RNG, typename EA>
+    template <typename ForwardIterator, typename EA>
     markov_network make_markov_network(const markov_network::desc_type& desc,
-                                       ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
-        markov_network net(desc, rng);
+                                       ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
+        markov_network net(desc, seed);
         build_markov_network(net, f, l, ea);
         net.writable_inputs(get<MKV_WRITABLE>(ea,0));
         return net;
@@ -430,39 +417,26 @@ namespace mkv {
     
     /*! Convenience method to build a Markov Network.
      */
-    template <typename ForwardIterator, typename RNG, typename EA>
-    markov_network make_markov_network(ForwardIterator f, ForwardIterator l, RNG& rng, EA& ea) {
+    template <typename ForwardIterator, typename EA>
+    markov_network make_markov_network(ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
         markov_network::desc_type desc;
         parse_desc(ealib::get<MKV_DESC>(ea), desc);
-        markov_network net(desc, rng);
+        markov_network net(desc, seed);
         build_markov_network(net, f, l, ea);
         net.writable_inputs(get<MKV_WRITABLE>(ea,0));
         return net;
     }
     
-    //    /*! Adapts the given mkv tool to a meta_population.
-    //     */
-    //    template <typename EA>
-    //    struct mkv_meta_population_reduced_graph : public ealib::analysis::unary_function<EA> {
-    //        static const char* name() { return "mkv_meta_population_reduced_graph"; }
-    //
-    //        virtual void operator()(EA& ea) {
-    //            using namespace ealib;
-    //            using namespace ealib::analysis;
-    //
-    //            int count=0;
-    //            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-    //                typename EA::individual_type::individual_type& ind = analysis::find_dominant(*i);
-    //                mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng(), ea);
-    //
-    //                datafile df("reduced_sp" + boost::lexical_cast<std::string>(count++) + ".dot");
-    //                std::ostringstream title;
-    //                title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
-    //
-    //                mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
-    //            }
-    //        }
-    //    };
+    /*! Convenience method to build a Deep Markov Network.
+     */
+    template <typename ForwardIterator, typename EA>
+    deep_markov_network make_deep_markov_network(const deep_markov_network::desc_type& desc,
+                                                 ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
+        deep_markov_network net(desc, seed);
+        build_deep_markov_network(net, f, l, ea);
+        net.writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
+        return net;
+    }
     
     /*! Save the detailed graph of the dominant individual in graphviz format.
      */
@@ -480,9 +454,9 @@ namespace mkv {
             std::ostringstream title;
             title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
             mkv::write_graphviz(title.str(), df, mkv::as_genetic_graph(net));
-        }
+            }
     };
-            
+    
     /*! Save the dominant individual in graphviz format.
      */
     template <typename EA>
@@ -520,47 +494,6 @@ namespace mkv {
             mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
         }
     };
-            
-            /*! Datafile for markov network statistics.
-             */
-            //    template <typename EA>
-            //    struct mkv_meta_population_datafile : ealib::record_statistics_event<EA> {
-            //        mkv_meta_population_datafile(EA& ea) : ealib::record_statistics_event<EA>(ea), _df("mkv_meta_population_datafile.dat") {
-            //            _df.add_field("update")
-            //            .add_field("mean_gates")
-            //            .add_field("max_gates")
-            //            .add_field("mean_genome_size");
-            //        }
-            //
-            //        virtual ~mkv_meta_population_datafile() {
-            //        }
-            //
-            //        virtual void operator()(EA& ea) {
-            //            using namespace boost::accumulators;
-            //            using namespace ealib;
-            //            accumulator_set<double, stats<tag::mean,tag::max> > gates;
-            //            accumulator_set<double, stats<tag::mean> > genes;
-            //
-            //            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-            //                for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
-            //                    mkv::markov_network net(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea), ea.rng());
-            //                    mkv::build_markov_network(net, j->repr().begin(), j->repr().end(), ea);
-            //
-            //                    gates(net.ngates());
-            //                    genes(j->repr().size());
-            //                }
-            //            }
-            //
-            //            _df.write(ea.current_update())
-            //            .write(mean(gates))
-            //            .write(max(gates))
-            //            .write(mean(genes))
-            //            .endl();
-            //        }
-            //
-            //        ealib::datafile _df;
-            //    };
-            
-            } // mkv
+} // mkv
             
 #endif
