@@ -104,23 +104,25 @@ namespace ealib {
             _configurator.configure(*this);
         }
  
-        //! Generates the initial subpopulations, initializes them, and generates *their* populations.
+        //! Generates the initial populations.
         void initial_population() {
-            for(unsigned int i=0; i<get<META_POPULATION_SIZE>(*this); ++i) {
-                individual_ptr_type p(new individual_type());
-                p->configure();
-                p->md() += md();
-                put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
-                p->rng().reset(get<RNG_SEED>(*p));
-                p->initialize();
-                p->initial_population();
-                _population.push_back(p);
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->initial_population();
             }
             _configurator.initial_population(*this);
         }
 
         //! Initialize this and all embedded EAs.
         void initialize() {
+            for(std::size_t i=_population.size(); i<get<META_POPULATION_SIZE>(*this); ++i) {
+                individual_ptr_type p(new individual_type());
+                p->configure();
+                p->md() += md();
+                put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
+                p->rng().reset(get<RNG_SEED>(*p));
+                _population.push_back(p);
+            }
+            
             for(iterator i=begin(); i!=end(); ++i) {
                 i->initialize();
             }

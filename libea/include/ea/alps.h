@@ -69,7 +69,7 @@ namespace ealib {
                     }
                     case (1): {
                         int a = (fib1 + fib2) * get<GAP_SIZE>(ea[i],1);
-                        swap(fib1, fib2);
+                        std::swap(fib1, fib2);
                         fib2 += fib1;
                         put<ADMISSION_AGE>(a, ea[i]);
                     }

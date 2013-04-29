@@ -158,6 +158,49 @@ namespace ealib {
             datafile _mp;
         };
         
+        /*! Datafile for meta pop fitness evaluations.
+         */
+        
+                
+        template <typename EA>
+        struct meta_population_fitness_evaluations : record_statistics_event<EA> {
+            meta_population_fitness_evaluations(EA& ea)
+            : record_statistics_event<EA>(ea)
+            , _mp("meta_population_fitness_evaluations.dat"), _instantaneous(0), _total(0) {
+                
+                _conn2.resize(get<META_POPULATION_SIZE>(ea));
+                
+                for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                    _conn2[i] = ea[i].events().fitness_evaluated.connect(boost::bind(&meta_population_fitness_evaluations::on_fitness_evaluation, this, _1, _2));
+                }
+                                
+                _mp.add_field("update")
+                .add_field("instantaneous")
+                .add_field("total");
+            }
+            
+            virtual ~meta_population_fitness_evaluations() {
+            }
+            
+            virtual void on_fitness_evaluation(typename EA::individual_type::individual_type& ind, typename EA::individual_type& ea) {
+                ++_instantaneous;
+                ++_total;
+            }
+            
+            virtual void operator()(EA& ea) {
+                _mp.write(ea.current_update())
+                .write(_instantaneous)
+                .write(_total)
+                .endl();
+                _instantaneous = 0;
+            }
+
+            std::vector<boost::signals::scoped_connection> _conn2;
+            datafile _mp;
+            long _instantaneous;
+            long _total;
+        };
+        
     } // datafiles
 } // ea
 
