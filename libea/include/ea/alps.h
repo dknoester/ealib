@@ -25,6 +25,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/min.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
 #include <vector>
 #include <limits>
@@ -144,6 +145,7 @@ namespace ealib {
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                 std::string prefix = "sp" + boost::lexical_cast<std::string>(i);
                 _df.add_field(prefix + "_mean_age")
+                .add_field(prefix + "_min_fitness")
                 .add_field(prefix + "_mean_fitness")
                 .add_field(prefix + "_max_fitness");
             }
@@ -159,10 +161,10 @@ namespace ealib {
             
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                 if(ea[i].population().empty()) {
-                    _df.write(0.0).write(0.0).write(0.0);
+                    _df.write(0.0).write(0.0).write(0.0).write(0.0);
                 } else {
                     accumulator_set<double, stats<tag::mean> > age;
-                    accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                    accumulator_set<double, stats<tag::mean, tag::min, tag::max> > fit;
                     
                     for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
                         age(get<GM_AGE>(**j,0.0));
@@ -170,6 +172,7 @@ namespace ealib {
                     }
                     
                     _df.write(mean(age))
+                    .write(min(fit))
                     .write(mean(fit))
                     .write(max(fit));
                 }

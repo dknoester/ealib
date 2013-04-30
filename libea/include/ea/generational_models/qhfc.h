@@ -24,6 +24,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/min.hpp>
 #include <algorithm>
 #include <ea/datafile.h>
 #include <ea/meta_data.h>
@@ -279,6 +280,7 @@ namespace ealib {
                 for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                     _fitness.add_field("max_fitness_sp" + boost::lexical_cast<std::string>(i));
                     _fitness.add_field("mean_fitness_sp" + boost::lexical_cast<std::string>(i));
+                    _fitness.add_field("min_fitness_sp" + boost::lexical_cast<std::string>(i));
                     _admission.add_field("admission_level_sp" + boost::lexical_cast<std::string>(i));
                     _pop_size.add_field("pop_size_sp" + boost::lexical_cast<std::string>(i));
                 }
@@ -295,13 +297,13 @@ namespace ealib {
                 _pop_size.write(ea.current_update());
                 
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                    accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                    accumulator_set<double, stats<tag::mean, tag::min, tag::max> > fit;
                     
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         fit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
                     
-                    _fitness.write(max(fit)).write(mean(fit));
+                    _fitness.write(max(fit)).write(mean(fit).write(min(fit)));
                     _admission.write(get<QHFC_ADMISSION_LEVEL>(*i,0.0));
                     _pop_size.write(i->size());
                 }

@@ -25,6 +25,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/min.hpp>
 #include <ea/datafile.h>
 #include <ea/attributes.h>
 
@@ -110,12 +111,14 @@ namespace ealib {
                 _df.add_field("update");
                 for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                     _df.add_field("mean_generation_sp" + boost::lexical_cast<std::string>(i))
+                    .add_field("min_fitness_sp" + boost::lexical_cast<std::string>(i))
                     .add_field("mean_fitness_sp" + boost::lexical_cast<std::string>(i))
                     .add_field("max_fitness_sp" + boost::lexical_cast<std::string>(i));
                 }
 
                 _mp.add_field("update")
                 .add_field("mean_generation")
+                .add_field("min_fitness")
                 .add_field("mean_fitness")
                 .add_field("max_fitness");
             }
@@ -127,12 +130,12 @@ namespace ealib {
                 using namespace boost::accumulators;
                 
                 accumulator_set<double, stats<tag::mean> > mpgen;
-                accumulator_set<double, stats<tag::mean, tag::max> > mpfit;
+                accumulator_set<double, stats<tag::min, tag::mean, tag::max> > mpfit;
 
                 _df.write(ea.current_update());
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                     accumulator_set<double, stats<tag::mean> > gen;
-                    accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                    accumulator_set<double, stats<tag::min, tag::mean, tag::max> > fit;
 
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         gen(j->generation());
@@ -142,6 +145,7 @@ namespace ealib {
                     }
                     
                     _df.write(mean(gen))
+                    .write(min(fit))
                     .write(mean(fit))
                     .write(max(fit));
                 }                
@@ -149,6 +153,7 @@ namespace ealib {
 
                 _mp.write(ea.current_update())
                 .write(mean(mpgen))
+                .write(min(mpfit))
                 .write(mean(mpfit))
                 .write(max(mpfit))
                 .endl();
