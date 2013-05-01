@@ -303,7 +303,7 @@ namespace ealib {
                         fit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
                     
-                    _fitness.write(max(fit)).write(mean(fit).write(min(fit)));
+                    _fitness.write(max(fit)).write(mean(fit)).write(min(fit));
                     _admission.write(get<QHFC_ADMISSION_LEVEL>(*i,0.0));
                     _pop_size.write(i->size());
                 }
