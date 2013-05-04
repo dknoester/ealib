@@ -1,19 +1,19 @@
-/* algorithm.h 
- * 
+/* algorithm.h
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester, Randal S. Olson.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,12 +21,77 @@
 #ifndef _EA_ALGORITHM_H_
 #define _EA_ALGORITHM_H_
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <numeric>
-#include <boost/lexical_cast.hpp>
+#include <functional>
+#include <cmath>
+
 
 namespace ealib {
 	namespace algorithm {
+        
+        /*! Calculates the cumulative product of the range [f,l).
+         */
+        template <typename ForwardIterator, typename OutputIterator>
+        void cumprod(ForwardIterator f, ForwardIterator l, OutputIterator o) {
+            std::partial_sum(f, l, o, std::multiplies<typename ForwardIterator::value_type>());
+        }
+        
+        namespace detail {
+            //! Recursively calculate the exponential mean of [f,l).
+            template <typename ForwardIterator>
+            double exp_mean(ForwardIterator f, ForwardIterator l, double alpha) {
+                if(f==l) {
+                    return 0.0;
+                }
+                return alpha * (*f) + (1.0-alpha) * detail::exp_mean(f+1,l,alpha);
+            }
+        }
+        
+        /*! Calculates the exponential mean S of Y=[f,l), where f is weighted most
+         heavily (i.e., f is the most recent value).
+         
+         We use the following formula:
+         S_t = alpha * Y_{t} + (1.0-alpha) * S_{t-1}
+         to calculate the exponential mean, where S_t is the mean, Y_t is the sample
+         value, and alpha is the decay rate.
+         
+         This particular version calculates alpha based on n, such that
+         alpha=2/(n+1).  For n>5, this works out to a half-life of ~n/2.8854.
+         We set S_1 = Y_1, that is, the first value of the series is taken to be
+         the first sample value.
+         */
+        template <typename ForwardIterator>
+        double exp_mean(ForwardIterator f, ForwardIterator l, std::size_t n) {
+            double alpha = 2.0 / (static_cast<double>(n)+1.0);
+            return detail::exp_mean(f,l,alpha);
+        }
+        
+        //! Calculates the exponential mean with a given alpha (see above).
+        template <typename ForwardIterator>
+        double exp_mean(ForwardIterator f, ForwardIterator l, double alpha) {
+            return detail::exp_mean(f,l,alpha);
+        }
+        
+        // this fragment can be used to set S1 to the mean of the first n samples..
+        //            using namespace boost::accumulators;
+        //            typedef accumulator_set<double, stats<tag::mean> > acc_type;
+        //            acc_type sacc;
+        //            for(std::size_t i=0; (i<n) && (f!=l); ++i,++f) {
+        //                sacc(*f);
+        //            }
+        //
+        //            Y[0] = mean(sacc);
+        //            double s=0.0;
+        //            for(std::size_t i=0; i<Y.size(); ++i) {
+        //                s += Y[i] * A[i];
+        //            }
+        //            return s;
+        //        }
         
         template <typename Sequence, typename RNG>
         void random_split(Sequence& x, Sequence& y, std::size_t n, RNG& rng) {
@@ -123,7 +188,7 @@ namespace ealib {
         ForwardIterator normalize(ForwardIterator f, ForwardIterator l, double v) {
             return normalize(f, l, f, v);
         }
-
+        
         template <typename T>
         T clip(T value, T min, T max) {
             return std::max(min, std::min(value, max));
@@ -253,7 +318,7 @@ namespace ealib {
                 }
             }
         }
-
+        
         /*! Write the indices of "on" outputs to an output iterator.
          */
         template <typename ForwardIterator, typename OutputIterator>
@@ -264,7 +329,7 @@ namespace ealib {
                 }
             }
         }
-
+        
         /*! Convert the bits in range [f,l) to an integer.
          */
         template <typename ForwardIterator>

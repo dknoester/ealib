@@ -29,7 +29,6 @@
 #include <ea/evolutionary_algorithm.h>
 #include <ea/representations/numeric_vector.h>
 #include <ea/fitness_functions/all_ones.h>
-#include <ea/checkpoint.h>
 
 using namespace ealib;
 

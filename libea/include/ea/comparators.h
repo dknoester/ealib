@@ -33,19 +33,9 @@ namespace ealib {
             fitness(EA& ea) : _ea(ea) {
             }
             
-            //! Called for ascending order of maximizing fitness function.
-            bool compare(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y, ealib::maximizeS) {
-                return ealib::fitness(*x,_ea) < ealib::fitness(*y,_ea);
-            }
-            
-            //! Called for ascending order of minimizing fitness function.
-            bool compare(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y, ealib::minimizeS) {
-                return ealib::fitness(*x,_ea) > ealib::fitness(*y,_ea);
-            }
-            
             //! Returns true if fitness(x) < fitness(y), false otherwise.
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
-                return compare(x, y, typename EA::fitness_function_type::direction_tag());
+                return ealib::fitness(*x,_ea) < ealib::fitness(*y,_ea);
             }
 
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
@@ -58,19 +48,9 @@ namespace ealib {
             fitness_desc(EA& ea) : _ea(ea) {
             }            
             
-            //! Called for ascending order of maximizing fitness function.
-            bool compare(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y, ealib::maximizeS) {
-                return ealib::fitness(*x,_ea) > ealib::fitness(*y,_ea);
-            }
-            
-            //! Called for ascending order of minimizing fitness function.
-            bool compare(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y, ealib::minimizeS) {
-                return ealib::fitness(*x,_ea) < ealib::fitness(*y,_ea);
-            }
-            
             //! Returns true if fitness(x) < fitness(y), false otherwise.
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
-                return compare(x, y, typename EA::fitness_function_type::direction_tag());
+                return ealib::fitness(*x,_ea) > ealib::fitness(*y,_ea);
             }
 
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.

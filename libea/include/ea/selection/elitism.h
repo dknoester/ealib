@@ -57,10 +57,12 @@ namespace ealib {
                 _embedded(src, dst, n-e, ea);
                 
                 // now, append the e most-fit individuals:
-                std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
-                typename Population::reverse_iterator rl=src.rbegin();
-                std::advance(rl, e);
-                dst.insert(dst.end(), src.rbegin(), rl);
+                if(e > 0) {
+                    std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
+                    typename Population::reverse_iterator rl=src.rbegin();
+                    std::advance(rl, e);
+                    dst.insert(dst.end(), src.rbegin(), rl);
+                }
             };
 
 			embedded_selection_type _embedded; //!< Underlying selection strategy.

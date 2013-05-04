@@ -77,7 +77,7 @@ namespace ealib {
         struct asexual {
             std::size_t capacity() const { return 1; }
             
-            //! Asexual reproduction (copies a single parent).
+            //! Asexual reproduction (copies a single parent's representation).
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
             offspring.insert(offspring.end(), 

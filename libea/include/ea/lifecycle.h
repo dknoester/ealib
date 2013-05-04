@@ -24,11 +24,14 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
-#include <ea/checkpoint.h>
 
 
 namespace ealib {

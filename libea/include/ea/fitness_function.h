@@ -62,10 +62,11 @@ namespace ealib {
     
     /*! Unary fitness value.
      */
-    template <typename T>
+    template <typename T,
+    typename DirectionTag=maximizeS>
     struct unary_fitness {
-        typedef unary_fitness<T> this_type;
         typedef T value_type;
+        typedef DirectionTag direction_tag;
 
         //! Constructor.
         unary_fitness() : _f(null()) {
@@ -91,13 +92,8 @@ namespace ealib {
             return *this;
         }
 
-        //! Operator <
-        bool operator<(const unary_fitness& that) {
-            return _f < that._f;
-        }
-
-        //! Operator ==
-        bool operator==(const unary_fitness& that) {
+        //! Operator==
+        bool operator==(const unary_fitness& that) const {
             if(is_null()) {
                 return that.is_null();
             } else {
@@ -105,8 +101,8 @@ namespace ealib {
             }
         }
 
-        //! Operator == for doubles.
-        bool operator==(const value_type v) {
+        //! Operator==
+        bool operator==(const value_type v) const {
             if(is_null()) {
                 return std::isnan(v);
             } else {
@@ -114,6 +110,72 @@ namespace ealib {
             }
         }
 
+        /*! Operator <.
+         
+         The semantics of comparisons depend on whether fitness is being maximized
+         or minimized.  Let A and B be fitnesses.  Then, if A<B, A has "better"
+         fitness than B.  If we're maximizing, then A has numerically larger fitness,
+         and vice versa.
+         */
+        bool operator<(const unary_fitness& that) const {
+            return lt(that._f, direction_tag());
+        }
+        
+        //! Operator>; see above.
+        bool operator>(const unary_fitness& that) const {
+            return gt(that._f,direction_tag());
+        }
+
+        //! Operator<=; see above.
+        bool operator<=(const unary_fitness& that) const {
+            return operator<(that) || operator==(that);
+        }
+        
+        //! Operator>=; see above.
+        bool operator>=(const unary_fitness& that) const {
+            return operator>(that) || operator==(that);
+        }
+
+        //! Operator<; see above.
+        bool operator<(const value_type f) const {
+            return lt(f, direction_tag());
+        }
+        
+        //! Operator>; see above.
+        bool operator>(const value_type f) const {
+            return gt(f,direction_tag());
+        }
+        
+        //! Operator<=; see above.
+        bool operator<=(const value_type f) const {
+            return operator<(f) || operator==(f);
+        }
+        
+        //! Operator>=; see above.
+        bool operator>=(const value_type f) const {
+            return operator>(f) || operator==(f);
+        }
+
+        //! Returns true if this maximized fitness is greater than that fitness.
+        bool gt(const value_type f, maximizeS) const {
+            return _f > f;
+        }
+        
+        //! Returns true if this minimized fitness is greater than that fitness.
+        bool gt(const value_type f, minimizeS) const {
+            return _f < f;
+        }
+
+        //! Returns true if this maximized fitness is less than that fitness.
+        bool lt(const value_type f, maximizeS) const {
+            return _f < f;
+        }
+        
+        //! Returns true if this minimized fitness is less than that fitness.
+        bool lt(const value_type f, minimizeS) const {
+            return _f > f;
+        }
+        
         //! Value-type cast operator.
         operator value_type() { return _f; }
 
@@ -169,11 +231,11 @@ namespace ealib {
     
     /*! Multivalued fitness object.
      */
-    template <typename T>
+    template <typename T,
+    typename DirectionTag=maximizeS>
     struct multivalued_fitness {
-        typedef multivalued_fitness<T> this_type;
-        typedef T objective_type;
-        typedef std::vector<T> value_type;
+        typedef unary_fitness<T,DirectionTag> objective_type;
+        typedef std::vector<objective_type> value_type;
         
         //! Constructor.
         multivalued_fitness() : _f(null()) {
@@ -255,14 +317,12 @@ namespace ealib {
      */
     template <typename T, 
     typename ConstantTag=constantS,
-    typename StabilityTag=deterministicS,
-    typename DirectionTag=maximizeS>
+    typename StabilityTag=deterministicS>
     struct fitness_function {
         typedef T fitness_type;
         typedef typename fitness_type::value_type value_type;
         typedef ConstantTag constant_tag;
         typedef StabilityTag stability_tag;
-        typedef DirectionTag direction_tag;
         
         //! Initialize this (deterministic) fitness function.
         template <typename EA>

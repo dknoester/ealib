@@ -81,6 +81,12 @@ namespace ealib {
 
         //! Compare iterators for equality.
         bool equal(const this_type& that) const {
+            // if this iterator points to an empty sequence, ignore the loop count:
+            if(std::distance(_begin,_end) == 0) {
+                return (_begin == that._begin)
+                && (_end == that._end);
+            }
+            
             return ((_begin == that._begin)
                     && (_end == that._end)
                     && (_cur == that._cur)

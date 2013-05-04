@@ -1,19 +1,19 @@
 /* line_of_descent.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -34,11 +34,12 @@
 
 #include <ea/datafile.h>
 #include <ea/events.h>
+#include <ea/lifecycle.h>
 #include <ea/individual.h>
 
 
 namespace ealib {
-
+    
     /*! Wrapper class for individuals to enable line of descent (lod) tracking.
      
      A note about construction and assignment: We specifically *do not* copy the
@@ -53,24 +54,25 @@ namespace ealib {
         typedef typename EA::individual_ptr_type individual_ptr_type;
         typedef typename EA::representation_type representation_type;
         typedef std::set<individual_ptr_type> parent_set_type;
-
+        
         //! Constructor.
         individual_lod() : base_type() {
         }
-
+        
         //! Constructor.
         individual_lod(const representation_type& r) : base_type(r) {
         }
-
+        
         //! Copy constructor.
         individual_lod(const individual_lod& that) : base_type(that) {
+            _lod_parents = that._lod_parents;
         }
         
         //! Assignment operator.
         individual_lod& operator=(const individual_lod& that) {
             if(this != & that) {
                 base_type::operator=(that);
-                _lod_parents.clear();
+                _lod_parents = that._lod_parents;
             }
             return *this;
         }
@@ -91,7 +93,7 @@ namespace ealib {
     protected:
         parent_set_type _lod_parents; //!< This individual's set of parents.
     };
-
+    
     template <typename EA>
 	class population_lod : public EA {
     public:
@@ -131,31 +133,6 @@ namespace ealib {
     protected:
         parent_set_type _lod_parents; //!< This individual's set of parents.
     };
-
-    
-    /*! Chains together offspring and their parents, called for every inheritance event.
-     */
-    template <typename EA>
-    struct lod_event : inheritance_event<EA> {
-        
-        //! Constructor.
-        lod_event(EA& ea) : inheritance_event<EA>(ea) {
-        }
-        
-        //! Destructor.
-        virtual ~lod_event() {
-        }
-        
-        //! Called for every inheritance event.
-        virtual void operator()(typename EA::population_type& parents,
-                                typename EA::individual_type& offspring,
-                                EA& ea) {
-            for(typename EA::population_type::iterator i=parents.begin(); i!=parents.end(); ++i) {
-                offspring.lod_parents().insert(*i);
-            }
-        }
-    };
-
     
     /*! Contains line of descent information.
      
@@ -187,11 +164,11 @@ namespace ealib {
         //! Returns the lineage.
         lineage_type& lineage() { return _lod; }
         
-        iterator begin() { return _lod.begin(); }        
+        iterator begin() { return _lod.begin(); }
         iterator end() { return _lod.end(); }
-        reverse_iterator rbegin() { return _lod.rbegin(); }        
+        reverse_iterator rbegin() { return _lod.rbegin(); }
         reverse_iterator rend() { return _lod.rend(); }
-
+        
         //! Returns the size (number of genomes) on the current lineage.
         std::size_t size() const { return _lod.size(); }
         
@@ -223,13 +200,13 @@ namespace ealib {
                 }
             }
         }
-
+        
         //! Remove all redundant genomes from this lineage, preserving the oldest.
         void runiq() {
             if(_lod.size()>1) {
                 typename lineage_type::iterator back=_lod.end(); --back;
                 typename lineage_type::iterator i=back; --i;
-
+                
                 for( ; i!=_lod.begin(); --i) { // stopping at begin is ok, as that's the ancestor
                     if((*i)->repr() == (*back)->repr()) {
                         _lod.erase(back);
@@ -238,7 +215,7 @@ namespace ealib {
                 }
             }
         }
-
+        
     protected:
         /*! Calculate the lineage of the given individual.
          
@@ -281,18 +258,18 @@ namespace ealib {
                 } else if(parent.use_count() > offspring.use_count()) {
                     m = parent;
                 }
-
+                
                 offspring = parent;
-            }            
+            }
             
             return m;
         }
-
+        
         lineage_type _lod; //!< The current line of descent.
         
     private:
         friend class boost::serialization::access;
-
+        
         template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
             std::size_t s = _lod.size();
@@ -313,47 +290,112 @@ namespace ealib {
                 _lod.push_back(p);
             }
 		}
-
+        
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
     
-
-    /*! Line-of-descent datafile.
-     
-     Saves the lod at the end of every epoch.
-     */     
+    /*! Chains together offspring and their parents, called for every inheritance event.
+     */
     template <typename EA>
-    struct mrca_lineage_datafile : end_of_epoch_event<EA> {
-       
+    struct lod_event : inheritance_event<EA> {
         //! Constructor.
-        mrca_lineage_datafile(EA& ea) : end_of_epoch_event<EA>(ea), _lod_event(ea) {
+        lod_event(EA& ea) : inheritance_event<EA>(ea) {
         }
         
         //! Destructor.
-        virtual ~mrca_lineage_datafile() {
+        virtual ~lod_event() {
         }
         
-        //! Called at the end of every epoch; saves the current lod.
-        virtual void operator()(EA& ea) {
-            line_of_descent<EA> lod;
-            lod.mrca_lineage(ea);
-
-            datafile df("lod", ea.current_update(), ".xml");
-            boost::archive::xml_oarchive oa(df);            
-            oa << BOOST_SERIALIZATION_NVP(lod);
+        //! Called for every inheritance event.
+        virtual void operator()(typename EA::population_type& parents,
+                                typename EA::individual_type& offspring,
+                                EA& ea) {
+            for(typename EA::population_type::iterator i=parents.begin(); i!=parents.end(); ++i) {
+                offspring.lod_parents().insert(*i);
+            }
         }
-
-        lod_event<EA> _lod_event;
     };
-
-
+    
+    /*! Meta-population enabled LOD event.
+     */
+    template <typename EA>
+    struct meta_population_lod_event : event {
+        typedef lod_event<typename EA::individual_type> event_type;
+        typedef boost::shared_ptr<event_type> ptr_type;
+        typedef std::vector<ptr_type> event_list_type;
+        
+        //! Constructor.
+        meta_population_lod_event(EA& ea) {
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                ptr_type p(new event_type(*i));
+                _events.push_back(p);
+            }
+        }
+        
+        event_list_type _events;
+    };
+    
+    namespace datafiles {
+        
+        //! Line-of-descent from the default ancestor to the current MRCA.
+        template <typename EA>
+        struct mrca_lineage : end_of_epoch_event<EA> {
+            //! Constructor.
+            mrca_lineage(EA& ea) : end_of_epoch_event<EA>(ea), _lod_event(ea) {
+            }
+            
+            //! Destructor.
+            virtual ~mrca_lineage() {
+            }
+            
+            //! Called at the end of every epoch; saves the current lod.
+            virtual void operator()(EA& ea) {
+                line_of_descent<EA> lod;
+                lod.mrca_lineage(ea);
+                
+                datafile df("lod", ea.current_update(), ".xml");
+                boost::archive::xml_oarchive oa(df);
+                oa << BOOST_SERIALIZATION_NVP(lod);
+            }
+            
+            lod_event<EA> _lod_event;
+        };
+        
+        /*! Meta-population enabled MRCA lineage datafile.
+         */
+        template <typename EA>
+        struct meta_population_mrca_lineage : end_of_epoch_event<EA> {
+            meta_population_mrca_lineage(EA& ea) : end_of_epoch_event<EA>(ea), _lod_event(ea) {
+            }
+            
+            //! Destructor.
+            virtual ~meta_population_mrca_lineage() {
+            }
+            
+            //! Called at the end of every epoch; saves the current lod.
+            virtual void operator()(EA& ea) {
+                std::size_t count=0;
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i, ++count) {
+                    line_of_descent<typename EA::individual_type> lod;
+                    lod.mrca_lineage(*i);
+                    
+                    datafile df("sp" + boost::lexical_cast<std::string>(count) + "_lod", ea.current_update(), ".xml");
+                    boost::archive::xml_oarchive oa(df);
+                    oa << BOOST_SERIALIZATION_NVP(lod);
+                }
+            }
+            
+            meta_population_lod_event<EA> _lod_event;
+        };
+    } // datafiles
+    
     LIBEA_MD_DECL(FIXATION_TIME, "individual.fixation_time", long);
     
     /*! Tracks the update at which individuals along the line of descent have fixed
      in the population.
      
      Requires the that lod tracking be enabled.
-     */     
+     */
     template <typename EA>
     struct track_fixation_events : end_of_update_event<EA> {
         
@@ -385,33 +427,33 @@ namespace ealib {
             }
         }
     };
-
+    
     
     /*! Serialize a line of descent object.
      */
     template <typename EA>
     void lod_save(std::ostream& out, line_of_descent<EA>& lod, EA& ea) {
         boost::archive::xml_oarchive oa(out);
-        oa << BOOST_SERIALIZATION_NVP(lod);        
+        oa << BOOST_SERIALIZATION_NVP(lod);
     }
     
     
-	/*! Load a previously serialized line of descent object.
+    /*! Load a previously serialized line of descent object.
      */
-	template <typename EA>
-	line_of_descent<EA> lod_load(std::istream& in, EA& ea) {
+    template <typename EA>
+    line_of_descent<EA> lod_load(std::istream& in, EA& ea) {
         line_of_descent<EA> lod;
-		boost::archive::xml_iarchive ia(in);
-		ia >> BOOST_SERIALIZATION_NVP(lod);
+        boost::archive::xml_iarchive ia(in);
+        ia >> BOOST_SERIALIZATION_NVP(lod);
         return lod;
-	}
+    }
     
     /*! Load a previously serialized line of descent object.
      */
     template <typename EA>
     line_of_descent<EA> lod_load(const std::string& fname, EA& ea) {
         std::ifstream ifs(fname.c_str());
-
+        
         // is this a gzipped file?  test by checking file extension...
         static const boost::regex e(".*\\.gz$");
         if(boost::regex_match(fname, e)) {

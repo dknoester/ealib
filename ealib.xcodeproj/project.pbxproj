@@ -277,7 +277,6 @@
 		423CBDB6157D0E450003A644 /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
 		423CBDB7157D0E450003A644 /* modularity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = modularity.h; sourceTree = "<group>"; };
 		423CBDB8157D0E450003A644 /* population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population.h; sourceTree = "<group>"; };
-		423CBDC6157D0E450003A644 /* checkpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkpoint.h; sourceTree = "<group>"; };
 		423CBDC7157D0E450003A644 /* cvector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cvector.h; sourceTree = "<group>"; };
 		423CBDC8157D0E450003A644 /* cmdline_interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cmdline_interface.h; sourceTree = "<group>"; };
 		423CBDC9157D0E450003A644 /* concepts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = concepts.h; sourceTree = "<group>"; };
@@ -593,7 +592,6 @@
 				42F4B63215822A7B0075D6EF /* attributes.h */,
 				42279CA315D52E0500DD63BB /* digital_evolution.h */,
 				42015A8115D6BEDC0020F594 /* digital_evolution */,
-				423CBDC6157D0E450003A644 /* checkpoint.h */,
 				423CBDC8157D0E450003A644 /* cmdline_interface.h */,
 				42F4B6191580EA0B0075D6EF /* comparators.h */,
 				423CBDC9157D0E450003A644 /* concepts.h */,
