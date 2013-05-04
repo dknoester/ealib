@@ -98,8 +98,8 @@ namespace ealib {
                 bool any=false, all=true;
                 
                 for(std::size_t i=0; i<fa.size(); ++i) {
-                    any |= (fa[i] > fb[i]);
-                    all &= (fa[i] >= fb[i]);
+                    any = any || (fa[i] > fb[i]);
+                    all = all && (fa[i] >= fb[i]);
                 }
                 return any && all;
             }
