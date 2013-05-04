@@ -25,6 +25,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/min.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
 #include <vector>
 #include <limits>
@@ -43,6 +44,8 @@ namespace ealib {
     
     LIBEA_MD_DECL(GM_AGE, "ea.alps.genetic_material_age", unsigned int);
     LIBEA_MD_DECL(ADMISSION_AGE, "ea.alps.admission_age", double);
+    LIBEA_MD_DECL(GAP_SIZE, "ea.alps.gap_size", unsigned int);
+    LIBEA_MD_DECL(ADMISSION_AGING_SCHEME, "ea.alps.admission_aging_scheme", unsigned int);
     
     template <typename MEA>
     struct alps : event {
@@ -51,9 +54,27 @@ namespace ealib {
         alps(MEA& ea) {
             _inheritance_conn.resize(get<META_POPULATION_SIZE>(ea));
             
+            int fib1 = 0;
+            int fib2 = 1;
+            
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                 _inheritance_conn[i] = ea[i].events().inheritance.connect(boost::bind(&alps::inheritance, this, _1, _2, _3));
-                put<ADMISSION_AGE>(i*100, ea[i]);
+                
+                // There are several aging schemes (linear, fibonacci, poly, exp). Only linear (0) and fib (1) are implemented.
+                switch(get<ADMISSION_AGING_SCHEME>(ea[i], 0)) {
+                
+                    case (0): {
+                        int a = (i+1) * get<GAP_SIZE>(ea[i],1); 
+                        put<ADMISSION_AGE>(a, ea[i]);
+                    
+                    }
+                    case (1): {
+                        int a = (fib1 + fib2) * get<GAP_SIZE>(ea[i],1);
+                        std::swap(fib1, fib2);
+                        fib2 += fib1;
+                        put<ADMISSION_AGE>(a, ea[i]);
+                    }
+                }                
             }
             
             _update_conn = ea.events().end_of_update.connect(boost::bind(&alps::end_of_update, this, _1));
@@ -124,6 +145,7 @@ namespace ealib {
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                 std::string prefix = "sp" + boost::lexical_cast<std::string>(i);
                 _df.add_field(prefix + "_mean_age")
+                .add_field(prefix + "_min_fitness")
                 .add_field(prefix + "_mean_fitness")
                 .add_field(prefix + "_max_fitness");
             }
@@ -139,10 +161,10 @@ namespace ealib {
             
             for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                 if(ea[i].population().empty()) {
-                    _df.write(0.0).write(0.0).write(0.0);
+                    _df.write(0.0).write(0.0).write(0.0).write(0.0);
                 } else {
                     accumulator_set<double, stats<tag::mean> > age;
-                    accumulator_set<double, stats<tag::mean, tag::max> > fit;
+                    accumulator_set<double, stats<tag::mean, tag::min, tag::max> > fit;
                     
                     for(typename EA::individual_type::population_type::iterator j=ea[i].population().begin(); j!=ea[i].population().end(); ++j) {
                         age(get<GM_AGE>(**j,0.0));
@@ -150,6 +172,7 @@ namespace ealib {
                     }
                     
                     _df.write(mean(age))
+                    .write(min(fit))
                     .write(mean(fit))
                     .write(max(fit));
                 }
