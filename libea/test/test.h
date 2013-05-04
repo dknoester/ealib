@@ -25,6 +25,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <sstream>
 
+#include <ea/analysis.h>
 #include <ea/lifecycle.h>
 #include <ea/evolutionary_algorithm.h>
 #include <ea/representations/numeric_vector.h>
@@ -51,6 +52,13 @@ mutation::per_site<mutation::bit>,
 all_ones,
 configuration
 > all_ones_ea;
+
+typedef evolutionary_algorithm<
+bitstring,
+mutation::per_site<mutation::bit>,
+multi_all_ones,
+configuration
+> multi_all_ones_ea;
 
 
 template <typename EA>

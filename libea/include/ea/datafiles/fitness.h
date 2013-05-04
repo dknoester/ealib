@@ -1,19 +1,19 @@
 /* fitness.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -66,7 +66,7 @@ namespace ealib {
             
             datafile _df;
         };
-
+        
         /*! Datafile for fitness evaluations.
          */
         template <typename EA>
@@ -85,7 +85,7 @@ namespace ealib {
                 ++_instantaneous;
                 ++_total;
             }
-
+            
             virtual void operator()(EA& ea) {
                 _df.write(ea.current_update())
                 .write(_instantaneous)
@@ -99,12 +99,12 @@ namespace ealib {
             long _total;
             boost::signals::scoped_connection _conn2;
         };
-
+        
         /*! Datafile for mean generation, and mean & max fitness.
          */
         template <typename EA>
         struct meta_population_fitness : record_statistics_event<EA> {
-            meta_population_fitness(EA& ea) 
+            meta_population_fitness(EA& ea)
             : record_statistics_event<EA>(ea)
             , _df("sub_population_fitness.dat")
             , _mp("meta_population_fitness.dat") {
@@ -115,7 +115,7 @@ namespace ealib {
                     .add_field("mean_fitness_sp" + boost::lexical_cast<std::string>(i))
                     .add_field("max_fitness_sp" + boost::lexical_cast<std::string>(i));
                 }
-
+                
                 _mp.add_field("update")
                 .add_field("mean_generation")
                 .add_field("min_fitness")
@@ -131,12 +131,12 @@ namespace ealib {
                 
                 accumulator_set<double, stats<tag::mean> > mpgen;
                 accumulator_set<double, stats<tag::min, tag::mean, tag::max> > mpfit;
-
+                
                 _df.write(ea.current_update());
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                     accumulator_set<double, stats<tag::mean> > gen;
                     accumulator_set<double, stats<tag::min, tag::mean, tag::max> > fit;
-
+                    
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         gen(j->generation());
                         fit(static_cast<double>(ealib::fitness(*j,*i)));
@@ -148,9 +148,9 @@ namespace ealib {
                     .write(min(fit))
                     .write(mean(fit))
                     .write(max(fit));
-                }                
+                }
                 _df.endl();
-
+                
                 _mp.write(ea.current_update())
                 .write(mean(mpgen))
                 .write(min(mpfit))
@@ -166,7 +166,7 @@ namespace ealib {
         /*! Datafile for meta pop fitness evaluations.
          */
         
-                
+        
         template <typename EA>
         struct meta_population_fitness_evaluations : record_statistics_event<EA> {
             meta_population_fitness_evaluations(EA& ea)
@@ -178,7 +178,7 @@ namespace ealib {
                 for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                     _conn2[i] = ea[i].events().fitness_evaluated.connect(boost::bind(&meta_population_fitness_evaluations::on_fitness_evaluation, this, _1, _2));
                 }
-                                
+                
                 _mp.add_field("update")
                 .add_field("instantaneous")
                 .add_field("total");
@@ -199,7 +199,7 @@ namespace ealib {
                 .endl();
                 _instantaneous = 0;
             }
-
+            
             std::vector<boost::signals::scoped_connection> _conn2;
             datafile _mp;
             long _instantaneous;

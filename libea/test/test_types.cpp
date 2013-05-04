@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(test_types) {
     }
     
     { // nsga2
-        evolutionary_algorithm<
+        typedef evolutionary_algorithm<
         bitstring,
         mutation::per_site<mutation::bit>,
         multi_all_ones,
@@ -212,6 +212,10 @@ BOOST_AUTO_TEST_CASE(test_types) {
         recombination::two_point_crossover,
         generational_models::nsga2,
         nsga2_attributes
-        > ea;        
+        > ea_type;
+        ea_type ea;
+        
+        analysis::multivalued_population_fitness<ea_type> mpf;
+        mpf(ea);
     }
 }
