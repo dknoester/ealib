@@ -448,7 +448,7 @@ namespace mkv {
             using namespace ealib;
             using namespace ealib::analysis;
             typename EA::individual_type& ind = analysis::find_dominant(ea);
-            mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng(), ea);
+            mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
             
             datafile df(get<ANALYSIS_OUTPUT>(ea,"mkv_genetic_graph.dot"));
             std::ostringstream title;
@@ -467,7 +467,7 @@ namespace mkv {
             using namespace ealib;
             using namespace ealib::analysis;
             typename EA::individual_type& ind = analysis::find_dominant(ea);
-            mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng(), ea);
+            mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
             
             datafile df(get<ANALYSIS_OUTPUT>(ea,"mkv_reduced_graph.dot"));
             std::ostringstream title;
