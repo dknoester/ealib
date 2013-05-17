@@ -204,6 +204,51 @@ namespace ealib {
             }
         }
         
+        /*! Divide this organism's memory between parent and offspring.
+         
+         Instructions from the beginning of the organism's memory to the current
+         position of the read head are preserved for the parent, while instructions
+         between the read head and the write head are split off to form the
+         offspring's genome; the offspring is then ``born.''
+         
+         This instruction provides a soft reset for a multibirth organism.
+         */
+        DIGEVO_INSTRUCTION_DECL(h_divide_soft_parent_reset) {
+            if(hw.age() >= (0.8 * hw.original_size())) {
+                typename Hardware::representation_type& r=hw.repr();
+                
+                // Check to see if the offspring would be a good length.
+                int divide_pos = hw.getHeadLocation(Hardware::RH);
+                int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH);
+                
+                int child_size = r.size() - divide_pos - extra_lines;
+                int parent_size = r.size() - child_size - extra_lines;
+                double ratio = 2.0;
+                
+                if ((child_size < (hw.original_size()/ratio)) ||
+                    (child_size > (hw.original_size()*ratio)) ||
+                    (parent_size < (hw.original_size()/ratio)) ||
+                    (parent_size > (hw.original_size()*ratio))){
+                    // fail!
+                    return;
+                }
+                
+                
+                typename Hardware::representation_type::iterator f=r.begin(),l=r.begin();
+                std::advance(f, hw.getHeadLocation(Hardware::RH));
+                std::advance(l, hw.getHeadLocation(Hardware::WH));
+                typename Hardware::representation_type offr(f, l);
+                
+                
+                r.resize(parent_size);
+                replicate(p, offr, ea);
+                hw.replicated_soft_reset();
+                
+            }
+        }
+        
+
+        
         /*! Read a new input into ?BX?.
          */
         DIGEVO_INSTRUCTION_DECL(input) {
