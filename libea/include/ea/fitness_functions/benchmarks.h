@@ -32,7 +32,7 @@ namespace ealib {
     
     /*! RANA
      */
-	struct rana : public fitness_function<unary_fitness<double>, constantS, deterministicS, minimizeS > {
+	struct rana : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             typename EA::representation_type& params = ind.repr();
@@ -55,7 +55,7 @@ namespace ealib {
 	
     /*! GRIEWANGK
      */
-	struct griewangk : public fitness_function<unary_fitness<double>, constantS, deterministicS, minimizeS  > {
+	struct griewangk : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             typename EA::representation_type& params = ind.repr();
@@ -75,7 +75,7 @@ namespace ealib {
     
     /*! ROSENBROCK
      */
-	struct rosenbrock : public fitness_function<unary_fitness<double>, constantS, deterministicS, minimizeS > {
+	struct rosenbrock : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             typename EA::representation_type& params = ind.repr();
@@ -97,7 +97,7 @@ namespace ealib {
 
     /*! SCHWEFEL
      */
-	struct schwefel : public fitness_function<unary_fitness<double>, constantS, deterministicS, minimizeS > {
+	struct schwefel : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             typename EA::representation_type& params = ind.repr();
@@ -115,7 +115,7 @@ namespace ealib {
 
     /*! F101
      */
-	struct f101 : public fitness_function<unary_fitness<double>, constantS, deterministicS, minimizeS > {
+	struct f101 : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             typename EA::representation_type& params = ind.repr();
@@ -134,7 +134,7 @@ namespace ealib {
 
     /*! F8F2 - Fix!
      */
-	struct f8f2 : public fitness_function<unary_fitness<double>, constantS, deterministicS, minimizeS > {
+	struct f8f2 : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             typename EA::representation_type& params = ind.repr();
@@ -174,7 +174,7 @@ namespace ealib {
      */
     LIBEA_MD_DECL(BENCHMARKS_FUNCTION, "ea.fitness_function.benchmarks_function", int);
     
-    struct benchmarks : public fitness_function<unary_fitness<double>, constantS, deterministicS, minimizeS > {
+    struct benchmarks : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
         template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             double val = 0.0;
