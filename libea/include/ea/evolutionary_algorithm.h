@@ -35,6 +35,7 @@
 #include <ea/mutation.h>
 #include <ea/selection.h>
 #include <ea/population.h>
+#include <ea/structure.h>
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>
@@ -62,7 +63,9 @@ namespace ealib {
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ealib::default_rng_type>
 	class evolutionary_algorithm {
-    public:        
+    public:
+        //! Tag indicating the structure of this population.
+        typedef singlePopulationS population_structure_tag;
         //! Configuration object type.
         typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
         //! Representation type.

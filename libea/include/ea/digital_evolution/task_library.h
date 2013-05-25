@@ -159,7 +159,10 @@ namespace ealib {
         void append(task_ptr_type p) {
             _tasklist.push_back(p);
         }
-        
+
+        //! Retrieve the list of active tasks.
+        tasklist_type& tasks() { return _tasklist; }
+
         /*! Updates the priority for the given individual.
          */
         void prioritize(individual_type& org, EA& ea) {

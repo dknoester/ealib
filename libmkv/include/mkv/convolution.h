@@ -57,6 +57,48 @@ namespace mkv {
         Matrix& _M;
     };
 
+    /*! 2D window iterator.
+     
+     (i,j) == upper left of window in (m x n) Sequence.     
+     */
+    template <typename Sequence>
+    struct ra_2d_window_iterator {
+        ra_2d_window_iterator(Sequence& M, std::size_t m, std::size_t n, std::size_t wm, std::size_t wn, std::size_t i, std::size_t j)
+        : _M(M), _m(m), _n(n), _wm(wm), _wn(wn), _i(i), _j(j) {
+        }
+        
+        //! Retrieve the value of the n'th entry in the window into the 2D sequence.
+        typename Sequence::value_type operator[](std::size_t n) {
+            assert(n < (_wm*_wn));
+            
+            std::size_t i=_i + n/_wn; // row
+            std::size_t j=_j + n%_wn; // col
+            
+            assert(i < _m);
+            assert(j < _n);
+            
+            std::size_t x = i * _n + j;
+            
+            assert(x < (_m * _n));
+            
+            return _M[x];
+        }
+        
+        void move(std::size_t i, std::size_t j) {
+            _i = i;
+            _j = j;
+        }
+        
+        Sequence& _M; //!< 2D data embedding in a Sequence.
+        std::size_t _m; //!< Number of rows in _M.
+        std::size_t _n; //!< Number of cols in _M.
+        std::size_t _wm; //!< Number of rows in window.
+        std::size_t _wn; //!< Number of cols in window.
+        std::size_t _i; //!< Row position in _M of the window.
+        std::size_t _j; //!< Column position in _M of the window.
+    };
+
+    
 //    /*! Max-pooling sequence iterator.
 //     
 //     ** THIS IS HOW WE HANDLE LAZY EVALUATION OF DEEP NETWORKS. (through iterators)**

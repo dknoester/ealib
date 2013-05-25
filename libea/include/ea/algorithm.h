@@ -340,7 +340,20 @@ namespace ealib {
             }
             return d;
         }
-        
+
+        /*! Convert the booleans in range [f,l) to a long.
+         */
+        template <typename T, typename ForwardIterator>
+        T range2bits(ForwardIterator f, ForwardIterator l) {
+            T d=0;
+            for(std::size_t j=0; f!=l; ++f, ++j) {
+                if(static_cast<int>(*f) != 0x0) {
+                    d |= 0x01 << j;
+                }
+            }
+            return d;
+        }
+
 	} // algorithm
 } // ea
 

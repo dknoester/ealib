@@ -38,6 +38,7 @@
 #include <ea/concepts.h>
 #include <ea/events.h>
 #include <ea/meta_data.h>
+#include <ea/structure.h>
 #include <ea/analysis/tool.h>
 #include <ea/lifecycle.h>
 
@@ -142,6 +143,7 @@ namespace ealib {
     template <typename T>
     struct pointer_map {
         typedef T value_type;
+        typedef T* ptr_type;
         typedef std::map<std::string, boost::shared_ptr<value_type> > map_type;
         map_type _m;
         
@@ -160,7 +162,7 @@ namespace ealib {
             _m[U::name()] = p;
         }
         
-        T* get(const std::string& k) {
+        ptr_type get(const std::string& k) {
             return _m[k].get();
         }
     };
@@ -234,7 +236,10 @@ namespace ealib {
             apply(vm, ea);
             ea.initialize();
             gather_tools();
-            (*_tools.get(vm["analyze"].as<std::string>()))(ea);
+            
+            typename tool_registry::ptr_type p =_tools.get(vm["analyze"].as<std::string>());
+            p->initialize(ea);
+            (*p)(ea);
         }
         
         //! Continue a previously-checkpointed EA.
@@ -282,6 +287,21 @@ namespace ealib {
         
     protected:
 
+        //! Apply meta-data to a single population.
+        void apply(const std::string& k, const std::string& v, EA& ea, singlePopulationS) {
+            std::cerr << "\t" << k << "=" << v << std::endl;
+            put(k, v, ea.md());
+        }
+        
+        //! Apply meta-data to multiple populations.
+        void apply(const std::string& k, const std::string& v, EA& ea, multiPopulationS) {
+            std::cerr << "\t" << k << "=" << v << "(incl. subpopulations)" << std::endl;
+            put(k, v, ea.md());
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                put(k,v,i->md());
+            }
+        }
+
         //! Apply any command line options to the EA.
         void apply(boost::program_options::variables_map& vm, EA& ea) {
             namespace po = boost::program_options;
@@ -290,8 +310,9 @@ namespace ealib {
             for(po::variables_map::iterator i=vm.begin(); i!=vm.end(); ++i) {
                 const std::string& k=i->first;
                 const std::string& v=i->second.as<std::string>();
-                std::cerr << "\t" << k << "=" << v << std::endl;
-                put(k, v, ea.md());
+                apply(k, v, ea, typename EA::population_structure_tag());
+//                std::cerr << "\t" << k << "=" << v << std::endl;
+//                put(k, v, ea.md());
             }
             std::cerr << std::endl;
         }

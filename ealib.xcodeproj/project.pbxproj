@@ -67,6 +67,7 @@
 		42B55B741641C2C500F240C5 /* test_evolutionary_algorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6F1641C2C500F240C5 /* test_evolutionary_algorithm.cpp */; };
 		42B55B751641C2C500F240C5 /* test_information.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B701641C2C500F240C5 /* test_information.cpp */; };
 		42B55B761641C2C500F240C5 /* test_novelty_search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B711641C2C500F240C5 /* test_novelty_search.cpp */; };
+		42CC0904174A7B3800A25640 /* tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 42CC0903174A7B3800A25640 /* tool.h */; };
 		42D68D8B163F892000659AE1 /* test_meta_population.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42D68D89163F891F00659AE1 /* test_meta_population.cpp */; };
 		42F4B63315822A7B0075D6EF /* attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F4B63215822A7B0075D6EF /* attributes.h */; };
 /* End PBXBuildFile section */
@@ -383,6 +384,7 @@
 		429B1CD7162EEDE000578A1C /* state_vector_machine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = state_vector_machine.h; sourceTree = "<group>"; };
 		429BBA4A15DA73C800EA4F67 /* groups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = groups.h; sourceTree = "<group>"; };
 		429BBA4E15E5B5C500EA4F67 /* events.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = events.h; sourceTree = "<group>"; };
+		42A8C743174FC7D30061D2EE /* structure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = structure.h; sourceTree = "<group>"; };
 		42AF136F16BD8FEE002C4D61 /* benchmarks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = benchmarks.h; sourceTree = "<group>"; };
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
 		42B55B6E1641C2C500F240C5 /* test_ea.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_ea.cpp; sourceTree = "<group>"; };
@@ -392,6 +394,43 @@
 		42BF1F6A165D162A0075D664 /* parse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parse.h; sourceTree = "<group>"; };
 		42C7730E16FF6F9B00EAFD8F /* qhfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = qhfc.h; sourceTree = "<group>"; };
 		42C7730F16FF6FDD00EAFD8F /* crowding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crowding.h; sourceTree = "<group>"; };
+		42CC0903174A7B3800A25640 /* tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tool.h; sourceTree = "<group>"; };
+		42CC090A174D175000A25640 /* gpu_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gpu_network.h; sourceTree = "<group>"; };
+		42CC090B174D175000A25640 /* gpu_update.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gpu_update.h; sourceTree = "<group>"; };
+		42CC090C174D175000A25640 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		42CC090E174D175000A25640 /* gpu_network.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gpu_network.cpp; sourceTree = "<group>"; };
+		42CC090F174D175000A25640 /* gpu_update.cu */ = {isa = PBXFileReference; lastKnownFileType = text; path = gpu_update.cu; sourceTree = "<group>"; };
+		42CC0911174D175000A25640 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		42CC0912174D175000A25640 /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
+		42CC0916174D175000A25640 /* globalConst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globalConst.h; sourceTree = "<group>"; };
+		42CC0917174D175000A25640 /* tAgent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tAgent.h; sourceTree = "<group>"; };
+		42CC0918174D175000A25640 /* tGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tGame.h; sourceTree = "<group>"; };
+		42CC091A174D175000A25640 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		42CC091B174D175000A25640 /* tAgent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tAgent.cpp; sourceTree = "<group>"; };
+		42CC091C174D175000A25640 /* tGame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tGame.cpp; sourceTree = "<group>"; };
+		42CC0920174D175000A25640 /* deterministic_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deterministic_node.h; sourceTree = "<group>"; };
+		42CC0921174D175000A25640 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		42CC0922174D175000A25640 /* hmm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmm.h; sourceTree = "<group>"; };
+		42CC0923174D175000A25640 /* hmm_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmm_evolution.h; sourceTree = "<group>"; };
+		42CC0924174D175000A25640 /* hmm_header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmm_header.h; sourceTree = "<group>"; };
+		42CC0925174D175000A25640 /* hmm_instruments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmm_instruments.h; sourceTree = "<group>"; };
+		42CC0926174D175000A25640 /* hmm_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmm_network.h; sourceTree = "<group>"; };
+		42CC0927174D175000A25640 /* hmm_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hmm_node.h; sourceTree = "<group>"; };
+		42CC0928174D175000A25640 /* output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = output.h; sourceTree = "<group>"; };
+		42CC0929174D175000A25640 /* primitive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = primitive.h; sourceTree = "<group>"; };
+		42CC092A174D175000A25640 /* probabilistic_node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = probabilistic_node.h; sourceTree = "<group>"; };
+		42CC092D174D175000A25640 /* deterministic_node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = deterministic_node.cpp; sourceTree = "<group>"; };
+		42CC092E174D175000A25640 /* graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
+		42CC092F174D175000A25640 /* hmm.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hmm.cpp; sourceTree = "<group>"; };
+		42CC0930174D175000A25640 /* hmm_network.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hmm_network.cpp; sourceTree = "<group>"; };
+		42CC0931174D175000A25640 /* hmm_node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = hmm_node.cpp; sourceTree = "<group>"; };
+		42CC0932174D175000A25640 /* probabilistic_node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = probabilistic_node.cpp; sourceTree = "<group>"; };
+		42CC0934174D175000A25640 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
+		42CC0935174D175000A25640 /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
+		42CC0936174D175000A25640 /* test_cat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_cat.cpp; sourceTree = "<group>"; };
+		42CC0937174D175000A25640 /* test_network.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_network.cpp; sourceTree = "<group>"; };
+		42CC0938174D175000A25640 /* test_nodes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_nodes.cpp; sourceTree = "<group>"; };
+		42CC0939174D175000A25640 /* test_update.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_update.cpp; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
 		42D6A6011705CB650043EBB1 /* lifecycle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lifecycle.h; sourceTree = "<group>"; };
 		42D93B2F16CFC14700E7E5E9 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
@@ -530,6 +569,7 @@
 				423CBE4C157D0F310003A644 /* lib */,
 				4281FEDD16C463F50066610C /* libann */,
 				423CBDAB157D0E450003A644 /* libea */,
+				42CC0905174D175000A25640 /* libgpu */,
 				42841C3515ADA06B00AB18BE /* libmkv */,
 				42681E17166E441F00665BD1 /* tutorial */,
 				423CBC7C157D0D440003A644 /* Products */,
@@ -624,6 +664,7 @@
 				423CBDE7157D0E450003A644 /* rng.h */,
 				42841D3E15BEDF7700AB18BE /* selection.h */,
 				423CBDE8157D0E450003A644 /* selection */,
+				42A8C743174FC7D30061D2EE /* structure.h */,
 			);
 			path = ea;
 			sourceTree = "<group>";
@@ -641,6 +682,7 @@
 				42EA57941623257C007BCF51 /* meta_population.h */,
 				423CBDB7157D0E450003A644 /* modularity.h */,
 				423CBDB8157D0E450003A644 /* population.h */,
+				42CC0903174A7B3800A25640 /* tool.h */,
 			);
 			path = analysis;
 			sourceTree = "<group>";
@@ -864,6 +906,177 @@
 			path = test;
 			sourceTree = "<group>";
 		};
+		42CC0905174D175000A25640 /* libgpu */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0906174D175000A25640 /* cuda */,
+				42CC0913174D175000A25640 /* examples */,
+				42CC091D174D175000A25640 /* include */,
+				42CC092B174D175000A25640 /* src */,
+				42CC0933174D175000A25640 /* test */,
+			);
+			path = libgpu;
+			sourceTree = "<group>";
+		};
+		42CC0906174D175000A25640 /* cuda */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0907174D175000A25640 /* include */,
+				42CC090C174D175000A25640 /* Makefile */,
+				42CC090D174D175000A25640 /* src */,
+				42CC0910174D175000A25640 /* test */,
+			);
+			path = cuda;
+			sourceTree = "<group>";
+		};
+		42CC0907174D175000A25640 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0908174D175000A25640 /* fn */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		42CC0908174D175000A25640 /* fn */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0909174D175000A25640 /* hmm */,
+			);
+			path = fn;
+			sourceTree = "<group>";
+		};
+		42CC0909174D175000A25640 /* hmm */ = {
+			isa = PBXGroup;
+			children = (
+				42CC090A174D175000A25640 /* gpu_network.h */,
+				42CC090B174D175000A25640 /* gpu_update.h */,
+			);
+			path = hmm;
+			sourceTree = "<group>";
+		};
+		42CC090D174D175000A25640 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				42CC090E174D175000A25640 /* gpu_network.cpp */,
+				42CC090F174D175000A25640 /* gpu_update.cu */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		42CC0910174D175000A25640 /* test */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0911174D175000A25640 /* test.cpp */,
+				42CC0912174D175000A25640 /* test.h */,
+			);
+			path = test;
+			sourceTree = "<group>";
+		};
+		42CC0913174D175000A25640 /* examples */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0914174D175000A25640 /* maze */,
+			);
+			path = examples;
+			sourceTree = "<group>";
+		};
+		42CC0914174D175000A25640 /* maze */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0915174D175000A25640 /* include */,
+				42CC0919174D175000A25640 /* src */,
+			);
+			path = maze;
+			sourceTree = "<group>";
+		};
+		42CC0915174D175000A25640 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0916174D175000A25640 /* globalConst.h */,
+				42CC0917174D175000A25640 /* tAgent.h */,
+				42CC0918174D175000A25640 /* tGame.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		42CC0919174D175000A25640 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				42CC091A174D175000A25640 /* main.cpp */,
+				42CC091B174D175000A25640 /* tAgent.cpp */,
+				42CC091C174D175000A25640 /* tGame.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		42CC091D174D175000A25640 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				42CC091E174D175000A25640 /* fn */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		42CC091E174D175000A25640 /* fn */ = {
+			isa = PBXGroup;
+			children = (
+				42CC091F174D175000A25640 /* hmm */,
+			);
+			path = fn;
+			sourceTree = "<group>";
+		};
+		42CC091F174D175000A25640 /* hmm */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0920174D175000A25640 /* deterministic_node.h */,
+				42CC0921174D175000A25640 /* graph.h */,
+				42CC0922174D175000A25640 /* hmm.h */,
+				42CC0923174D175000A25640 /* hmm_evolution.h */,
+				42CC0924174D175000A25640 /* hmm_header.h */,
+				42CC0925174D175000A25640 /* hmm_instruments.h */,
+				42CC0926174D175000A25640 /* hmm_network.h */,
+				42CC0927174D175000A25640 /* hmm_node.h */,
+				42CC0928174D175000A25640 /* output.h */,
+				42CC0929174D175000A25640 /* primitive.h */,
+				42CC092A174D175000A25640 /* probabilistic_node.h */,
+			);
+			path = hmm;
+			sourceTree = "<group>";
+		};
+		42CC092B174D175000A25640 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				42CC092C174D175000A25640 /* hmm */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		42CC092C174D175000A25640 /* hmm */ = {
+			isa = PBXGroup;
+			children = (
+				42CC092D174D175000A25640 /* deterministic_node.cpp */,
+				42CC092E174D175000A25640 /* graph.cpp */,
+				42CC092F174D175000A25640 /* hmm.cpp */,
+				42CC0930174D175000A25640 /* hmm_network.cpp */,
+				42CC0931174D175000A25640 /* hmm_node.cpp */,
+				42CC0932174D175000A25640 /* probabilistic_node.cpp */,
+			);
+			path = hmm;
+			sourceTree = "<group>";
+		};
+		42CC0933174D175000A25640 /* test */ = {
+			isa = PBXGroup;
+			children = (
+				42CC0934174D175000A25640 /* test.cpp */,
+				42CC0935174D175000A25640 /* test.h */,
+				42CC0936174D175000A25640 /* test_cat.cpp */,
+				42CC0937174D175000A25640 /* test_network.cpp */,
+				42CC0938174D175000A25640 /* test_nodes.cpp */,
+				42CC0939174D175000A25640 /* test_update.cpp */,
+			);
+			path = test;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -873,6 +1086,7 @@
 			files = (
 				42F4B63315822A7B0075D6EF /* attributes.h in Headers */,
 				3E1F5FCF160CC5C100406D80 /* alps.h in Headers */,
+				42CC0904174A7B3800A25640 /* tool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

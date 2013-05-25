@@ -38,6 +38,7 @@
 #include <ea/mutation.h>
 #include <ea/selection.h>
 #include <ea/population.h>
+#include <ea/structure.h>
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>
@@ -99,6 +100,8 @@ namespace ealib {
 	typename RandomNumberGenerator=ealib::default_rng_type>
 	class novelty_search {
     public:
+        //! Tag indicating the structure of this population.
+        typedef singlePopulationS population_structure_tag;
         //! Configuration object type.
         typedef ConfigurationStrategy<novelty_search> configuration_type;
         //! Representation type.

@@ -29,6 +29,7 @@
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
 #include <ea/population.h>
+#include <ea/structure.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
 #include <ea/rng.h>
@@ -64,6 +65,8 @@ namespace ealib {
 	typename RandomNumberGenerator=default_rng_type>
     class meta_population {
     public:
+        //! Tag indicating the structure of this population.
+        typedef multiPopulationS population_structure_tag;
         //! Configuration object type.
         typedef ConfigurationStrategy<meta_population> configuration_type;
         //! Type of individual held by this metapopulation.

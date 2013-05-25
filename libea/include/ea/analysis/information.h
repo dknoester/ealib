@@ -142,7 +142,36 @@ namespace ealib {
             }
             return -1.0 * s;
         }
-        
+
+        //! Calculates the joint entropy H(x,y); columns are variables, rows are events.
+        template <typename Sequence>
+        double joint_entropy(const Sequence& x, const Sequence& y) {
+            using namespace boost::numeric::ublas;
+            typedef typename Sequence::value_type value_type;
+            typedef matrix<value_type> Matrix;
+            typedef matrix_column<Matrix> Column;
+            
+            Matrix M(x.size(),2);
+            Column(M,0) = x;
+            Column(M,1) = y;
+            return joint_entropy(M);
+        }
+
+        //! Calculates the joint entropy H(x,y,z); columns are variables, rows are events.
+        template <typename Sequence>
+        double joint_entropy(const Sequence& x, const Sequence& y, const Sequence& z) {
+            using namespace boost::numeric::ublas;
+            typedef typename Sequence::value_type value_type;
+            typedef matrix<value_type> Matrix;
+            typedef matrix_column<Matrix> Column;
+            
+            Matrix M(x.size(),3);
+            Column(M,0) = x;
+            Column(M,1) = y;
+            Column(M,2) = z;
+            return joint_entropy(M);
+        }
+
 
         //! Calculates conditional entropy H(X|Y).
         template <typename Sequence>
@@ -161,7 +190,7 @@ namespace ealib {
         
         //! Calculates the mutual information between event sequences x and y, I(x;y).
         template <typename Sequence>
-        double mutual_information(Sequence& x, Sequence& y) {
+        double mutual_information(const Sequence& x, const Sequence& y) {
             using namespace boost::numeric::ublas;
             typedef typename Sequence::value_type value_type;
             typedef matrix<value_type> Matrix;
@@ -188,6 +217,20 @@ namespace ealib {
             
             return entropy(X) + entropy(Y) - joint_entropy(M);
         }
+
+        //! Calculates the multivariate information of event sequences x, y, and z, I(x;y;z).
+        template <typename Sequence>
+        double multivariate_information(const Sequence& x, const Sequence& y, const Sequence& z) {
+            using namespace boost::numeric::ublas;
+            typedef typename Sequence::value_type value_type;
+            typedef matrix<value_type> Matrix;
+            typedef matrix_column<Matrix> Column;
+            
+            return entropy(x) + entropy(y) + entropy(z)
+            - joint_entropy(x,y) - joint_entropy(x,z) - joint_entropy(y,z)
+            + joint_entropy(x,y,z);
+        }
+        
         
         //! Calculates the conditional mutual information of event sequences x and y given z, I(x;y|z).
         template <typename Sequence>

@@ -361,11 +361,36 @@ namespace ealib {
         }
 
         //! Get the data contents of a neighboring location, if it exists.
-        DIGEVO_INSTRUCTION_DECL(sense_ldata) {            
+        DIGEVO_INSTRUCTION_DECL(get_neighbor_ldata) {
             typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);            
             if(exists<LOCATION_DATA>(l)) {
                 hw.setRegValue(hw.modifyRegister(), get<LOCATION_DATA>(l));
             }
+        }
+
+        /*! Sense the state of the enviroment.
+         
+         This instruction sets a register to a bit vector, where a 1 at position i
+         means that, if the individual performs task i, (1) the reaction will be 
+         triggered, and (2) that the associated resource's level is greater than
+         or equal to the task's limit.
+         */
+        DIGEVO_INSTRUCTION_DECL(sense_env) {
+            typedef typename EA::tasklib_type::tasklist_type tasklist_type;
+            tasklist_type& tasklist = ea.tasklib().tasks();
+            
+            int env=0;
+            std::size_t j=0;
+            for(typename tasklist_type::iterator i=tasklist.begin(); i!=tasklist.end(); ++i, ++j) {
+                if((*i)->reaction_occurs(*p,ea)) {
+                    if(!(*i)->is_limited() // unlimited resource
+                       || ((*i)->consumed_resource()->level() >= (*i)->limit())) { // limited, but sufficient abount
+                        env |= 0x01 << j;
+                    }
+                }
+            }
+
+            hw.setRegValue(hw.modifyRegister(), env);
         }
 
         //! Increment the value in ?bx?.

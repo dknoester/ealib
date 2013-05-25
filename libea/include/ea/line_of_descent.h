@@ -332,6 +332,10 @@ namespace ealib {
             }
         }
         
+        //! Destructor.
+        virtual ~meta_population_lod_event() {
+        }
+
         event_list_type _events;
     };
     
