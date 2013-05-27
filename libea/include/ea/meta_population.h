@@ -296,6 +296,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("meta_population_size", s);
             for(std::size_t i=0; i<s; ++i) {
                 individual_ptr_type p(new individual_type());
+                p->configure();
                 ar & boost::serialization::make_nvp("subpopulation", *p);
                 _population.push_back(p);
             }
