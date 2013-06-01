@@ -295,7 +295,7 @@ namespace ealib {
         
         //! Apply meta-data to multiple populations.
         void apply(const std::string& k, const std::string& v, EA& ea, multiPopulationS) {
-            std::cerr << "\t" << k << "=" << v << "(incl. subpopulations)" << std::endl;
+            std::cerr << "\t" << k << "=" << v << " (+subpopulations)" << std::endl;
             put(k, v, ea.md());
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                 put(k,v,i->md());

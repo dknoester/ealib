@@ -354,6 +354,20 @@ namespace ealib {
             return d;
         }
 
+        /*! Convert the bits in range [f, f+1] to a ternary value (-1,0,1).
+         */
+        template <typename ForwardIterator>
+        int bits2ternary(ForwardIterator f) {
+            int l = *f++;
+            int h = *f;
+            
+            if(l^h) {
+                return h ? -1 : 1; // if the high order bit alone is 1, then this is a -1.
+            } else {
+                return 0;
+            }
+        }
+
 	} // algorithm
 } // ea
 
