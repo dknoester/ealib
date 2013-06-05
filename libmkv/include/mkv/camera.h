@@ -203,7 +203,7 @@ namespace mkv {
         }
 
         //! Move the camera d units along axis a.
-        void move_axis(axis_type a, int d) {
+        void move(axis_type a, int d) {
             switch(a) {
                 case X_AXIS: {
                     _x += d;
@@ -219,24 +219,60 @@ namespace mkv {
                 }
             }
         }
-        
+
+        //! Move the camera d*z units along axis a.
+        void scaled_move(axis_type a, int d) {
+            switch(a) {
+                case X_AXIS: {
+                    _x += d*_z;
+                    break;
+                }
+                case Y_AXIS: {
+                    _y += d*_z;
+                    break;
+                }
+                case Z_AXIS: {
+                    _z = std::max(_z+d*_z, 1);
+                    break;
+                }
+            }
+        }
+
         //! Move the camera (i,j) units along axes (y,x).
         void move_ij(int i, int j) {
-            move_axis(X_AXIS,j);
-            move_axis(Y_AXIS,i);
+            move(X_AXIS,j);
+            move(Y_AXIS,i);
         }
 
         //! Move the camera (x,y) units.
         void move_xy(int x, int y) {
-            move_axis(X_AXIS,x);
-            move_axis(Y_AXIS,y);
+            move(X_AXIS,x);
+            move(Y_AXIS,y);
         }
 
-        //! Reset the camera's position in space.
+        //! Home the given axis.
+        void home(axis_type a) {
+            switch(a) {
+                case X_AXIS: {
+                    _x = 0;
+                    break;
+                }
+                case Y_AXIS: {
+                    _y = 0;
+                    break;
+                }
+                case Z_AXIS: {
+                    _z = 1;
+                    break;
+                }
+            }
+        }
+
+        //! Home all axes.
         void home() {
-            _x = 0;
-            _y = 0;
-            _z = 1;
+            home(X_AXIS);
+            home(Y_AXIS);
+            home(Z_AXIS);
         }
         
         Matrix& _M; //!< Matrix being "viewed."
