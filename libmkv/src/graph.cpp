@@ -179,7 +179,13 @@ void mkv::write_graphviz(const std::string& title, std::ostream& out, const mark
     for(boost::tie(vi,vi_end)=boost::vertices(g); vi!=vi_end; ++vi) {
         if(has_edges(*vi,g) && (g[*vi].nt == vertex_properties::GATE)) {
             out << g[*vi].idx << " ";
-            out << "[shape=box,label=\"" << nl << "\"];" << std::endl;
+            out << "[shape=box,label=\"" << nl << "::";
+            switch(g[*vi].gt) {
+                case vertex_properties::LOGIC: out << "L"; break;
+                case vertex_properties::MARKOV: out << "M"; break;
+                case vertex_properties::ADAPTIVE: out << "A"; break;
+            }
+            out << "\"];" << std::endl;
             if(*nl.rbegin() == 'Z') {
                 std::string::reverse_iterator i=nl.rbegin();
                 for( ; i!=nl.rend(); ++i) {

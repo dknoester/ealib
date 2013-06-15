@@ -31,11 +31,12 @@ namespace mkv {
      */
     struct vertex_properties {
         enum node_type { NONE, INPUT, OUTPUT, HIDDEN, GATE };
-        
-        vertex_properties() : nt(NONE), idx(0) {
+        enum gate_type { LOGIC, MARKOV, ADAPTIVE };
+        vertex_properties() : nt(NONE), gt(LOGIC), idx(0) {
         }
         
         node_type nt;
+        gate_type gt;
         int idx;
     };
 
@@ -94,16 +95,19 @@ namespace mkv {
             
             //! Parse a logic gate.
             void operator()(logic_gate& g) const {
+                G[v].gt = vertex_properties::LOGIC;
                 add_edges(g.inputs, g.outputs);
             }
             
             //! Parse a Markov gate.
             void operator()(markov_gate& g) const {
+                G[v].gt = vertex_properties::MARKOV;
                 add_edges(g.inputs, g.outputs);
             }
             
             //! Parse an Adaptive Markov gate.
             void operator()(adaptive_gate& g) const {
+                G[v].gt = vertex_properties::ADAPTIVE;
                 add_edges(g.inputs, g.outputs);
                 boost::add_edge(boost::vertex(g.p,G), v, edge_properties(edge_properties::REINFORCE), G);
                 boost::add_edge(v, boost::vertex(g.n,G), edge_properties(edge_properties::INHIBIT), G);

@@ -53,7 +53,7 @@ namespace mkv {
     template <typename Matrix>
     struct camera2_iterator {
         //! Constructor.
-        camera2_iterator(Matrix& M, std::size_t s1, std::size_t s2) : _M(M), _size1(s1), _size2(s2), _i(0), _j(0) {
+        camera2_iterator(Matrix& M, std::size_t s1, std::size_t s2, std::size_t i=0, std::size_t j=0) : _M(M), _size1(s1), _size2(s2), _i(i), _j(j) {
         }
         
         //! Retrieve the value of the n'th entry in the camera's retina.
