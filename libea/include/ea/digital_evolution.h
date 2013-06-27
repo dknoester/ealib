@@ -98,6 +98,7 @@ namespace ealib {
         typedef Hardware hardware_type;
         //! Representation type.
         typedef typename hardware_type::representation_type representation_type;
+        //! Individual type.
         typedef Individual<digital_evolution> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
@@ -105,7 +106,6 @@ namespace ealib {
         typedef Scheduler<digital_evolution> scheduler_type;
         //! Scheduler fitness type.
         typedef typename scheduler_type::priority_type priority_type;
-        //! Individual type.
         //! ISA type.
         typedef InstructionSetArchitecture<digital_evolution> isa_type;
         //! Replacment strategy type.
@@ -175,6 +175,7 @@ namespace ealib {
 
         //! End an epoch.
         void end_epoch() {
+            _events.end_of_epoch(*this);
         }
         
         //! Advance this EA by one update.
@@ -184,6 +185,13 @@ namespace ealib {
             
             _scheduler.next_update();
             _events.record_statistics(*this);
+        }
+        
+        //! Advance this EA by n updates.
+        void update(std::size_t n) {
+            for( ; n>0; --n) {
+                update();
+            }
         }
 
         //! Build an individual from the given representation.

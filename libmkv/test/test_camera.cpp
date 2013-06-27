@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(test_camera3) {
     BOOST_CHECK_EQUAL(ci[2], 14);
     BOOST_CHECK_EQUAL(ci[3], 15);
     
-    ci.move_axis(mkv::Z_AXIS, 1);
+    ci.move(mkv::Z_AXIS, 1);
     BOOST_CHECK_EQUAL(ci[0], 15);
     BOOST_CHECK_EQUAL(ci[1], 0);
     BOOST_CHECK_EQUAL(ci[2], 0);

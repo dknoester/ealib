@@ -36,16 +36,12 @@
 #include <ea/events.h>
 #include <ea/lifecycle.h>
 #include <ea/individual.h>
+#include <ea/digital_evolution/organism.h>
 
 
 namespace ealib {
     
     /*! Wrapper class for individuals to enable line of descent (lod) tracking.
-     
-     A note about construction and assignment: We specifically *do not* copy the
-     parent set.  If we did, then every offspring would have a pointer to its entire
-     lineage.  While this is kind of interesting, it's unneeded overhead and artificially
-     inflates reference counts.
      */
     template <typename EA>
 	class individual_lod : public individual<EA> {
@@ -79,6 +75,54 @@ namespace ealib {
         
         //! Destructor.
         virtual ~individual_lod() {
+        }
+        
+        //! Retrieve the set of this individual's parents.
+        parent_set_type& lod_parents() { return _lod_parents; }
+        
+        //! Shorthand for asexual populations.
+        individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
+        
+        //! Returns true if this individual has parents.
+        bool has_parents() { return (_lod_parents.size() > 0); }
+        
+    protected:
+        parent_set_type _lod_parents; //!< This individual's set of parents.
+    };
+   
+    
+    template <typename EA>
+	class organism_lod : public organism<EA> {
+    public:
+        typedef organism<EA> base_type;
+        typedef typename EA::individual_ptr_type individual_ptr_type;
+        typedef typename EA::representation_type representation_type;
+        typedef std::set<individual_ptr_type> parent_set_type;
+        
+        //! Constructor.
+        organism_lod() : base_type() {
+        }
+        
+        //! Constructor.
+        organism_lod(const representation_type& r) : base_type(r) {
+        }
+        
+        //! Copy constructor.
+        organism_lod(const organism_lod& that) : base_type(that) {
+            _lod_parents = that._lod_parents;
+        }
+        
+        //! Assignment operator.
+        organism_lod& operator=(const organism_lod& that) {
+            if(this != & that) {
+                base_type::operator=(that);
+                _lod_parents = that._lod_parents;
+            }
+            return *this;
+        }
+        
+        //! Destructor.
+        virtual ~organism_lod() {
         }
         
         //! Retrieve the set of this individual's parents.

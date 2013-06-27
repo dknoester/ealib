@@ -325,6 +325,7 @@
 		4245003016D26866007827D7 /* abstract_neuron.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_neuron.h; sourceTree = "<group>"; };
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		4245006416D53E22007827D7 /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
+		425029961773355800275986 /* encoding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = encoding.h; sourceTree = "<group>"; };
 		425A6DC3171EF1790096FD75 /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
 		425A6E0D1726CDB90096FD75 /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		425E833416602B5A003B6867 /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
@@ -645,6 +646,7 @@
 				423CBDC7157D0E450003A644 /* cvector.h */,
 				423CBDCA157D0E450003A644 /* datafile.h */,
 				423CBDCB157D0E450003A644 /* datafiles */,
+				425029961773355800275986 /* encoding.h */,
 				423CBDCD157D0E450003A644 /* events.h */,
 				423CBDCE157D0E450003A644 /* evolutionary_algorithm.h */,
 				423CBDCF157D0E450003A644 /* exceptions.h */,

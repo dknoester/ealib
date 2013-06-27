@@ -50,7 +50,7 @@ namespace mkv {
     };
     
     //! Markov graph type.
-    typedef boost::adjacency_list<boost::setS,
+    typedef boost::adjacency_list<boost::vecS,
     boost::vecS,
     boost::bidirectionalS,
     vertex_properties,
@@ -110,7 +110,7 @@ namespace mkv {
                 G[v].gt = vertex_properties::ADAPTIVE;
                 add_edges(g.inputs, g.outputs);
                 boost::add_edge(boost::vertex(g.p,G), v, edge_properties(edge_properties::REINFORCE), G);
-                boost::add_edge(v, boost::vertex(g.n,G), edge_properties(edge_properties::INHIBIT), G);
+                boost::add_edge(boost::vertex(g.n,G), v, edge_properties(edge_properties::INHIBIT), G);
             }
             
         protected:

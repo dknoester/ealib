@@ -41,7 +41,7 @@ namespace ealib {
             
             mutation::graph_mutator gm;
             for(int i=0; i<get<GRAPH_EVENTS_N>(ea); ++i) {
-                gm(G,ea);
+//                gm(G,ea);
             }
             return G;
         }

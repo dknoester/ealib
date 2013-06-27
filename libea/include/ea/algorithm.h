@@ -34,6 +34,21 @@
 namespace ealib {
 	namespace algorithm {
         
+        template <typename Integer, typename OutputIterator>
+        void copy_n_bits(Integer i, std::size_t n, OutputIterator o) {
+            for( ; n>0; --n) {
+                *o++ = (i >> n) & 0x01;
+            }
+        }
+        
+        template <class RandomAccessIterator, class OutputIterator>
+        OutputIterator copy_n(RandomAccessIterator first, std::size_t n, OutputIterator result) {
+            for(std::size_t i=0; i<n; ++i) {
+                *(result+i) = first[i];
+            }
+            return result+n;
+        }
+        
         /*! Calculates the cumulative product of the range [f,l).
          */
         template <typename ForwardIterator, typename OutputIterator>

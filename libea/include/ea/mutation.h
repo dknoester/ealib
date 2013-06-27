@@ -33,7 +33,7 @@ namespace ealib {
 	void mutate(typename EA::individual_type& ind, Mutator& mutator, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));	
-		mutator(ind.repr(), ea);
+		mutator(ind, ea);
 	}
 	
 	
@@ -171,8 +171,9 @@ namespace ealib {
             typedef MutationType mutation_type;
             
             //! Mutate a single point in the given representation.
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, EA& ea) {
+            template <typename EA>
+            void operator()(typename EA::individual_type& ind, EA& ea) {
+                typename EA::representation_type& repr=ind.repr();
                 _mt(repr, ea.rng().choice(repr.begin(), repr.end()), ea);
             }
             
@@ -187,10 +188,11 @@ namespace ealib {
             typedef MutationType mutation_type;
             
             //! Iterate through all elements in the given representation, possibly mutating them.
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, EA& ea) {
+            template <typename EA>
+            void operator()(typename EA::individual_type& ind, EA& ea) {
+                typename EA::representation_type& repr=ind.repr();
                 const double per_site_p=get<MUTATION_PER_SITE_P>(ea);
-                for(typename Representation::iterator i=repr.begin(); i!=repr.end(); ++i){
+                for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i){
                     if(ea.rng().p(per_site_p)) {
                         _mt(repr, i, ea);
                     }
@@ -210,18 +212,20 @@ namespace ealib {
             typedef MutationOperator mutation_operator_type;
 
             //! Probabilistically perform indel mutations.
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, EA& ea) {
+            template <typename EA>
+            void operator()(typename EA::individual_type& ind, EA& ea) {
+                typename EA::representation_type& repr=ind.repr();
+                
                 // insertion:
                 if((repr.size() < get<REPRESENTATION_MAX_SIZE>(ea)) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
-                    typename Representation::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
-                    Representation chunk(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea)); // copy to avoid undefined behavior
+                    typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
+                    typename EA::representation_type chunk(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea)); // copy to avoid undefined behavior
                     repr.insert(ea.rng().choice(repr.begin(),repr.end()), chunk.begin(), chunk.end());
                 }
                 
                 // deletion:
                 if((repr.size() > get<REPRESENTATION_MIN_SIZE>(ea)) && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
-                    typename Representation::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
+                    typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
                     repr.erase(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea));
                 }
                 

@@ -29,6 +29,7 @@
 #include <ea/configuration.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
+#include <ea/encoding.h>
 #include <ea/fitness_function.h>
 #include <ea/ancestors.h>
 #include <ea/meta_data.h>

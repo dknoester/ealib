@@ -111,6 +111,12 @@ namespace mkv {
         //! Retrieve an iterator to the end of the svm outputs at time t in the last (highest-level) layer.
         markov_network::svm_type::iterator end_output() { return rbegin()->end_output(); }
 
+        //! Retrieve the value of output i in the last (highest) layer.
+        markov_network::state_type output(std::size_t i) { return rbegin()->output(i); }
+
+        //! Retrieve the value of output i in layer j.
+        markov_network::state_type output(std::size_t i, std::size_t j) { return at(j).output(i); }
+
         //! Update the network n times per layer, with the top-level inputs given by f.
         template <typename RandomAccessIterator>
         void update(std::size_t n, RandomAccessIterator f) {

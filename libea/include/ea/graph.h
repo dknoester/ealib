@@ -397,18 +397,10 @@ namespace ealib {
             }
         }
         
-        /*! Mutate a graph.
-         
-         This mutation operator performs one graph growth event, and may then
-         attempt to mutate either a vertex or edge.
-         
-         \warning The graph mutation types described here allow self-loops and
-         do not explicitly prevent parallel edges (though careful selection of
-         the underlying graph type can do so).
-         */
-        struct graph_mutator {
-            template <typename Representation, typename EA>
-            void operator()(Representation& G, EA& ea) {
+        
+        struct graph_rep_mutator {
+            template <typename EA>
+            void operator()(typename EA::representation_type& G, EA& ea) {
                 graph::growth_descriptor D(get<GRAPH_VERTEX_EVENT_P>(ea),
                                            get<GRAPH_EDGE_EVENT_P>(ea),
                                            get<GRAPH_DUPLICATE_EVENT_P>(ea),
@@ -426,6 +418,24 @@ namespace ealib {
                     }
                 }
             }
+        };
+        
+        
+        /*! Mutate a graph.
+         
+         This mutation operator performs one graph growth event, and may then
+         attempt to mutate either a vertex or edge.
+         
+         \warning The graph mutation types described here allow self-loops and
+         do not explicitly prevent parallel edges (though careful selection of
+         the underlying graph type can do so).
+         */
+        struct graph_mutator {
+            template <typename EA>
+            void operator()(typename EA::individual_type& ind, EA& ea) {
+                _m(ind.repr(), ea);
+            }
+            graph_rep_mutator _m;
         };
 
         /*! Mutate a graph growth descriptor.
@@ -472,7 +482,7 @@ namespace ealib {
             template <typename EA>
             typename EA::representation_type operator()(EA& ea) {
                 typename EA::representation_type G;
-                mutation::graph_mutator gm;
+                mutation::graph_rep_mutator gm;
                 for(int i=0; i<get<GRAPH_EVENTS_N>(ea); ++i) {
                     gm(G,ea);
                 }

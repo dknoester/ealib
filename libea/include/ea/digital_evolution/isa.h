@@ -204,6 +204,35 @@ namespace ealib {
             }
         }
         
+        /*! Reset this organism under the same conditions as h_divide, but do not
+         produce offspring.
+         */
+        DIGEVO_INSTRUCTION_DECL(h_divide_reset_only) {
+            if(hw.age() >= (0.8 * hw.original_size())) {
+                typename Hardware::representation_type& r=hw.repr();
+                
+                // Check to see if the offspring would be a good length.
+                int divide_pos = hw.getHeadLocation(Hardware::RH);
+                int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH);
+                
+                int child_size = r.size() - divide_pos - extra_lines;
+                int parent_size = r.size() - child_size - extra_lines;
+                double ratio = 2.0;
+                
+                if ((child_size < (hw.original_size()/ratio)) ||
+                    (child_size > (hw.original_size()*ratio)) ||
+                    (parent_size < (hw.original_size()/ratio)) ||
+                    (parent_size > (hw.original_size()*ratio))){
+                    // fail and die a miserable death!
+                    hw.replicated();
+                    return;
+                }
+                
+                r.resize(parent_size);
+                hw.replicated();
+            }
+        }
+        
         /*! Divide this organism's memory between parent and offspring.
          
          Instructions from the beginning of the organism's memory to the current
@@ -384,7 +413,7 @@ namespace ealib {
             for(typename tasklist_type::iterator i=tasklist.begin(); i!=tasklist.end(); ++i, ++j) {
                 if((*i)->reaction_occurs(*p,ea)) {
                     if(!(*i)->is_limited() // unlimited resource
-                       || ((*i)->consumed_resource()->level() >= (*i)->limit())) { // limited, but sufficient abount
+                       || ((*i)->consumed_resource()->level() >= (*i)->limit())) { // limited, but sufficient amount
                         env |= 0x01 << j;
                     }
                 }
@@ -557,14 +586,14 @@ namespace ealib {
             _name[p->name()] = _isa.size() - 1;
         }
         
-        //! Knockout the instruction at index i with the given instruction.
-        template <template <typename,typename> class Instruction>
-        void knockout(std::size_t i, std::size_t cost) {
-            assert(i < _isa.size());
-            boost::shared_ptr<inst_type> p(new Instruction<hardware_type,ea_type>(cost));
+        //! Knockout an instruction, replacing it with one of given cost.
+        template <template <typename,typename> class Knockout, template <typename,typename> class Replacement>
+        void knockout(std::size_t cost) {
+            Knockout<hardware_type,ea_type> k(0);
+            std::size_t i=operator[](k.name());
+            boost::shared_ptr<inst_type> p(new Replacement<hardware_type,ea_type>(cost));
             _isa[i] = p;
         }
-
         
         //! Execute instruction i.
         void operator()(std::size_t i, hardware_type& hw, individual_ptr_type p, ea_type& ea) {
@@ -606,18 +635,16 @@ namespace ealib {
         ea.isa().template append<Instruction>(1);
     }
 
-    //! Helper method to knockout an instruction from the ISA with the given cost.
-    template <template <typename,typename> class Instruction, typename EA>
-    void knockout_isa(const std::string& inst, std::size_t cost, EA& ea) {
-        std::size_t i = ea.isa()[inst];
-        ea.isa().template knockout<Instruction>(i, cost);
+    //! Helper method to replace an instruction in the ISA with an instruction of given cost.
+    template <template <typename,typename> class Knockout, template <typename,typename> class Replacement,  typename EA>
+    void knockout(std::size_t cost, EA& ea) {
+        ea.isa().template knockout<Knockout,Replacement>(cost);
     }
-    
-    //! Helper method to knockout an instruction from the ISA with a cost of 1.
-    template <template <typename,typename> class Instruction, typename EA>
-    void knockout_isa(const std::string& inst, EA& ea) {
-        std::size_t i = ea.isa()[inst];
-        ea.isa().template knockout<Instruction>(i, 1);
+
+    //! Helper method to replace an instruction in the ISA with a cost of 1.
+    template <template <typename,typename> class Knockout, template <typename,typename> class Replacement,  typename EA>
+    void knockout(EA& ea) {
+        ea.isa().template knockout<Knockout,Replacement>(1);
     }
 
 } // ea

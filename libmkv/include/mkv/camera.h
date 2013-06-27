@@ -87,6 +87,8 @@ namespace mkv {
             _j = ealib::algorithm::clip(_j, 0ul, _M.size2()-_size2);
         }
         
+        std::size_t size() { return _size1 * _size2; }
+        
         Matrix& _M; //!< Image that we're iterating over.
         std::size_t _size1, _size2; //!< Sizes of the camera's retina (m,n)
         std::size_t _i; //!< Row position in _M of the camera.

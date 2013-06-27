@@ -51,6 +51,17 @@ namespace ealib {
     
     
     template <typename EA>
+    struct task_event : event {
+        task_event(EA& ea) {
+            conn = ea.events().task.connect(boost::bind(&task_event::operator(), this, _1, _2, _3));
+        }
+        virtual ~task_event() { }
+        virtual void operator()(typename EA::individual_type&, // individual
+                                typename EA::tasklib_type::task_ptr_type, // task pointer
+                                EA&) = 0;
+    };
+
+    template <typename EA>
     struct reaction_event : event {
         reaction_event(EA& ea) {
             conn = ea.events().reaction.connect(boost::bind(&reaction_event::operator(), this, _1, _2, _3, _4));

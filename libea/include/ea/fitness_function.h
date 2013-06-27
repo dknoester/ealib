@@ -54,7 +54,7 @@ namespace ealib {
     
     //! Indicates that fitness should be minimized.
     struct minimizeS { };
-    
+
     /* While fitnesses are typically thought of as a single real value (e.g., a
      double), treating them as an object has numerous benefits, especially for
      multiobjective problems.  Here is the unary fitness value:
@@ -365,7 +365,6 @@ namespace ealib {
     } // attr
     
     namespace detail {
-        
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {

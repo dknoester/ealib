@@ -60,7 +60,15 @@ namespace ealib {
         const static int BX = 1; 
         const static int CX = 2;
         
-
+        struct abstract_hardware_trace {
+            //! Called immediately upon entry to execute().
+            virtual void top_half() { }
+            //! Called during trace upon the execution of instruction n.
+            virtual void instruction_executed(int n) { }
+            //! Called as the last step before exit of execute().
+            virtual void bottom_half() { }
+        };
+        
         //! Constructor.
         hardware() {
             initialize();
@@ -144,20 +152,23 @@ namespace ealib {
          the organism as dead.
          */
         template <typename EA>
-        void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
+        void execute(std::size_t n, typename EA::individual_ptr_type p, abstract_hardware_trace* cb, EA& ea) {
+            if(cb != 0) {
+                cb->top_half();
+            }
 
             std::size_t attempts=0;
-            // while we have cycles to spend and we haven't exhausted our attempts 
+            // while we have cycles to spend and we haven't exhausted our attempts
             // at executing an instruction:
             while((n > 0) && (attempts++ < _repr.size())) {
                 // get a pointer to the function object for the current instruction:
                 typename EA::isa_type::inst_ptr_type inst=ea.isa()[_repr[_head_position[IP]]];
-
+                
                 // if cost is zero, we're on a new instruction.  figure out its cost:
                 if(_cost == 0) {
                     _cost = inst->cost(*this, p, ea);
                 }
-
+                
                 // if there's now a cost to be paid, we can spend up to min(n,_cost) cycles.
                 int spent=0;
                 if(_cost > 0) {
@@ -166,10 +177,13 @@ namespace ealib {
                     _cost -= spent;
                     _age += spent;
                 }
-
+                
                 // if cost is again 0, everything's been paid and we should execute the instruction:
                 if(_cost == 0) {
                     (*inst)(*this, p, ea);
+                    if(cb != 0) {
+                        cb->instruction_executed(_repr[_head_position[IP]]);
+                    }
                     
                     // if we spent any cycles on this instruction, clear the label stack:
                     if(spent > 0) {
@@ -185,13 +199,16 @@ namespace ealib {
             if(attempts == _repr.size()) {
                 p->alive() = false;
             }
+            
+            if(cb != 0) {
+                cb->bottom_half();
+            }
         }
         
         //! Mark this hardware as having replicated (reinitialize).
         void replicated() {
             initialize();
             advanceHead(IP, -1);
-//            --_age;
         }
         
         //! This hardware undergoes a soft reset -- for multi-birth organisms

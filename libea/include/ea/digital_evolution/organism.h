@@ -56,14 +56,14 @@ namespace ealib {
         typedef int io_type; //!< Type for input and output values.
         typedef std::deque<io_type> iobuffer_type; //!< Type for buffering inputs and outputs.
 		typedef std::map<std::string, double> phenotype_map_type; //!< Type for storing phenotype information.
-        
+
 		//! Constructor.
-		organism() : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0) {
+		organism() : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0), _tracecb(0) {
 		}
         
 		//! Constructor that builds an organism from a representation.
 		organism(const representation_type& r) 
-        : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0), _hw(r) {
+        : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0), _hw(r), _tracecb(0) {
 		}
         
         //! Copy constructor.
@@ -79,6 +79,7 @@ namespace ealib {
             _outputs = that._outputs;
             _phenotype = that._phenotype;
             _location = that._location;
+            _tracecb = 0;
         }
         
         //! Assignment operator.
@@ -95,6 +96,7 @@ namespace ealib {
                 _outputs = that._outputs;
                 _phenotype = that._phenotype;
                 _location = that._location;
+                _tracecb = 0;
             }
             return *this;
         }
@@ -170,11 +172,20 @@ namespace ealib {
         
         //! Retrieve a pointer to this organism's location.
         location_handle_type& location() { return _location; }
-
+        
         //! Execute this organism for n cycles.
-        template <typename AL>
-        void execute(std::size_t n, typename AL::individual_ptr_type p, AL& al) {
-            _hw.execute(n,p,al);
+        inline void execute(std::size_t n, typename ea_type::individual_ptr_type p, ea_type& ea) {
+            _hw.execute(n,p,_tracecb,ea);
+        }
+
+        //! Turn on hardware tracing for this organism.
+        void trace(typename hardware_type::abstract_hardware_trace* cb) {
+            _tracecb = cb;
+        }
+        
+        //! Turn off hardware tracing for this organism.
+        void clear_trace() {
+            _tracecb = 0;
         }
         
 	protected:
@@ -189,6 +200,7 @@ namespace ealib {
         iobuffer_type _outputs; //!< This organism's outputs.
         phenotype_map_type _phenotype; //!< This organism's phenotype.
         location_handle_type _location; //!< This organism's location.
+        typename hardware_type::abstract_hardware_trace* _tracecb; //!< Trace handler, if so configured.
 
 	private:
 		/* These enable serialization and de-serialization of organisms.

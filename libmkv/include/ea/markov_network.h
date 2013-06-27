@@ -25,7 +25,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
-
+#include <boost/lexical_cast.hpp>
 
 #include <ea/meta_data.h>
 #include <ea/analysis.h>
@@ -81,13 +81,14 @@ namespace ealib {
      Performs per-site, duplication, and deletion mutations.
 	 */
 	struct mkv_mutation {
-		template <typename Representation, typename EA>
-		void operator()(Representation& repr, EA& ea) {
-			typedef typename std::vector<typename Representation::codon_type> codon_buffer;
+        template <typename EA>
+        void operator()(typename EA::individual_type& ind, EA& ea) {
+            typename EA::representation_type& repr=ind.repr();
+			typedef typename std::vector<typename EA::representation_type::codon_type> codon_buffer;
 			
 			double per_site_p = get<MUTATION_PER_SITE_P>(ea);
             int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
-			for(typename Representation::iterator i=repr.begin(); i!=repr.end(); ++i) {
+			for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
 				if(ea.rng().p(per_site_p)) {
 					*i = ea.rng()(imax);
 				}
@@ -115,58 +116,7 @@ namespace ealib {
 			}
 		}
 	};
-    
-    /*! Markov network mutation type.
-     
-     Performs per-site, duplication, and deletion mutations.
-	 */
-	struct mkv_smart_mutation {
-		template <typename Representation, typename EA>
-		void operator()(Representation& repr, EA& ea) {
-            double per_site_p = get<MUTATION_PER_SITE_P>(ea);
-            int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
-            
-            std::size_t f=1,l=repr.size(),last=0;
-            if(f >= l) { return; }
-            
-            std::vector<std::pair<std::size_t, std::size_t> > genes;
-            
-            for( ; f!=l; ++f, ++last) {
-                int start_codon = repr[f] + repr[last];
-                if(start_codon == 255) {
-                    std::size_t ms=ea.rng().uniform_integer(16, 257);
-                    
-                    // don't overrun:
-                    if((f+ms) < l) {
-                        // per-site mutations
-                        for(std::size_t i=(f+1); i<(f+ms); ++i) {
-                            if(ea.rng().p(per_site_p)) {
-                                repr[i] = ea.rng()(imax);
-                            }
-                        }
-                        
-                        genes.push_back(std::make_pair(f-1, f+ms));
-                    }
-                }
-            }
-            
-            if(!genes.empty()) {
-                // gene duplication
-                if(ea.rng().p(get<MUTATION_DUPLICATION_P>(ea)) && (repr.size()<get<MKV_REPR_MAX_SIZE>(ea))) {
-                    std::pair<std::size_t, std::size_t>& g=*ea.rng().choice(genes.begin(), genes.end());
-                    std::vector<typename Representation::codon_type> buffer(repr.begin()+g.first, repr.begin()+g.second);
-                    repr.insert(repr.end(), buffer.begin(), buffer.end());
-                }
-                
-                // gene deletion
-                if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<MKV_REPR_MIN_SIZE>(ea))) {
-                    std::pair<std::size_t, std::size_t>& g=*ea.rng().choice(genes.begin(), genes.end());
-                    repr.erase(repr.begin()+g.first, repr.begin()+g.second);
-                }
-            }
-		}
-	};
-    
+
     
     /*! Generates random Markov network-based individuals.
 	 */
@@ -421,10 +371,7 @@ namespace mkv {
     markov_network make_markov_network(ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
         markov_network::desc_type desc;
         parse_desc(ealib::get<MKV_DESC>(ea), desc);
-        markov_network net(desc, seed);
-        build_markov_network(net, f, l, ea);
-        net.writable_inputs(get<MKV_WRITABLE>(ea,0));
-        return net;
+        return make_markov_network(desc, f, l, seed, ea);
     }
     
     /*! Convenience method to build a Deep Markov Network.
@@ -438,11 +385,20 @@ namespace mkv {
         return net;
     }
     
+    /*! Convenience method to build a Deep Markov Network.
+     */
+    template <typename ForwardIterator, typename EA>
+    deep_markov_network make_deep_markov_network(ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
+        deep_markov_network::desc_type desc;
+        parse_desc(ealib::get<MKV_DESC>(ea), desc);
+        return make_deep_markov_network(desc, f, l, seed, ea);
+    }
+    
     /*! Save the detailed graph of the dominant individual in graphviz format.
      */
     template <typename EA>
-    struct mkv_genetic_graph : public ealib::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_genetic_graph";}
+    struct genetic_graph : public ealib::analysis::unary_function<EA> {
+        static const char* name() { return "genetic_graph";}
         
         virtual void operator()(EA& ea) {
             using namespace ealib;
@@ -450,50 +406,131 @@ namespace mkv {
             typename EA::individual_type& ind = analysis::find_dominant(ea);
             mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
             
-            datafile df(get<ANALYSIS_OUTPUT>(ea,"mkv_genetic_graph.dot"));
+            datafile df(get<ANALYSIS_OUTPUT>(ea,"genetic_graph.dot"));
             std::ostringstream title;
             title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
             mkv::write_graphviz(title.str(), df, mkv::as_genetic_graph(net));
             }
-    };
-    
-    /*! Save the dominant individual in graphviz format.
-     */
-    template <typename EA>
-    struct mkv_reduced_graph : public ealib::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_reduced_graph"; }
-        
-        virtual void operator()(EA& ea) {
-            using namespace ealib;
-            using namespace ealib::analysis;
-            typename EA::individual_type& ind = analysis::find_dominant(ea);
-            mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
+            };
             
-            datafile df(get<ANALYSIS_OUTPUT>(ea,"mkv_reduced_graph.dot"));
-            std::ostringstream title;
-            title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
-            mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
-        }
-    };
-    
-    /*! Save the causal graph of the dominant individual in graphviz format.
-     */
-    template <typename EA>
-    struct mkv_causal_graph : public ealib::analysis::unary_function<EA> {
-        static const char* name() { return "mkv_causal_graph"; }
-        
-        virtual void operator()(EA& ea) {
-            using namespace ealib;
-            using namespace ealib::analysis;
-            typename EA::individual_type& ind = analysis::find_dominant(ea);
-            mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng(), ea);
+            /*! Save the dominant individual in graphviz format.
+             */
+            template <typename EA>
+            struct reduced_graph : public ealib::analysis::unary_function<EA> {
+                static const char* name() { return "reduced_graph"; }
+                
+                virtual void operator()(EA& ea) {
+                    using namespace ealib;
+                    using namespace ealib::analysis;
+                    typename EA::individual_type& ind = analysis::find_dominant(ea);
+                    mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
+                    
+                    datafile df(get<ANALYSIS_OUTPUT>(ea,"reduced_graph.dot"));
+                    std::ostringstream title;
+                    title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
+                    mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
+                }
+            };
             
-            datafile df("mkv_causal_graph.dot");
-            std::ostringstream title;
-            title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
-            mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
-        }
-    };
+            
+            /*! Save the causal graph of the dominant individual in graphviz format.
+             */
+            template <typename EA>
+            struct causal_graph : public ealib::analysis::unary_function<EA> {
+                static const char* name() { return "causal_graph"; }
+                
+                virtual void operator()(EA& ea) {
+                    using namespace ealib;
+                    using namespace ealib::analysis;
+                    typename EA::individual_type& ind = analysis::find_dominant(ea);
+                    mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng(), ea);
+                    
+                    datafile df("causal_graph.dot");
+                    std::ostringstream title;
+                    title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
+                    mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
+                }
+            };
+            
+            /*! Save the dominant individual in graphviz format.
+             */
+            template <typename EA>
+            struct deep_reduced_graph : public ealib::analysis::unary_function<EA> {
+                static const char* name() { return "deep_reduced_graph"; }
+                
+                virtual void operator()(EA& ea) {
+                    using namespace ealib;
+                    using namespace ealib::analysis;
+                    typename EA::individual_type& ind = analysis::find_dominant(ea);
+                    
+                    mkv::deep_markov_network net=mkv::make_deep_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
+                    
+                    for(std::size_t j=0; j<net.size(); ++j) {
+                        mkv::markov_network& layer=net[j];
+                        datafile df("reduced_l" + boost::lexical_cast<std::string>(j) + ".dot");
+                        std::ostringstream title;
+                        title << "individual=" << ind.name()
+                        << ", generation=" << ind.generation()
+                        << ", fitness=" << ealib::fitness(ind,ea)
+                        << ", layer=" << j;
+                        mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(layer));
+                    }
+                }
+            };
+            
+            /*! Datafile for markov networks statistics.
+             */
+            template <typename EA>
+            struct network_statistics : ealib::analysis::unary_function<EA> {
+                static const char* name() { return "network_statistics"; }
+
+                virtual void operator()(EA& ea) {
+                    using namespace ealib;
+                    datafile df("network_statistics.dat");
+                    df.add_field("individual")
+                    .add_field("inputs")
+                    .add_field("outputs")
+                    .add_field("hidden")
+                    .add_field("gates");
+                    
+                    for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                        markov_network net = mkv::make_markov_network(i->repr().begin(), i->repr().end(), ea.rng().seed(), ea);
+                        markov_graph G = as_reduced_graph(net);
+
+                        double gates=0.0, inputs=0.0, outputs=0.0, hidden=0.0;
+                        markov_graph::vertex_iterator vi,vi_end;
+                        for(boost::tie(vi,vi_end)=boost::vertices(G); vi!=vi_end; ++vi) {
+                            if(!has_edges(*vi,G)) {
+                                continue;
+                            }
+                            switch(G[*vi].nt) {
+                                case vertex_properties::INPUT: {
+                                    ++inputs;
+                                    break;
+                                }
+                                case vertex_properties::OUTPUT: {
+                                    ++outputs;
+                                    break;
+                                }
+                                case vertex_properties::HIDDEN: {
+                                    ++hidden;
+                                    break;
+                                }
+                                case vertex_properties::GATE: {
+                                    ++gates;
+                                    break;
+                                }
+                                default: {
+                                    // shouldn't ever get here...
+                                    throw std::logic_error("markov_network.h::network_statistics: found a vertex with an invalid node_type.");
+                                }
+                            }
+                        }
+                        
+                        df.write(i->name()).write(inputs).write(outputs).write(hidden).write(gates).endl();
+                    }
+                }
+            };
 } // mkv
             
 #endif
