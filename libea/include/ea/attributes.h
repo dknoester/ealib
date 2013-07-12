@@ -41,6 +41,14 @@ namespace ealib {
     
     namespace access {
         
+        //! Accessor for all of an individual's attributes.
+        struct attributes {
+            template <typename EA>
+            typename EA::individual_attr_type operator()(typename EA::individual_type& ind, EA& ea) {
+                return ind.attr();
+            }
+        };
+
         //! Fitness accessor functor.
         struct fitness_accessor {
             template <typename EA>

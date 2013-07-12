@@ -37,7 +37,7 @@ namespace ealib {
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
                 return ealib::fitness(*x,_ea) < ealib::fitness(*y,_ea);
             }
-
+            
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
         
@@ -46,13 +46,13 @@ namespace ealib {
         struct fitness_desc {
             //! Constructor.
             fitness_desc(EA& ea) : _ea(ea) {
-            }            
+            }
             
             //! Returns true if fitness(x) < fitness(y), false otherwise.
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
                 return ealib::fitness(*x,_ea) > ealib::fitness(*y,_ea);
             }
-
+            
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
         
@@ -63,7 +63,7 @@ namespace ealib {
             meta_data() {
             }
             
-            //! Returns true if meta_data(x) > meta_data(y), false otherwise.
+            //! Returns true if meta_data(x) < meta_data(y), false otherwise.
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
                 return get<MDType>(*x) < get<MDType>(*y);
             }
@@ -76,7 +76,7 @@ namespace ealib {
             objective(std::size_t i, EA& ea) : _i(i), _ea(ea) {
             }
             
-            //! Returns true if fitness(x) > fitness(y), false otherwise.
+            //! Returns true if objective(i) of x < objective(i) of y, false otherwise.
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
                 return ealib::fitness(*x,_ea)[_i] < ealib::fitness(*y,_ea)[_i];
             }
@@ -85,6 +85,21 @@ namespace ealib {
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
         
+        //! Compare individuals based on the natural order of their i'th objective.
+        template <typename AttributeAccessor, typename EA>
+        struct attribute {
+            //! Constructor.
+            attribute(EA& ea) : _ea(ea) {
+            }
+            
+            //! Returns true if attr(x) < attr(y), false otherwise.
+            bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
+                return _acc(*x,_ea) < _acc(*y,_ea);
+            }
+            
+            EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
+            AttributeAccessor _acc; //!< Accessor for the compared attribute.
+        };
     } // comparators
 } // ea
 

@@ -56,14 +56,14 @@ namespace ealib {
         double distance; //<! Crowding distance.
     };
     
-    
-    /*! Crowding comparison operator, <_n.  
+
+    /*! Crowding comparison operator, <_n.
      
      If a has lower rank than b, return true.
      If a has the same rank as b, but greater crowding distance, return true.
      Otherwise, return false.
      */
-    template <typename EA>
+    template <typename AttributeAccessor, typename EA>
     struct crowding_comparator {
         //! Constructor.
         crowding_comparator(EA& ea) : _ea(ea) {
@@ -71,9 +71,11 @@ namespace ealib {
         
         //! Returns true if a <_n b, false otherwise.
         bool operator()(typename EA::individual_ptr_type a, typename EA::individual_ptr_type b) {
-            return (a->attr().rank < b->attr().rank) || ((a->attr().rank == b->attr().rank) && (a->attr().distance > b->attr().distance));
+            return (_acc(*a,_ea).rank < _acc(*b,_ea).rank)
+            || ((_acc(*a,_ea).rank == _acc(*b,_ea).rank) && (_acc(*a,_ea).distance > _acc(*b,_ea).distance));
         }
         
+        AttributeAccessor _acc;
         EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
     };
     
@@ -266,7 +268,7 @@ namespace ealib {
                 // select parents & recombine to create offspring:
                 Population offspring;                
                 recombine_n(parents, offspring,
-                            selection::tournament<crowding_comparator>(n,parents,ea),
+                            selection::tournament<access::attributes,crowding_comparator>(n,parents,ea),
                             typename EA::recombination_operator_type(),
                             n, ea);
                 
