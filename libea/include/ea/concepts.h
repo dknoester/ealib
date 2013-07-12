@@ -122,12 +122,12 @@ namespace ealib {
 
             detail::same_type(long(), x.name());
             detail::same_type(double(), x.generation());
-            detail::same_type(long(), x.update());
+            detail::same_type(long(), x.birth_update());
             detail::same_type(representation_type(), x.repr());
             
             x.name() = long();
             x.generation() = double();
-            x.update() = long();
+            x.birth_update() = long();
             x.repr() = representation_type();
 		}
         

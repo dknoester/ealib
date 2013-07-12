@@ -28,7 +28,7 @@
 #include <ea/analysis.h>
 #include <ea/lifecycle.h>
 #include <ea/evolutionary_algorithm.h>
-#include <ea/representations/numeric_vector.h>
+#include <ea/representations/bitstring.h>
 #include <ea/fitness_functions/all_ones.h>
 
 using namespace ealib;
@@ -48,14 +48,14 @@ struct configuration : public abstract_configuration<EA> {
 
 typedef evolutionary_algorithm<
 bitstring,
-mutation::per_site<mutation::bit>,
+mutation::operators::per_site<mutation::site::bit>,
 all_ones,
 configuration
 > all_ones_ea;
 
 typedef evolutionary_algorithm<
 bitstring,
-mutation::per_site<mutation::bit>,
+mutation::operators::per_site<mutation::site::bit>,
 multi_all_ones,
 configuration
 > multi_all_ones_ea;

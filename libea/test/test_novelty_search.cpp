@@ -24,6 +24,6 @@
 BOOST_AUTO_TEST_CASE(test_novelty_search) {
     using namespace ealib;
     
-    novelty_search<bitstring, mutation::per_site<mutation::bitflip>, all_ones, all_ones> E;
+    novelty_search<bitstring, mutation::operators::per_site<mutation::site::bitflip>, all_ones, all_ones> E;
 
 }

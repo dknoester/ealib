@@ -17,20 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_FITNESS_FUNCTIONS_NK_H_
-#define _EA_FITNESS_FUNCTIONS_NK_H_
+#ifndef _EA_FITNESS_FUNCTIONS_NK_MODEL_H_
+#define _EA_FITNESS_FUNCTIONS_NK_MODEL_H_
 
 #include <ea/fitness_function.h>
 #include <limits>
 #include <cmath>
 
 namespace ealib {
+    
+    LIBEA_MD_DECL(NK_MODEL_N, "ea.fitness_function.nk_model.n", unsigned int);
+    LIBEA_MD_DECL(NK_MODEL_K, "ea.fitness_function.nk_model.k", unsigned int);
+    LIBEA_MD_DECL(NK_MODEL_BINS, "ea.fitness_function.nk_model.bins", unsigned int);
 	
-    //! Tag for arithmetic NK landscape.
-    struct nk_arithmetic_t { };
+    //! Selector for arithmetic NK landscape.
+    struct arithmeticS { };
 
-    //! Tag for geometric NK landscape.
-    struct nk_geometric_t { };
+    //! Selector for geometric NK landscape.
+    struct geometricS { };
     
     /*! Fitness function corresponding to the NK Model~\cite{Kauffmann?}.
      
@@ -53,8 +57,8 @@ namespace ealib {
      each loci s in N has a table of 2^K uniformly distributed random numbers between
      [0,1] (representing all possible states of {s^i_1, s^i_2,... s^i_K}).
      */
-    template <typename MeanTag=nk_arithmetic_t>
-    struct nk_model : unary_fitness_function<double> {
+    template <typename MeanTag=geometricS>
+    struct nk_model : public fitness_function<unary_fitness<double>, constantS, deterministicS> {
         typedef std::vector<double> k_table;
         typedef std::vector<k_table> nk_table;
         nk_table nkt;
@@ -74,9 +78,8 @@ namespace ealib {
             int ktsize=1<<(K+1);
             int N = get<NK_MODEL_N>(ea);
             nkt.resize(N);
-            int bins = get<NK_MODEL_BINS>(ea);
-
-            int seed = get<FF_RNG_SEED>(ea);
+            int bins = get<NK_MODEL_BINS>(ea,0);
+            int seed = get<FF_RNG_SEED>(ea,0);
             // is this a random sample?  if so, get a random seed and save it for later
             // checkpointing.  we do it this way (instead of a 0 seed) because it's
             // quite likely that subsequent k tables could be generated at the same 
@@ -121,15 +124,14 @@ namespace ealib {
         }
         
         double accumulate(double s, double v) {
-            MeanTag mt;
-            return accumulate(s, v, mt);
+            return accumulate(s, v, MeanTag());
         }
 
-        double accumulate(double s, double v, nk_arithmetic_t&) {
+        double accumulate(double s, double v, arithmeticS) {
             return s + v;
         }
         
-        double accumulate(double s, double v, nk_geometric_t&) {
+        double accumulate(double s, double v, geometricS) {
             if(v != 0.0) {
                 return s + log(v);
             } else {
@@ -138,15 +140,14 @@ namespace ealib {
         }
         
         double mean(double s, double n) {
-            MeanTag mt;
-            return mean(s, n, mt);
+            return mean(s, n, MeanTag());
         }
         
-        double mean(double s, double n, nk_arithmetic_t&) {
+        double mean(double s, double n, arithmeticS) {
             return s/n;
         }
         
-        double mean(double s, double n, nk_geometric_t&) {
+        double mean(double s, double n, geometricS) {
             if(s != 0.0) {
                 s /= n; 
                 return exp(s);

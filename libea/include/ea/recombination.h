@@ -32,7 +32,7 @@ namespace ealib {
     void inherits_from(typename EA::individual_type& parent, typename EA::individual_type& offspring, EA& ea) {
         offspring.name() = next<INDIVIDUAL_COUNT>(ea);
         offspring.generation() = parent.generation() + 1.0;
-        offspring.update() = ea.current_update();
+        offspring.birth_update() = ea.current_update();
     }        
     
     

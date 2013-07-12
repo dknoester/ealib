@@ -1,19 +1,19 @@
 /* mutation.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -28,11 +28,11 @@
 namespace ealib {
     
 	/*! Unconditionally mutate an individual.
-	 */	
+	 */
 	template <typename Mutator, typename EA>
 	void mutate(typename EA::individual_type& ind, Mutator& mutator, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));	
+		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
 		mutator(ind, ea);
 	}
 	
@@ -54,7 +54,7 @@ namespace ealib {
 		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
 		for( ; first!=last; ++first) {
 			mutate(**first, mutator, ea);
-		}		
+		}
 	}
     
 	
@@ -69,7 +69,7 @@ namespace ealib {
 	
 	
 	/*! Probabilistically mutate a range of individuals.
-	 */	 
+	 */
 	template <typename ForwardIterator, typename Mutator, typename EA>
 	void mutate_p(ForwardIterator first, ForwardIterator last, Mutator& mutator, const double prob, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
@@ -93,149 +93,155 @@ namespace ealib {
     
     namespace mutation {
         
-        struct uniform_integer {
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                *i = ea.rng().uniform_integer(get<MUTATION_UNIFORM_INT_MIN>(ea), get<MUTATION_UNIFORM_INT_MAX>(ea));
-            }
-        };
-        
-        struct uniform_real {
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                *i = ea.rng().uniform_real(get<MUTATION_UNIFORM_REAL_MIN>(ea), get<MUTATION_UNIFORM_REAL_MAX>(ea));
-            }
-        };
-        
-        struct normal_real {
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                *i = ea.rng().normal_real(get<MUTATION_NORMAL_REAL_MEAN>(ea), get<MUTATION_NORMAL_REAL_VAR>(ea));
-            }
-        };
-        
-        struct relative_normal_real {
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                *i = ea.rng().normal_real(*i, get<MUTATION_NORMAL_REAL_VAR>(ea));
-            }
-        };
-        
-        struct bit {
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                *i = ea.rng().bit();
-            }
-        };
-
-        struct bitflip {
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                (*i) ^= 0x01;
-            }
-        };
-
-        template <typename MutationType>
-        struct clip {
-            typedef MutationType mutation_type;
-            
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                _mt(repr, i, ea);
-                *i = algorithm::clip(*i, get<MUTATION_CLIP_MIN>(ea), get<MUTATION_CLIP_MAX>(ea));
-            }
-            
-            mutation_type _mt;
-        };
-
-        template <typename MutationType>
-        struct zero {
-            typedef MutationType mutation_type;
-            
-            template <typename Representation, typename EA>
-            void operator()(Representation& repr, typename Representation::iterator i, EA& ea) {
-                if(ea.rng().p(get<MUTATION_ZERO_P>(ea))) {
-                    *i = 0.0;
-                } else {
-                    _mt(repr, i, ea);
+        namespace site {
+            struct uniform_integer {
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    *i = ea.rng().uniform_integer(get<MUTATION_UNIFORM_INT_MIN>(ea), get<MUTATION_UNIFORM_INT_MAX>(ea));
                 }
-            }
+            };
             
-            mutation_type _mt;
-        };
-
-        /*! Single-point mutation.
-         */
-        template <typename MutationType>
-        struct single_point {
-            typedef MutationType mutation_type;
+            struct uniform_real {
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    *i = ea.rng().uniform_real(get<MUTATION_UNIFORM_REAL_MIN>(ea), get<MUTATION_UNIFORM_REAL_MAX>(ea));
+                }
+            };
             
-            //! Mutate a single point in the given representation.
-            template <typename EA>
-            void operator()(typename EA::individual_type& ind, EA& ea) {
-                typename EA::representation_type& repr=ind.repr();
-                _mt(repr, ea.rng().choice(repr.begin(), repr.end()), ea);
-            }
+            struct normal_real {
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    *i = ea.rng().normal_real(get<MUTATION_NORMAL_REAL_MEAN>(ea), get<MUTATION_NORMAL_REAL_VAR>(ea));
+                }
+            };
             
-            mutation_type _mt;
-        };
-        
-        
-        /*! Per-site mutation.
-         */
-        template <typename MutationType>
-        struct per_site {            
-            typedef MutationType mutation_type;
+            struct relative_normal_real {
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    *i = ea.rng().normal_real(*i, get<MUTATION_NORMAL_REAL_VAR>(ea));
+                }
+            };
             
-            //! Iterate through all elements in the given representation, possibly mutating them.
-            template <typename EA>
-            void operator()(typename EA::individual_type& ind, EA& ea) {
-                typename EA::representation_type& repr=ind.repr();
-                const double per_site_p=get<MUTATION_PER_SITE_P>(ea);
-                for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i){
-                    if(ea.rng().p(per_site_p)) {
-                        _mt(repr, i, ea);
+            struct bit {
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    *i = ea.rng().bit();
+                }
+            };
+            
+            struct bitflip {
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    (*i) ^= 0x01;
+                }
+            };
+            
+            template <typename MutationType>
+            struct clip {
+                typedef MutationType mutation_type;
+                
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    _mt(i, ea);
+                    *i = algorithm::clip(*i, get<MUTATION_CLIP_MIN>(ea), get<MUTATION_CLIP_MAX>(ea));
+                }
+                
+                mutation_type _mt;
+            };
+            
+            template <typename MutationType>
+            struct zero {
+                typedef MutationType mutation_type;
+                
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    if(ea.rng().p(get<MUTATION_ZERO_P>(ea))) {
+                        *i = 0.0;
+                    } else {
+                        _mt(i, ea);
                     }
                 }
-            }
-            
-            mutation_type _mt;
-        };
-
-        
-        /*! Insertion/deletion (of fixed-size chunks) mutation type.
-         
-         \todo for variable size chunks, implement slip mutations.
-         */
-        template <typename MutationOperator>
-        struct indel {
-            typedef MutationOperator mutation_operator_type;
-
-            //! Probabilistically perform indel mutations.
-            template <typename EA>
-            void operator()(typename EA::individual_type& ind, EA& ea) {
-                typename EA::representation_type& repr=ind.repr();
                 
-                // insertion:
-                if((repr.size() < get<REPRESENTATION_MAX_SIZE>(ea)) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
-                    typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
-                    typename EA::representation_type chunk(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea)); // copy to avoid undefined behavior
-                    repr.insert(ea.rng().choice(repr.begin(),repr.end()), chunk.begin(), chunk.end());
+                mutation_type _mt;
+            };
+            
+        } // site
+        
+        namespace operators {
+            
+            /*! Single-point mutation.
+             */
+            template <typename MutationType>
+            struct single_point {
+                typedef MutationType mutation_type;
+                
+                //! Mutate a single point in the given representation.
+                template <typename EA>
+                void operator()(typename EA::individual_type& ind, EA& ea) {
+                    typename EA::representation_type& repr=ind.repr();
+                    _mt(ea.rng().choice(repr.begin(), repr.end()), ea);
                 }
                 
-                // deletion:
-                if((repr.size() > get<REPRESENTATION_MIN_SIZE>(ea)) && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
-                    typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
-                    repr.erase(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea));
+                mutation_type _mt;
+            };
+            
+            
+            /*! Per-site mutation.
+             */
+            template <typename MutationType>
+            struct per_site {
+                typedef MutationType mutation_type;
+                
+                //! Iterate through all elements in the given representation, possibly mutating them.
+                template <typename EA>
+                void operator()(typename EA::individual_type& ind, EA& ea) {
+                    typename EA::representation_type& repr=ind.repr();
+                    const double per_site_p=get<MUTATION_PER_SITE_P>(ea);
+                    for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i){
+                        if(ea.rng().p(per_site_p)) {
+                            _mt(i, ea);
+                        }
+                    }
                 }
                 
-                // then carry on with normal mutations:
-                _mt(repr, ea);
-            }
+                mutation_type _mt;
+            };
             
-            mutation_operator_type _mt;            
-        };
-        
+            
+            /*! Insertion/deletion (of fixed-size chunks) mutation type.
+             
+             \todo for variable size chunks, implement slip mutations.
+             */
+            template <typename MutationOperator>
+            struct indel {
+                typedef MutationOperator mutation_operator_type;
+                
+                //! Probabilistically perform indel mutations.
+                template <typename EA>
+                void operator()(typename EA::individual_type& ind, EA& ea) {
+                    typename EA::representation_type& repr=ind.repr();
+                    
+                    // insertion:
+                    if((repr.size() < get<REPRESENTATION_MAX_SIZE>(ea)) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
+                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
+                        typename EA::representation_type chunk(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea)); // copy to avoid undefined behavior
+                        repr.insert(ea.rng().choice(repr.begin(),repr.end()), chunk.begin(), chunk.end());
+                    }
+                    
+                    // deletion:
+                    if((repr.size() > get<REPRESENTATION_MIN_SIZE>(ea)) && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
+                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
+                        repr.erase(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea));
+                    }
+                    
+                    // then carry on with normal mutations:
+                    _mt(repr, ea);
+                }
+                
+                mutation_operator_type _mt;            
+            };
+            
+        } // operators
     } // mutation
 } // ea
 

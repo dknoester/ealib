@@ -82,7 +82,7 @@ namespace ealib {
     template <typename> class TaskLibrary=task_library,
     typename Hardware=hardware,
     template <typename> class InstructionSetArchitecture=isa,
-	typename MutationOperator=mutation::per_site<mutation::uniform_integer>,
+	typename MutationOperator=mutation::operators::per_site<mutation::site::uniform_integer>,
     template <typename> class Individual=organism,
 	template <typename, typename> class Population=ealib::population,
 	template <typename> class EventHandler=alife_event_handler,
@@ -136,7 +136,7 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
 
         //! Default constructor.
-        digital_evolution() : _name(0), _generation(0.0) {
+        digital_evolution() : _name(0), _generation(0.0), _update(0) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
         }
         
@@ -236,6 +236,11 @@ namespace ealib {
             return _generation;
         }
         
+        //! Retrieve this population's update.
+        unsigned long& birth_update() {
+            return _update;
+        }
+        
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
         
@@ -314,8 +319,9 @@ namespace ealib {
         }
         
     protected:
-        unsigned long _name;
-        double _generation;
+        unsigned long _name; //!< The name of this EA (primarily used during meta-population runs).
+        double _generation; //!< Generation "".
+        unsigned long _update; //!< Update (of birth) "".
         rng_type _rng; //!< Random number generator.
         environment_type _env; //!< Environment object.
         scheduler_type _scheduler; //!< Scheduler instance.
@@ -335,6 +341,9 @@ namespace ealib {
             ar & boost::serialization::make_nvp("scheduler", _scheduler);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("name", _name);
+            ar & boost::serialization::make_nvp("generation", _generation);
+            ar & boost::serialization::make_nvp("update", _update);
 		}
 		
 		template<class Archive>
@@ -344,6 +353,9 @@ namespace ealib {
             ar & boost::serialization::make_nvp("scheduler", _scheduler);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("name", _name);
+            ar & boost::serialization::make_nvp("generation", _generation);
+            ar & boost::serialization::make_nvp("update", _update);
             
             // now we have to fix up the connection between the environment and organisms:
             _env.attach(*this);

@@ -25,11 +25,13 @@
 
 namespace ealib {
     
+    LIBEA_MD_DECL(BENCHMARKS_FUNCTION, "ea.fitness_function.benchmarks_function", int);
+    
+
     /* All of the benchmark fitness functions contained in this file are courtesy
      of GENITOR: http://www.cs.colostate.edu/~genitor/functions.html
      */
-    
-    
+
     /*! RANA
      */
 	struct rana : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
@@ -172,47 +174,39 @@ namespace ealib {
     
     /*! benchmarks - this fitness function allows you to select which fitness function to use - BENCHMARKS_FUNCTION
      */
-    LIBEA_MD_DECL(BENCHMARKS_FUNCTION, "ea.fitness_function.benchmarks_function", int);
-    
     struct benchmarks : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
         template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            double val = 0.0;
-            int func = get<BENCHMARKS_FUNCTION>(ea,-1);
-            
-            switch (func) {
+            switch(get<BENCHMARKS_FUNCTION>(ea,-1)) {
                 case 0: {
-                    rana r;
-                    val = r(ind, ea);
-                    break;
+                    return _ra(ind, ea);
                 }
                 case 1: {
-                    griewangk g;
-                    val = g(ind, ea);
-                    break;
+                    return _gr(ind, ea);
                 }
                 case 2: {
-                    rosenbrock r2;
-                    val = r2(ind,ea);
-                    break;
+                    return _ro(ind, ea);
                 }
                 case 3: {
-                    schwefel s;
-                    val = s(ind, ea);
-                    break;
+                    return _sc(ind, ea);
                 }
                 case 4: {
-                    f101 r3;
-                    val = r3(ind, ea);
-                    break;
+                    return _f1(ind, ea);
+                }
+                default: {
+                    throw bad_argument_exception("benchmarks.h: unknown benchmark function.");
                 }
             }
-            
-            return val;
         }
         
+        // benchmarking functions:
+        rana _ra;
+        griewangk _gr;
+        rosenbrock _ro;
+        schwefel _sc;
+        f101 _f1;
     };
 
-}
+} // ealib
 
 #endif

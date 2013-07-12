@@ -1,4 +1,4 @@
-/* tutorial_1.cpp
+/* environment.h
  *
  * This file is part of EALib.
  *
@@ -17,19 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _EA_LEARNING_CLASSIFIER_ENVIRONMENT_H_
+#define _EA_LEARNING_CLASSIFIER_ENVIRONMENT_H_
 
-// Go here:
-#include "tutorial_1.h"
+namespace ealib {
 
-int main(int argc, const char * argv[]) {
-    repr_type r1(repr_size,1);
-    cout << "10 ones: " << all_ones(r1) << endl;
+    /*! The environment in an LCS is technically an interface between the classifiers
+     in the LCS' population and the extenal world.  It communicates with the LCS via
+     messages that are passed via detectors and effectors.
+     */
+    struct abstract_environment {
+        template <typename EA>
+        void detectors(typename EA::message_board_type& mb, EA& ea) {
+        }
+        
+        template <typename EA>
+        void effectors(typename EA::message_board_type& mb, EA& ea) {
+        }
+    };
     
-    repr_type r2(repr_size,0);
-    cout << "0 ones: " << all_ones(r2) << endl;
-    return 0;
-}
+} // ea
 
-/* Great.  However, there's no evolution here -- Indeed, we don't even have a
- population.  On to part 2.
- */
+#endif

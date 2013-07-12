@@ -44,7 +44,7 @@ namespace ealib {
         typename EA::individual_ptr_type ap = ea.make_individual(typename EA::representation_type());
         ap->name() = next<INDIVIDUAL_COUNT>(ea);
         ap->generation() = -1.0;
-        ap->update() = ea.current_update();
+        ap->birth_update() = ea.current_update();
      
         // wrap it in a population:
         typename EA::population_type parents;
@@ -77,7 +77,7 @@ namespace ealib {
         typename EA::individual_ptr_type ap = ea.make_individual(typename EA::representation_type());
         ap->name() = next<INDIVIDUAL_COUNT>(ea);
         ap->generation() = -1.0;
-        ap->update() = ea.current_update();
+        ap->birth_update() = ea.current_update();
         
         // wrap it in a population:
         typename EA::population_type parents;
@@ -224,7 +224,7 @@ namespace ealib {
                 typename EA::individual_type a = typename EA::individual_type();
                 a.name() = next<INDIVIDUAL_COUNT>(ea);
                 a.generation() = -1.0;
-                a.update() = ea.current_update();
+                a.birth_update() = ea.current_update();
                 ancestral.append(make_population_entry(a,ea));
                 
                 IndividualGenerator ig;

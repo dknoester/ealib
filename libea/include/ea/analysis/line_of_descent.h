@@ -73,7 +73,7 @@ namespace ealib {
                         }                    
                     }
                     
-                    df.write(ind(i,ea).update()).write(get<FIXATION_TIME>(ind(i,ea))).write(tally).endl();
+                    df.write(ind(i,ea).birth_update()).write(get<FIXATION_TIME>(ind(i,ea))).write(tally).endl();
                 }
             }
         };

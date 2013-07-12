@@ -83,8 +83,8 @@ namespace ealib {
         //! Retrieve this individual's generation (const-qualified).
         const double& generation() const { return _generation; }
         
-        //! Retrieve this individual's update.
-        long& update() { return _update; }
+        //! Retrieve this individual's birth update.
+        long& birth_update() { return _update; }
 
         //! Retrieve this individual's update (const-qualified).
         const long& update() const { return _update; }

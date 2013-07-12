@@ -186,19 +186,19 @@ BOOST_AUTO_TEST_CASE(test_types) {
     { // default
         evolutionary_algorithm<
         bitstring,
-        mutation::per_site<mutation::bit>,
+        mutation::operators::per_site<mutation::site::bit>,
         all_ones> ea;
     }
     
     { // steady state
         evolutionary_algorithm<
         bitstring,
-        mutation::per_site<mutation::bit>,
+        mutation::operators::per_site<mutation::site::bit>,
         all_ones,
         abstract_configuration,
         recombination::two_point_crossover,
         generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-        default_attributes,
+        attr::default_attributes,
         individual_lod
         > ea;
     }
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(test_types) {
     { // nsga2
         typedef evolutionary_algorithm<
         bitstring,
-        mutation::per_site<mutation::bit>,
+        mutation::operators::per_site<mutation::site::bit>,
         multi_all_ones,
         abstract_configuration,
         recombination::two_point_crossover,

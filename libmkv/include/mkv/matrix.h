@@ -58,6 +58,19 @@ namespace mkv {
         std::size_t _size1, _size2; //!< Sizes of the matrix (m,n)
     };
     
+    //! Output the camera's retina.
+    template <typename Sequence>
+    std::ostream& operator<<(std::ostream& out, sequence_matrix<Sequence>& M) {
+        for(std::size_t i=0; i<M.size1(); ++i) {
+            for(std::size_t j=0; j<M.size2(); ++j) {
+                out << M(i,j);
+            }
+            out << std::endl;
+        }
+        return out;
+    }
+
+    
     
     /*! Random access Matrix iterator, used to bridge Matrix input to a random
      access iterator suitable for Markov networks.

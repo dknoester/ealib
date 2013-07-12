@@ -25,15 +25,19 @@
 #include <ea/fitness_function.h>
 
 namespace ealib {
-
-    //! Default attributes for a individuals in an evolutionary algorithm.
-    template <typename EA>
-    struct default_attributes : attr::fitness_attribute<EA> {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
-        }
-    };
+    
+    namespace attr {
+        
+        //! Default attributes for a individuals in an evolutionary algorithm.
+        template <typename EA>
+        struct default_attributes : attr::fitness_attribute<EA> {
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+                ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
+            }
+        };
+        
+    } // attr
     
     namespace access {
         
@@ -48,9 +52,9 @@ namespace ealib {
         //! Accessor for an individual's meta-data.
         template <typename MDType>
         struct meta_data {
-            template <typename Individual>
-            typename MDType::value_type operator()(Individual& x) {
-                return ealib::get<MDType>(x);
+            template <typename EA>
+            typename MDType::value_type operator()(typename EA::individual_type& ind, EA& ea) {
+                return ealib::get<MDType>(ind);
             }
         };
         

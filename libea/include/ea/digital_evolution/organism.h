@@ -129,10 +129,10 @@ namespace ealib {
         const double& generation() const { return _generation; }
         
         //! Retrieve this organism's update.
-        unsigned long& update() { return _update; }
+        unsigned long& birth_update() { return _update; }
         
         //! Retrieve this organism's update (const-qualified).
-        const unsigned long& update() const { return _update; }
+        const unsigned long& birth_update() const { return _update; }
         
 		//! Retrieve this organism's priority.
 		priority_type& priority() { return _priority; }

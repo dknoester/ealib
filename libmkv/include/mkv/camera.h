@@ -30,9 +30,9 @@ namespace mkv {
     
     //! Used to select the axis being moved.
     enum axis_type { X_AXIS, Y_AXIS, Z_AXIS };
- 
+    
     /*! 2D camera-based iterator over a Matrix.
-
+     
      Consider a 2D Cartesian coordinate plane:
      
      Y+
@@ -41,7 +41,7 @@ namespace mkv {
      |   image
      | UL     LL
      + ----->
-        X+
+     X+
      
      We place an image in this plane such that the upper-left corner of the image
      is at (0,0) in the plane.  (We do this to avoid potential hard-to-find bugs
@@ -94,7 +94,7 @@ namespace mkv {
         std::size_t _i; //!< Row position in _M of the camera.
         std::size_t _j; //!< Column position in _M of the camera.
     };
-
+    
     //! Output the camera's retina.
     template <typename Matrix>
     std::ostream& operator<<(std::ostream& out, camera2_iterator<Matrix>& ci) {
@@ -102,8 +102,8 @@ namespace mkv {
             out << ci[i] << " ";
         }
         return out;
-    }    
-
+    }
+    
     
     /*! 3D camera-based iterator over a Matrix.
      
@@ -155,28 +155,28 @@ namespace mkv {
      --------
      Limits
      
-         min   max
+     min   max
      X  -inf  +inf
      Y  -inf  +inf
      Z   1    +inf
-
+     
      --------
      Random access
      
      This iterator supports random-access, where indices refer to the sensors in
-     the camera's retina.  In the case of Z values > 1, the sensor value is 
+     the camera's retina.  In the case of Z values > 1, the sensor value is
      calculated via max-pooling.  Note that the camera's retina can be "off" the
      image -- that is, the camera is not bound by the size of the image.  In this
      case, sensors that are off the image are always 0.
      
      \todo Alter this to do raycasting for each retina sensor.
-
+     
      \todo Camera's are multi-axis devices, and it is clear that at least 6 axes
      make sense (pitch, yaw, and roll).  We do not deal with these yet.
      */
     template <typename Matrix>
     struct camera3_iterator {
-
+        
         //! Constructor.
         camera3_iterator(Matrix& M, std::size_t s1, std::size_t s2) : _M(M), _size1(s1), _size2(s2), _x(0), _y(0), _z(1) {
         }
@@ -203,7 +203,7 @@ namespace mkv {
             
             return t;
         }
-
+        
         //! Move the camera d units along axis a.
         void move(axis_type a, int d) {
             switch(a) {
@@ -221,7 +221,7 @@ namespace mkv {
                 }
             }
         }
-
+        
         //! Move the camera d*z units along axis a.
         void scaled_move(axis_type a, int d) {
             switch(a) {
@@ -239,19 +239,19 @@ namespace mkv {
                 }
             }
         }
-
+        
         //! Move the camera (i,j) units along axes (y,x).
         void move_ij(int i, int j) {
             move(X_AXIS,j);
             move(Y_AXIS,i);
         }
-
+        
         //! Move the camera (x,y) units.
         void move_xy(int x, int y) {
             move(X_AXIS,x);
             move(Y_AXIS,y);
         }
-
+        
         //! Home the given axis.
         void home(axis_type a) {
             switch(a) {
@@ -269,7 +269,7 @@ namespace mkv {
                 }
             }
         }
-
+        
         //! Home all axes.
         void home() {
             home(X_AXIS);
@@ -292,7 +292,137 @@ namespace mkv {
         }
         return out;
     }
-
+    
+    /*! 2D iterator based on the retinal ganglion.
+     
+     The idea here is that the center of the camera's field of view (FOV) is at
+     a higher resolution than the edges of the camera's FOV.  In essence, we're
+     getting "zoom" for free.
+     
+     The camera's (i,j) position is the location of the upper-left corner of the
+     fovea, which is a square region and may contain >= 1 sensors.
+     
+     + ---------------------> j
+     | UL               UR
+     |  r2         r2        r2
+     |        r1   r1  r1
+     |  r2    r1 fovea r1    r2
+     |        r1   r1  r1
+     |  r2         r2        r2
+     | LL               LR
+     v
+     i
+     
+     Note that cells in each subsequent ring are the same total size as the 
+     receding ring.
+     */
+    template <typename Matrix>
+    struct retina2_iterator {
+        
+        /*! Constructor.
+         
+         \param s is the size of the fovea (square)
+         \param r is the number of rings around the fovea
+         */
+        retina2_iterator(Matrix& M, std::size_t fs, std::size_t r) : _M(M), _fs(fs), _r(r), _i(0), _j(0) {
+        }
+        
+        //! Retrieve the value of the n'th retinal sensor.
+        typename Matrix::value_type operator[](std::size_t n) {
+            // if we're in the fovea, then simply calc and return the cell:
+            if(n < (_fs*_fs)) {
+                int ai = _i + n/_fs;
+                int aj = _j + n%_fs;
+                if((ai>=0) && (ai<static_cast<int>(_M.size1())) && (aj>=0) && (aj<static_cast<int>(_M.size2()))) {
+                    return _M(ai,aj);
+                } else {
+                    return static_cast<typename Matrix::value_type>(0);
+                }
+            }
+            
+            // The below code figures out the overall region of the *retina* over
+            // which we're going to be aggregating information.  Once we know the
+            // region of the retina that we're interested in, relative to the
+            // anchor (upper left) of the fovea, then we take the camera's position
+            // into account.
+            
+            // not in fovea; calculate the ring:
+            n -= _fs*_fs;
+            int ring = n/8+1; // 0th ring is the fovea
+            assert(ring <= _r);
+            
+            // calculate the anchor (upper left corner) of the ring, which is an
+            // offset from the upper left corner of the fovea:
+            int ai=0, aj=0;
+            for(int r=1; r<=ring; ++r) {
+                ai -= _fs*static_cast<int>(pow(3.0,r-1));
+            }
+            aj = ai; // up to this point, ai and aj are the same...
+            
+            // now calculate the cell anchor based on the ring's anchor
+            // (avoiding math here, as we have a hole in the center of the ring):
+            int cell_size = _fs * static_cast<int>(pow(3.0,ring-1));
+            switch(n%8) {
+                case 0: break;
+                case 1: aj += cell_size; break;
+                case 2: aj += 2*cell_size; break;
+                case 3: ai += cell_size; break;
+                case 4: ai += cell_size; aj += 2*cell_size; break;
+                case 5: ai += 2*cell_size; break;
+                case 6: ai += 2*cell_size; aj += cell_size; break;
+                case 7: ai += 2*cell_size; aj += 2*cell_size; break;
+            }
+            
+            // now we know the retina region (ai,aj) -> (ai+cell_size, aj+cell_size).
+            // adjust the anchor wrt the position of the camera; this places us
+            // in the image:
+            ai += _i;
+            aj += _j;
+            
+            // finally, aggregate the pixels in the cell:
+            typename Matrix::value_type t=static_cast<typename Matrix::value_type>(0);
+            for(int i=std::max(0,ai); (i<(ai+cell_size)) && (i<static_cast<int>(_M.size1())); ++i) {
+                for(int j=std::max(0,aj); (j<(aj+cell_size)) && (j<static_cast<int>(_M.size2())); ++j) {
+                    t = std::max(t, _M(i,j));
+                }
+            }
+            return t;
+        }
+        
+        //! Place the camera at absolute position (i,j).
+        void position(int i, int j) {
+            _i = i;
+            _j = j;
+        }
+        
+        //! Move the camera by (i,j), relative to its current position.
+        void move(int i, int j) {
+            _i += i;
+            _j += j;
+        }
+        
+        std::size_t size() { return _fs * _fs + _r * 8; }
+        
+        Matrix& _M; //!< Image that we're iterating over.
+        std::size_t _fs; //!< Size of the retina's fovea (square).
+        std::size_t _r; //!< Number of rings in the retina.
+        int _i; //!< Row position in _M of the camera.
+        int _j; //!< Column position in _M of the camera.
+    };
+    
+    //! Output the camera's retina.
+    template <typename Matrix>
+    std::ostream& operator<<(std::ostream& out, retina2_iterator<Matrix>& ci) {
+        out << "(" << ci._i << "," << ci._j << ")";
+        for(std::size_t i=0; i<ci.size(); ++i) {
+            if(i%8==0) {
+                out << std::endl;
+            }
+            out << ci[i] << " ";
+        }
+        return out;
+    }
+        
 } // mkv
-
+        
 #endif

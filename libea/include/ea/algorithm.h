@@ -34,6 +34,14 @@
 namespace ealib {
 	namespace algorithm {
         
+        //! Ternary {0,1,#} equals binary predicate (# == don't care, which is valued at -1).
+        struct tdc_binary_predicate : std::binary_function<int,int,bool> {
+            bool operator()(int x, int y) {
+                return (x==-1) || (y==-1) || (x==y);
+            }
+        };
+        
+
         template <typename Integer, typename OutputIterator>
         void copy_n_bits(Integer i, std::size_t n, OutputIterator o) {
             for( ; n>0; --n) {

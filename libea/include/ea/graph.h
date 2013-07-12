@@ -441,7 +441,7 @@ namespace ealib {
         /*! Mutate a graph growth descriptor.
          */
         struct growth_descriptor_mutator {
-            typedef mutation::per_site<mutation::uniform_real> sequence_mutator_type;
+            typedef mutation::operators::per_site<mutation::site::uniform_real> sequence_mutator_type;
             
             template <typename Representation, typename EA>
             void operator()(Representation& repr, EA& ea) {

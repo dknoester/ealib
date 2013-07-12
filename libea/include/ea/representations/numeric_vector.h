@@ -83,16 +83,6 @@ namespace ealib {
 		BOOST_SERIALIZATION_SPLIT_MEMBER();		
 	};
 	
-
-    //! Bitstring representation type.
-	typedef numeric_vector<int> bitstring;
-    
-    //! Integer-string representation type.
-    typedef numeric_vector<int> intstring;
-    
-    //! Real-string representation type.
-    typedef numeric_vector<double> realstring;
-	
 } // ea
 
 #endif

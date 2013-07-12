@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_meta_population) {
 BOOST_AUTO_TEST_CASE(test_qhfc) {
     typedef evolutionary_algorithm<
     bitstring,
-    mutation::per_site<mutation::bit>,
+    mutation::operators::per_site<mutation::site::bit>,
     all_ones,
     configuration,
     recombination::two_point_crossover,

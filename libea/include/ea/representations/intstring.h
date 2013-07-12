@@ -1,4 +1,4 @@
-/* tutorial_2.cpp
+/* intstring.h
  *
  * This file is part of EALib.
  *
@@ -17,17 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _EA_REPRESENTATIONS_INTSTRING_H_
+#define _EA_REPRESENTATIONS_INTSTRING_H_
 
-// Go here:
-#include "tutorial_2.h"
+#include <ea/representations/numeric_vector.h>
 
-int main(int argc, const char * argv[]) {
-    population_type p(population_size, repr_type(repr_size, 0));
+namespace ealib {
     
-    random_selection(p);
-    return 0;
-}
+    //! Intstring representation type.
+	typedef numeric_vector<int> intstring;
+	
+} // ea
 
-/* Great.  However, there's still no evolution here -- There's no mutation or
- preferential survival for highly fit individuals.  On to part 3...
- */
+#endif
