@@ -422,6 +422,13 @@ namespace ealib {
         detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
         return ind.attr().fitness();
     }
+    
+    //! Returns true if the individual has a valid fitness.
+    template <typename EA>
+    bool has_fitness(typename EA::individual_type& i, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        return !i.attr().fitness().is_null();
+    }
 
     //! Nullify the fitness of an individual.
     template <typename EA>

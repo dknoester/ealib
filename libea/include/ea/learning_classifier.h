@@ -56,14 +56,14 @@ namespace ealib {
     //! Probability of running the GA during a given update.
     LIBEA_MD_DECL(LCS_GA_P, "ea.lcs.ga_p", double);
     
+    //! Default representation for an LCS.
     struct default_lcs_repr {
         intstring match_string;
         message action_message;
         double bid;
     };
     
-    
-    template <typename MatchStringMutationType, typename ActionStringMutationType, typename BidMutationType>
+    //! Default mutation type for an LCS' representation.
     struct lcs_mutation {
 
         //! Iterate through all elements in the given representation, possibly mutating them.
@@ -80,15 +80,14 @@ namespace ealib {
         template <typename EA>
         void operator()(typename EA::individual_type& ind, EA& ea) {
             typename EA::representation_type& repr=ind.repr();
-            
             operator()(match, repr.match_string, ea);
-            operator()(action, repr.action_string, ea);
-            bid(repr.bid, ea);
+            operator()(action, repr.action_message, ea);
+            bid(&repr.bid, ea);
         }
         
-        MatchStringMutationType match;
-        ActionStringMutationType action;
-        BidMutationType bid;
+        mutation::site::bitflip match;
+        mutation::site::bitflip action;
+        mutation::site::uniform_real bid;
     };
         
     

@@ -28,6 +28,7 @@
 /* Begin PBXBuildFile section */
 		3E1F5FCF160CC5C100406D80 /* alps.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E1F5FCE160CC5C100406D80 /* alps.h */; };
 		421D68B81735719700A45DD6 /* test_analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 421D68B61735719700A45DD6 /* test_analysis.cpp */; };
+		4234C46A17916FBD0078BD85 /* test_lcs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4234C3FE178B1ACE0078BD85 /* test_lcs.cpp */; };
 		423CBE41157D0ECF0003A644 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF0157D0E450003A644 /* main.cpp */; };
 		423CBE42157D0ECF0003A644 /* runner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF1157D0E450003A644 /* runner.cpp */; };
 		423CBE63157D0FF50003A644 /* test_checkpoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF6157D0E450003A644 /* test_checkpoint.cpp */; };
@@ -230,6 +231,7 @@
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		4245006416D53E22007827D7 /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
 		425029961773355800275986 /* encoding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = encoding.h; sourceTree = "<group>"; };
+		4259F67A179EA75500132687 /* evaluations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evaluations.h; sourceTree = "<group>"; };
 		425A6DC3171EF1790096FD75 /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
 		425A6E0D1726CDB90096FD75 /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		425E833416602B5A003B6867 /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
@@ -550,10 +552,11 @@
 		423CBDCB157D0E450003A644 /* datafiles */ = {
 			isa = PBXGroup;
 			children = (
+				4259F67A179EA75500132687 /* evaluations.h */,
+				423CBDCC157D0E450003A644 /* fitness.h */,
 				42279CA515D52E2A00DD63BB /* priority.h */,
 				42279CA615D52E2A00DD63BB /* reactions.h */,
 				425A6DC3171EF1790096FD75 /* resources.h */,
-				423CBDCC157D0E450003A644 /* fitness.h */,
 			);
 			path = datafiles;
 			sourceTree = "<group>";
@@ -1106,6 +1109,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4234C46A17916FBD0078BD85 /* test_lcs.cpp in Sources */,
 				426064C916D8F6F000C5B117 /* runner.cpp in Sources */,
 				423CBE63157D0FF50003A644 /* test_checkpoint.cpp in Sources */,
 				423CBE66157D0FF50003A644 /* test_meta_data.cpp in Sources */,
