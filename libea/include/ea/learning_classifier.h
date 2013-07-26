@@ -296,6 +296,9 @@ namespace ealib {
         //! Accessor for the fitness function object.
         fitness_function_type& fitness_function() { return _fitness_function; }
         
+        //! Accessor for the reward function object.
+        reward_function_type& reward() { return _reward; }
+        
         //! Accessor for the generational model object.
         generational_model_type& generational_model() { return _generational_model; }
         
