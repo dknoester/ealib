@@ -102,12 +102,13 @@ namespace ealib {
      accomodate a wide variety of different LCS approaches.
 	 */
 	template <
-    typename Environment, // communicates via messages; detectors, effectors
+    //typename Environment, // communicates via messages; detectors, effectors
+    template <typename> class Environment, // communicates via messages; detectors, effectors
     typename RewardFunction, // acts upon the action set based on feedback from the environment; learning strategy
     typename Representation=default_lcs_repr,
     typename MatchOperator=default_match,
     typename ActionOperator=default_action,
-    typename CoveringOperator=default_covering,
+    typename CoveringOperator=no_covering,
     template <typename> class ConfigurationStrategy=abstract_configuration,
     typename FitnessFunction=accuracy_fitness,
 	typename MutationOperator=lcs_mutation,
@@ -134,7 +135,7 @@ namespace ealib {
         //! Attributes attached to individuals.
         typedef IndividualAttrs<learning_classifier> individual_attr_type;
         //! Environment type.
-        typedef Environment environment_type;
+        typedef Environment<learning_classifier> environment_type;
         //! Reward function type.
         typedef RewardFunction reward_function_type;
         //! Match operator type.
@@ -193,6 +194,7 @@ namespace ealib {
         //! Initialize this EA.
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
+            _env.initialize(*this);
             _configurator.initialize(*this);
         }
         
@@ -242,7 +244,7 @@ namespace ealib {
             _env.effectors(_messages, *this);
             
             // check for reward:
-            _reward(_env, actionset, *this);
+            _reward(_env, _messages, actionset, *this);
             
             // probabilistically evolve the population:
             if(_rng.p(get<LCS_GA_P>(*this)) && !_population.empty()) {
@@ -295,6 +297,9 @@ namespace ealib {
         
         //! Accessor for the fitness function object.
         fitness_function_type& fitness_function() { return _fitness_function; }
+        
+        //! Accessor for the environment object.
+        environment_type& env() { return _env; }
         
         //! Accessor for the reward function object.
         reward_function_type& reward() { return _reward; }

@@ -407,7 +407,7 @@ namespace ealib {
          Although conceptually simple, we pass in a few extra parameters to support
          eventual spatial resources.
          */
-        double reaction(resource_ptr_type r, individual_type org, ea_type& ea) {
+        double reaction(resource_ptr_type r, individual_type& org, ea_type& ea) {
             return r->consume();
         }
         

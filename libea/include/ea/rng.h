@@ -339,7 +339,17 @@ namespace ealib {
         result_type operator()() { return _rng.p(); }
         RNG& _rng;
     };
-    
+
+    /*! STL-compatible generator for bits.
+     */
+    template <typename RNG>
+    struct bit_generator {
+        typedef double result_type;
+        bit_generator(RNG& rng) : _rng(rng) { }
+        result_type operator()() { return _rng.bit(); }
+        RNG& _rng;
+    };
+
 	//! Default random number generation type.
 	typedef rng<boost::mt19937> default_rng_type;
 

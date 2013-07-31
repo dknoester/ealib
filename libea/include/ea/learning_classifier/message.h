@@ -25,6 +25,14 @@ namespace ealib {
     
     //! Message class; transmitted between environment, internal message board, and rules.
     struct message : public bitstring {
+        typedef bitstring base_type;
+
+        message() : base_type() {
+        }
+
+        message(const bitstring& that) : base_type(that) {
+        }
+        
         template <typename Individual>
         void consumed_by(Individual& ind) {
             

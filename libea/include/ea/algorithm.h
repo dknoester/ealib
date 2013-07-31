@@ -364,6 +364,49 @@ namespace ealib {
             return d;
         }
 
+        //! Cast the range [f,l) of binary values to type T.
+        template <typename T, typename ForwardIterator>
+        T binary_range_cast(ForwardIterator f, ForwardIterator l) {
+            T t=T();
+            for(std::size_t j=0; f!=l; ++f, ++j) {
+                t |=  (*f & 0x01) << j;
+            }
+            return t;
+        }
+        
+        /*! Cast the range [f,l) of binary values to type T, where two bits are
+         used to compute the value of each bit: b = x & ~y.
+         */
+        template <typename T, typename ForwardIterator>
+        T binary_range2_cast(ForwardIterator f, ForwardIterator l) {
+            assert((std::distance(f,l)%2) == 0);
+            T t=T();
+            for(std::size_t j=0; f!=l; ++f, ++j) {
+                int excite=(*f & 0x01);
+                int inhibit=(*++f & 0x01);
+                t |=  (excite & ~inhibit) << j;
+            }
+            return t;
+        }
+
+//        /*! Output single-bit version of the +/- encoded range [f,l).
+//         */
+//        struct range2_reduce : std::binary_function<int,int,int> {
+//            int operator()(int x, int y) { return x & ~y; }
+//        };
+//        
+        template <typename ForwardIterator, typename OutputIterator>
+        void range2_reduce(ForwardIterator f, ForwardIterator l, OutputIterator oi) {
+            assert((std::distance(f,l)%2) == 0);
+            for(; f!=l; ++f) {
+                int excite=(*f & 0x01);
+                int inhibit=(*++f & 0x01);
+                *oi++ = (excite & ~inhibit);
+            }
+        }
+
+        
+        
         /*! Convert the booleans in range [f,l) to a long.
          */
         template <typename T, typename ForwardIterator>

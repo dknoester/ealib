@@ -29,7 +29,7 @@ namespace ealib {
      */
     struct abstract_reward {
         template <typename EA>
-        void operator()(typename EA::environment_type& env, typename EA::population_type& actionset, EA& ea) {
+        void operator()(typename EA::environment_type& env, typename EA::message_board_type& mb, typename EA::population_type& actionset, EA& ea) {
         }
     };
     

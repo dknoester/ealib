@@ -23,12 +23,12 @@
 
 //! Novelty search.
 BOOST_AUTO_TEST_CASE(test_lcs) {
-    using namespace ealib;
-
-    typedef learning_classifier<
-    abstract_environment,
-    abstract_reward
-    > lcs_type;
-    
-    lcs_type lcs;
+//    using namespace ealib;
+//
+//    typedef learning_classifier<
+//    abstract_environment,
+//    abstract_reward
+//    > lcs_type;
+//    
+//    lcs_type lcs;
 }

@@ -22,7 +22,7 @@
 
 namespace ealib {
     
-    struct default_covering {
+    struct no_covering {
         template <typename EA>
         void operator()(typename EA::message_board_type& mb, typename EA::population_type& matchset, EA& ea) {
         }
