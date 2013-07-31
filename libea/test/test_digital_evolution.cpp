@@ -421,45 +421,45 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
 }
 
 
-
-BOOST_AUTO_TEST_CASE(test_tournaments_propagule) {
-
-    al_type al;
-    typedef meta_population<al_type, mp_configuration, generational_models::qhfc> mea_type;
-
-    
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(100,al);
-	put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(20,al);
-    put<SCHEDULER_TIME_SLICE>(30,al);
-    put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<CHECKPOINT_PREFIX>("checkpoint",al);
-    put<RNG_SEED>(1,al);
-    put<RECORDING_PERIOD>(10,al);
-    
-
-    
-    
-    
-    mea_type M;
-    M.configure();
-    put<POPULATION_SIZE>(50,M);
-    put<META_POPULATION_SIZE>(5,M);
-	put<REPRESENTATION_SIZE>(100,M);
-	put<MUTATION_PER_SITE_P>(0.0005,M);
-	put<ELITISM_N>(1,M);
-    put<QHFC_BREED_TOP_FREQ>(2,M);
-    put<QHFC_DETECT_EXPORT_NUM>(2,M);
-    put<QHFC_PERCENT_REFILL>(0.25,M);
-    put<QHFC_CATCHUP_GEN>(20,M);
-    put<QHFC_NO_PROGRESS_GEN>(2,M);
-    
-    M.initialize();
-    M.initial_population();
-    lifecycle::advance_epoch(10,M);
-}
-
+//
+//BOOST_AUTO_TEST_CASE(test_tournaments_propagule) {
+//
+//    al_type al;
+//    typedef meta_population<al_type, mp_configuration, generational_models::qhfc> mea_type;
+//
+//    
+//    put<POPULATION_SIZE>(100,al);
+//	put<REPRESENTATION_SIZE>(100,al);
+//	put<MUTATION_PER_SITE_P>(0.0075,al);
+//    put<SPATIAL_X>(10,al);
+//    put<SPATIAL_Y>(10,al);
+//    put<MUTATION_UNIFORM_INT_MIN>(0,al);
+//    put<MUTATION_UNIFORM_INT_MAX>(20,al);
+//    put<SCHEDULER_TIME_SLICE>(30,al);
+//    put<MUTATION_PER_SITE_P>(0.0075,al);
+//    put<CHECKPOINT_PREFIX>("checkpoint",al);
+//    put<RNG_SEED>(1,al);
+//    put<RECORDING_PERIOD>(10,al);
+//    
+//
+//    
+//    
+//    
+//    mea_type M;
+//    M.configure();
+//    put<POPULATION_SIZE>(50,M);
+//    put<META_POPULATION_SIZE>(5,M);
+//	put<REPRESENTATION_SIZE>(100,M);
+//	put<MUTATION_PER_SITE_P>(0.0005,M);
+//	put<ELITISM_N>(1,M);
+//    put<QHFC_BREED_TOP_FREQ>(2,M);
+//    put<QHFC_DETECT_EXPORT_NUM>(2,M);
+//    put<QHFC_PERCENT_REFILL>(0.25,M);
+//    put<QHFC_CATCHUP_GEN>(20,M);
+//    put<QHFC_NO_PROGRESS_GEN>(2,M);
+//    
+//    M.initialize();
+//    M.initial_population();
+//    lifecycle::advance_epoch(10,M);
+//}
+//
