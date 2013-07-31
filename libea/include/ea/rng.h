@@ -264,6 +264,7 @@ namespace ealib {
 			replacement_type replace(range);
 			algorithm::iota(replace.begin(), replace.end());
 			
+            assert(n <= replace.size());
 			for(; n>0; --n) {
 				replacement_type::iterator i=replace.begin();
 				std::advance(i, uniform_integer(0, replace.size()));

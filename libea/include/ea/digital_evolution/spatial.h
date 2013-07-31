@@ -307,6 +307,12 @@ namespace ealib {
                                   iterator(*handle2ptr(p->location()),8,_locs,ea));
         }
         
+        //! Retrieve the neighbor at the specified direction
+        iterator direction_neighbor(individual_type p, int dir, ea_type& ea) {
+            assert(dir < 8 && dir >= 0);
+            return (iterator(*handle2ptr(p.location()), dir, _locs, ea));
+        }
+        
         //! Retrieve the currently faced neighboring location of the given individual.
         iterator neighbor(individual_ptr_type p, ea_type& ea) {
             return iterator(*handle2ptr(p->location()),handle2ptr(p->location())->heading,_locs,ea);
