@@ -224,27 +224,28 @@ namespace ealib {
             // i'm pretty sure that these are ephemeral, but this may have to
             // be revisited later:
             population_type actionset, matchset;
+            message_board_type env_msgs, action_msgs;
 
             // get messages from env:
-            _env.detectors(_messages, *this);
+            _env.detectors(env_msgs, *this);
             
             // match current messages against population:
-            _match(_messages, _population, matchset, *this);
+            _match(env_msgs, _population, matchset, *this);
             
             // if we don't have a match, generate a covering rule:
             if(matchset.empty()) {
-                _cover(_messages, matchset, *this);
+                _cover(env_msgs, matchset, *this);
             }
             
             // select rules from the match set to be included in the action set,
             // and post their messages:
-            _action(matchset, actionset, _messages, *this);
+            _action(matchset, actionset, env_msgs, action_msgs, *this);
             
             // send the current messages back to the environment:
-            _env.effectors(_messages, *this);
+            _env.effectors(action_msgs, *this);
             
             // check for reward:
-            _reward(_env, _messages, actionset, *this);
+            _reward(_env, action_msgs, actionset, *this);
             
             // probabilistically evolve the population:
             if(_rng.p(get<LCS_GA_P>(*this)) && !_population.empty()) {
@@ -383,7 +384,7 @@ namespace ealib {
         reward_function_type _reward; //!< Reward function object; operates on the environment and action set.
 //        population_type _match_set; //!< Current matching individuals.
 //        population_type _action_set; //!< Current acting individuals.
-        message_board_type _messages; //!< Messages internal to the LCS.
+//        message_board_type _messages; //!< Messages internal to the LCS.
         
         // not serialized:
         match_operator_type _match;

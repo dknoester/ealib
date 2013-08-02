@@ -46,7 +46,6 @@
 		4281FC5615CAE0FB00167444 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		4281FEDC16C45E890066610C /* test_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEDA16C45C840066610C /* test_graph.cpp */; };
 		4281FEEB16C464000066610C /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEE916C463F50066610C /* test.cpp */; };
-		4281FEEE16C4644F0066610C /* test_neuroevolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */; };
 		4281FEF016C464BE0066610C /* test_neuroevolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */; };
 		42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_circular.cpp */; };
 		42841C5E15ADA3F700AB18BE /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
@@ -1103,7 +1102,6 @@
 			files = (
 				423CBE41157D0ECF0003A644 /* main.cpp in Sources */,
 				423CBE42157D0ECF0003A644 /* runner.cpp in Sources */,
-				4281FEEE16C4644F0066610C /* test_neuroevolution.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

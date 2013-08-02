@@ -37,9 +37,9 @@ namespace ealib {
     };
     
     struct default_action {
-        
         template <typename EA>
-        void operator()(typename EA::population_type& matchset, typename EA::population_type& actionset, typename EA::message_board_type& mb, EA& ea) {
+        void operator()(typename EA::population_type& matchset, typename EA::population_type& actionset,
+                        typename EA::message_board_type& env_msgs, typename EA::message_board_type& action_msgs, EA& ea) {
             // sort the matchset based on their bids:
             std::sort(matchset.begin(), matchset.end(), bid_comparator<EA>());
             
@@ -49,7 +49,7 @@ namespace ealib {
             
             // post messages from each individual in the action set:
             for(typename EA::population_type::iterator i=actionset.begin(); i!=actionset.end(); ++i) {
-                mb.insert(mb.end(), (*i)->repr().action_message);
+                action_msgs.insert(action_msgs.end(), (*i)->repr().action_message);
             }
         }
     };
