@@ -20,12 +20,7 @@
 #ifndef _EA_CMDLINE_INTERFACE_H_
 #define _EA_CMDLINE_INTERFACE_H_
 
-#include <sys/resource.h>
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/mean.hpp>
 #include <boost/program_options.hpp>
-#include <boost/timer.hpp>
 #include <boost/regex.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
@@ -41,44 +36,10 @@
 #include <ea/structure.h>
 #include <ea/analysis/tool.h>
 #include <ea/lifecycle.h>
+#include <ea/datafiles/runtime.h>
 
 namespace ealib {
-    
-    /*! Datafile for run statistics.
-     */
-    template <typename EA>
-    struct run_statistics : end_of_update_event<EA> {
-        run_statistics(EA& ea) : end_of_update_event<EA>(ea) {
-            _t.restart();
-        }
-        
-        virtual ~run_statistics() {
-        }
-        
-        virtual void operator()(EA& ea) {
-            double t=_t.elapsed();
-            _tacc(t);
-            std::cerr << std::fixed << std::setprecision(4) << t << " ";
-            std::cerr << std::fixed << std::setprecision(4) << boost::accumulators::mean(_tacc) << " ";
-            
-            double rss=1024.0;
-#ifdef __APPLE__
-            rss *= 1024.0; // bug in apple documentation; ru_maxrss is in units of bytes.
-#endif
-            
-            rusage r;
-            getrusage(RUSAGE_SELF, &r);
-            std::cerr << std::fixed << std::setprecision(4) << r.ru_maxrss/rss << std::endl;
-            
-            
-            _t.restart();
-        }
-        
-        boost::timer _t;
-        boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::mean> > _tacc;
-    };
 
-    
     //! Abstract base class allowing for a limited set of interactions with an EA.
     class ea_interface {
     public:
@@ -261,7 +222,7 @@ namespace ealib {
             ea.initialize();
             gather_events(ea);
             if(vm.count("with-time")) {
-                add_event<run_statistics>(this,ea);
+                add_event<datafiles::runtime>(this,ea);
             }
             execute(ea);
         }        
@@ -279,7 +240,7 @@ namespace ealib {
             ea.initialize();
             gather_events(ea);
             if(vm.count("with-time")) {
-                add_event<run_statistics>(this,ea);
+                add_event<datafiles::runtime>(this,ea);
             }
             ea.initial_population();
             execute(ea);
@@ -366,9 +327,8 @@ namespace ealib {
 } // ea
 
 
-/*! Declare an instance of an evolutionary algorithm.
- 
- This is where we adjust serialization versions, if needed...
+/*! Declare an instance of an evolutionary algorithm, and connect it to the registrar
+ for command-line access.
  */
 #define LIBEA_CMDLINE_INSTANCE( ea_type, cmdline_type ) \
 cmdline_type<ea_type> cmdline_type##_instance;
