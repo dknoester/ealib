@@ -158,7 +158,6 @@ namespace ealib {
         ci->_events.push_back(p);
     }
     
-    
     /*! Command-line interface to an EA.
      */
     template <typename EA>
@@ -272,8 +271,6 @@ namespace ealib {
                 const std::string& k=i->first;
                 const std::string& v=i->second.as<std::string>();
                 apply(k, v, ea, typename EA::population_structure_tag());
-//                std::cerr << "\t" << k << "=" << v << std::endl;
-//                put(k, v, ea.md());
             }
             std::cerr << std::endl;
         }
