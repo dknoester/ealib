@@ -34,6 +34,11 @@ namespace ealib {
         template <typename EA>
         void effectors(typename EA::message_board_type& mb, EA& ea) {
         }
+        
+        //! Serialize this fitness function.
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+        }
     };
     
 } // ea

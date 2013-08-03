@@ -26,6 +26,8 @@
 #include <ea/exceptions.h>
 #include <ea/cmdline_interface.h>
 
+ealib::registrar* ealib::registrar::_instance=0;
+
 //! Called to gather properties (meta-data) into an options_description.
 void gather_options(boost::program_options::options_description& opt_desc);
 

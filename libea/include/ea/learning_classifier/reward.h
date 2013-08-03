@@ -31,6 +31,11 @@ namespace ealib {
         template <typename EA>
         void operator()(typename EA::environment_type& env, typename EA::message_board_type& mb, typename EA::population_type& actionset, EA& ea) {
         }
+
+        //! Serialize this fitness function.
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+        }
     };
     
 } // ea
