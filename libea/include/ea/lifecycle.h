@@ -188,6 +188,19 @@ namespace ealib {
             ea.end_epoch();
         }
         
+        //! Advance the EA by all configured epochs.
+        template <typename EA>
+        void advance_all(EA& ea) {
+			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
+                lifecycle::advance_epoch(get<RUN_UPDATES>(ea), ea);
+                if(!get<CHECKPOINT_OFF>(ea,0)) {
+                    std::ostringstream filename;
+                    filename << get<CHECKPOINT_PREFIX>(ea) << "-" << ea.current_update() << ".xml";
+                    lifecycle::save_checkpoint(filename.str(), ea);
+                }
+			}
+		}
+        
     } // lifecycle
 } // ealib
 
