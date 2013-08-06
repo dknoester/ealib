@@ -69,6 +69,8 @@ namespace ealib {
         typedef singlePopulationS population_structure_tag;
         //! Configuration object type.
         typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
+        //! Encoding type.
+        typedef typename configuration_type::encoding_type encoding_type;
         //! Representation type.
         typedef Representation representation_type;
         //! Fitness function type.

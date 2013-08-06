@@ -40,19 +40,19 @@ namespace ealib {
     namespace detail {
         //!
         template <typename EA>
-        typename EA::configuration_type::phenotype decode(typename EA::individual_type& ind, directS, EA& ea) {
+        typename EA::configuration_type::phenotype make_phenotype(typename EA::individual_type& ind, directS, EA& ea) {
             return ind.repr();
         }
         
         //!
         template <typename EA>
-        typename EA::configuration_type::phenotype decode(typename EA::individual_type& ind, indirectS, EA& ea) {
+        typename EA::configuration_type::phenotype make_phenotype(typename EA::individual_type& ind, indirectS, EA& ea) {
             return ind.repr();
         }
 
         //!
         template <typename EA>
-        typename EA::configuration_type::phenotype decode(typename EA::individual_type& ind, generativeS, EA& ea) {
+        typename EA::configuration_type::phenotype make_phenotype(typename EA::individual_type& ind, generativeS, EA& ea) {
             return ind.repr();
         }
     }
@@ -65,9 +65,11 @@ namespace ealib {
      all-ones problem.
      */
     template <typename EA>
-    typename EA::configuration_type::phenotype decode(typename EA::individual_type& ind, EA& ea) {
-        return detail::decode(ind, typename EA::configuration_type::encoding_type(), ea);
+    typename EA::configuration_type::phenotype make_phenotype(typename EA::individual_type& ind, EA& ea) {
+        return detail::make_phenotype(ind, typename EA::configuration_type::encoding_type(), ea);
     }
+    
+    
     
 } // ealib
 

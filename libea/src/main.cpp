@@ -20,16 +20,16 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <string>
 
 #include <ea/exceptions.h>
 #include <ea/cmdline_interface.h>
 
-ealib::registrar* ealib::registrar::_instance=0;
-
 //! Called to gather properties (meta-data) into an options_description.
 void gather_options(boost::program_options::options_description& opt_desc);
+
 
 /*! Common main function for most evolutionary algorithms supported by EALib.
  
@@ -43,51 +43,7 @@ int main(int argc, char* argv[]) {
 	using namespace std;
 
 	try {
-        // these options are only available on the command line.  when adding options,
-        // if they must be available to the EA, don't add them here -- use meta_data
-        // instead.
-        po::options_description cmdline_only_options("Command-line only options");
-        cmdline_only_options.add_options()
-        ("help,h", "produce this help message")
-        ("config,c", po::value<string>()->default_value("ealib.cfg"), "ealib configuration file")
-        ("checkpoint,l", po::value<string>(), "load a checkpoint file")
-        ("override", "override checkpoint options")
-        ("reset", "reset all fitness values prior to continuing a checkpoint")
-        ("analyze", po::value<string>(), "analyze the results of this EA")
-        ("with-time", "output the instantaneous and mean wall-clock time per update");
-	    
-        po::options_description ea_options("Configuration file and command-line options");
-        ealib::registrar::instance()->gather_options(ea_options);
-		
-        po::options_description all_options;
-        all_options.add(cmdline_only_options).add(ea_options);
-        
-        po::variables_map vm;
-        po::store(po::parse_command_line(argc, argv, all_options), vm);
-        po::notify(vm);
-        
-        string cfgfile(vm["config"].as<string>());
-        ifstream ifs(cfgfile.c_str());
-        if(ifs.good()) {
-            po::parsed_options opt=po::parse_config_file(ifs, ea_options, true);
-            vector<string> unrec = po::collect_unrecognized(opt.options, po::exclude_positional);
-            if(!unrec.empty()) {
-                cout << "Unrecognized options were found in " << cfgfile << ":" << endl;
-                for(std::size_t i=0; i<unrec.size(); ++i) {
-                    cout << "\t" << unrec[i] << endl;
-                }
-                cout << "Exiting..." << endl;
-                return -1;
-            }
-            po::store(opt, vm);
-            ifs.close();
-        }
-        
-        if(vm.count("help")) {
-            cout << "Usage: " << argv[0] << " [-c config_file] [-l checkpoint] [--override] [--analyze] [--option_name value...]" << endl;
-            cout << all_options << endl;
-            return -1;
-        }
+        po::variables_map vm = ealib::parse_command_line(argc, argv);
         
         if(vm.count("analyze")) {
             ealib::registrar::instance()->analyze(vm);

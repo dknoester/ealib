@@ -40,6 +40,9 @@
 
 namespace ealib {
 
+    //! Parse command-line (and potentially config file) options.
+    boost::program_options::variables_map parse_command_line(int argc, char* argv[]);
+    
     //! Abstract base class allowing for a limited set of interactions with an EA.
     class ea_interface {
     public:

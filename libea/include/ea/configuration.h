@@ -21,6 +21,7 @@
 #define _EA_CONFIGURATION_H_
 
 #include <ea/events.h>
+#include <ea/encoding.h>
 
 namespace ealib {
     
@@ -46,6 +47,7 @@ namespace ealib {
     template <typename EA>
     class abstract_configuration {
     public:
+        typedef directS encoding_type; //!< Default encoding type.
         typedef std::vector<boost::shared_ptr<ealib::event> > event_list; //!< Storage for events.
         
         //! Called as the first step of an EA's lifecycle.
