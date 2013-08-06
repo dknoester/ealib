@@ -149,7 +149,8 @@ namespace ealib {
             ("override", "override checkpoint options")
             ("reset", "reset all fitness values prior to continuing a checkpoint")
             ("analyze", po::value<string>(), "analyze the results of this EA")
-            ("with-time", "output the instantaneous and mean wall-clock time per update");
+            ("with-time", "output the instantaneous and mean wall-clock time per update")
+            ("verbose", "output all configuration options");
 
             // gather all the options that are configured for this EA interface:
             gather_options();
@@ -180,10 +181,12 @@ namespace ealib {
             
             if(_vm.count("help")) {
                 ostringstream msg;
-                msg << "Usage: " << argv[0] << " [-c config_file] [-l checkpoint] [--override] [--analyze] [--option_name value...]" << endl;
+                msg << "Usage: " << argv[0] << " [-c config_file] [--with-time] [--verbose] [-l checkpoint] [--override] [--analyze] [--option_name value...]" << endl;
                 msg << all_options << endl;
                 throw ealib::ealib_exception(msg.str());
             }
+            
+            po::notify(_vm);
         }
 
         //! Execute an EA based on the given command-line parameters.
@@ -270,14 +273,18 @@ namespace ealib {
     protected:
 
         //! Apply meta-data to a single population.
-        void apply(const std::string& k, const std::string& v, EA& ea, singlePopulationS) {
-            std::cerr << "\t" << k << "=" << v << std::endl;
+        void apply(const std::string& k, const std::string& v, EA& ea, bool verbose, singlePopulationS) {
+            if(verbose) {
+                std::cerr << "\t" << k << "=" << v << std::endl;
+            }
             put(k, v, ea.md());
         }
         
         //! Apply meta-data to multiple populations.
-        void apply(const std::string& k, const std::string& v, EA& ea, multiPopulationS) {
-            std::cerr << "\t" << k << "=" << v << " (+subpopulations)" << std::endl;
+        void apply(const std::string& k, const std::string& v, EA& ea, bool verbose, multiPopulationS) {
+            if(verbose) {
+                std::cerr << "\t" << k << "=" << v << " (+subpopulations)" << std::endl;
+            }
             put(k, v, ea.md());
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                 put(k,v,i->md());
@@ -287,16 +294,23 @@ namespace ealib {
         //! Apply any command line options to the EA.
         void apply(EA& ea) {
             namespace po = boost::program_options;
-            po::notify(_vm);
-            std::cerr << std::endl << "Active configuration options:" << std::endl;
+            bool verbose = (_vm.count("verbose") > 0);
+
+            if(verbose) {
+                std::cerr << std::endl << "Active configuration options:" << std::endl;
+            }
+            
             for(po::variables_map::iterator i=_vm.begin(); i!=_vm.end(); ++i) {
                 const std::string& k=i->first;
                 const std::string& v=i->second.as<std::string>();
-                apply(k, v, ea, typename EA::population_structure_tag());
+                apply(k, v, ea, verbose, typename EA::population_structure_tag());
             }
-            std::cerr << std::endl;
+            
+            if(verbose) {
+                std::cerr << std::endl;
+            }
         }
-
+        
         //! Returns true if a checkpoint file should be loaded.
         bool has_checkpoint() {
             return (_vm.count("checkpoint") > 0);
