@@ -40,20 +40,11 @@
 
 namespace ealib {
 
-    //! Parse command-line (and potentially config file) options.
-    boost::program_options::variables_map parse_command_line(int argc, char* argv[]);
-    
     //! Abstract base class allowing for a limited set of interactions with an EA.
     class ea_interface {
     public:
-        //! Gather all the registered options into an options description.
-        virtual void gather_options(boost::program_options::options_description& od) = 0;
-        //! Run an analysis on the EA.
-        virtual void analyze(boost::program_options::variables_map& vm) = 0;
-        //! Continue a checkpoint.
-        virtual void continue_checkpoint(boost::program_options::variables_map& vm) = 0;
-        //! Run the EA.
-        virtual void run(boost::program_options::variables_map& vm) = 0;
+        //! Execute an EA based on the given command-line parameters.
+        virtual void exec(int argc, char* argv[]) = 0;
 	};
     
 
@@ -69,26 +60,11 @@ namespace ealib {
 			return _instance;
 		}
         
-        //! Gather all the registered options into an options description.
-        virtual void gather_options(boost::program_options::options_description& od) {
-            _ea->gather_options(od);
+        //! Execute an EA based on the given command-line parameters.
+        virtual void exec(int argc, char* argv[]) {
+            _ea->exec(argc, argv);
         }
-        
-        //! Run an analysis on the EA.
-        virtual void analyze(boost::program_options::variables_map& vm) {
-            _ea->analyze(vm);
-        }
-        
-        //! Continue a checkpoint.
-        virtual void continue_checkpoint(boost::program_options::variables_map& vm) {
-            _ea->continue_checkpoint(vm);
-        }
-        
-        //! Run the EA.
-        virtual void run(boost::program_options::variables_map& vm) {
-            _ea->run(vm);
-        }
-        
+
         //! Register an interface to an EA.
         void register_ea(ea_interface* ea) {
             _ea = ea;
@@ -174,6 +150,75 @@ namespace ealib {
         //! Constructor.
         cmdline_interface() {
             registrar::instance()->register_ea(this);
+        }
+
+        //! Parse command-line (and potentially config file) options.
+        boost::program_options::variables_map parse_command_line(int argc, char* argv[]) {
+            namespace po = boost::program_options;
+            using namespace std;
+            
+            // these options are only available on the command line.  when adding options,
+            // if they must be available to the EA, don't add them here -- use meta_data
+            // instead.
+            po::options_description cmdline_only_options("Command-line only options");
+            cmdline_only_options.add_options()
+            ("help,h", "produce this help message")
+            ("config,c", po::value<string>()->default_value("ealib.cfg"), "ealib configuration file")
+            ("checkpoint,l", po::value<string>(), "load a checkpoint file")
+            ("override", "override checkpoint options")
+            ("reset", "reset all fitness values prior to continuing a checkpoint")
+            ("analyze", po::value<string>(), "analyze the results of this EA")
+            ("with-time", "output the instantaneous and mean wall-clock time per update");
+            
+            po::options_description ea_options("Configuration file and command-line options");
+            gather_options(ea_options);
+            
+            po::options_description all_options;
+            all_options.add(cmdline_only_options).add(ea_options);
+            
+            po::variables_map vm;
+            po::store(po::parse_command_line(argc, argv, all_options), vm);
+            po::notify(vm);
+            
+            string cfgfile(vm["config"].as<string>());
+            ifstream ifs(cfgfile.c_str());
+            if(ifs.good()) {
+                po::parsed_options opt=po::parse_config_file(ifs, ea_options, true);
+                vector<string> unrec = po::collect_unrecognized(opt.options, po::exclude_positional);
+                if(!unrec.empty()) {
+                    ostringstream msg;
+                    msg << "Unrecognized options were found in " << cfgfile << ":" << endl;
+                    for(std::size_t i=0; i<unrec.size(); ++i) {
+                        msg << "\t" << unrec[i] << endl;
+                    }
+                    msg << "Exiting..." << endl;
+                    throw ealib::ealib_exception(msg.str());
+                }
+                po::store(opt, vm);
+                ifs.close();
+            }
+            
+            if(vm.count("help")) {
+                ostringstream msg;
+                msg << "Usage: " << argv[0] << " [-c config_file] [-l checkpoint] [--override] [--analyze] [--option_name value...]" << endl;
+                msg << all_options << endl;
+                throw ealib::ealib_exception(msg.str());
+            }
+            
+            return vm;
+        }
+
+        //! Execute an EA based on the given command-line parameters.
+        virtual void exec(int argc, char* argv[]) {
+            boost::program_options::variables_map vm = parse_command_line(argc, argv);
+            
+            if(vm.count("analyze")) {
+                analyze(vm);
+            } else if(vm.count("checkpoint")) {
+                continue_checkpoint(vm);
+            } else {
+                run(vm);
+            }
         }
         
         //! Gather all the registered options into an options description.

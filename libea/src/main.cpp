@@ -19,10 +19,6 @@
  */
 #include <boost/program_options.hpp>
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <string>
 
 #include <ea/exceptions.h>
 #include <ea/cmdline_interface.h>
@@ -43,15 +39,7 @@ int main(int argc, char* argv[]) {
 	using namespace std;
 
 	try {
-        po::variables_map vm = ealib::parse_command_line(argc, argv);
-        
-        if(vm.count("analyze")) {
-            ealib::registrar::instance()->analyze(vm);
-        } else if(vm.count("checkpoint")) {
-            ealib::registrar::instance()->continue_checkpoint(vm);
-        } else {
-            ealib::registrar::instance()->run(vm);
-        }
+        ealib::registrar::instance()->exec(argc, argv);
     } catch(const po::unknown_option& ex) {
         cerr << "Unknown option: " << ex.get_option_name() << endl;
         return -1;
