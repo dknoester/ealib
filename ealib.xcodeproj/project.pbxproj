@@ -228,7 +228,7 @@
 		4245003016D26866007827D7 /* abstract_neuron.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_neuron.h; sourceTree = "<group>"; };
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		4245006416D53E22007827D7 /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
-		425029961773355800275986 /* encoding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = encoding.h; sourceTree = "<group>"; };
+		425029961773355800275986 /* phenotype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = phenotype.h; sourceTree = "<group>"; };
 		4259F67A179EA75500132687 /* evaluations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evaluations.h; sourceTree = "<group>"; };
 		4259F68E17A2A6B500132687 /* population_entropy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_entropy.h; sourceTree = "<group>"; };
 		4259F69317ABF65600132687 /* runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = runtime.h; sourceTree = "<group>"; };
@@ -499,7 +499,6 @@
 				423CBDC7157D0E450003A644 /* cvector.h */,
 				423CBDCA157D0E450003A644 /* datafile.h */,
 				423CBDCB157D0E450003A644 /* datafiles */,
-				425029961773355800275986 /* encoding.h */,
 				423CBDCD157D0E450003A644 /* events.h */,
 				423CBDCE157D0E450003A644 /* evolutionary_algorithm.h */,
 				423CBDCF157D0E450003A644 /* exceptions.h */,
@@ -519,6 +518,7 @@
 				42841C8015AEEC3A00AB18BE /* meta_population.h */,
 				423CBDE1157D0E450003A644 /* mutation.h */,
 				42F4B631158225F00075D6EF /* novelty_search.h */,
+				425029961773355800275986 /* phenotype.h */,
 				423CBDE2157D0E450003A644 /* population.h */,
 				423CBDE3157D0E450003A644 /* recombination.h */,
 				423CBDE4157D0E450003A644 /* representations */,

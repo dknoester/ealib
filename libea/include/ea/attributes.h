@@ -23,14 +23,14 @@
 #include <boost/serialization/nvp.hpp>
 #include <ea/meta_data.h>
 #include <ea/fitness_function.h>
+#include <ea/phenotype.h>
 
 namespace ealib {
-    
     namespace attr {
-        
-        //! Default attributes for a individuals in an evolutionary algorithm.
+
+        //! Default attributes for individuals in an evolutionary algorithm.
         template <typename EA>
-        struct default_attributes : attr::fitness_attribute<EA> {
+        struct default_attributes : attr::fitness_attribute<EA>, attr::phenotype_attribute<EA> {
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
                 ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));

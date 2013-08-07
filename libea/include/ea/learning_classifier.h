@@ -28,9 +28,9 @@
 #include <ea/attributes.h>
 #include <ea/concepts.h>
 #include <ea/configuration.h>
-#include <ea/generational_models/steady_state.h>
+#include <ea/generational_models/death_birth_process.h>
 #include <ea/individual.h>
-#include <ea/encoding.h>
+#include <ea/phenotype.h>
 #include <ea/fitness_function.h>
 #include <ea/ancestors.h>
 #include <ea/meta_data.h>
@@ -113,7 +113,7 @@ namespace ealib {
     typename FitnessFunction=accuracy_fitness,
 	typename MutationOperator=lcs_mutation,
 	typename RecombinationOperator=recombination::asexual,
-	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
+	typename GenerationalModel=generational_models::death_birth_process<selection::proportionate< >, selection::random>,
     template <typename> class IndividualAttrs=attr::default_attributes,
     template <typename> class Individual=individual,
 	template <typename,typename> class Population=ealib::population,
@@ -124,8 +124,6 @@ namespace ealib {
     public:
         //! Tag indicating the structure of this population.
         typedef singlePopulationS population_structure_tag;
-        //! Configuration object type.
-        typedef ConfigurationStrategy<learning_classifier> configuration_type;
         //! Representation type.
         typedef Representation representation_type;
         //! Fitness function type.
@@ -148,6 +146,10 @@ namespace ealib {
         typedef Individual<learning_classifier> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
+        //! Configuration object type.
+        typedef ConfigurationStrategy<learning_classifier> configuration_type;
+        //! Encoding type.
+        typedef typename configuration_type::encoding_type encoding_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
@@ -401,7 +403,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
             ar & boost::serialization::make_nvp("meta_data", _md);
             ar & boost::serialization::make_nvp("environment", _env);
-            ar & boost::serialization::make_nvp("reward", _reward);
+//            ar & boost::serialization::make_nvp("reward", _reward);
 //            ar & boost::serialization::make_nvp("match_set", _match_set);
 //            ar & boost::serialization::make_nvp("action_set", _action_set);
         }

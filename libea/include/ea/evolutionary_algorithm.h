@@ -29,7 +29,7 @@
 #include <ea/configuration.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
-#include <ea/encoding.h>
+#include <ea/phenotype.h>
 #include <ea/fitness_function.h>
 #include <ea/ancestors.h>
 #include <ea/meta_data.h>
@@ -67,10 +67,6 @@ namespace ealib {
     public:
         //! Tag indicating the structure of this population.
         typedef singlePopulationS population_structure_tag;
-        //! Configuration object type.
-        typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
-        //! Encoding type.
-        typedef typename configuration_type::encoding_type encoding_type;
         //! Representation type.
         typedef Representation representation_type;
         //! Fitness function type.
@@ -83,6 +79,10 @@ namespace ealib {
         typedef Individual<evolutionary_algorithm> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
+        //! Configuration object type.
+        typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
+        //! Encoding type.
+        typedef typename configuration_type::encoding_type encoding_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.

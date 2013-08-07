@@ -108,10 +108,10 @@ namespace ealib {
         ci->_events.push_back(p);
     }
     
-    /*! This selector is used with the command-line interface to autostart an interface
-     (i.e., it connects the EA to the registrar so that libea's main() can find it.
+    /*! This selector is used with the command-line interface to prevent an interface
+     from adding itself to the registrar.
      */
-    struct autostartS { };
+    struct do_not_registerS { };
     
     /*! Command-line interface to an EA.
      */
@@ -125,50 +125,51 @@ namespace ealib {
         typedef std::vector<boost::shared_ptr<ealib::event> > event_list; //!< Storage for events.
         
         //! Constructor.
-        explicit cmdline_interface() : ea_interface(), _ea_options("Configuration file and command-line options") {
-        }
-
-        //! Autostarting constructor.
-        explicit cmdline_interface(autostartS) : ea_interface(), _ea_options("Configuration file and command-line options") {
+        cmdline_interface() : ea_interface(), _ea_options("Configuration file and command-line options") {
             registrar::instance()->register_ea(this);
         }
 
-        //! Parse command-line (and potentially config file) options.
-        void parse_command_line(int argc, char* argv[]) {
+        //! Autostarting constructor.
+        cmdline_interface(do_not_registerS) : ea_interface(), _ea_options("Configuration file and command-line options") {
+        }
+        
+        //! Gather the options supported by this EA.
+        virtual void gather_options() { }
+        
+        //! Gather the analysis tools supported by this EA.
+        virtual void gather_tools() { }
+        
+        //! Gather the events that occur during a trial of this EA.
+        virtual void gather_events(EA& ea) { }
+        
+        //! Execute an EA based on the given command-line parameters.
+        virtual void exec(int argc, char* argv[]) {
+            gather_options();
+            parse_all(argc, argv);
+            
+            ea_type ea;
+            
+            if(_vm.count("analyze")) {
+                analyze(ea);
+            } else if(_vm.count("checkpoint")) {
+                continue_checkpoint(ea);
+            } else {
+                run(ea);
+            }
+        }
+        
+        //! Parse config file options.
+        void parse_config_file(const std::string& filename) {
             namespace po = boost::program_options;
             using namespace std;
-            
-            // these options are only available on the command line.  when adding options,
-            // if they must be available to the EA, don't add them here -- use meta_data
-            // instead.
-            po::options_description cmdline_only_options("Command-line only options");
-            cmdline_only_options.add_options()
-            ("help,h", "produce this help message")
-            ("config,c", po::value<string>()->default_value("ealib.cfg"), "ealib configuration file")
-            ("checkpoint,l", po::value<string>(), "load a checkpoint file")
-            ("override", "override checkpoint options")
-            ("reset", "reset all fitness values prior to continuing a checkpoint")
-            ("analyze", po::value<string>(), "analyze the results of this EA")
-            ("with-time", "output the instantaneous and mean wall-clock time per update")
-            ("verbose", "output all configuration options");
 
-            // gather all the options that are configured for this EA interface:
-            gather_options();
-            
-            po::options_description all_options;
-            all_options.add(cmdline_only_options).add(_ea_options);
-            
-            po::store(po::parse_command_line(argc, argv, all_options), _vm);
-            po::notify(_vm);
-            
-            string cfgfile(_vm["config"].template as<string>());
-            ifstream ifs(cfgfile.c_str());
+            ifstream ifs(filename.c_str());
             if(ifs.good()) {
                 po::parsed_options opt=po::parse_config_file(ifs, _ea_options, true);
                 vector<string> unrec = po::collect_unrecognized(opt.options, po::exclude_positional);
                 if(!unrec.empty()) {
                     ostringstream msg;
-                    msg << "Unrecognized options were found in " << cfgfile << ":" << endl;
+                    msg << "Unrecognized options were found in: " << filename << ":" << endl;
                     for(std::size_t i=0; i<unrec.size(); ++i) {
                         msg << "\t" << unrec[i] << endl;
                     }
@@ -176,7 +177,37 @@ namespace ealib {
                     throw ealib::ealib_exception(msg.str());
                 }
                 po::store(opt, _vm);
+                po::notify(_vm);
                 ifs.close();
+            } else {
+                throw ealib::file_io_exception("Could not open config file: " + filename);
+            }
+        }
+
+        //! Parse command-line and potentially config file options.
+        void parse_all(int argc, char* argv[]) {
+            namespace po = boost::program_options;
+            using namespace std;
+            
+            po::options_description cmdline_only_options("Command-line only options");
+            cmdline_only_options.add_options()
+            ("help,h", "produce this help message")
+            ("config,c", po::value<string>(), "ealib configuration file")
+            ("checkpoint,l", po::value<string>(), "load a checkpoint file")
+            ("override", "override checkpoint options")
+            ("reset", "reset all fitness values prior to continuing a checkpoint")
+            ("analyze", po::value<string>(), "analyze the results of this EA")
+            ("with-time", "output the instantaneous and mean wall-clock time per update")
+            ("verbose", "output all configuration options");
+
+            po::options_description all_options;
+            all_options.add(cmdline_only_options).add(_ea_options);
+            
+            po::store(po::parse_command_line(argc, argv, all_options), _vm);
+            po::notify(_vm);
+            
+            if(_vm.count("config")) {
+                parse_config_file(_vm["config"].template as<string>());
             }
             
             if(_vm.count("help")) {
@@ -189,33 +220,9 @@ namespace ealib {
             po::notify(_vm);
         }
 
-        //! Execute an EA based on the given command-line parameters.
-        virtual void exec(int argc, char* argv[]) {
-            parse_command_line(argc, argv);
-            
-            ea_type ea;
-            ea.configure();
-            
-            if(_vm.count("analyze")) {
-                analyze(ea);
-            } else if(_vm.count("checkpoint")) {
-                continue_checkpoint(ea);
-            } else {
-                run(ea);
-            }
-        }
-        
-        //! Gather the options supported by this EA.
-        virtual void gather_options() { }
-        
-        //! Gather the analysis tools supported by this EA.
-        virtual void gather_tools() { }
-        
-        //! Gather the events that occur during a trial of this EA.
-        virtual void gather_events(EA& ea) { }
-
         //! Analyze an EA instance.
 		void analyze(ea_type& ea) {
+            ea.configure();
             load_if(ea);
             apply(ea);
             ea.initialize();
@@ -233,6 +240,7 @@ namespace ealib {
         
         //! Continue a previously-checkpointed EA.
 		void continue_checkpoint(ea_type& ea) {
+            ea.configure();
             load(ea);
             
             // conditionally apply command-line and/or file parameters:
@@ -255,6 +263,7 @@ namespace ealib {
         
 		//! Run the EA.
 		void run(ea_type& ea) {
+            ea.configure();
             apply(ea);
             
             if(exists<RNG_SEED>(ea)) {
@@ -352,7 +361,7 @@ namespace ealib {
  for command-line access.
  */
 #define LIBEA_CMDLINE_INSTANCE( ea_type, cmdline_type ) \
-cmdline_type<ea_type> cmdline_type##_instance(ealib::autostartS);
+cmdline_type<ea_type> cmdline_type##_instance;
 //BOOST_CLASS_VERSION(ea_type::individual_type, 2) 
 //BOOST_CLASS_VERSION(ea_type::generational_model_type, 1)
 

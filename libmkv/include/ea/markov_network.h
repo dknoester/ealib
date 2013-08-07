@@ -27,6 +27,7 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <ea/configuration.h>
 #include <ea/meta_data.h>
 #include <ea/analysis.h>
 #include <ea/events.h>
@@ -74,77 +75,6 @@ namespace mkv {
     }
 }
 
-namespace ealib {
-	
-	/*! Markov network mutation type.
-     
-     Performs per-site, duplication, and deletion mutations.
-	 */
-	struct mkv_mutation {
-        template <typename EA>
-        void operator()(typename EA::individual_type& ind, EA& ea) {
-            typename EA::representation_type& repr=ind.repr();
-			typedef typename std::vector<typename EA::representation_type::codon_type> codon_buffer;
-			
-			double per_site_p = get<MUTATION_PER_SITE_P>(ea);
-            int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
-			for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
-				if(ea.rng().p(per_site_p)) {
-					*i = ea.rng()(imax);
-				}
-			}
-			
-            // gene duplication
-            // (the below looks a little crude, but there were some problems related
-            // to incorrect compiler optimization.)
-			if(ea.rng().p(get<MUTATION_DUPLICATION_P>(ea)) && (repr.size()<get<MKV_REPR_MAX_SIZE>(ea))) {
-                int start = ea.rng().uniform_integer(0, repr.size());
-                int extent = ea.rng().uniform_integer(16, 513);
-                codon_buffer buf(extent);
-                for(int i=0; i<extent; ++i) {
-                    buf[i] = repr[start+i];
-                }
-				repr.insert(ea.rng().choice(repr.begin(),repr.end()), buf.begin(), buf.end());
-			}
-            
-            // gene deletion
-			if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<MKV_REPR_MIN_SIZE>(ea))) {
-				int start, extent;
-				extent = 15+ea.rng()(512);
-				start = ea.rng()(repr.size()-extent);
-				repr.erase(repr.begin()+start, repr.begin()+start+extent);
-			}
-		}
-	};
-
-    
-    /*! Generates random Markov network-based individuals.
-	 */
-	struct mkv_random_individual {
-        template <typename EA>
-        typename EA::representation_type operator()(EA& ea) {
-            using namespace mkv;
-            
-            typename EA::representation_type repr;
-            repr.resize(get<MKV_REPR_INITIAL_SIZE>(ea), 127);
-			
-            // which gate types are supported?
-            std::set<gate_types> supported = supported_gates(ea);
-            
-			int i,j;
-			for(i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
-				j=ea.rng()(repr.size()-100);
-                int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
-                repr[j] = gate;
-                repr[j+1] = 255-gate;
-				for(int k=2; k<97; ++k) {
-					repr[j+k]=ea.rng()(256);
-				}
-			}
-			return repr;
-		}
-	};
-}
 
 namespace mkv {
     namespace detail {
@@ -358,8 +288,8 @@ namespace mkv {
      */
     template <typename ForwardIterator, typename EA>
     markov_network make_markov_network(const markov_network::desc_type& desc,
-                                       ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
-        markov_network net(desc, seed);
+                                       ForwardIterator f, ForwardIterator l, EA& ea) {
+        markov_network net(desc);
         build_markov_network(net, f, l, ea);
         net.writable_inputs(get<MKV_WRITABLE>(ea,0));
         return net;
@@ -368,18 +298,18 @@ namespace mkv {
     /*! Convenience method to build a Markov Network.
      */
     template <typename ForwardIterator, typename EA>
-    markov_network make_markov_network(ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
+    markov_network make_markov_network(ForwardIterator f, ForwardIterator l, EA& ea) {
         markov_network::desc_type desc;
         parse_desc(ealib::get<MKV_DESC>(ea), desc);
-        return make_markov_network(desc, f, l, seed, ea);
+        return make_markov_network(desc, f, l, ea);
     }
     
     /*! Convenience method to build a Deep Markov Network.
      */
     template <typename ForwardIterator, typename EA>
     deep_markov_network make_deep_markov_network(const deep_markov_network::desc_type& desc,
-                                                 ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
-        deep_markov_network net(desc, seed);
+                                                 ForwardIterator f, ForwardIterator l, EA& ea) {
+        deep_markov_network net(desc);
         build_deep_markov_network(net, f, l, ea);
         net.writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
         return net;
@@ -388,11 +318,12 @@ namespace mkv {
     /*! Convenience method to build a Deep Markov Network.
      */
     template <typename ForwardIterator, typename EA>
-    deep_markov_network make_deep_markov_network(ForwardIterator f, ForwardIterator l, int seed, EA& ea) {
+    deep_markov_network make_deep_markov_network(ForwardIterator f, ForwardIterator l, EA& ea) {
         deep_markov_network::desc_type desc;
         parse_desc(ealib::get<MKV_DESC>(ea), desc);
-        return make_deep_markov_network(desc, f, l, seed, ea);
+        return make_deep_markov_network(desc, f, l, ea);
     }
+    
     
     /*! Save the detailed graph of the dominant individual in graphviz format.
      */
@@ -423,7 +354,7 @@ namespace mkv {
                     using namespace ealib;
                     using namespace ealib::analysis;
                     typename EA::individual_type& ind = analysis::find_dominant(ea);
-                    mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
+                    mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea);
                     
                     datafile df(get<ANALYSIS_OUTPUT>(ea,"reduced_graph.dot"));
                     std::ostringstream title;
@@ -483,7 +414,7 @@ namespace mkv {
             template <typename EA>
             struct network_statistics : ealib::analysis::unary_function<EA> {
                 static const char* name() { return "network_statistics"; }
-
+                
                 virtual void operator()(EA& ea) {
                     using namespace ealib;
                     datafile df("network_statistics.dat");
@@ -494,9 +425,9 @@ namespace mkv {
                     .add_field("gates");
                     
                     for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                        markov_network net = mkv::make_markov_network(i->repr().begin(), i->repr().end(), ea.rng().seed(), ea);
+                        markov_network net = mkv::make_markov_network(i->repr().begin(), i->repr().end(), ea);
                         markov_graph G = as_reduced_graph(net);
-
+                        
                         double gates=0.0, inputs=0.0, outputs=0.0, hidden=0.0;
                         markov_graph::vertex_iterator vi,vi_end;
                         for(boost::tie(vi,vi_end)=boost::vertices(G); vi!=vi_end; ++vi) {
@@ -531,6 +462,114 @@ namespace mkv {
                     }
                 }
             };
-} // mkv
+            } // mkv
+            
+            
+            namespace ealib {
+                
+                /*! Markov network mutation type.
+                 
+                 Performs per-site, duplication, and deletion mutations.
+                 */
+                struct mkv_mutation {
+                    template <typename EA>
+                    void operator()(typename EA::individual_type& ind, EA& ea) {
+                        typename EA::representation_type& repr=ind.repr();
+                        typedef typename std::vector<typename EA::representation_type::codon_type> codon_buffer;
+                        
+                        double per_site_p = get<MUTATION_PER_SITE_P>(ea);
+                        int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
+                        for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
+                            if(ea.rng().p(per_site_p)) {
+                                *i = ea.rng()(imax);
+                            }
+                        }
+                        
+                        // gene duplication
+                        // (the below looks a little crude, but there were some problems related
+                        // to incorrect compiler optimization.)
+                        if(ea.rng().p(get<MUTATION_DUPLICATION_P>(ea)) && (repr.size()<get<MKV_REPR_MAX_SIZE>(ea))) {
+                            int start = ea.rng().uniform_integer(0, repr.size());
+                            int extent = ea.rng().uniform_integer(16, 513);
+                            codon_buffer buf(extent);
+                            for(int i=0; i<extent; ++i) {
+                                buf[i] = repr[start+i];
+                            }
+                            repr.insert(ea.rng().choice(repr.begin(),repr.end()), buf.begin(), buf.end());
+                        }
+                        
+                        // gene deletion
+                        if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<MKV_REPR_MIN_SIZE>(ea))) {
+                            int start, extent;
+                            extent = 15+ea.rng()(512);
+                            start = ea.rng()(repr.size()-extent);
+                            repr.erase(repr.begin()+start, repr.begin()+start+extent);
+                        }
+                    }
+                };
+                
+                
+                /*! Generates random Markov network-based individuals.
+                 */
+                struct mkv_random_individual {
+                    template <typename EA>
+                    typename EA::representation_type operator()(EA& ea) {
+                        using namespace mkv;
+                        
+                        typename EA::representation_type repr;
+                        repr.resize(get<MKV_REPR_INITIAL_SIZE>(ea), 127);
+                        
+                        // which gate types are supported?
+                        std::set<gate_types> supported = supported_gates(ea);
+                        
+                        int i,j;
+                        for(i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
+                            j=ea.rng()(repr.size()-100);
+                            int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
+                            repr[j] = gate;
+                            repr[j+1] = 255-gate;
+                            for(int k=2; k<97; ++k) {
+                                repr[j+k]=ea.rng()(256);
+                            }
+                        }
+                        return repr;
+                    }
+                };
+                
+                
+                /*! Configuration object for EAs that use Markov Networks.
+                 */
+                template <typename EA>
+                struct mkv_configuration : public abstract_configuration<EA> {
+                    typedef indirectS encoding_type;
+                    typedef mkv::markov_network phenotype;
+                    typedef boost::shared_ptr<mkv::markov_network> phenotype_ptr;
+                    
+                    mkv::markov_network::desc_type _desc;
+                    
+                    //! Translate an individual's representation into a Markov Network.
+                    phenotype_ptr virtual make_phenotype(typename EA::individual_type& ind, EA& ea) {
+                        phenotype_ptr p(new mkv::markov_network(_desc));
+                        mkv::build_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea);
+                        return p;
+                    }
+                    
+                    //! Called as the first step of an EA's lifecycle.
+                    virtual void configure(EA& ea) {
+                    }
+                    
+                    //! Called to generate the initial EA population.
+                    virtual void initial_population(EA& ea) {
+                        generate_ancestors(mkv_random_individual(), get<POPULATION_SIZE>(ea), ea);
+                    }
+                    
+                    //! Called as the final step of EA initialization.
+                    virtual void initialize(EA& ea) {
+                        mkv::parse_desc(get<MKV_DESC>(ea), _desc);
+                    }
+                };
+                
+            } // ealib
+            
             
 #endif
