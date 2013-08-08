@@ -27,7 +27,6 @@
 #include <ea/meta_data.h>
 
 namespace ealib {
-
 	namespace selection {
 		
 		/*! Stacks elitism on top of another selection strategy.

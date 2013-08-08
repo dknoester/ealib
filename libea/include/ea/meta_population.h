@@ -53,6 +53,8 @@ namespace ealib {
         };        
     }
 
+    struct null_representation { };
+    
     /*! Metapopulation evolutionary algorithm, where individuals in the population
      are themselves evolutionary algorithms.
      */
@@ -67,6 +69,8 @@ namespace ealib {
     public:
         //! Tag indicating the structure of this population.
         typedef multiPopulationS population_structure_tag;
+        //! Representation (null, in the normal case).
+        typedef null_representation representation_type;
         //! Configuration object type.
         typedef ConfigurationStrategy<meta_population> configuration_type;
         //! Type of individual held by this metapopulation.

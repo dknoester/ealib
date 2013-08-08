@@ -240,6 +240,8 @@
 		426064ED16EF8F0800C5B117 /* neurodevelopment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neurodevelopment.h; sourceTree = "<group>"; };
 		426064EE16F0D36700C5B117 /* test_neurodevelopment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neurodevelopment.cpp; sourceTree = "<group>"; };
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
+		426A04AA17B3C951000F5151 /* sigma_scaling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sigma_scaling.h; sourceTree = "<group>"; };
+		426A04AB17B3CC9A000F5151 /* universal_sampling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = universal_sampling.h; sourceTree = "<group>"; };
 		42720FB1163C0957008C8E63 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		42720FB2163C0AEA008C8E63 /* graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
 		42720FBF163C0B1F008C8E63 /* libmkv.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmkv.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -603,6 +605,8 @@
 				423CBDE9157D0E450003A644 /* elitism.h */,
 				423CBDEA157D0E450003A644 /* proportionate.h */,
 				423CBDEB157D0E450003A644 /* random.h */,
+				426A04AB17B3CC9A000F5151 /* universal_sampling.h */,
+				426A04AA17B3C951000F5151 /* sigma_scaling.h */,
 				423CBDEC157D0E450003A644 /* tournament.h */,
 				423CBDED157D0E450003A644 /* truncation.h */,
 			);

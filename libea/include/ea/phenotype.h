@@ -21,7 +21,7 @@
 #define _EA_PHENOTYPE_H_
 
 namespace ealib {
-    
+
     // **** Warning: this is not yet well-developed.
 
     /* The idea here is that some kinds of EAs require that an individual's genotype

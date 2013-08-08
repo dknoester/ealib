@@ -86,6 +86,9 @@ namespace ealib {
         //! Returns true if this individual has parents.
         bool has_parents() { return (_lod_parents.size() > 0); }
         
+        //! Returns true if this individual is an ancestor (i.e., an invalid individual).
+        bool is_ancestor() { return base_type::generation() < 0.0; }
+        
     protected:
         parent_set_type _lod_parents; //!< This individual's set of parents.
     };

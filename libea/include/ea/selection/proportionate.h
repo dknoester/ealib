@@ -54,9 +54,10 @@ namespace ealib {
                 }
 			}
 
-			/*! Select n individuals via fitness-proportionate selection.
+			/*! Select n individuals via proportionate selection.
              
-             We go through a few hoops here in order to avoid n linear time lookups...
+             We go through a few hoops here in order to avoid n linear time lookups.
+             It's not quite universal sampling, but similar in spirit.
              */
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
