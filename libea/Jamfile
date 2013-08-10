@@ -10,6 +10,7 @@ alias libea : : : : <include>./include ;
 
 lib libea_runner :
     src/main.cpp
+    src/cmdline_interface.cpp
     libea
     /boost//program_options
     /boost//serialization
