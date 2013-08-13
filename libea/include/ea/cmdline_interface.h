@@ -197,8 +197,7 @@ namespace ealib {
             ("override", "override checkpoint options")
             ("reset", "reset all fitness values prior to continuing a checkpoint")
             ("analyze", po::value<string>(), "analyze the results of this EA")
-            ("with-time", "output the instantaneous and mean wall-clock time per update")
-            ("verbose", "output all configuration options");
+            ("verbose", "output configuration options and per-update time and memory usage");
 
             po::options_description all_options;
             all_options.add(cmdline_only_options).add(_ea_options);
@@ -212,7 +211,7 @@ namespace ealib {
             
             if(_vm.count("help")) {
                 ostringstream msg;
-                msg << "Usage: " << argv[0] << " [-c config_file] [--with-time] [--verbose] [-l checkpoint] [--override] [--analyze] [--option_name value...]" << endl;
+                msg << "Usage: " << argv[0] << " [-c config_file] [--verbose] [-l checkpoint] [--override] [--analyze] [--option_name value...]" << endl;
                 msg << all_options << endl;
                 throw ealib::ealib_exception(msg.str());
             }
@@ -255,7 +254,7 @@ namespace ealib {
             
             ea.initialize();
             gather_events(ea);
-            if(_vm.count("with-time")) {
+            if(_vm.count("verbose")) {
                 add_event<datafiles::runtime>(this,ea);
             }
             lifecycle::advance_all(ea);
@@ -272,7 +271,7 @@ namespace ealib {
             
             ea.initialize();
             gather_events(ea);
-            if(_vm.count("with-time")) {
+            if(_vm.count("verbose")) {
                 add_event<datafiles::runtime>(this,ea);
             }
             ea.initial_population();

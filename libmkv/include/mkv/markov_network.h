@@ -310,7 +310,7 @@ namespace mkv {
                 // output:
                 std::size_t i = get_input(g.inputs);
                 markov_gate::row_type row(g.M, i);
-                double p = _net.rng().uniform_real(0.0,1.0);
+                double p = _net.rng().p();
                 
                 for(int j=0; j<static_cast<int>(g.M.size2()); ++j) {
                     if(p <= row[j]) {
@@ -344,7 +344,7 @@ namespace mkv {
                 // now handle the next output:
                 std::size_t i = get_input(g.inputs);
                 adaptive_gate::row_type row(g.M, i);
-                double p = _net.rng().uniform_real(0.0,1.0);
+                double p = _net.rng().p();
                 
                 for(int j=0; j<static_cast<int>(g.M.size2()); ++j) {
                     if(p <= row[j]) {

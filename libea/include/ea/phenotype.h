@@ -91,6 +91,13 @@ namespace ealib {
         typename EA::configuration_type::phenotype_ptr make_phenotype(typename EA::individual_type& ind, indirectS, EA& ea) {
             return ea.configuration().make_phenotype(ind,ea);
         }
+        
+        //! Indirect encoding; returns a pointer to a stochastic phenotype that has been translated from the genotype.
+        template <typename EA>
+        typename EA::configuration_type::phenotype_ptr make_phenotype(typename EA::individual_type& ind, indirectS,
+                                                                      typename EA::rng_type& rng, EA& ea) {
+            return ea.configuration().make_phenotype(ind,rng,ea);
+        }
 
     } // detail
     
@@ -104,6 +111,20 @@ namespace ealib {
             ind.attr().phenotype() = p;
         }
 
+        return *ind.attr().phenotype();
+    }
+    
+    //! Phenotype attribute accessor; lazily decodes a genotype into a stochastic phenotype.
+    template <typename EA>
+    typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind,
+                                                          typename EA::rng_type& rng, EA& ea) {
+        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+        
+        if(!ind.attr().has_phenotype()) {
+            typename EA::configuration_type::phenotype_ptr p=detail::make_phenotype(ind, typename EA::encoding_type(), rng, ea);
+            ind.attr().phenotype() = p;
+        }
+        
         return *ind.attr().phenotype();
     }
 

@@ -377,9 +377,9 @@ namespace ealib {
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, stochasticS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            next<FF_RNG_SEED>(ea);
-            typename EA::rng_type rng(get<FF_RNG_SEED>(ea)+1); // +1 to avoid clock
-            put<FF_RNG_SEED>(get<FF_RNG_SEED>(ea), i); // save the seed that was used to evaluate this individual
+            int seed = ea.rng().seed();
+            typename EA::rng_type rng(seed);
+            put<FF_RNG_SEED>(seed, i); // save the seed that was used to evaluate this individual
             i.attr().fitness() = ea.fitness_function()(i, rng, ea);
             ea.events().fitness_evaluated(i,ea);
         }

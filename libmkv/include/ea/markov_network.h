@@ -548,8 +548,9 @@ namespace mkv {
                     mkv::markov_network::desc_type mkv_desc;
                     
                     //! Translate an individual's representation into a Markov Network.
-                    phenotype_ptr virtual make_phenotype(typename EA::individual_type& ind, EA& ea) {
-                        phenotype_ptr p(new mkv::markov_network(mkv_desc));
+                    virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
+                                                         typename EA::rng_type& rng, EA& ea) {
+                        phenotype_ptr p(new mkv::markov_network(mkv_desc,rng));
                         mkv::build_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea);
                         p->writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
                         return p;
@@ -563,6 +564,12 @@ namespace mkv {
                     virtual void initial_population(EA& ea) {
                         generate_ancestors(mkv_random_individual(), get<POPULATION_SIZE>(ea), ea);
                     }
+                    
+                    
+                    //! Called as the final step of EA initialization.
+                    virtual void initialize(EA& ea) {
+                        mkv::parse_desc(get<MKV_DESC>(ea), mkv_desc);
+                    }
                 };
 
                 /*! Configuration object for EAs that use Deep Markov Networks.
@@ -573,11 +580,12 @@ namespace mkv {
                     typedef mkv::deep_markov_network phenotype;
                     typedef boost::shared_ptr<phenotype> phenotype_ptr;
                     
-                    mkv::deep_markov_network::desc_type _desc;
+                    mkv::deep_markov_network::desc_type mkv_desc;
                     
                     //! Translate an individual's representation into a Markov Network.
-                    phenotype_ptr virtual make_phenotype(typename EA::individual_type& ind, EA& ea) {
-                        phenotype_ptr p(new mkv::deep_markov_network(_desc));
+                    virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
+                                                         typename EA::rng_type& rng, EA& ea) {
+                        phenotype_ptr p(new mkv::deep_markov_network(mkv_desc,rng));
                         mkv::build_deep_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea);
                         p->writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
                         return p;
@@ -594,7 +602,7 @@ namespace mkv {
                     
                     //! Called as the final step of EA initialization.
                     virtual void initialize(EA& ea) {
-                        mkv::parse_desc(get<MKV_DESC>(ea), _desc);
+                        mkv::parse_desc(get<MKV_DESC>(ea), mkv_desc);
                     }
                 };
 
