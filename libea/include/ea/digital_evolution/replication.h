@@ -50,6 +50,26 @@ namespace ealib {
         }
     };
 
+    /*! Selects the location of the neighbor faced by the parent as the location
+     for an offspring.
+     
+     */
+    struct empty_facing_neighbor {
+        template <typename EA>
+        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
+            
+            typedef typename EA::environment_type::iterator location_iterator;
+            location_iterator l = ea.env().neighbor(parent, ea);
+            if (l->occupied()) {
+                return std::make_pair(l, false);
+
+            }
+            return std::make_pair(l, true);
+        }
+    };
+    
+    
+    
     /*! Selects the location of an empty neighbor location to the parent as the location
      for an offspring. (Note: here empty includes locations occupied by dead organisms.)
      
