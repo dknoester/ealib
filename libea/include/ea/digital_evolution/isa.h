@@ -396,6 +396,17 @@ namespace ealib {
                 hw.setRegValue(hw.modifyRegister(), get<LOCATION_DATA>(l));
             }
         }
+        
+        //! Get whether a neighboring organism exists.
+        DIGEVO_INSTRUCTION_DECL(is_neighbor) {
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);
+            if(l.occupied()) {
+                hw.setRegValue(hw.modifyRegister(), 1);
+            } else {
+                hw.setRegValue(hw.modifyRegister(), 0);
+            }
+        }
+        
 
         /*! Sense the state of the enviroment.
          
@@ -535,6 +546,16 @@ namespace ealib {
                         
             hw.setRegValue(rbx,ea.env().handle2ptr(p->location())->x);
             hw.setRegValue(rcx,ea.env().handle2ptr(p->location())->y);
+        }
+        
+        //! Get whether a neighboring organism exists.
+        DIGEVO_INSTRUCTION_DECL(is_origin) {
+            if ((ea.env().handle2ptr(p->location())->x == 0) &&
+                (ea.env().handle2ptr(p->location())->y == 0)) {
+                hw.setRegValue(hw.modifyRegister(), 1);
+            } else {
+                hw.setRegValue(hw.modifyRegister(), 0);
+            }
         }
         
         //! Get the organism's age
