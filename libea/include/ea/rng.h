@@ -117,6 +117,15 @@ namespace ealib {
 			return uniform_integer_rng(0,n)();
 		}
 
+        /*! Returns a random number in the range [l,u).
+		 
+		 This method enables this class to be used as a RandomNumberGenerator in
+         STL algorithms.
+		 */
+		result_type operator()(argument_type l, argument_type u) {
+			return uniform_integer_rng(l,u)();
+		}
+
 		/*! Returns a random number in the range [0,maxint).
          */
         result_type operator()() {

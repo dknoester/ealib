@@ -177,17 +177,17 @@ namespace mkv {
         
         //! Constructs a Markov network with the given seed.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
-        : _desc(nin, nout, nhid), _svm(nout+nhid), _inputs(nin), _rng(seed), _threshold(0), _writable(0) {
+        : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed) {
         }
         
         //! Constructs a Markov network with the given seed.
         markov_network(const desc_type& desc, unsigned int seed=0)
-        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _inputs(desc.get<IN>()), _rng(seed), _threshold(0), _writable(0) {
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(seed) {
         }
         
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(const desc_type& desc, const rng_type& rng)
-        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _inputs(desc.get<IN>()), _rng(rng), _threshold(0), _writable(0) {
+        : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(rng) {
         }
         
         //! Retrieve this network's underlying random number generator.
@@ -211,13 +211,29 @@ namespace mkv {
         std::size_t ngates() const { return size(); }
         
         //! Clear the network.
-        void clear() { _svm.clear(); _inputs.clear(); }
+        void clear() { _svm.clear(); }
         
         //! Reset the network.
         void reset(int seed) { clear(); _rng.reset(seed); }
         
-        //! Rotate t and t-1 state vectors.
-        void rotate() { _svm.rotate(); _inputs.rotate(); }
+        /*! Rotate t and t-1 state vectors, and probabilistically normalize t-1.
+         
+         The idea is that outputs from the network are 1 with a probability equal
+         to their sum/updates.  If gates write to the same state multiple times,
+         this is "reinforcing" that state.
+         */
+        void rotate(std::size_t n) {
+            _svm.rotate(); // moves t (output) to t-1 (input for next update)
+            svm_type::state_vector_type& sv=_svm.tminus1();
+            for(std::size_t i=0; i<_svm.size(); ++i) {
+                if((sv[i] < n) && (sv[i] > 0)) {
+                    double prob = ealib::algorithm::clip(static_cast<double>(sv[i]) / static_cast<double>(n), 0.0, 1.0);
+                    sv[i] = _rng.p(prob);
+                } else {
+                    sv[i] = 1;
+                }
+            }
+        }
         
         //! Retrieve an iterator to the beginning of the svm outputs at time t.
         svm_type::iterator begin_output() { return _svm.t().begin(); }
@@ -228,44 +244,31 @@ namespace mkv {
         //! Retrieve the value of output i at time t.
         state_type output(std::size_t i) { return _svm.state_t(i); }
         
-        //! Retrieve the threshold for inputs to be considered a "1".
-        int& threshold() { return _threshold; }
-        
         /*! Retrieve the value of input i.  Markov networks treat any state variable
          as input, so we need to check to see if the requested input comes from
-         the range of inputs, or if it's an internal state variable.  If it's an
-         input, there's also the possibility that it's been locally overridden.
+         the range of inputs, or if it's an internal state variable.
          */
         template <typename RandomAccessIterator>
         state_type input(RandomAccessIterator f, std::size_t i) {
             if(i < _desc.get<IN>()) {
-                return (f[i] > _threshold) || _inputs.state_tminus1(i);
+                return f[i];
             } else {
                 return _svm.state_tminus1(i-_desc.get<IN>());
             }
         }
         
-        /*! Update output i with value v.  If i refers to an input variable, then
-         use the local _inputs SVM to store its value, IF allowed.
+        /*! Update output i with value v.
          */
         void output(std::size_t i, const state_type& v) {
             if(i >= _desc.get<IN>()) {
-                _svm.state_t(i-_desc.get<IN>()) |= v;
-            } else {
-                _inputs.state_t(i) |= (_writable && v);
+                _svm.state_t(i-_desc.get<IN>()) += v;
             }
         }
-        
-        //! Set whether this Markov network is able to write into its inputs.
-        void writable_inputs(bool w) { _writable = w; }
         
     protected:
         desc_type _desc; //!< Geometry descriptor for this Markov Network.
         svm_type _svm; //!< State vector machine for the hidden & output states.
-        svm_type _inputs; //!< State vector machine for inputs that have been written to.
         rng_type _rng; //<! Random number generator.
-        state_type _threshold; //!< Threshold value above which an input is considered a "1".
-        int _writable; //!< Whether inputs are writable, 1==yes.
     };
     
     
@@ -369,14 +372,18 @@ namespace mkv {
     } // detail
     
     /*! Update a Markov Network n times with inputs given by f.
+     
+     The network updates are performed "in-place" -- That is, we do not rotate
+     the state vectors until all updates are performed.  Once all updates are done,
+     only then do we rotate the state vectors.
      */
     template <typename RandomAccessIterator>
     void update(markov_network& net, std::size_t n, RandomAccessIterator f) {
         detail::markov_network_update_visitor<RandomAccessIterator> visitor(net, f);
-        for( ; n>0; --n) {
-            net.rotate();
+        for(std::size_t i=0; i<n; ++i) {
             std::for_each(net.begin(), net.end(), boost::apply_visitor(visitor));
         }
+        net.rotate(n);
     }
     
 } // mkv

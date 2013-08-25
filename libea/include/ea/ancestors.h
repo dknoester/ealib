@@ -22,6 +22,7 @@
 
 
 #include <ea/meta_data.h>
+#include <ea/mutation.h>
 #include <ea/generators.h>
 
 

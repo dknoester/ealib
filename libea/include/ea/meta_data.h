@@ -292,6 +292,7 @@ namespace ealib {
     
 	// ea.representation.*
 	LIBEA_MD_DECL(REPRESENTATION_SIZE, "ea.representation.size", int);
+    LIBEA_MD_DECL(REPRESENTATION_INITIAL_SIZE, "ea.representation.initial_size", int);
 	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
 	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
 	LIBEA_MD_DECL(REALSTRING_MEAN, "ea.representation.realstring.mean", double);
@@ -308,7 +309,6 @@ namespace ealib {
     LIBEA_MD_DECL(FF_RNG_SEED, "ea.fitness_function.rng_seed", int);
     LIBEA_MD_DECL(FF_INITIAL_RNG_SEED, "ea.fitness_function.initial_rng_seed", int);
     LIBEA_MD_DECL(FF_INITIALIZATION_PERIOD, "ea.fitness_function.initialization_period", int);
-    LIBEA_MD_DECL(ELITISM_N, "ea.selection.elitism.n", int);
     
 
     // ea.landscape.*
@@ -331,22 +331,7 @@ namespace ealib {
 	LIBEA_MD_DECL(NUM_OFFSPRING, "ea.generational_model.num_offspring", int);
 	LIBEA_MD_DECL(REPLACEMENT_RATE_P, "ea.generational_model.replacement_rate.p", double);
 	
-	// ea.mutation.*
-	LIBEA_MD_DECL(MUTATION_GENOMIC_P, "ea.mutation.genomic.p", double);
-	LIBEA_MD_DECL(MUTATION_PER_SITE_P, "ea.mutation.site.p", double);
-	LIBEA_MD_DECL(MUTATION_DUPLICATION_P, "ea.mutation.duplication.p", double);
-	LIBEA_MD_DECL(MUTATION_DELETION_P, "ea.mutation.deletion.p", double);
-	LIBEA_MD_DECL(MUTATION_INSERTION_P, "ea.mutation.insertion.p", double);
-    LIBEA_MD_DECL(MUTATION_INDEL_CHUNK_SIZE, "ea.mutation.indel.chunk_size", int);
-    LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MIN, "ea.mutation.uniform_integer.min", int);
-    LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MAX, "ea.mutation.uniform_integer.max", int);
-    LIBEA_MD_DECL(MUTATION_UNIFORM_REAL_MIN, "ea.mutation.uniform_real.min", double);
-    LIBEA_MD_DECL(MUTATION_UNIFORM_REAL_MAX, "ea.mutation.uniform_real.max", double);
-    LIBEA_MD_DECL(MUTATION_NORMAL_REAL_MEAN, "ea.mutation.normal_real.mean", double);
-    LIBEA_MD_DECL(MUTATION_NORMAL_REAL_VAR, "ea.mutation.normal_real.var", double);
-    LIBEA_MD_DECL(MUTATION_CLIP_MIN, "ea.mutation.clip.min", double);
-    LIBEA_MD_DECL(MUTATION_CLIP_MAX, "ea.mutation.clip.max", double);
-    LIBEA_MD_DECL(MUTATION_ZERO_P, "ea.mutation.zero.p", double);
+
     
 	// ea.run.*
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);

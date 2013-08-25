@@ -27,6 +27,26 @@
 
 namespace ealib {
     
+    // ea.mutation.*
+	LIBEA_MD_DECL(MUTATION_GENOMIC_P, "ea.mutation.genomic.p", double);
+	LIBEA_MD_DECL(MUTATION_PER_SITE_P, "ea.mutation.site.p", double);
+	LIBEA_MD_DECL(MUTATION_DUPLICATION_P, "ea.mutation.duplication.p", double);
+
+	LIBEA_MD_DECL(MUTATION_DELETION_P, "ea.mutation.deletion.p", double);
+	LIBEA_MD_DECL(MUTATION_INSERTION_P, "ea.mutation.insertion.p", double);
+    LIBEA_MD_DECL(MUTATION_INDEL_MAX_SIZE, "ea.mutation.indel.max_size", int);
+    LIBEA_MD_DECL(MUTATION_INDEL_MIN_SIZE, "ea.mutation.indel.min_size", int);
+    
+    LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MIN, "ea.mutation.uniform_integer.min", int);
+    LIBEA_MD_DECL(MUTATION_UNIFORM_INT_MAX, "ea.mutation.uniform_integer.max", int);
+    LIBEA_MD_DECL(MUTATION_UNIFORM_REAL_MIN, "ea.mutation.uniform_real.min", double);
+    LIBEA_MD_DECL(MUTATION_UNIFORM_REAL_MAX, "ea.mutation.uniform_real.max", double);
+    LIBEA_MD_DECL(MUTATION_NORMAL_REAL_MEAN, "ea.mutation.normal_real.mean", double);
+    LIBEA_MD_DECL(MUTATION_NORMAL_REAL_VAR, "ea.mutation.normal_real.var", double);
+    LIBEA_MD_DECL(MUTATION_CLIP_MIN, "ea.mutation.clip.min", double);
+    LIBEA_MD_DECL(MUTATION_CLIP_MAX, "ea.mutation.clip.max", double);
+    LIBEA_MD_DECL(MUTATION_ZERO_P, "ea.mutation.zero.p", double);
+    
 	/*! Unconditionally mutate an individual.
 	 */
 	template <typename Mutator, typename EA>
@@ -208,9 +228,10 @@ namespace ealib {
             };
             
             
-            /*! Insertion/deletion (of fixed-size chunks) mutation type.
+            /*! Insertion/deletion mutation operator.
              
-             \todo for variable size chunks, implement slip mutations.
+             Inserts a random-sized copy of an existing portion of the genome, or
+             deletes a random part of the genome.
              */
             template <typename MutationOperator>
             struct indel {
@@ -222,20 +243,25 @@ namespace ealib {
                     typename EA::representation_type& repr=ind.repr();
                     
                     // insertion:
-                    if((repr.size() < get<REPRESENTATION_MAX_SIZE>(ea)) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
-                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
-                        typename EA::representation_type chunk(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea)); // copy to avoid undefined behavior
+                    if((repr.size() < static_cast<std::size_t>(get<REPRESENTATION_MAX_SIZE>(ea))) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
+                        std::size_t csize = ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea));
+                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(),
+                                                                                       repr.begin() + (repr.size()-csize));
+                        // copy to avoid undefined behavior
+                        typename EA::representation_type chunk(src, src+csize);
                         repr.insert(ea.rng().choice(repr.begin(),repr.end()), chunk.begin(), chunk.end());
                     }
                     
                     // deletion:
-                    if((repr.size() > get<REPRESENTATION_MIN_SIZE>(ea)) && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
-                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(), repr.begin()+(repr.size()-get<MUTATION_INDEL_CHUNK_SIZE>(ea)));
-                        repr.erase(src, src+get<MUTATION_INDEL_CHUNK_SIZE>(ea));
+                    if((repr.size() > static_cast<std::size_t>(get<REPRESENTATION_MIN_SIZE>(ea))) && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
+                        std::size_t csize = ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea));
+                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(),
+                                                                                       repr.begin() + (repr.size()-csize));
+                        repr.erase(src, src+csize);
                     }
                     
                     // then carry on with normal mutations:
-                    _mt(repr, ea);
+                    _mt(ind, ea);
                 }
                 
                 mutation_operator_type _mt;            

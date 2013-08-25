@@ -27,6 +27,9 @@
 #include <ea/meta_data.h>
 
 namespace ealib {
+
+    LIBEA_MD_DECL(ELITISM_N, "ea.selection.elitism.n", int);
+
 	namespace selection {
 		
 		/*! Stacks elitism on top of another selection strategy.

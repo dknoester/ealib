@@ -32,51 +32,33 @@
 #include <ea/analysis.h>
 #include <ea/events.h>
 #include <ea/datafile.h>
+#include <ea/representations/circular_genome.h>
+#include <ea/mutation.h>
 
 #include <mkv/markov_network.h>
 #include <mkv/deep_markov_network.h>
 #include <mkv/parse.h>
 #include <mkv/graph.h>
 
-// meta-data
-LIBEA_MD_DECL(MKV_DESC, "markov_network.desc", std::string);
-LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
-LIBEA_MD_DECL(MKV_WRITABLE, "markov_network.writable_inputs", int);
-LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
-LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", int);
-LIBEA_MD_DECL(MKV_REPR_INITIAL_SIZE, "markov_network.representation.initial_size", unsigned int);
-LIBEA_MD_DECL(MKV_REPR_MAX_SIZE, "markov_network.representation.max_size", unsigned int);
-LIBEA_MD_DECL(MKV_REPR_MIN_SIZE, "markov_network.representation.min_size", unsigned int);
-LIBEA_MD_DECL(GATE_INPUT_LIMIT, "markov_network.gate.input.limit", int);
-LIBEA_MD_DECL(GATE_INPUT_FLOOR, "markov_network.gate.input.floor", int);
-LIBEA_MD_DECL(GATE_OUTPUT_LIMIT, "markov_network.gate.output.limit", int);
-LIBEA_MD_DECL(GATE_OUTPUT_FLOOR, "markov_network.gate.output.floor", int);
-LIBEA_MD_DECL(GATE_HISTORY_FLOOR, "markov_network.gate.history.floor", int);
-LIBEA_MD_DECL(GATE_HISTORY_LIMIT, "markov_network.gate.history.limit", int);
-LIBEA_MD_DECL(GATE_WV_STEPS, "markov_network.gate.wv_steps", int);
-
-
 namespace mkv {
     
-    enum gate_types { MARKOV=42, LOGIC=43, ADAPTIVE=44, SPATIAL=45 };
+    LIBEA_MD_DECL(MKV_DESC, "markov_network.desc", std::string);
+    LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", int);
+    LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
+    LIBEA_MD_DECL(MKV_GATE_ALLOW_PROBABILISTIC, "markov_network.gate.allow_probabilistic", int);
+    LIBEA_MD_DECL(MKV_GATE_ALLOW_LOGIC, "markov_network.gate.allow_logic", int);
+    LIBEA_MD_DECL(MKV_GATE_ALLOW_ADAPTIVE, "markov_network.gate.allow_adaptive", int);
+    LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", int);
+    LIBEA_MD_DECL(GATE_INPUT_LIMIT, "markov_network.gate.input.limit", int);
+    LIBEA_MD_DECL(GATE_INPUT_FLOOR, "markov_network.gate.input.floor", int);
+    LIBEA_MD_DECL(GATE_OUTPUT_LIMIT, "markov_network.gate.output.limit", int);
+    LIBEA_MD_DECL(GATE_OUTPUT_FLOOR, "markov_network.gate.output.floor", int);
+    LIBEA_MD_DECL(GATE_HISTORY_FLOOR, "markov_network.gate.history.floor", int);
+    LIBEA_MD_DECL(GATE_HISTORY_LIMIT, "markov_network.gate.history.limit", int);
+    LIBEA_MD_DECL(GATE_WV_STEPS, "markov_network.gate.wv_steps", int);
     
-    /*! Returns a set of supported gate types.
-     */
-    template <typename EA>
-    std::set<gate_types> supported_gates(EA& ea) {
-        using namespace ealib;
-        std::set<gate_types> supported;
-        std::string gates = get<MKV_GATE_TYPES>(ea);
-        if(boost::icontains(gates,"markov")) { supported.insert(MARKOV); }
-        if(boost::icontains(gates,"logic")) { supported.insert(LOGIC); }
-        if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
-        if(boost::icontains(gates,"spatial")) { supported.insert(SPATIAL); }
-        return supported;
-    }
-}
-
-
-namespace mkv {
+    enum gate_type { PROBABILISTIC=42, LOGIC=43, ADAPTIVE=44 };
+    
     namespace detail {
         
         /*! Parse the inputs and outputs for a Markov network gate.
@@ -111,10 +93,10 @@ namespace mkv {
             net.push_back(g);
         }
         
-        /*! Build a markov gate.
+        /*! Build a probabilistic gate.
          */
         template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_markov_gate(Network& net, ForwardIterator h, MetaData& md) {
+        void build_probabilistic_gate(Network& net, ForwardIterator h, MetaData& md) {
             std::size_t layer=0;
             index_list_type inputs, outputs;
             build_io(net, layer, inputs, outputs, h, md);
@@ -154,23 +136,6 @@ namespace mkv {
             net.push_back(g);
         }
         
-        /*! Build a spatial gate.
-         */
-        template <typename Network, typename ForwardIterator, typename MetaData>
-        void build_spatial_gate(Network& net, ForwardIterator h, MetaData& md) {
-            std::size_t layer=0;
-            index_list_type inputs, outputs;
-            build_io(net, layer, inputs, outputs, h, md);
-            
-            for(std::size_t i=1; i<inputs.size();++i) {
-                inputs[i] = inputs[i-1] + 1;
-            }
-            std::transform(inputs.begin(), inputs.end(), inputs.begin(), std::bind2nd(std::modulus<int>(), net.nstates()));
-            
-            logic_gate g(inputs, outputs, h);
-            net.push_back(g);
-        }
-        
         template <typename ForwardIterator>
         std::size_t get_layer(ForwardIterator h, int max_layer) {
             using namespace ealib;
@@ -178,6 +143,35 @@ namespace mkv {
             return modnorm(*h, 0, max_layer);
         }
         
+        /*! Build a gate from f with the given meta data.
+         */
+        template <typename ForwardIterator, typename MetaData>
+        void build_gate(int start_codon, markov_network& net, ForwardIterator f, MetaData& md) {
+            switch(start_codon) {
+                case PROBABILISTIC: { // build a markov gate
+                    if(get<MKV_GATE_ALLOW_PROBABILISTIC>(md)) {
+                        build_probabilistic_gate(net, f, md);
+                    }
+                    break;
+                }
+                case LOGIC: { // build a logic gate
+                    if(get<MKV_GATE_ALLOW_LOGIC>(md)) {
+                        build_logic_gate(net, f, md);
+                    }
+                    break;
+                }
+                case ADAPTIVE: { // build an adaptive gate
+                    if(get<MKV_GATE_ALLOW_ADAPTIVE>(md)) {
+                        build_adaptive_gate(net, f, md);
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+
     } // detail
     
     
@@ -185,15 +179,7 @@ namespace mkv {
      */
     template <typename ForwardIterator, typename MetaData>
     void build_deep_markov_network(deep_markov_network& net, ForwardIterator f, ForwardIterator l, MetaData& md) {
-        using namespace detail;
-        using namespace ealib;
-        using namespace ealib::algorithm;
-        using namespace mkv;
-        
         if(f == l) { return; }
-        
-        // which gate types are supported?
-        std::set<gate_types> supported = supported_gates(md);
         
         ForwardIterator last=f;
         ++f;
@@ -201,53 +187,18 @@ namespace mkv {
         for( ; f!=l; ++f, ++last) {
             int start_codon = *f + *last;
             if(start_codon == 255) {
-                switch(*last) {
-                    case MARKOV: { // build a markov gate
-                        if(!supported.count(MARKOV)) { break; }
-                        markov_network& layer=net[get_layer(f+1,net.size())];
-                        build_markov_gate(layer, f+2, md);
-                        break;
-                    }
-                    case LOGIC: { // build a logic gate
-                        if(!supported.count(LOGIC)) { break; }
-                        markov_network& layer=net[get_layer(f+1,net.size())];
-                        build_logic_gate(layer, f+2, md);
-                        break;
-                    }
-                    case ADAPTIVE: { // build an adaptive gate
-                        if(!supported.count(ADAPTIVE)) { break; }
-                        markov_network& layer=net[get_layer(f+1,net.size())];
-                        build_adaptive_gate(layer, f+2, md);
-                        break;
-                    }
-                    case SPATIAL: { // build a spatial gate
-                        if(!supported.count(SPATIAL)) { break; }
-                        markov_network& layer=net[get_layer(f+1,net.size())];
-                        build_spatial_gate(layer, f+2, md);
-                        break;
-                    }
-                        
-                    default: {
-                        break;
-                    }
-                }
+                markov_network& layer=net[get_layer(f+1,net.size())];
+                detail::build_gate(*last, layer, f+2, md);
             }
         }
     }
+    
     
     /*! Build a Markov network from the genome [f,l), with the given meta data.
      */
     template <typename ForwardIterator, typename MetaData>
     void build_markov_network(markov_network& net, ForwardIterator f, ForwardIterator l, MetaData& md) {
-        using namespace detail;
-        using namespace ealib;
-        using namespace ealib::algorithm;
-        using namespace mkv;
-        
         if(f == l) { return; }
-        
-        // which gate types are supported?
-        std::set<gate_types> supported = supported_gates(md);
         
         ForwardIterator last=f;
         ++f;
@@ -255,75 +206,11 @@ namespace mkv {
         for( ; f!=l; ++f, ++last) {
             int start_codon = *f + *last;
             if(start_codon == 255) {
-                switch(*last) {
-                    case MARKOV: { // build a markov gate
-                        if(!supported.count(MARKOV)) { break; }
-                        build_markov_gate(net, f+1, md);
-                        break;
-                    }
-                    case LOGIC: { // build a logic gate
-                        if(!supported.count(LOGIC)) { break; }
-                        build_logic_gate(net, f+1, md);
-                        break;
-                    }
-                    case ADAPTIVE: { // build an adaptive gate
-                        if(!supported.count(ADAPTIVE)) { break; }
-                        build_adaptive_gate(net, f+1, md);
-                        break;
-                    }
-                    case SPATIAL: { // build a spatial gate
-                        if(!supported.count(SPATIAL)) { break; }
-                        build_spatial_gate(net, f+1, md);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
+                detail::build_gate(*last, net, f+1, md);
             }
         }
     }
-    
-    /*! Convenience method to build a Markov Network.
-     */
-    template <typename ForwardIterator, typename EA>
-    markov_network make_markov_network(const markov_network::desc_type& desc,
-                                       ForwardIterator f, ForwardIterator l, EA& ea) {
-        markov_network net(desc);
-        build_markov_network(net, f, l, ea);
-        net.writable_inputs(get<MKV_WRITABLE>(ea,0));
-        return net;
-    }
-    
-    /*! Convenience method to build a Markov Network.
-     */
-    template <typename ForwardIterator, typename EA>
-    markov_network make_markov_network(ForwardIterator f, ForwardIterator l, EA& ea) {
-        markov_network::desc_type desc;
-        parse_desc(ealib::get<MKV_DESC>(ea), desc);
-        return make_markov_network(desc, f, l, ea);
-    }
-    
-    /*! Convenience method to build a Deep Markov Network.
-     */
-    template <typename ForwardIterator, typename EA>
-    deep_markov_network make_deep_markov_network(const deep_markov_network::desc_type& desc,
-                                                 ForwardIterator f, ForwardIterator l, EA& ea) {
-        deep_markov_network net(desc);
-        build_deep_markov_network(net, f, l, ea);
-        net.writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
-        return net;
-    }
-    
-    /*! Convenience method to build a Deep Markov Network.
-     */
-    template <typename ForwardIterator, typename EA>
-    deep_markov_network make_deep_markov_network(ForwardIterator f, ForwardIterator l, EA& ea) {
-        deep_markov_network::desc_type desc;
-        parse_desc(ealib::get<MKV_DESC>(ea), desc);
-        return make_deep_markov_network(desc, f, l, ea);
-    }
-    
+
     
     /*! Save the detailed graph of the dominant individual in graphviz format.
      */
@@ -335,278 +222,316 @@ namespace mkv {
             using namespace ealib;
             using namespace ealib::analysis;
             typename EA::individual_type& ind = analysis::find_dominant(ea);
-            mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
+            mkv::markov_network& net = ealib::phenotype(ind,ea.rng(),ea);
             
             datafile df(get<ANALYSIS_OUTPUT>(ea,"genetic_graph.dot"));
-            std::ostringstream title;
-            title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
-            mkv::write_graphviz(title.str(), df, mkv::as_genetic_graph(net));
+            mkv::write_graphviz(ind, df, mkv::as_genetic_graph(net));
+        }
+    };
+    
+    
+    /*! Save the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct reduced_graph : public ealib::analysis::unary_function<EA> {
+        static const char* name() { return "reduced_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ealib;
+            using namespace ealib::analysis;
+            typename EA::individual_type& ind = analysis::find_dominant(ea);
+            mkv::markov_network& net = ealib::phenotype(ind,ea.rng(),ea);
+            
+            datafile df(get<ANALYSIS_OUTPUT>(ea,"reduced_graph.dot"));
+            mkv::write_graphviz(ind, df, mkv::as_reduced_graph(net));
+        }
+    };
+    
+    
+    /*! Save the causal graph of the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct causal_graph : public ealib::analysis::unary_function<EA> {
+        static const char* name() { return "causal_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ealib;
+            using namespace ealib::analysis;
+            typename EA::individual_type& ind = analysis::find_dominant(ea);
+            mkv::markov_network& net = ealib::phenotype(ind,ea.rng(),ea);
+            
+            datafile df("causal_graph.dot");
+            mkv::write_graphviz(ind, df, mkv::as_causal_graph(net));
+        }
+    };
+    
+    
+    /*! Save the dominant individual in graphviz format.
+     */
+    template <typename EA>
+    struct deep_reduced_graph : public ealib::analysis::unary_function<EA> {
+        static const char* name() { return "deep_reduced_graph"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ealib;
+            using namespace ealib::analysis;
+            typename EA::individual_type& ind = analysis::find_dominant(ea);
+            mkv::deep_markov_network& net = ealib::phenotype(ind,ea.rng(),ea);
+
+            for(std::size_t j=0; j<net.size(); ++j) {
+                mkv::markov_network& layer=net[j];
+                datafile df("reduced_l" + boost::lexical_cast<std::string>(j) + ".dot");
+                mkv::write_graphviz(ind + boost::lexical_cast<std::string>(j), df, mkv::as_reduced_graph(layer));
             }
-            };
+        }
+    };
+    
+    
+    /*! Datafile for markov networks statistics.
+     */
+    template <typename EA>
+    struct network_statistics : ealib::analysis::unary_function<EA> {
+        static const char* name() { return "network_statistics"; }
+        
+        virtual void operator()(EA& ea) {
+            using namespace ealib;
+            datafile df("network_statistics.dat");
+            df.add_field("individual")
+            .add_field("inputs")
+            .add_field("outputs")
+            .add_field("hidden")
+            .add_field("gates");
             
-            /*! Save the dominant individual in graphviz format.
-             */
-            template <typename EA>
-            struct reduced_graph : public ealib::analysis::unary_function<EA> {
-                static const char* name() { return "reduced_graph"; }
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                mkv::markov_network& net = ealib::phenotype(*i,ea.rng(),ea);
+                markov_graph G = as_reduced_graph(net);
                 
-                virtual void operator()(EA& ea) {
-                    using namespace ealib;
-                    using namespace ealib::analysis;
-                    typename EA::individual_type& ind = analysis::find_dominant(ea);
-                    mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea);
-                    
-                    datafile df(get<ANALYSIS_OUTPUT>(ea,"reduced_graph.dot"));
-                    std::ostringstream title;
-                    title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
-                    mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(net));
-                }
-            };
-            
-            
-            /*! Save the causal graph of the dominant individual in graphviz format.
-             */
-            template <typename EA>
-            struct causal_graph : public ealib::analysis::unary_function<EA> {
-                static const char* name() { return "causal_graph"; }
-                
-                virtual void operator()(EA& ea) {
-                    using namespace ealib;
-                    using namespace ealib::analysis;
-                    typename EA::individual_type& ind = analysis::find_dominant(ea);
-                    mkv::markov_network net = mkv::make_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng(), ea);
-                    
-                    datafile df("causal_graph.dot");
-                    std::ostringstream title;
-                    title << "individual=" << ind.name() << ", generation=" << ind.generation() << ", fitness=" << ealib::fitness(ind,ea);
-                    mkv::write_graphviz(title.str(), df, mkv::as_causal_graph(net));
-                }
-            };
-            
-            /*! Save the dominant individual in graphviz format.
-             */
-            template <typename EA>
-            struct deep_reduced_graph : public ealib::analysis::unary_function<EA> {
-                static const char* name() { return "deep_reduced_graph"; }
-                
-                virtual void operator()(EA& ea) {
-                    using namespace ealib;
-                    using namespace ealib::analysis;
-                    typename EA::individual_type& ind = analysis::find_dominant(ea);
-                    
-                    mkv::deep_markov_network net=mkv::make_deep_markov_network(ind.repr().begin(), ind.repr().end(), ea.rng().seed(), ea);
-                    
-                    for(std::size_t j=0; j<net.size(); ++j) {
-                        mkv::markov_network& layer=net[j];
-                        datafile df("reduced_l" + boost::lexical_cast<std::string>(j) + ".dot");
-                        std::ostringstream title;
-                        title << "individual=" << ind.name()
-                        << ", generation=" << ind.generation()
-                        << ", fitness=" << ealib::fitness(ind,ea)
-                        << ", layer=" << j;
-                        mkv::write_graphviz(title.str(), df, mkv::as_reduced_graph(layer));
+                double gates=0.0, inputs=0.0, outputs=0.0, hidden=0.0;
+                markov_graph::vertex_iterator vi,vi_end;
+                for(boost::tie(vi,vi_end)=boost::vertices(G); vi!=vi_end; ++vi) {
+                    if(!has_edges(*vi,G)) {
+                        continue;
+                    }
+                    switch(G[*vi].nt) {
+                        case vertex_properties::INPUT: {
+                            ++inputs;
+                            break;
+                        }
+                        case vertex_properties::OUTPUT: {
+                            ++outputs;
+                            break;
+                        }
+                        case vertex_properties::HIDDEN: {
+                            ++hidden;
+                            break;
+                        }
+                        case vertex_properties::GATE: {
+                            ++gates;
+                            break;
+                        }
+                        default: {
+                            // shouldn't ever get here...
+                            throw std::logic_error("markov_network.h::network_statistics: found a vertex with an invalid node_type.");
+                        }
                     }
                 }
-            };
+                
+                df.write(i->name()).write(inputs).write(outputs).write(hidden).write(gates).endl();
+            }
+        }
+    };
+    
+    
+    /*! Generates random Markov network-based individuals.
+     */
+    struct markov_network_ancestor {
+        template <typename EA>
+        typename EA::representation_type operator()(EA& ea) {
+            using namespace ealib;
             
-            /*! Datafile for markov networks statistics.
-             */
-            template <typename EA>
-            struct network_statistics : ealib::analysis::unary_function<EA> {
-                static const char* name() { return "network_statistics"; }
-                
-                virtual void operator()(EA& ea) {
-                    using namespace ealib;
-                    datafile df("network_statistics.dat");
-                    df.add_field("individual")
-                    .add_field("inputs")
-                    .add_field("outputs")
-                    .add_field("hidden")
-                    .add_field("gates");
-                    
-                    for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                        markov_network net = mkv::make_markov_network(i->repr().begin(), i->repr().end(), ea);
-                        markov_graph G = as_reduced_graph(net);
-                        
-                        double gates=0.0, inputs=0.0, outputs=0.0, hidden=0.0;
-                        markov_graph::vertex_iterator vi,vi_end;
-                        for(boost::tie(vi,vi_end)=boost::vertices(G); vi!=vi_end; ++vi) {
-                            if(!has_edges(*vi,G)) {
-                                continue;
-                            }
-                            switch(G[*vi].nt) {
-                                case vertex_properties::INPUT: {
-                                    ++inputs;
-                                    break;
-                                }
-                                case vertex_properties::OUTPUT: {
-                                    ++outputs;
-                                    break;
-                                }
-                                case vertex_properties::HIDDEN: {
-                                    ++hidden;
-                                    break;
-                                }
-                                case vertex_properties::GATE: {
-                                    ++gates;
-                                    break;
-                                }
-                                default: {
-                                    // shouldn't ever get here...
-                                    throw std::logic_error("markov_network.h::network_statistics: found a vertex with an invalid node_type.");
-                                }
-                            }
-                        }
-                        
-                        df.write(i->name()).write(inputs).write(outputs).write(hidden).write(gates).endl();
-                    }
-                }
-            };
-            } // mkv
+            typename EA::representation_type repr;
+            repr.resize(get<REPRESENTATION_INITIAL_SIZE>(ea), 127);
             
+            std::set<gate_type> supported;
+            std::string gates = get<MKV_GATE_TYPES>(ea);
+            if(boost::icontains(gates,"probabilistic")) { supported.insert(PROBABILISTIC); }
+            if(boost::icontains(gates,"logic")) { supported.insert(LOGIC); }
+            if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
             
-            namespace ealib {
-                
-                /*! Markov network mutation type.
-                 
-                 Performs per-site, duplication, and deletion mutations.
-                 */
-                struct mkv_mutation {
-                    template <typename EA>
-                    void operator()(typename EA::individual_type& ind, EA& ea) {
-                        typename EA::representation_type& repr=ind.repr();
-                        typedef typename std::vector<typename EA::representation_type::codon_type> codon_buffer;
-                        
-                        double per_site_p = get<MUTATION_PER_SITE_P>(ea);
-                        int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
-                        for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
-                            if(ea.rng().p(per_site_p)) {
-                                *i = ea.rng()(imax);
-                            }
-                        }
-                        
-                        // gene duplication
-                        // (the below looks a little crude, but there were some problems related
-                        // to incorrect compiler optimization.)
-                        if(ea.rng().p(get<MUTATION_DUPLICATION_P>(ea)) && (repr.size()<get<MKV_REPR_MAX_SIZE>(ea))) {
-                            int start = ea.rng().uniform_integer(0, repr.size());
-                            int extent = ea.rng().uniform_integer(16, 513);
-                            codon_buffer buf(extent);
-                            for(int i=0; i<extent; ++i) {
-                                buf[i] = repr[start+i];
-                            }
-                            repr.insert(ea.rng().choice(repr.begin(),repr.end()), buf.begin(), buf.end());
-                        }
-                        
-                        // gene deletion
-                        if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<MKV_REPR_MIN_SIZE>(ea))) {
-                            int start, extent;
-                            extent = 15+ea.rng()(512);
-                            start = ea.rng()(repr.size()-extent);
-                            repr.erase(repr.begin()+start, repr.begin()+start+extent);
-                        }
-                    }
-                };
-                
-                
-                /*! Generates random Markov network-based individuals.
-                 */
-                struct mkv_random_individual {
-                    template <typename EA>
-                    typename EA::representation_type operator()(EA& ea) {
-                        using namespace mkv;
-                        
-                        typename EA::representation_type repr;
-                        repr.resize(get<MKV_REPR_INITIAL_SIZE>(ea), 127);
-                        
-                        // which gate types are supported?
-                        std::set<gate_types> supported = supported_gates(ea);
-                        
-                        int i,j;
-                        for(i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
-                            j=ea.rng()(repr.size()-100);
-                            int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
-                            repr[j] = gate;
-                            repr[j+1] = 255-gate;
-                            for(int k=2; k<97; ++k) {
-                                repr[j+k]=ea.rng()(256);
-                            }
-                        }
-                        return repr;
-                    }
-                };
-                
-                
-                /*! Configuration object for EAs that use Markov Networks.
-                 */
-                template <typename EA>
-                struct markov_network_configuration : public abstract_configuration<EA> {
-                    typedef indirectS encoding_type;
-                    typedef mkv::markov_network phenotype;
-                    typedef boost::shared_ptr<phenotype> phenotype_ptr;
-                    
-                    mkv::markov_network::desc_type mkv_desc;
-                    
-                    //! Translate an individual's representation into a Markov Network.
-                    virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
-                                                         typename EA::rng_type& rng, EA& ea) {
-                        phenotype_ptr p(new mkv::markov_network(mkv_desc,rng));
-                        mkv::build_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea);
-                        p->writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
-                        return p;
-                    }
-                    
-                    //! Called as the first step of an EA's lifecycle.
-                    virtual void configure(EA& ea) {
-                    }
-                    
-                    //! Called to generate the initial EA population.
-                    virtual void initial_population(EA& ea) {
-                        generate_ancestors(mkv_random_individual(), get<POPULATION_SIZE>(ea), ea);
-                    }
-                    
-                    
-                    //! Called as the final step of EA initialization.
-                    virtual void initialize(EA& ea) {
-                        mkv::parse_desc(get<MKV_DESC>(ea), mkv_desc);
-                    }
-                };
+            for(int i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
+                //                std::size_t csize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
+                //                                           get<MUTATION_INDEL_MAX_SIZE>(ea));
+                std::size_t csize=get<MUTATION_INDEL_MAX_SIZE>(ea);
 
-                /*! Configuration object for EAs that use Deep Markov Networks.
-                 */
-                template <typename EA>
-                struct deep_markov_network_configuration : public abstract_configuration<EA> {
-                    typedef indirectS encoding_type;
-                    typedef mkv::deep_markov_network phenotype;
-                    typedef boost::shared_ptr<phenotype> phenotype_ptr;
-                    
-                    mkv::deep_markov_network::desc_type mkv_desc;
-                    
-                    //! Translate an individual's representation into a Markov Network.
-                    virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
-                                                         typename EA::rng_type& rng, EA& ea) {
-                        phenotype_ptr p(new mkv::deep_markov_network(mkv_desc,rng));
-                        mkv::build_deep_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea);
-                        p->writable_inputs(ealib::get<MKV_WRITABLE>(ea,0));
-                        return p;
-                    }
-                    
-                    //! Called as the first step of an EA's lifecycle.
-                    virtual void configure(EA& ea) {
-                    }
-                    
-                    //! Called to generate the initial EA population.
-                    virtual void initial_population(EA& ea) {
-                        generate_ancestors(mkv_random_individual(), get<POPULATION_SIZE>(ea), ea);
-                    }
-                    
-                    //! Called as the final step of EA initialization.
-                    virtual void initialize(EA& ea) {
-                        mkv::parse_desc(get<MKV_DESC>(ea), mkv_desc);
-                    }
-                };
+                int j=ea.rng()(repr.size()-csize);
+                int gate=*ea.rng().choice(supported.begin(), supported.end());
+                repr[j] = gate;
+                repr[j+1] = 255-gate;
+                for(std::size_t k=2; k<csize; ++k) {
+                    repr[j+k]=ea.rng()(get<MUTATION_UNIFORM_INT_MIN>(ea), get<MUTATION_UNIFORM_INT_MAX>(ea));
+                }
+            }
+            return repr;
+        }
+    };
+    
+    
+    struct mkv_mutation {
+        template <typename EA>
+        void operator()(typename EA::individual_type& ind, EA& ea) {
+            using namespace ealib;
+            typename EA::representation_type& repr=ind.repr();
+            typedef typename std::vector<typename EA::representation_type::codon_type> codon_buffer;
+            
+            double per_site_p = get<MUTATION_PER_SITE_P>(ea);
+            int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
+            for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
+                if(ea.rng().p(per_site_p)) {
+                    *i = ea.rng()(imax);
+                }
+            }
+            
+            // gene duplication
+            // (the below looks a little crude, but there were some problems related
+            // to incorrect compiler optimization.)
+            if(ea.rng().p(get<MUTATION_INSERTION_P>(ea)) && (repr.size()<get<REPRESENTATION_MAX_SIZE>(ea))) {
+                int start = ea.rng().uniform_integer(0, repr.size());
+                int extent = ea.rng().uniform_integer(16, 513);
+                codon_buffer buf(extent);
+                for(int i=0; i<extent; ++i) {
+                    buf[i] = repr[start+i];
+                }
+                repr.insert(ea.rng().choice(repr.begin(),repr.end()), buf.begin(), buf.end());
+            }
+            
+            // gene deletion
+            if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<REPRESENTATION_MIN_SIZE>(ea))) {
+                int start, extent;
+                extent = 15+ea.rng()(512);
+                start = ea.rng()(repr.size()-extent);
+                repr.erase(repr.begin()+start, repr.begin()+start+extent);
+            }
+        }
+    };
+    
+    /*! Generates random Markov network-based individuals.
+     */
+    struct mkv_random_individual {
+        template <typename EA>
+        typename EA::representation_type operator()(EA& ea) {
+            using namespace mkv;
+            
+            typename EA::representation_type repr;
+            repr.resize(get<ealib::REPRESENTATION_INITIAL_SIZE>(ea), 127);
+            
+            // which gate types are supported?
+            std::set<gate_type> supported;
+            std::string gates = get<MKV_GATE_TYPES>(ea);
+            if(boost::icontains(gates,"probabilistic")) { supported.insert(PROBABILISTIC); }
+            if(boost::icontains(gates,"logic")) { supported.insert(LOGIC); }
+            if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
+            
+            int i,j;
+            for(i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
+                j=ea.rng()(repr.size()-100);
+                int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
+                repr[j] = gate;
+                repr[j+1] = 255-gate;
+                for(int k=2; k<97; ++k) {
+                    repr[j+k]=ea.rng()(256);
+                }
+            }
+            return repr;
+        }
+    };
+    
+    
+    /*! Returns a set of supported gate types.
+     */
+    template <typename EA>
+    void intialize_allowed_gates(EA& ea) {
+        using namespace ealib;
+        std::string gates = get<MKV_GATE_TYPES>(ea);
+        put<MKV_GATE_ALLOW_PROBABILISTIC>(boost::icontains(gates,"probabilistic"), ea);
+        put<MKV_GATE_ALLOW_LOGIC>(boost::icontains(gates,"logic"), ea);
+        put<MKV_GATE_ALLOW_ADAPTIVE>(boost::icontains(gates,"adaptive"), ea);
+    }
+    
+    /*! Configuration object for EAs that use Markov Networks.
+     */
+    template <typename EA>
+    struct markov_network_configuration : public ealib::abstract_configuration<EA> {
+        typedef ealib::indirectS encoding_type;
+        typedef mkv::markov_network phenotype;
+        typedef boost::shared_ptr<phenotype> phenotype_ptr;
+        
+        mkv::markov_network::desc_type mkv_desc;
+        
+        //! Translate an individual's representation into a Markov Network.
+        virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
+                                             typename EA::rng_type& rng, EA& ea) {
+            phenotype_ptr p(new mkv::markov_network(mkv_desc,rng));
+            mkv::build_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea);
+            return p;
+        }
+        
+        //! Called as the first step of an EA's lifecycle.
+        virtual void configure(EA& ea) {
+        }
+        
+        //! Called to generate the initial EA population.
+        virtual void initial_population(EA& ea) {
+            generate_ancestors(markov_network_ancestor(), get<ealib::POPULATION_SIZE>(ea), ea);
+        }
+        
+        
+        //! Called as the final step of EA initialization.
+        virtual void initialize(EA& ea) {
+            mkv::parse_desc(get<MKV_DESC>(ea), mkv_desc);
+            intialize_allowed_gates(ea);
+        }
+    };
+    
+    
+    /*! Configuration object for EAs that use Deep Markov Networks.
+     */
+    template <typename EA>
+    struct deep_markov_network_configuration : public ealib::abstract_configuration<EA> {
+        typedef ealib::indirectS encoding_type;
+        typedef mkv::deep_markov_network phenotype;
+        typedef boost::shared_ptr<phenotype> phenotype_ptr;
+        
+        mkv::deep_markov_network::desc_type mkv_desc;
+        
+        //! Translate an individual's representation into a Markov Network.
+        virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
+                                             typename EA::rng_type& rng, EA& ea) {
+            phenotype_ptr p(new mkv::deep_markov_network(mkv_desc,rng));
+            mkv::build_deep_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea);
+            return p;
+        }
+        
+        //! Called as the first step of an EA's lifecycle.
+        virtual void configure(EA& ea) {
+        }
+        
+        //! Called to generate the initial EA population.
+        virtual void initial_population(EA& ea) {
+            generate_ancestors(markov_network_ancestor(), get<ealib::POPULATION_SIZE>(ea), ea);
+        }
+        
+        //! Called as the final step of EA initialization.
+        virtual void initialize(EA& ea) {
+            mkv::parse_desc(get<MKV_DESC>(ea), mkv_desc);
+            intialize_allowed_gates(ea);
+        }
+    };
+    
+    typedef ealib::circular_genome<int> representation_type;
+    typedef ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > mutation_type;
+    //typedef mkv_mutation mutation_type;
+    
 
-            } // ealib
-            
-            
+} // mkv
+
 #endif

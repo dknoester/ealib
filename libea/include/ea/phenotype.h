@@ -73,7 +73,13 @@ namespace ealib {
                 return _p;
             }
 
-            typename EA::configuration_type::phenotype_ptr _p; //!< Pointer to the phenotype (owned).
+            /*! Pointer to the phenotype.
+             
+             In the case of a direct encoding, phenotype_ptr should be a plain-old
+             pointer.  In **all** other cases, it should be an auto-deleting pointer
+             like boost::shared_ptr< >.
+             */
+            typename EA::configuration_type::phenotype_ptr _p;
         };
         
     } // attr

@@ -124,6 +124,8 @@ namespace ealib {
     public:
         //! Tag indicating the structure of this population.
         typedef singlePopulationS population_structure_tag;
+        //! Random number generator type.
+        typedef RandomNumberGenerator rng_type;
         //! Representation type.
         typedef Representation representation_type;
         //! Fitness function type.
@@ -160,8 +162,6 @@ namespace ealib {
         typedef Population<individual_type, individual_ptr_type> population_type;
         //! Meta-data type.
         typedef MetaData md_type;
-        //! Random number generator type.
-        typedef RandomNumberGenerator rng_type;
         //! Event handler.
         typedef EventHandler<learning_classifier> event_handler_type;
         //! Iterator over this EA's population.

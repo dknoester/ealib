@@ -1,30 +1,31 @@
 /* individual.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef _EA_INDIVIDUAL_H_
 #define _EA_INDIVIDUAL_H_
 
+#include <sstream>
 #include <boost/serialization/nvp.hpp>
 #include <ea/meta_data.h>
 
 namespace ealib {
-
+    
 	/*! Definition of EALib individuals.
      
      Individuals in EALib are containers for a representation, attributes, and meta-data.
@@ -76,19 +77,19 @@ namespace ealib {
 		
         //! Retrieve this individual's name (const-qualified).
         const long& name() const { return _name; }
-
+        
         //! Retrieve this individual's generation.
         double& generation() { return _generation; }
-
+        
         //! Retrieve this individual's generation (const-qualified).
         const double& generation() const { return _generation; }
         
         //! Retrieve this individual's birth update.
         long& birth_update() { return _update; }
-
+        
         //! Retrieve this individual's update (const-qualified).
         const long& update() const { return _update; }
-
+        
 		//! Retrieve this individual's representation.
 		representation_type& repr() { return _repr; }
         
@@ -97,7 +98,7 @@ namespace ealib {
         
         //! Retrieve this individual's meta data.
         meta_data& md() { return _md; }
-
+        
         //! Retrieve this individual's meta data (const-qualified).
         const meta_data& md() const { return _md; }
         
@@ -106,7 +107,14 @@ namespace ealib {
         
         //! Retrieve this individual's attributes (const-qualified).
         const attr_type& attr() const { return _attr; }
-
+        
+        //! Cast this individual to a std::string.
+        operator std::string() {
+            std::ostringstream s;
+            s << "individual=" << name() << ", generation=" << generation();
+            return s.str();
+        }
+        
 	protected:
         long _name; //!< Name (id number) of this individual.
         double _generation; //!< Generation of this individual.
@@ -117,7 +125,7 @@ namespace ealib {
         
 	private:
 		friend class boost::serialization::access;
-
+        
         //! Serialize this individual.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
@@ -129,7 +137,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("attributes", _attr);
 		}
 	};
-
+    
 } // ea
 
 #endif

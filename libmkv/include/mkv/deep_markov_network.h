@@ -101,8 +101,8 @@ namespace mkv {
         }
         
         //! Rotate t and t-1 state vectors.
-        void rotate() {
-            std::for_each(begin(), end(), bl::bind(&markov_network::rotate, bl::_1));
+        void rotate(std::size_t n) {
+            std::for_each(begin(), end(), bl::bind(&markov_network::rotate, bl::_1, n));
         }
         
         //! Retrieve an iterator to the beginning of the svm outputs at time t in the last (highest-level) layer.
@@ -122,9 +122,7 @@ namespace mkv {
         void update(std::size_t n, RandomAccessIterator f) {
             if(size() == 0) { return; } // empty network, should warn
             
-            for( ; n>0; --n) {
-                rotate();
-                
+            for(std::size_t i=0; i<n; ++i) {
                 markov_network& l0=operator[](0);
                 detail::markov_network_update_visitor<RandomAccessIterator> l0v(l0, f);
                 std::for_each(l0.begin(), l0.end(), boost::apply_visitor(l0v));
@@ -139,13 +137,8 @@ namespace mkv {
                     std::for_each(l.begin(), l.end(), boost::apply_visitor(lv));
                 }
             }
-        }
-        
-        //! Set whether this Markov network is able to write into its inputs.
-        void writable_inputs(bool w) {
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->writable_inputs(w);
-            }
+
+            rotate(n);
         }
 
     private:
