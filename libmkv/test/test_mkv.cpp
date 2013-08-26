@@ -88,6 +88,7 @@ BOOST_AUTO_TEST_CASE(test_layers) {
     
     meta_data md;
     put<MKV_GATE_TYPES>("logic", md);
+    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
@@ -163,19 +164,19 @@ BOOST_AUTO_TEST_CASE(test_layers) {
     int* in;
     
 	in=tc0;
-    net.update(2, in);
+    net.update(2, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
     
 	in=tc1;
-    net.update(2, in);
+    net.update(2, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
     
 	in=tc2;
-    net.update(2, in);
+    net.update(2, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
 	
 	in=tc3;
-    net.update(2, in);
+    net.update(2, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[4]));
 }
 
@@ -223,7 +224,8 @@ BOOST_AUTO_TEST_CASE(test_graph_conversion) {
     };
     
     meta_data md;
-    put<MKV_GATE_TYPES>("logic,markov", md);
+    put<MKV_GATE_TYPES>("logic,probabilistic", md);
+    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
@@ -296,6 +298,7 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
 	
     meta_data md;
     put<MKV_GATE_TYPES>("logic", md);
+    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
@@ -338,19 +341,19 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
     int* in;
     
 	in=tc0;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
     
 	in=tc1;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc2;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc3;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 }
 
@@ -399,7 +402,8 @@ BOOST_AUTO_TEST_CASE(test_markov_gate) {
 	};
 	
     meta_data md;
-    put<MKV_GATE_TYPES>("markov", md);
+    put<MKV_GATE_TYPES>("probabilistic", md);
+    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
@@ -449,19 +453,19 @@ BOOST_AUTO_TEST_CASE(test_markov_gate) {
     int* in;
     
 	in=tc0;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
     
 	in=tc1;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc2;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 	
 	in=tc3;
-    update(net, 1, in);
+    update(net, 1, 1, in);
     BOOST_CHECK(std::equal(net.begin_output(), net.end_output(), &in[2]));
 }
 
@@ -509,7 +513,8 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
     };
     
     meta_data md;
-    put<MKV_GATE_TYPES>("logic,markov", md);
+    put<MKV_GATE_TYPES>("logic,probabilistic", md);
+    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);

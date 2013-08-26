@@ -216,21 +216,26 @@ namespace mkv {
         //! Reset the network.
         void reset(int seed) { clear(); _rng.reset(seed); }
         
-        /*! Rotate t and t-1 state vectors, and probabilistically normalize t-1.
+        /*! Rotate t and t-1 state vectors.
+         */
+        void top_half() {
+            // moves t (output) to t-1 (input for next update)
+            _svm.rotate();
+        }
+        
+        /*! Probabilistically normalize output and hidden states.
          
          The idea is that outputs from the network are 1 with a probability equal
-         to their sum/updates.  If gates write to the same state multiple times,
-         this is "reinforcing" that state.
+         to their sum/n.  If gates write to the same state multiple times, this 
+         "reinforces" that state.
          */
-        void rotate(std::size_t n) {
-            _svm.rotate(); // moves t (output) to t-1 (input for next update)
-            svm_type::state_vector_type& sv=_svm.tminus1();
-            for(std::size_t i=0; i<_svm.size(); ++i) {
-                if((sv[i] < n) && (sv[i] > 0)) {
-                    double prob = ealib::algorithm::clip(static_cast<double>(sv[i]) / static_cast<double>(n), 0.0, 1.0);
-                    sv[i] = _rng.p(prob);
-                } else {
+        void bottom_half(std::size_t n) {
+            svm_type::state_vector_type& sv=_svm.t();
+            for(std::size_t i=0; i<sv.size(); ++i) {
+                if(sv[i] >= static_cast<int>(n)) {
                     sv[i] = 1;
+                } else if(sv[i] > 0) {
+                    sv[i] = _rng.p(static_cast<double>(sv[i]) / static_cast<double>(n));
                 }
             }
         }
@@ -253,15 +258,17 @@ namespace mkv {
             if(i < _desc.get<IN>()) {
                 return f[i];
             } else {
-                return _svm.state_tminus1(i-_desc.get<IN>());
+                i -= _desc.get<IN>();
+                return _svm.state_tminus1(i);
             }
         }
         
         /*! Update output i with value v.
          */
-        void output(std::size_t i, const state_type& v) {
+        void output(std::size_t i, state_type v) {
             if(i >= _desc.get<IN>()) {
-                _svm.state_t(i-_desc.get<IN>()) += v;
+                i -= _desc.get<IN>();
+                _svm.state_t(i) += v;
             }
         }
         
@@ -371,19 +378,24 @@ namespace mkv {
 
     } // detail
     
-    /*! Update a Markov Network n times with inputs given by f.
+    /*! Update a Markov Network.
      
-     The network updates are performed "in-place" -- That is, we do not rotate
-     the state vectors until all updates are performed.  Once all updates are done,
-     only then do we rotate the state vectors.
+     \param n is the number of network updates.
+     \param t is the number of ticks per update.
+
+     State vectors are rotated once for each network update (n).  Gates are evaluated
+     once per tick (t).  
      */
     template <typename RandomAccessIterator>
-    void update(markov_network& net, std::size_t n, RandomAccessIterator f) {
+    void update(markov_network& net, std::size_t n, std::size_t t, RandomAccessIterator f) {
         detail::markov_network_update_visitor<RandomAccessIterator> visitor(net, f);
-        for(std::size_t i=0; i<n; ++i) {
-            std::for_each(net.begin(), net.end(), boost::apply_visitor(visitor));
+        for( ; n>0; --n) {
+            net.top_half();
+            for(std::size_t i=0; i<t; ++i) {
+                std::for_each(net.begin(), net.end(), boost::apply_visitor(visitor));
+            }
+            net.bottom_half(t);
         }
-        net.rotate(n);
     }
     
 } // mkv

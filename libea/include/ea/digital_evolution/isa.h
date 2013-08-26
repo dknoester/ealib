@@ -25,6 +25,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include <ea/mutation.h>
+
 #define DIGEVO_INSTRUCTION_DECL(name) \
 template <typename Hardware, typename EA> \
 struct name : ealib::instructions::abstract_instruction<Hardware,EA> { \

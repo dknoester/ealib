@@ -46,7 +46,7 @@ namespace mkv {
         typedef std::vector<markov_network::desc_type> desc_type; //!< Type for geometry of Deep Markov Network.
         typedef std::vector<markov_network> base_type; //!< Base type container for Deep Markov Networks.
         typedef ealib::default_rng_type rng_type; //!< Random number generator type.
-
+        
         //! Constructs a Deep Markov network with a given seed.
         deep_markov_network(const desc_type& desc, unsigned int seed=0) : _desc(desc), _rng(seed) {
             for(desc_type::iterator i=_desc.begin(); i!=_desc.end(); ++i) {
@@ -101,8 +101,13 @@ namespace mkv {
         }
         
         //! Rotate t and t-1 state vectors.
-        void rotate(std::size_t n) {
-            std::for_each(begin(), end(), bl::bind(&markov_network::rotate, bl::_1, n));
+        void top_half() {
+            std::for_each(begin(), end(), bl::bind(&markov_network::top_half, bl::_1));
+        }
+        
+        //! Rotate t and t-1 state vectors.
+        void bottom_half(std::size_t n) {
+            std::for_each(begin(), end(), bl::bind(&markov_network::bottom_half, bl::_1, n));
         }
         
         //! Retrieve an iterator to the beginning of the svm outputs at time t in the last (highest-level) layer.
@@ -110,47 +115,49 @@ namespace mkv {
         
         //! Retrieve an iterator to the end of the svm outputs at time t in the last (highest-level) layer.
         markov_network::svm_type::iterator end_output() { return rbegin()->end_output(); }
-
+        
         //! Retrieve the value of output i in the last (highest) layer.
         markov_network::state_type output(std::size_t i) { return rbegin()->output(i); }
-
+        
         //! Retrieve the value of output i in layer j.
         markov_network::state_type output(std::size_t i, std::size_t j) { return at(j).output(i); }
-
-        //! Update the network n times per layer, with the top-level inputs given by f.
+        
+        //! Update the network n times, with t ticks per update, with the top-level inputs given by f.
         template <typename RandomAccessIterator>
-        void update(std::size_t n, RandomAccessIterator f) {
+        void update(std::size_t n, std::size_t t, RandomAccessIterator f) {
             if(size() == 0) { return; } // empty network, should warn
             
-            for(std::size_t i=0; i<n; ++i) {
-                markov_network& l0=operator[](0);
-                detail::markov_network_update_visitor<RandomAccessIterator> l0v(l0, f);
-                std::for_each(l0.begin(), l0.end(), boost::apply_visitor(l0v));
-                
-                for(std::size_t i=1; i<size(); ++i) {
-                    markov_network& l=operator[](i);
+            for( ; n>0; --n) {
+                top_half();
+                for(std::size_t i=0; i<t; ++i) {
+                    markov_network& l0=operator[](0);
+                    detail::markov_network_update_visitor<RandomAccessIterator> l0v(l0, f);
+                    std::for_each(l0.begin(), l0.end(), boost::apply_visitor(l0v));
                     
-                    // get a visitor to the **previous** layer's outputs:
-                    detail::markov_network_update_visitor<markov_network::svm_type::iterator> lv(l, operator[](i-1).begin_output());
-                    
-                    // and now update this layer:
-                    std::for_each(l.begin(), l.end(), boost::apply_visitor(lv));
+                    for(std::size_t i=1; i<size(); ++i) {
+                        markov_network& l=operator[](i);
+                        
+                        // get a visitor to the **previous** layer's outputs:
+                        detail::markov_network_update_visitor<markov_network::svm_type::iterator> lv(l, operator[](i-1).begin_output());
+                        
+                        // and now update this layer:
+                        std::for_each(l.begin(), l.end(), boost::apply_visitor(lv));
+                    }
                 }
+                bottom_half(t);
             }
-
-            rotate(n);
         }
-
+        
     private:
         desc_type _desc; //!< Description of the geometries of each successive layer of DMKVs.
         rng_type _rng; //<! Random number generator.
     };
-
+    
     /*! Update a Deep Markov Network n times with inputs given by f.
      */
     template <typename RandomAccessIterator>
-    void update(deep_markov_network& net, std::size_t n, RandomAccessIterator f) {
-        net.update(n,f);
+    void update(deep_markov_network& net, std::size_t n, std::size_t t, RandomAccessIterator f) {
+        net.update(n,t,f);
     }
     
 } // mkv

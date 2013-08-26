@@ -187,7 +187,7 @@ namespace mkv {
         for( ; f!=l; ++f, ++last) {
             int start_codon = *f + *last;
             if(start_codon == 255) {
-                markov_network& layer=net[get_layer(f+1,net.size())];
+                markov_network& layer=net[detail::get_layer(f+1,net.size())];
                 detail::build_gate(*last, layer, f+2, md);
             }
         }
@@ -359,10 +359,8 @@ namespace mkv {
             if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
             
             for(int i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
-                //                std::size_t csize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
-                //                                           get<MUTATION_INDEL_MAX_SIZE>(ea));
-                std::size_t csize=get<MUTATION_INDEL_MAX_SIZE>(ea);
-
+                std::size_t csize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
+                                           get<MUTATION_INDEL_MAX_SIZE>(ea));
                 int j=ea.rng()(repr.size()-csize);
                 int gate=*ea.rng().choice(supported.begin(), supported.end());
                 repr[j] = gate;
@@ -376,86 +374,17 @@ namespace mkv {
     };
     
     
-    struct mkv_mutation {
-        template <typename EA>
-        void operator()(typename EA::individual_type& ind, EA& ea) {
-            using namespace ealib;
-            typename EA::representation_type& repr=ind.repr();
-            typedef typename std::vector<typename EA::representation_type::codon_type> codon_buffer;
-            
-            double per_site_p = get<MUTATION_PER_SITE_P>(ea);
-            int imax = get<MUTATION_UNIFORM_INT_MAX>(ea);
-            for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i) {
-                if(ea.rng().p(per_site_p)) {
-                    *i = ea.rng()(imax);
-                }
-            }
-            
-            // gene duplication
-            // (the below looks a little crude, but there were some problems related
-            // to incorrect compiler optimization.)
-            if(ea.rng().p(get<MUTATION_INSERTION_P>(ea)) && (repr.size()<get<REPRESENTATION_MAX_SIZE>(ea))) {
-                int start = ea.rng().uniform_integer(0, repr.size());
-                int extent = ea.rng().uniform_integer(16, 513);
-                codon_buffer buf(extent);
-                for(int i=0; i<extent; ++i) {
-                    buf[i] = repr[start+i];
-                }
-                repr.insert(ea.rng().choice(repr.begin(),repr.end()), buf.begin(), buf.end());
-            }
-            
-            // gene deletion
-            if(ea.rng().p(get<MUTATION_DELETION_P>(ea)) && (repr.size()>get<REPRESENTATION_MIN_SIZE>(ea))) {
-                int start, extent;
-                extent = 15+ea.rng()(512);
-                start = ea.rng()(repr.size()-extent);
-                repr.erase(repr.begin()+start, repr.begin()+start+extent);
-            }
-        }
-    };
-    
-    /*! Generates random Markov network-based individuals.
-     */
-    struct mkv_random_individual {
-        template <typename EA>
-        typename EA::representation_type operator()(EA& ea) {
-            using namespace mkv;
-            
-            typename EA::representation_type repr;
-            repr.resize(get<ealib::REPRESENTATION_INITIAL_SIZE>(ea), 127);
-            
-            // which gate types are supported?
-            std::set<gate_type> supported;
-            std::string gates = get<MKV_GATE_TYPES>(ea);
-            if(boost::icontains(gates,"probabilistic")) { supported.insert(PROBABILISTIC); }
-            if(boost::icontains(gates,"logic")) { supported.insert(LOGIC); }
-            if(boost::icontains(gates,"adaptive")) { supported.insert(ADAPTIVE); }
-            
-            int i,j;
-            for(i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
-                j=ea.rng()(repr.size()-100);
-                int gate=*ea.rng().choice(supported.begin(), supported.end()); //ea.rng()(3);
-                repr[j] = gate;
-                repr[j+1] = 255-gate;
-                for(int k=2; k<97; ++k) {
-                    repr[j+k]=ea.rng()(256);
-                }
-            }
-            return repr;
-        }
-    };
-    
-    
     /*! Returns a set of supported gate types.
      */
-    template <typename EA>
-    void intialize_allowed_gates(EA& ea) {
+    template <typename MD>
+    void intialize_allowed_gates(MD& md) {
         using namespace ealib;
-        std::string gates = get<MKV_GATE_TYPES>(ea);
-        put<MKV_GATE_ALLOW_PROBABILISTIC>(boost::icontains(gates,"probabilistic"), ea);
-        put<MKV_GATE_ALLOW_LOGIC>(boost::icontains(gates,"logic"), ea);
-        put<MKV_GATE_ALLOW_ADAPTIVE>(boost::icontains(gates,"adaptive"), ea);
+        std::string gates = get<MKV_GATE_TYPES>(md);
+        put<MKV_GATE_ALLOW_PROBABILISTIC>(boost::icontains(gates,"probabilistic"), md);
+        put<MKV_GATE_ALLOW_LOGIC>(boost::icontains(gates,"logic"), md);
+        put<MKV_GATE_ALLOW_ADAPTIVE>(boost::icontains(gates,"adaptive"), md);
     }
+    
     
     /*! Configuration object for EAs that use Markov Networks.
      */
@@ -529,8 +458,6 @@ namespace mkv {
     
     typedef ealib::circular_genome<int> representation_type;
     typedef ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > mutation_type;
-    //typedef mkv_mutation mutation_type;
-    
 
 } // mkv
 

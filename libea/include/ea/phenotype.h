@@ -110,8 +110,6 @@ namespace ealib {
     //! Phenotype attribute accessor; lazily decodes a genotype into a phenotype.
     template <typename EA>
     typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-
         if(!ind.attr().has_phenotype()) {
             typename EA::configuration_type::phenotype_ptr p=detail::make_phenotype(ind, typename EA::encoding_type(), ea);
             ind.attr().phenotype() = p;
@@ -124,8 +122,6 @@ namespace ealib {
     template <typename EA>
     typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind,
                                                           typename EA::rng_type& rng, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        
         if(!ind.attr().has_phenotype()) {
             typename EA::configuration_type::phenotype_ptr p=detail::make_phenotype(ind, typename EA::encoding_type(), rng, ea);
             ind.attr().phenotype() = p;

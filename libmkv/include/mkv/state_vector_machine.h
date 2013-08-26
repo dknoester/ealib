@@ -39,6 +39,7 @@ namespace mkv {
         
         //! Constructor.
         state_vector_machine(std::size_t n) : _n(n), _t(n), _tminus1(n) {
+            clear();
         }
         
         //! Retrieves the size of this SVM, in number of states.
@@ -72,10 +73,10 @@ namespace mkv {
         state_vector_type& tminus1() { return _tminus1; }
         
         //! Retrieve state n at time t.
-        state_type& state_t(std::size_t n) { return _t[n]; }
+        state_type& state_t(std::size_t n) { assert(n < _t.size()); return _t[n]; }
         
         //! Retrieve state n at time t-1.
-        state_type& state_tminus1(std::size_t n) { return _tminus1[n]; }
+        state_type& state_tminus1(std::size_t n) { assert(n < _tminus1.size()); return _tminus1[n]; }
         
         //! Retrieve state n at time t (const-qualified).
         const state_type& state_t(std::size_t n) const { return _t[n]; }
