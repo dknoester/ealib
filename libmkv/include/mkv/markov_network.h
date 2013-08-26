@@ -397,6 +397,12 @@ namespace mkv {
             net.bottom_half(t);
         }
     }
+
+    //! Convenience method for single-tick updates.
+    template <typename RandomAccessIterator>
+    void update(markov_network& net, std::size_t n, RandomAccessIterator f) {
+        update(net, n, 1, f);
+    }
     
 } // mkv
 

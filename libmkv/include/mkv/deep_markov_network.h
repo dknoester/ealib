@@ -159,7 +159,14 @@ namespace mkv {
     void update(deep_markov_network& net, std::size_t n, std::size_t t, RandomAccessIterator f) {
         net.update(n,t,f);
     }
-    
+
+    /*! Update a Deep Markov Network n times with inputs given by f.
+     */
+    template <typename RandomAccessIterator>
+    void update(deep_markov_network& net, std::size_t n, RandomAccessIterator f) {
+        net.update(n,1,f);
+    }
+
 } // mkv
 
 #endif
