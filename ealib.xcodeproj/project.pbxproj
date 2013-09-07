@@ -224,6 +224,11 @@
 		423CBDFB157D0E450003A644 /* test_rng.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_rng.cpp; sourceTree = "<group>"; };
 		423CBE57157D0FCC0003A644 /* libea_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libea_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
+		4242B60317CF8DF6005D05BF /* direct_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = direct_markov_network.h; sourceTree = "<group>"; };
+		4242B61517CF9359005D05BF /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
+		4242B61617CFA50E005D05BF /* build.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = build.h; sourceTree = "<group>"; };
+		4242B61717D0FF5D005D05BF /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		4242B61817D10095005D05BF /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
 		4245002E16D2655B007827D7 /* back_propagation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = back_propagation.h; sourceTree = "<group>"; };
 		4245003016D26866007827D7 /* abstract_neuron.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_neuron.h; sourceTree = "<group>"; };
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
@@ -654,6 +659,16 @@
 			name = lib;
 			sourceTree = "<group>";
 		};
+		4242B61417CF9359005D05BF /* mkv */ = {
+			isa = PBXGroup;
+			children = (
+				4242B61517CF9359005D05BF /* analysis.h */,
+				4242B61617CFA50E005D05BF /* build.h */,
+				4242B61717D0FF5D005D05BF /* common.h */,
+			);
+			path = mkv;
+			sourceTree = "<group>";
+		};
 		4281FEDD16C463F50066610C /* libann */ = {
 			isa = PBXGroup;
 			children = (
@@ -730,7 +745,10 @@
 		42841C3915ADA06B00AB18BE /* ea */ = {
 			isa = PBXGroup;
 			children = (
+				4242B61417CF9359005D05BF /* mkv */,
 				42841C3A15ADA06B00AB18BE /* markov_network.h */,
+				4242B61817D10095005D05BF /* deep_markov_network.h */,
+				4242B60317CF8DF6005D05BF /* direct_markov_network.h */,
 			);
 			path = ea;
 			sourceTree = "<group>";

@@ -21,61 +21,46 @@
 #define _MKV_EA_MARKOV_NETWORK_H_
 
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/max.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <ea/configuration.h>
+#include <ea/meta_data.h>
+#include <ea/analysis.h>
+#include <ea/events.h>
+#include <ea/datafile.h>
 #include <ea/mutation.h>
 #include <ea/representations/circular_genome.h>
 
+#include <mkv/markov_network.h>
+#include <mkv/deep_markov_network.h>
+#include <mkv/parse.h>
 #include <ea/mkv/common.h>
 #include <ea/mkv/analysis.h>
 #include <ea/mkv/build.h>
-#include <mkv/markov_network.h>
-#include <mkv/parse.h>
+#include <ea/markov_network.h>
 
 namespace mkv {
-        
-    /*! Generates random Markov network-based individuals.
-     */
-    struct markov_network_ancestor {
-        template <typename EA>
-        typename EA::representation_type operator()(EA& ea) {
-            using namespace ealib;
-            
-            typename EA::representation_type repr;
-            repr.resize(get<REPRESENTATION_INITIAL_SIZE>(ea), 127);
-            
-            for(std::size_t i=0; i<get<MKV_INITIAL_GATES>(ea); ++i) {
-                std::size_t csize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
-                                           get<MUTATION_INDEL_MAX_SIZE>(ea));
-                int j=ea.rng()(repr.size()-csize);
-                int gate=*ea.rng().choice(ea.configuration().supported_gates.begin(), ea.configuration().supported_gates.end());
-                repr[j] = gate;
-                repr[j+1] = 255-gate;
-                for(std::size_t k=2; k<csize; ++k) {
-                    repr[j+k]=ea.rng()(get<MUTATION_UNIFORM_INT_MIN>(ea), get<MUTATION_UNIFORM_INT_MAX>(ea));
-                }
-            }
-            return repr;
-        }
-    };
     
-
-    /*! Configuration object for EAs that use Markov Networks.
+    /*! Configuration object for EAs that use Deep Markov Networks.
      */
     template <typename EA>
-    struct markov_network_configuration : public ealib::abstract_configuration<EA> {
+    struct deep_markov_network_configuration : public ealib::abstract_configuration<EA> {
         typedef ealib::indirectS encoding_type;
-        typedef mkv::markov_network phenotype;
+        typedef mkv::deep_markov_network phenotype;
         typedef boost::shared_ptr<phenotype> phenotype_ptr;
         
-        mkv::markov_network::desc_type mkv_desc;
-        std::set<gate_type> supported_gates;
-
+        mkv::deep_markov_network::desc_type mkv_desc;
+        gate_selector_type supported_gates;
+        
         //! Translate an individual's representation into a Markov Network.
         virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
                                              typename EA::rng_type& rng, EA& ea) {
-            phenotype_ptr p(new mkv::markov_network(mkv_desc,rng));
-            detail::build_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea, supported_gates);
+            phenotype_ptr p(new mkv::deep_markov_network(mkv_desc,rng));
+            detail::build_deep_markov_network(*p, ind.repr().begin(), ind.repr().end(), ea, supported_gates);
             return p;
         }
         
@@ -87,7 +72,6 @@ namespace mkv {
         virtual void initial_population(EA& ea) {
             generate_ancestors(markov_network_ancestor(), get<ealib::POPULATION_SIZE>(ea), ea);
         }
-        
         
         //! Called as the final step of EA initialization.
         virtual void initialize(EA& ea) {
@@ -104,10 +88,10 @@ namespace mkv {
             }
         }
     };
-        
+    
     typedef ealib::circular_genome<int> representation_type;
     typedef ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > mutation_type;
-
+    
 } // mkv
 
 #endif

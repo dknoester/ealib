@@ -87,8 +87,6 @@ BOOST_AUTO_TEST_CASE(test_layers) {
     };
     
     meta_data md;
-    put<MKV_GATE_TYPES>("logic", md);
-    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
@@ -99,7 +97,10 @@ BOOST_AUTO_TEST_CASE(test_layers) {
     lv.push_back(boost::make_tuple(2,4,0));
     deep_markov_network net(lv, 42);
     
-    build_deep_markov_network(net, data, data+44, md);
+    gate_selector_type gates;
+    gates.insert(LOGIC);
+    
+    build_deep_markov_network(net, data, data+44, md, gates);
     BOOST_CHECK(net.size()==2);
     BOOST_CHECK(net.ninput_states()==6);
     BOOST_CHECK(net.noutput_states()==6);
@@ -224,17 +225,20 @@ BOOST_AUTO_TEST_CASE(test_graph_conversion) {
     };
     
     meta_data md;
-    put<MKV_GATE_TYPES>("logic,probabilistic", md);
-    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
     put<GATE_OUTPUT_LIMIT>(8, md);
-    
+
     // build the network, check that the gate is what we expect:
     markov_network net(2, 2, 2, 42);
     cvector<int> cv(data, data+76);
-    build_markov_network(net, cv.begin(), cv.end(), md);
+    
+    gate_selector_type gates;
+    gates.insert(LOGIC);
+    gates.insert(PROBABILISTIC);
+
+    build_markov_network(net, cv.begin(), cv.end(), md, gates);
 
     markov_graph G=as_reduced_graph(net);
     using namespace boost;
@@ -297,15 +301,17 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
 	};
 	
     meta_data md;
-    put<MKV_GATE_TYPES>("logic", md);
-    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
     put<GATE_OUTPUT_LIMIT>(8, md);
     
     markov_network net(2, 2, 1);
-    build_markov_network(net, data, data+64, md);
+    
+    gate_selector_type gates;
+    gates.insert(LOGIC);
+
+    build_markov_network(net, data, data+64, md, gates);
     BOOST_CHECK(net.size()==1);
     BOOST_CHECK(net.nstates()==5);
     BOOST_CHECK(std::distance(net.begin_output(), net.end_output())==2);
@@ -402,16 +408,16 @@ BOOST_AUTO_TEST_CASE(test_markov_gate) {
 	};
 	
     meta_data md;
-    put<MKV_GATE_TYPES>("probabilistic", md);
-    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
     put<GATE_OUTPUT_LIMIT>(8, md);
     
     markov_network net(2, 2, 1, 42);
+    gate_selector_type gates;
+    gates.insert(PROBABILISTIC);
 
-    build_markov_network(net, data, data+64, md);
+    build_markov_network(net, data, data+64, md, gates);
     BOOST_CHECK(net.size()==1);
     BOOST_CHECK(net.nstates()==5);
     BOOST_CHECK(std::distance(net.begin_output(), net.end_output())==2);
@@ -513,8 +519,6 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
     };
     
     meta_data md;
-    put<MKV_GATE_TYPES>("logic,probabilistic", md);
-    intialize_allowed_gates(md);
     put<GATE_INPUT_FLOOR>(1, md);
     put<GATE_INPUT_LIMIT>(8, md);
     put<GATE_OUTPUT_FLOOR>(1, md);
@@ -523,7 +527,11 @@ BOOST_AUTO_TEST_CASE(test_markov_network_ctor2) {
     // build the network, check that the gate is what we expect:
     markov_network net(2, 2, 2, 42);
     cvector<int> cv(data, data+76);
-    build_markov_network(net, cv.begin(), cv.end(), md);
+    gate_selector_type gates;
+    gates.insert(LOGIC);
+    gates.insert(PROBABILISTIC);
+
+    build_markov_network(net, cv.begin(), cv.end(), md, gates);
     BOOST_CHECK(net.size()==3);
     BOOST_CHECK(net.nstates()==6);
     BOOST_CHECK(std::distance(net.begin_output(), net.end_output())==2);

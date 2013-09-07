@@ -68,11 +68,6 @@ namespace ealib {
                 return _p != 0;
             }
             
-            //! Retrieves a pointer reference to the phenotype.
-            typename EA::configuration_type::phenotype_ptr& phenotype() {
-                return _p;
-            }
-
             /*! Pointer to the phenotype.
              
              In the case of a direct encoding, phenotype_ptr should be a plain-old
@@ -86,48 +81,52 @@ namespace ealib {
 
     namespace detail {
         
-        //! Direct encoding; returns a pointer to the individual's representation (its genotype).
+        //! Direct encoding; returns the individual's representation (its genotype).
         template <typename EA>
-        typename EA::configuration_type::phenotype_ptr make_phenotype(typename EA::individual_type& ind, directS, EA& ea) {
-            return &ind.repr();
+        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, directS, EA& ea) {
+            return ind.repr();
         }
         
+        //! Direct encoding; returns the individual's representation (its genotype).
+        template <typename EA>
+        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, directS, typename EA::rng_type& rng, EA& ea) {
+            return ind.repr();
+        }
+
         //! Indirect encoding; returns a pointer to a phenotype that has been translated from the genotype.
         template <typename EA>
-        typename EA::configuration_type::phenotype_ptr make_phenotype(typename EA::individual_type& ind, indirectS, EA& ea) {
-            return ea.configuration().make_phenotype(ind,ea);
+        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, indirectS, EA& ea) {
+            if(!ind.attr().has_phenotype()) {
+                typename EA::configuration_type::phenotype_ptr p = ea.configuration().make_phenotype(ind,ea);
+                ind.attr()._p = p;
+            }
+            
+            return *ind.attr()._p;
         }
         
         //! Indirect encoding; returns a pointer to a stochastic phenotype that has been translated from the genotype.
         template <typename EA>
-        typename EA::configuration_type::phenotype_ptr make_phenotype(typename EA::individual_type& ind, indirectS,
+        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, indirectS,
                                                                       typename EA::rng_type& rng, EA& ea) {
-            return ea.configuration().make_phenotype(ind,rng,ea);
+            if(!ind.attr().has_phenotype()) {
+                typename EA::configuration_type::phenotype_ptr p = ea.configuration().make_phenotype(ind,rng,ea);
+                ind.attr()._p = p;
+            }
+            
+            return *ind.attr()._p;
         }
-
     } // detail
     
     //! Phenotype attribute accessor; lazily decodes a genotype into a phenotype.
     template <typename EA>
     typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, EA& ea) {
-        if(!ind.attr().has_phenotype()) {
-            typename EA::configuration_type::phenotype_ptr p=detail::make_phenotype(ind, typename EA::encoding_type(), ea);
-            ind.attr().phenotype() = p;
-        }
-
-        return *ind.attr().phenotype();
+        return detail::phenotype(ind, typename EA::encoding_type(), ea);
     }
     
     //! Phenotype attribute accessor; lazily decodes a genotype into a stochastic phenotype.
     template <typename EA>
-    typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind,
-                                                          typename EA::rng_type& rng, EA& ea) {
-        if(!ind.attr().has_phenotype()) {
-            typename EA::configuration_type::phenotype_ptr p=detail::make_phenotype(ind, typename EA::encoding_type(), rng, ea);
-            ind.attr().phenotype() = p;
-        }
-        
-        return *ind.attr().phenotype();
+    typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, typename EA::rng_type& rng, EA& ea) {
+        return detail::phenotype(ind, typename EA::encoding_type(), rng, ea);
     }
 
 } // ealib

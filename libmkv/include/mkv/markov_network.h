@@ -20,6 +20,7 @@
 #ifndef _MKV_MARKOV_NETWORK_H_
 #define _MKV_MARKOV_NETWORK_H_
 
+#include <boost/serialization/nvp.hpp>
 #include <boost/variant.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
@@ -35,7 +36,7 @@
 namespace mkv {
     
     class markov_network;
-    
+
     namespace detail {
         
         typedef std::vector<std::size_t> index_list_type; //!< Type for a list of indices.
@@ -99,6 +100,14 @@ namespace mkv {
             virtual ~markov_gate() {
             }
             
+            //! Convenience method for normalizing the probability table.
+            void normalize() {
+                for(std::size_t i=0; i<M.size1(); ++i) {
+                    row_type row(M, i);
+                    ealib::algorithm::normalize(row.begin(), row.end(), 1.0);
+                }
+            }
+            
             matrix_type M; //!< Probability table.
         };
         
@@ -126,6 +135,14 @@ namespace mkv {
             
             //! Destructor.
             virtual ~adaptive_gate() {
+            }
+
+            //! Convenience method for normalizing the probability table.
+            void normalize() {
+                for(std::size_t i=0; i<M.size1(); ++i) {
+                    row_type row(M, i);
+                    ealib::algorithm::normalize(row.begin(), row.end(), 1.0);
+                }
             }
             
             //! Scale the probability of output (i,j) by s.
@@ -174,7 +191,11 @@ namespace mkv {
         typedef state_vector_machine<state_type> svm_type; //!< State vector machine type.
         typedef std::vector<variant_gate_type> base_type; //!< List of gates.
         typedef ealib::default_rng_type rng_type; //!< Random number generator type.
-        
+
+        //! Default constructor.
+        markov_network() : _desc(0,0,0), _svm(0), _rng(0) {
+        }
+
         //! Constructs a Markov network with the given seed.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0)
         : _desc(nin, nout, nhid), _svm(nout+nhid), _rng(seed) {
@@ -188,6 +209,11 @@ namespace mkv {
         //! Constructs a Markov network with a copy of the given random number generator.
         markov_network(const desc_type& desc, const rng_type& rng)
         : _desc(desc), _svm(desc.get<OUT>()+desc.get<HID>()), _rng(rng) {
+        }
+        
+        //! Copy constructor.
+        markov_network(const markov_network& that)
+        : base_type(that), _desc(that._desc), _svm(_desc.get<OUT>()+_desc.get<HID>()), _rng(that._rng) {
         }
         
         //! Retrieve this network's underlying random number generator.
@@ -276,6 +302,15 @@ namespace mkv {
         desc_type _desc; //!< Geometry descriptor for this Markov Network.
         svm_type _svm; //!< State vector machine for the hidden & output states.
         rng_type _rng; //<! Random number generator.
+        
+    private:
+		friend class boost::serialization::access;
+        
+        //! Serialize this individual.
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+//            ar & boost::serialization::make_nvp("name", _name);
+		}
     };
     
     

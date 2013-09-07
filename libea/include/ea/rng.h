@@ -339,7 +339,7 @@ namespace ealib {
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};
-	
+    
     /*! STL-compatible generator for probabilities.
      */
     template <typename RNG>
@@ -347,6 +347,16 @@ namespace ealib {
         typedef double result_type;
         probability_generator(RNG& rng) : _rng(rng) { }
         result_type operator()() { return _rng.p(); }
+        RNG& _rng;
+    };
+
+    /*! STL-compatible generator for integers.
+     */
+    template <typename RNG>
+    struct integer_generator {
+        typedef int result_type;
+        integer_generator(RNG& rng) : _rng(rng) { }
+        result_type operator()() { return _rng.uniform_integer(); }
         RNG& _rng;
     };
 

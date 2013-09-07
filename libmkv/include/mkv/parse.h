@@ -31,12 +31,28 @@
 #include <stdexcept>
 #include <vector>
 
+#include <mkv/markov_network.h>
+#include <mkv/deep_markov_network.h>
 
 namespace mkv {
     namespace detail {
         
         namespace qi = boost::spirit::qi;
         namespace ascii = boost::spirit::ascii;
+             
+        /*! Defines the grammar to parse a description object for a markov_network.
+         */
+        template <typename Iterator>
+        struct desc_parser : qi::grammar<Iterator, markov_network::desc_type(), ascii::space_type> {
+            
+            desc_parser() : desc_parser::base_type(start) {
+                using qi::int_;
+                
+                start %= "(" >> int_ >> "," >> int_ >> "," >> int_ >> ")";
+            }
+            
+            qi::rule<Iterator, markov_network::desc_type(), ascii::space_type> start;
+        };
         
         /*! Defines the grammar to parse a description object for a deep markov network.
          */
@@ -54,23 +70,8 @@ namespace mkv {
             qi::rule<Iterator, deep_markov_network::desc_type(), ascii::space_type> start;
         };
         
-        
-        /*! Defines the grammar to parse a description object for a markov_network.
-         */
-        template <typename Iterator>
-        struct desc_parser : qi::grammar<Iterator, markov_network::desc_type(), ascii::space_type> {
-            
-            desc_parser() : desc_parser::base_type(start) {
-                using qi::int_;
-                
-                start %= "(" >> int_ >> "," >> int_ >> "," >> int_ >> ")";
-            }
-            
-            qi::rule<Iterator, markov_network::desc_type(), ascii::space_type> start;
-        };
-        
     } // detail
-    
+        
     
     /*! Parse a deep_markov_network description from a string.
      */
@@ -106,14 +107,6 @@ namespace mkv {
         }
     }
     
-    template <typename T>
-    markov_network::desc_type make_markov_network_desc(const T& t) {
-        markov_network::desc_type d;
-        parse_desc(t,d);
-        return d;
-    }
-    
 } // mkv
-
 
 #endif

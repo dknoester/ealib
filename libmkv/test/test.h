@@ -41,4 +41,5 @@ struct test_rng {
 	int _r;
 };
 
+
 #endif
