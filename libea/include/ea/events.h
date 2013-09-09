@@ -137,7 +137,8 @@ namespace ealib {
         }
         virtual ~record_statistics_event() { }
         virtual void record(EA& ea) {
-            if((ea.current_update() == 0) || ((ea.current_update() % get<RECORDING_PERIOD>(ea)) == 0)) {
+            if((get<RECORDING_PERIOD>(ea,0) > 0) &&
+               ((ea.current_update() == 0) || ((ea.current_update() % get<RECORDING_PERIOD>(ea)) == 0))) {
                 operator()(ea);
             }
         }

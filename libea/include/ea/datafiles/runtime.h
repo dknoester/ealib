@@ -40,7 +40,7 @@ namespace ealib {
         template <typename EA>
         struct runtime : end_of_update_event<EA> {
             runtime(EA& ea) : end_of_update_event<EA>(ea) {
-                std::cerr << "update mean_generation min_fitness mean_fitness max_fitness instantaneous_t average_t memory_usage" << std::endl;
+                std::cerr << "update instantaneous_t average_t memory_usage" << std::endl;
                 _t.restart();
             }
             
@@ -53,14 +53,14 @@ namespace ealib {
                 _tacc(t);
                 std::cerr << ea.current_update() << " ";
                 
-                accumulator_set<double, stats<tag::mean> > gen;
-                accumulator_set<double, stats<tag::min, tag::mean, tag::max> > fit;
-                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    gen((*i)->generation());
-                    fit(static_cast<double>(ealib::fitness(**i,ea)));
-                }
+//                accumulator_set<double, stats<tag::mean> > gen;
+//                accumulator_set<double, stats<tag::min, tag::mean, tag::max> > fit;
+//                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+//                    gen((*i)->generation());
+//                    fit(static_cast<double>(ealib::fitness(**i,ea)));
+//                }
                 
-                std::cerr << mean(gen) << " " << min(fit) << " " << mean(fit) << " " << max(fit) << " ";
+//                std::cerr << mean(gen) << " " << min(fit) << " " << mean(fit) << " " << max(fit) << " ";
                 std::cerr << std::fixed << std::setprecision(4) << t << " ";
                 std::cerr << std::fixed << std::setprecision(4) << boost::accumulators::mean(_tacc) << " ";
                 

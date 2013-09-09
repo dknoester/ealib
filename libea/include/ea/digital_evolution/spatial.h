@@ -37,12 +37,12 @@ namespace ealib {
     
     namespace resources {
         //! Abstract resource type.
+        template <typename EA>
         struct abstract_resource {
             abstract_resource(const std::string& name) : _name(name) { }
             //! Update resource levels, if needed, based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) = 0;
-            //! Consume resources.
-            virtual double consume() = 0;
+            virtual double consume(typename EA::individual_type& org, EA& ea) = 0;
             virtual void reset() = 0;
             virtual void clear() = 0;
             virtual double level() = 0;
@@ -52,19 +52,21 @@ namespace ealib {
         };
         
         //! Unlimited resource type.
-        struct unlimited : abstract_resource {
-            unlimited(const std::string& name) : abstract_resource(name) { }
+        template <typename EA>
+        struct unlimited : abstract_resource<EA> {
+            unlimited(const std::string& name) : abstract_resource<EA>(name) { }
             void update(double) { }
-            double consume() { return 1.0; }
+            double consume(typename EA::individual_type& org, EA& ea) { return 1.0; }
             void reset() { }
             void clear() { }
             double level() { return 1.0; }
         };
         
         //! Limited resource type.
-        struct limited : abstract_resource {
+        template <typename EA>
+        struct limited : abstract_resource<EA> {
             limited(const std::string& name, double initial, double inflow, double outflow, double consume)
-            : abstract_resource(name), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
+            : abstract_resource<EA>(name), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
             }
             
             void update(double delta_t) {
@@ -72,7 +74,7 @@ namespace ealib {
                 _level = std::max(0.0, _level);
             }
             
-            double consume() {
+            double consume(typename EA::individual_type& org, EA& ea) {
                 double r = std::max(0.0, _level*_consume);
                 _level = std::max(0.0, _level-r);
                 return r;
@@ -91,13 +93,85 @@ namespace ealib {
             double _consume; //!< Fraction of resource consumed.
         };
         
+        //! Spatial resources type.
+        template <typename EA>
+        struct spatial : abstract_resource<EA> {
+            typedef boost::numeric::ublas::matrix<double> matrix_type; //!< Type for matrix that will store resource levels.
+
+            spatial(const std::string& name, double diffuse, double initial, double inflow, double outflow, double consume, EA& ea)
+            : abstract_resource<EA>(name), _diffuse(diffuse), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
+                _R.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea));
+                _T.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea));
+                reset();
+            }
+            
+            void update(double delta_t) {
+                // for stability...
+                assert(delta_t < (1.0/(2.0*_diffuse)));
+
+                // last row and column indices...
+                std::size_t ni=_R.size1()-1;
+                std::size_t nj=_R.size2()-1;
+
+                // inflow to the top row...
+                for(std::size_t j=0; j<nj; ++j) {
+                    _R(0,j) += _inflow;
+                }
+
+                // outflow from the bottom row...
+                for(std::size_t j=0; j<nj; ++j) {
+                    _R(ni,j) = std::max(0.0, _R(ni,j) - _outflow);
+                }
+
+                // diffuse
+                // based on: http://www.timteatro.net/2010/10/29/performance-python-solving-the-2d-diffusion-equation-with-numpy/
+                for(std::size_t i=1; i<ni; ++i) {
+                    for(std::size_t j=1; j<nj; ++j) {
+                        double uxx = _R(i+1,j) - 2*_R(i,j) + _R(i-1,j);
+                        double uyy = _R(i,j+1) - 2*_R(i,j) + _R(i,j-1);
+                        _T(i,j) = _R(i,j) + delta_t * _diffuse * (uxx+uyy);
+                    }
+                }
+                _R.swap(_T);
+            }
+            
+            double consume(typename EA::individual_type& org, EA& ea) {
+                typename EA::environment_type::location_ptr_type p = ea.env().handle2ptr(org.location());
+                double level = _R(p->x, p->y);
+                double r = std::max(0.0, level*_consume);
+                _R(p->x, p->y) = std::max(0.0, level-r);
+                return r;
+            }
+            
+            void reset() {
+                _R = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), _initial);
+                _T = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), _initial);
+            }
+            
+            void clear() {
+                _R = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), 0.0);
+                _T = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), 0.0);
+            }
+            
+            double level() {  }
+            
+            matrix_type _R; //!< Matrix for current resource levels at each cell.
+            matrix_type _T; //!< Matrix for updating resource levels at each cell.
+            double _diffuse; //!< Diffusion constant for this resource.
+            double _initial; //!< Initial resource level
+            double _level; //!< Current resource level.
+            double _inflow; //!< Amount of resource flowing in per update.
+            double _outflow; //!< Rate at which resource flows out per update.
+            double _consume; //!< Fraction of resource consumed.
+        };
+        
     } // resources
     
     //! Helper method that builds an unlimited resource and adds it to the environment.
     template <typename EA>
     typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, EA& ea) {
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::unlimited(name));
+        resource_ptr_type p(new resources::unlimited<EA>(name));
         ea.env().add_resource(p);
         return p;
     }
@@ -106,10 +180,22 @@ namespace ealib {
     template <typename EA>
     typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::limited(name, initial, inflow, outflow, consume));
+        resource_ptr_type p(new resources::limited<EA>(name, initial, inflow, outflow, consume));
         ea.env().add_resource(p);
         return p;
     }
+    
+    //! Helper method that builds a spatial resource and adds it to the environment.
+    template <typename EA>
+    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name,
+                                                                   double diffuse,
+                                                                   double initial, double inflow, double outflow, double consume, EA& ea) {
+        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+        resource_ptr_type p(new resources::spatial<EA>(name, diffuse, initial, inflow, outflow, consume, ea));
+        ea.env().add_resource(p);
+        return p;
+    }
+    
     
     
     /*! Spatial topology.
@@ -120,14 +206,14 @@ namespace ealib {
         typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
         typedef typename ea_type::individual_type individual_type; //!< Pointer to individual type.
         
-        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type;
+        typedef boost::shared_ptr<resources::abstract_resource<ea_type> > resource_ptr_type;
         typedef std::vector<resource_ptr_type> resource_list_type;
         resource_list_type _resources;
         
         resource_list_type& resources() { return _resources; }
         
         void clear_resources() {
-            for(resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
                 (*i)->clear();
             }
         }
@@ -414,7 +500,7 @@ namespace ealib {
          eventual spatial resources.
          */
         double reaction(resource_ptr_type r, individual_type& org, ea_type& ea) {
-            return r->consume();
+            return r->consume(org,ea);
         }
         
         //! Add a resource to this environment.
@@ -424,7 +510,7 @@ namespace ealib {
         
         //! Fractional update.
         void partial_update(double delta_t, ea_type& ea) {
-            for(resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
                 (*i)->update(delta_t);
             }
         }
@@ -432,7 +518,7 @@ namespace ealib {
         /*! Reset resources -- may occur on successful group event 
          */
         void reset_resources() {
-            for(resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
                 (*i)->reset();
             }
         }

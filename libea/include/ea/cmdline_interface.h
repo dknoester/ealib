@@ -40,6 +40,8 @@
 
 namespace ealib {
 
+    LIBEA_MD_DECL(COMMAND_LINE, "ea.run.command_line", std::string);
+
     //! Abstract base class allowing for a limited set of interactions with an EA.
     class ea_interface {
     public:
@@ -108,8 +110,8 @@ namespace ealib {
         ci->_events.push_back(p);
     }
     
-    /*! This selector is used with the command-line interface to prevent an interface
-     from adding itself to the registrar.
+    /*! This selector is used with the command-line interface to automatically 
+     register the command line interface.
      */
     struct do_not_registerS { };
     
@@ -124,12 +126,12 @@ namespace ealib {
         typedef std::map<std::string, tool_ptr_type> tool_registry; //!< Storage for analysis tools.
         typedef std::vector<boost::shared_ptr<ealib::event> > event_list; //!< Storage for events.
         
-        //! Constructor.
+        //! Registering constructor.
         cmdline_interface() : ea_interface(), _ea_options("Configuration file and command-line options") {
             registrar::instance()->register_ea(this);
         }
 
-        //! Autostarting constructor.
+        //! Non-registering constructor.
         cmdline_interface(do_not_registerS) : ea_interface(), _ea_options("Configuration file and command-line options") {
         }
         

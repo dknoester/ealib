@@ -331,15 +331,6 @@ namespace ealib {
 	LIBEA_MD_DECL(NUM_OFFSPRING, "ea.generational_model.num_offspring", int);
 	LIBEA_MD_DECL(REPLACEMENT_RATE_P, "ea.generational_model.replacement_rate.p", double);
 	
-
-    
-	// ea.run.*
-	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
-	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
-    LIBEA_MD_DECL(CHECKPOINT_OFF, "ea.run.checkpoint_off", int);
-	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
-	LIBEA_MD_DECL(COMMAND_LINE, "ea.run.command_line", std::string);
-
     // ea.rng.*
     LIBEA_MD_DECL(RNG_SEED, "ea.rng.seed", unsigned int);
     

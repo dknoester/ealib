@@ -224,6 +224,33 @@ namespace mkv {
     typedef markov_network representation_type;
     typedef detail::direct_mutate_markov_network mutation_type;
     
+    /*! Add the common Markov Network configuration options to the command line interface.
+     */
+    template <typename EA>
+    void add_options(ealib::cmdline_interface<EA>* ci) {
+        using namespace ealib;
+        // markov network options
+        add_option<MKV_DESC>(ci);
+        add_option<MKV_UPDATE_N>(ci);
+        add_option<MKV_GATE_TYPES>(ci);
+        add_option<MKV_INITIAL_GATES>(ci);
+        add_option<MKV_MAX_GATES>(ci);
+        add_option<MKV_MIN_GATES>(ci);
+        add_option<GATE_INPUT_LIMIT>(ci);
+        add_option<GATE_INPUT_FLOOR>(ci);
+        add_option<GATE_OUTPUT_LIMIT>(ci);
+        add_option<GATE_OUTPUT_FLOOR>(ci);
+        add_option<GATE_HISTORY_LIMIT>(ci);
+        add_option<GATE_HISTORY_FLOOR>(ci);
+        add_option<GATE_WV_STEPS>(ci);
+        
+        // ea options
+        add_option<MUTATION_PER_SITE_P>(ci);
+        add_option<MUTATION_DELETION_P>(ci);
+        add_option<MUTATION_INSERTION_P>(ci);
+        add_option<MUTATION_DUPLICATION_P>(ci);
+    }
+
 } // mkv
 
 #endif

@@ -35,7 +35,12 @@
 
 
 namespace ealib {
-    
+
+	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
+	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
+    LIBEA_MD_DECL(CHECKPOINT_OFF, "ea.run.checkpoint_off", int);
+	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
+
     /*! At the conceptual level, here are the states and actions associated with 
      an EA's lifecycle.  Where appropriate, these states correspond to methods
      defined below.

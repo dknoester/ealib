@@ -22,6 +22,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
+#include <ea/cmdline_interface.h>
 #include <ea/configuration.h>
 #include <ea/mutation.h>
 #include <ea/representations/circular_genome.h>
@@ -33,7 +34,7 @@
 #include <mkv/parse.h>
 
 namespace mkv {
-        
+    
     /*! Generates random Markov network-based individuals.
      */
     struct markov_network_ancestor {
@@ -59,7 +60,7 @@ namespace mkv {
         }
     };
     
-
+    
     /*! Configuration object for EAs that use Markov Networks.
      */
     template <typename EA>
@@ -70,7 +71,7 @@ namespace mkv {
         
         mkv::markov_network::desc_type mkv_desc;
         std::set<gate_type> supported_gates;
-
+        
         //! Translate an individual's representation into a Markov Network.
         virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
                                              typename EA::rng_type& rng, EA& ea) {
@@ -104,10 +105,41 @@ namespace mkv {
             }
         }
     };
-        
+    
     typedef ealib::circular_genome<int> representation_type;
     typedef ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > mutation_type;
-
+    
+    /*! Add the common Markov Network configuration options to the command line interface.
+     */
+    template <typename EA>
+    void add_options(ealib::cmdline_interface<EA>* ci) {
+        using namespace ealib;
+        // markov network options
+        add_option<MKV_DESC>(ci);
+        add_option<MKV_UPDATE_N>(ci);
+        add_option<MKV_GATE_TYPES>(ci);
+        add_option<MKV_INITIAL_GATES>(ci);
+        add_option<GATE_INPUT_LIMIT>(ci);
+        add_option<GATE_INPUT_FLOOR>(ci);
+        add_option<GATE_OUTPUT_LIMIT>(ci);
+        add_option<GATE_OUTPUT_FLOOR>(ci);
+        add_option<GATE_HISTORY_LIMIT>(ci);
+        add_option<GATE_HISTORY_FLOOR>(ci);
+        add_option<GATE_WV_STEPS>(ci);
+        
+        // ea options
+        add_option<REPRESENTATION_INITIAL_SIZE>(ci);
+        add_option<REPRESENTATION_MIN_SIZE>(ci);
+        add_option<REPRESENTATION_MAX_SIZE>(ci);
+        add_option<MUTATION_PER_SITE_P>(ci);
+        add_option<MUTATION_UNIFORM_INT_MIN>(ci);
+        add_option<MUTATION_UNIFORM_INT_MAX>(ci);
+        add_option<MUTATION_DELETION_P>(ci);
+        add_option<MUTATION_INSERTION_P>(ci);
+        add_option<MUTATION_INDEL_MIN_SIZE>(ci);
+        add_option<MUTATION_INDEL_MAX_SIZE>(ci);
+    }
+    
 } // mkv
 
 #endif

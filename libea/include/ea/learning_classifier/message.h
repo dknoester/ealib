@@ -33,6 +33,10 @@ namespace ealib {
         message(const bitstring& that) : base_type(that) {
         }
         
+        template <typename ForwardIterator>
+        message(ForwardIterator f, ForwardIterator l) : base_type(f,l) {
+        }
+        
         template <typename Individual>
         void consumed_by(Individual& ind) {
             
