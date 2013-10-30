@@ -197,9 +197,9 @@
 		423CBDD3157D0E450003A644 /* direct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = direct.h; sourceTree = "<group>"; };
 		423CBDD4157D0E450003A644 /* nk_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nk_model.h; sourceTree = "<group>"; };
 		423CBDD5157D0E450003A644 /* generational_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generational_model.h; sourceTree = "<group>"; };
-		423CBDD7157D0E450003A644 /* death_birth_process.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = death_birth_process.h; sourceTree = "<group>"; };
+		423CBDD7157D0E450003A644 /* moran_process.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = moran_process.h; sourceTree = "<group>"; };
 		423CBDD8157D0E450003A644 /* nsga2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nsga2.h; sourceTree = "<group>"; };
-		423CBDD9157D0E450003A644 /* steady_state.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = steady_state.h; sourceTree = "<group>"; };
+		423CBDD9157D0E450003A644 /* generational.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generational.h; sourceTree = "<group>"; };
 		423CBDDA157D0E450003A644 /* generators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generators.h; sourceTree = "<group>"; };
 		423CBDDB157D0E450003A644 /* individual.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = individual.h; sourceTree = "<group>"; };
 		423CBDDC157D0E450003A644 /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
@@ -233,7 +233,9 @@
 		4245003016D26866007827D7 /* abstract_neuron.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = abstract_neuron.h; sourceTree = "<group>"; };
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		4245006416D53E22007827D7 /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
+		424BB36E17F07E9A00D573B2 /* statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = statistics.h; sourceTree = "<group>"; };
 		425029961773355800275986 /* phenotype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = phenotype.h; sourceTree = "<group>"; };
+		4257DF211812BBBA0001598C /* steady_state.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = steady_state.h; sourceTree = "<group>"; };
 		4259F67A179EA75500132687 /* evaluations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evaluations.h; sourceTree = "<group>"; };
 		4259F68E17A2A6B500132687 /* population_entropy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_entropy.h; sourceTree = "<group>"; };
 		4259F69317ABF65600132687 /* runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = runtime.h; sourceTree = "<group>"; };
@@ -545,6 +547,7 @@
 				423CBDB2157D0E450003A644 /* graph.h */,
 				423CBDB3157D0E450003A644 /* individual.h */,
 				423CBDB4157D0E450003A644 /* information.h */,
+				424BB36E17F07E9A00D573B2 /* statistics.h */,
 				423CBDB5157D0E450003A644 /* landscape.h */,
 				423CBDB6157D0E450003A644 /* line_of_descent.h */,
 				42EA57941623257C007BCF51 /* meta_population.h */,
@@ -584,10 +587,11 @@
 			isa = PBXGroup;
 			children = (
 				42C7730F16FF6FDD00EAFD8F /* crowding.h */,
-				423CBDD7157D0E450003A644 /* death_birth_process.h */,
+				423CBDD9157D0E450003A644 /* generational.h */,
+				423CBDD7157D0E450003A644 /* moran_process.h */,
 				423CBDD8157D0E450003A644 /* nsga2.h */,
 				42C7730E16FF6F9B00EAFD8F /* qhfc.h */,
-				423CBDD9157D0E450003A644 /* steady_state.h */,
+				4257DF211812BBBA0001598C /* steady_state.h */,
 			);
 			path = generational_models;
 			sourceTree = "<group>";

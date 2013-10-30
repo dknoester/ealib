@@ -326,11 +326,6 @@ namespace ealib {
 	LIBEA_MD_DECL(TOURNAMENT_SELECTION_N, "ea.selection.tournament.n", int);
 	LIBEA_MD_DECL(TOURNAMENT_SELECTION_K, "ea.selection.tournament.k", int);
 	
-	// ea.generational_model.*
-	LIBEA_MD_DECL(STEADY_STATE_LAMBDA, "ea.generational_model.steady_state.lambda", int);
-	LIBEA_MD_DECL(NUM_OFFSPRING, "ea.generational_model.num_offspring", int);
-	LIBEA_MD_DECL(REPLACEMENT_RATE_P, "ea.generational_model.replacement_rate.p", double);
-	
     // ea.rng.*
     LIBEA_MD_DECL(RNG_SEED, "ea.rng.seed", unsigned int);
     
@@ -343,6 +338,6 @@ namespace ealib {
     LIBEA_MD_DECL(ANALYSIS_ROUNDS, "ea.analysis.rounds", unsigned int);
     LIBEA_MD_DECL(EPISTASIS_THRESHOLD, "ea.analysis.epistasis.threshold", double);
     
-} // ea
+} // ealib
 
 #endif

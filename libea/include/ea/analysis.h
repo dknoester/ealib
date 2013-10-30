@@ -24,6 +24,7 @@
 #include <ea/analysis/tool.h>
 //#include <ea/analysis/epistasis.h>
 #include <ea/analysis/information.h>
+#include <ea/analysis/statistics.h>
 //#include <ea/analysis/girvan_newman_clustering.h>
 //#include <ea/analysis/line_of_descent.h>
 #include <ea/analysis/individual.h>

@@ -89,7 +89,6 @@ namespace mkv {
             generate_ancestors(markov_network_ancestor(), get<ealib::POPULATION_SIZE>(ea), ea);
         }
         
-        
         //! Called as the final step of EA initialization.
         virtual void initialize(EA& ea) {
             mkv::parse_desc(get<MKV_DESC>(ea), mkv_desc);
@@ -106,8 +105,54 @@ namespace mkv {
         }
     };
     
+    
+    /*! This mutation type wrapper makes sure that at least one gate is always
+     present in the genome.
+     */
+    template <typename MutationOperator>
+    struct keep_gate {
+        typedef MutationOperator mutation_operator_type;
+        
+        //! Probabilistically perform indel mutations.
+        template <typename EA>
+        void operator()(typename EA::individual_type& ind, EA& ea) {
+            using namespace ealib;
+            
+            // normal mutation:
+            _mt(ind, ea);
+
+            // now, check that we have at least one gate:
+            typename EA::representation_type& repr=ind.repr();
+            typename EA::representation_type::iterator f=repr.begin(), last=repr.begin(), l=repr.end();
+            ++f;
+            std::set<gate_type>& gates = ea.configuration().supported_gates;
+            unsigned int count=0;
+            for( ; f!=l; ++f, ++last) {
+                int start_codon = *f + *last;
+                if((start_codon == 255) && (gates.count(static_cast<mkv::gate_type>(*last)) > 0)) {
+                    ++count;
+                }
+            }
+
+            // add a gate if we don't have any:
+            if(count == 0) {
+                std::size_t csize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
+                                           get<MUTATION_INDEL_MAX_SIZE>(ea));
+                int j=ea.rng()(repr.size()-csize);
+                int gate=*ea.rng().choice(gates.begin(), gates.end());
+                repr[j] = gate;
+                repr[j+1] = 255-gate;
+                for(std::size_t k=2; k<csize; ++k) {
+                    repr[j+k]=ea.rng()(get<MUTATION_UNIFORM_INT_MIN>(ea), get<MUTATION_UNIFORM_INT_MAX>(ea));
+                }
+            }
+        }
+        
+        mutation_operator_type _mt;
+    };
+    
     typedef ealib::circular_genome<int> representation_type;
-    typedef ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > mutation_type;
+    typedef keep_gate<ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > > mutation_type;
     
     /*! Add the common Markov Network configuration options to the command line interface.
      */

@@ -131,7 +131,7 @@ namespace ealib {
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("name", _name);
             ar & boost::serialization::make_nvp("generation", _generation);
-			ar & boost::serialization::make_nvp("representation", _repr);
+            ar & boost::serialization::make_nvp("representation", _repr);
             ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("meta_data", _md);
             ar & boost::serialization::make_nvp("attributes", _attr);

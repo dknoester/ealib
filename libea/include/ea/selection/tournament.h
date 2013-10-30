@@ -36,7 +36,7 @@ namespace ealib {
 		 
 		 <b>Model of:</b> SelectionStrategyConcept.
 		 */
-        template <typename AttributeAccessor=access::fitness_accessor, template <typename,typename> class Comparator=comparators::attribute>
+        template <typename AttributeAccessor=access::fitness, template <typename,typename> class Comparator=comparators::attribute>
 		struct tournament {
             //! Initializing constructor.
 			template <typename Population, typename EA>

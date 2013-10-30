@@ -274,7 +274,7 @@ namespace mkv {
 
         //! Retrieve the value of output i at time t.
         state_type output(std::size_t i) { return _svm.state_t(i); }
-        
+                
         /*! Retrieve the value of input i.  Markov networks treat any state variable
          as input, so we need to check to see if the requested input comes from
          the range of inputs, or if it's an internal state variable.
@@ -323,6 +323,11 @@ namespace mkv {
         public:
             markov_network_update_visitor(markov_network& net, RandomAccessIterator f)
             : _net(net), _f(f) {
+            }
+            
+            //! Reset the underlying iterator.
+            void reset(RandomAccessIterator i) {
+                _f = i;
             }
             
             /*! Retrieve the input to this node from the Markov network's state machine at time t-1.
@@ -438,6 +443,23 @@ namespace mkv {
     void update(markov_network& net, std::size_t n, RandomAccessIterator f) {
         update(net, n, 1, f);
     }
+    
+    //! Convenience method for multiple updates of a sequence of inputs.
+    template <typename ForwardIterator>
+    void update_sequence(markov_network& net, std::size_t n, std::size_t t, ForwardIterator f, ForwardIterator l) {
+        detail::markov_network_update_visitor<typename ForwardIterator::value_type*> visitor(net, &(*f));
+        for( ; f!=l; ++f) {
+            visitor.reset(&(*f));
+            for( ; n>0; --n) {
+                net.top_half();
+                for(std::size_t i=0; i<t; ++i) {
+                    std::for_each(net.begin(), net.end(), boost::apply_visitor(visitor));
+                }
+                net.bottom_half(t);
+            }
+        }
+    }
+    
     
 } // mkv
 

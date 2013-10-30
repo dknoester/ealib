@@ -1,4 +1,4 @@
-/* death_birth_process.h
+/* moran_process.h
  * 
  * This file is part of EALib.
  * 
@@ -17,33 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_GENERATIONAL_MODELS_DEATH_GROWTH_PROCESS_H_
-#define _EA_GENERATIONAL_MODELS_DEATH_GROWTH_PROCESS_H_
+#ifndef _EA_GENERATIONAL_MODELS_MORAN_PROCESS_H_
+#define _EA_GENERATIONAL_MODELS_MORAN_PROCESS_H_
 
-#include <algorithm>
-#include <cmath>
-
+#include <ea/meta_data.h>
 #include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>
 
 namespace ealib {
     
+    LIBEA_MD_DECL(MORAN_REPLACEMENT_RATE_P, "ea.generational_model.moran_process.replacement_rate.p", double);
+    
 	namespace generational_models {
 		
-        /*! Death-birth process generational model.
+        /*! Moran process generational model.
 
 		 The idea here is that all individuals that are slated to die (according
          to a configurable replacement rate) die at once, and then the population
          expands back to that size.
          
-         This is a reasonable approximation of the Moran process.
+         This model is a reasonable approximation of the eponymous Moran process,
+         by Patrick Moran.  The only difference is that we make use of a replacement
+         rate, as opposed to replacing a single individual at a time (for speed).
          
          \warning Fitness can not be negative.
 		 */
         template <typename ParentSelectionStrategy=selection::proportionate< >,
         typename SurvivorSelectionStrategy=selection::random>
-		struct death_birth_process : public generational_model {
+		struct moran_process : public generational_model {
             typedef ParentSelectionStrategy parent_selection_type;
             typedef SurvivorSelectionStrategy survivor_selection_type;
 
@@ -54,7 +56,7 @@ namespace ealib {
 				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));				
                 
                 // how many survivors?
-                std::size_t n = static_cast<std::size_t>((1.0 - get<REPLACEMENT_RATE_P>(ea)) * get<POPULATION_SIZE>(ea));
+                std::size_t n = static_cast<std::size_t>((1.0 - get<MORAN_REPLACEMENT_RATE_P>(ea)) * get<POPULATION_SIZE>(ea));
                 
                 // select individuals for survival:
 				Population survivors;

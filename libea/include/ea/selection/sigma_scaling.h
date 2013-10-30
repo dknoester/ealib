@@ -44,7 +44,7 @@ namespace ealib {
          Sigma-scaling has the benefit of maintaining a relatively consistent
          selection pressure throughout evolution.
 		 */
-        template <typename AttributeAccessor=access::fitness_accessor>
+        template <typename AttributeAccessor=access::fitness>
 		struct sigma_scaling {
             typedef AttributeAccessor acc_type; //!< Accessor for proportionate selection.
             

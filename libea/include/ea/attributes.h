@@ -50,7 +50,7 @@ namespace ealib {
         };
 
         //! Fitness accessor functor.
-        struct fitness_accessor {
+        struct fitness {
             template <typename EA>
             typename EA::individual_type::attr_type::fitness_type& operator()(typename EA::individual_type& ind, EA& ea) {
                 return ealib::fitness(ind,ea);

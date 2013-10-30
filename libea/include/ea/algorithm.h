@@ -100,6 +100,17 @@ namespace ealib {
             return detail::exp_mean(f,l,alpha);
         }
         
+        template <typename ForwardIterator, typename Accessor, typename EA>
+        double mean(ForwardIterator f, ForwardIterator l, Accessor a, EA& ea) {
+            using namespace boost::accumulators;
+            accumulator_set<double, stats<tag::mean> > acc;
+            
+            for(; f!=l; ++f) {
+                acc(static_cast<double>(a(*f,ea)));
+            }
+            return boost::accumulators::mean(acc);
+        }
+        
         // this fragment can be used to set S1 to the mean of the first n samples..
         //            using namespace boost::accumulators;
         //            typedef accumulator_set<double, stats<tag::mean> > acc_type;

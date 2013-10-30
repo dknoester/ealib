@@ -205,21 +205,21 @@ namespace ealib {
         
         template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
-			bool null_fitness=is_null();
+            int null_fitness=is_null();
 			ar & BOOST_SERIALIZATION_NVP(null_fitness);
-			if(!null_fitness) {
-				ar & boost::serialization::make_nvp("f", _f);
+			if(!is_null()) {
+				ar & boost::serialization::make_nvp("value_type", _f);
 			}
 		}
 		
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
-			bool null_fitness=true;
+            int null_fitness=1;
 			ar & BOOST_SERIALIZATION_NVP(null_fitness);
 			if(null_fitness) {
                 nullify();
 			} else {
-				ar & boost::serialization::make_nvp("f", _f);
+				ar & boost::serialization::make_nvp("value_type", _f);
 			}
 		}
         
@@ -315,7 +315,7 @@ namespace ealib {
     /*! Convenience struct to define typedefs and empty initialization and serialization
      methods for fitness function objects.
      */
-    template <typename T, 
+    template <typename T,
     typename ConstantTag=constantS,
     typename StabilityTag=deterministicS>
     struct fitness_function {
@@ -357,7 +357,7 @@ namespace ealib {
             
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
-                ar & boost::serialization::make_nvp("fitness_attr", _v);
+                ar & boost::serialization::make_nvp("fitness_type", _v);
             }
             
             fitness_type _v;

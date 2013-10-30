@@ -237,7 +237,7 @@ namespace ealib {
 			}
 			return std::make_pair(static_cast<T>(one), static_cast<T>(two));
 		}        
-        
+
 		/*! Choose two different iterators from the range [f,l), and return them in sorted order (r.first occurs before r.second).
 		 */
 		template <typename ForwardIterator>

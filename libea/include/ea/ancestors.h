@@ -102,6 +102,22 @@ namespace ealib {
         
         /*! Generates a representation from random bits.
          */
+        struct zero_bitstring {
+            //! Generate an individual.
+            template <typename EA>
+            typename EA::representation_type operator()(EA& ea) {
+                typename EA::representation_type r;
+                r.resize(get<REPRESENTATION_SIZE>(ea));
+                
+                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                    *i = 0;
+                }
+                return r;
+            }
+        };
+
+        /*! Generates a representation from random bits.
+         */
         struct random_bitstring {            
             //! Generate an individual.
             template <typename EA>
