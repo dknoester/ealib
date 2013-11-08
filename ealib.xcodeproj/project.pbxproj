@@ -278,6 +278,7 @@
 		42841C7F15ADACF100AB18BE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		42841C8015AEEC3A00AB18BE /* meta_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_population.h; sourceTree = "<group>"; };
 		42841D3E15BEDF7700AB18BE /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
+		42961BDB182BC3B1007E2285 /* target.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = target.h; sourceTree = "<group>"; };
 		429B1CBD162ED94F00578A1C /* bitstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bitstring.h; sourceTree = "<group>"; };
 		429B1CBE162EDCD600578A1C /* all_ones.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = all_ones.h; sourceTree = "<group>"; };
 		429B1CD7162EEDE000578A1C /* state_vector_machine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = state_vector_machine.h; sourceTree = "<group>"; };
@@ -499,8 +500,8 @@
 				423CBDAF157D0E450003A644 /* analysis */,
 				423CBDDC157D0E450003A644 /* ancestors.h */,
 				42F4B63215822A7B0075D6EF /* attributes.h */,
-				42015A8115D6BEDC0020F594 /* digital_evolution */,
 				42279CA315D52E0500DD63BB /* digital_evolution.h */,
+				42015A8115D6BEDC0020F594 /* digital_evolution */,
 				423CBDC8157D0E450003A644 /* cmdline_interface.h */,
 				42F4B6191580EA0B0075D6EF /* comparators.h */,
 				423CBDC9157D0E450003A644 /* concepts.h */,
@@ -518,8 +519,8 @@
 				423CBDDA157D0E450003A644 /* generators.h */,
 				42D93B2F16CFC14700E7E5E9 /* graph.h */,
 				423CBDDB157D0E450003A644 /* individual.h */,
-				4234C41A178C808D0078BD85 /* learning_classifier */,
 				4234C3FD1781DC240078BD85 /* learning_classifier.h */,
+				4234C41A178C808D0078BD85 /* learning_classifier */,
 				42D6A6011705CB650043EBB1 /* lifecycle.h */,
 				423CBDDF157D0E450003A644 /* line_of_descent.h */,
 				4220F31115CD940E005750F1 /* island_model.h */,
@@ -576,6 +577,7 @@
 			isa = PBXGroup;
 			children = (
 				429B1CBE162EDCD600578A1C /* all_ones.h */,
+				42961BDB182BC3B1007E2285 /* target.h */,
 				42AF136F16BD8FEE002C4D61 /* benchmarks.h */,
 				423CBDD3157D0E450003A644 /* direct.h */,
 				423CBDD4157D0E450003A644 /* nk_model.h */,

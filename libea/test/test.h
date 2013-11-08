@@ -64,14 +64,12 @@ configuration
 template <typename EA>
 void add_std_meta_data(EA& ea) {
 	put<POPULATION_SIZE>(1024,ea);
-	put<NUM_OFFSPRING>(2,ea);
+	put<STEADY_STATE_LAMBDA>(2,ea);
 	put<REPRESENTATION_SIZE>(10,ea);
 	put<MUTATION_GENOMIC_P>(0.1,ea);
 	put<MUTATION_PER_SITE_P>(0.1,ea);
 	put<TOURNAMENT_SELECTION_N>(2,ea);
 	put<TOURNAMENT_SELECTION_K>(1,ea);	
-	put<STEADY_STATE_LAMBDA>(1,ea);
-	put<REPLACEMENT_RATE_P>(0.5,ea);
 }
 
 

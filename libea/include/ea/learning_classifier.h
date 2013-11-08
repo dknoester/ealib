@@ -28,7 +28,7 @@
 #include <ea/attributes.h>
 #include <ea/concepts.h>
 #include <ea/configuration.h>
-#include <ea/generational_models/death_birth_process.h>
+#include <ea/generational_models/moran_process.h>
 #include <ea/individual.h>
 #include <ea/phenotype.h>
 #include <ea/fitness_function.h>
@@ -113,7 +113,7 @@ namespace ealib {
     typename FitnessFunction=accuracy_fitness,
 	typename MutationOperator=lcs_mutation,
 	typename RecombinationOperator=recombination::asexual,
-	typename GenerationalModel=generational_models::death_birth_process<selection::proportionate< >, selection::random>,
+	typename GenerationalModel=generational_models::moran_process<selection::proportionate< >, selection::random>,
     template <typename> class IndividualAttrs=attr::default_attributes,
     template <typename> class Individual=individual,
 	template <typename,typename> class Population=ealib::population,

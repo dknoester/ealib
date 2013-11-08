@@ -152,7 +152,8 @@ namespace mkv {
     };
     
     typedef ealib::circular_genome<int> representation_type;
-    typedef keep_gate<ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > > mutation_type;
+    // typedef keep_gate<ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > > mutation_type;
+    typedef ealib::mutation::operators::indel<ealib::mutation::operators::per_site<ealib::mutation::site::uniform_integer> > mutation_type;
     
     /*! Add the common Markov Network configuration options to the command line interface.
      */

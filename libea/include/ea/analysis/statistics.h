@@ -64,7 +64,8 @@ namespace ealib {
          The range of the MCC is [-1,1], where -1 represents complete disagreement,
          1 represents complete agreement, and 0 represents chance.
          */
-        double matthews_correlation(const confusion_matrix_type& C) {
+        template <typename ConfusionMatrix>
+        double matthews_correlation(const ConfusionMatrix& C) {
             assert(C.size1() == C.size2());
             assert(C.size1() == 2);
             double TP=C(0,0), TN=C(1,1), FP=C(0,1), FN=C(1,0);
@@ -97,7 +98,8 @@ namespace ealib {
          
          \warning This test requires that all entries in E are positive.
          */
-        double pearson_chi_squared(const frequency_matrix_type& O, const frequency_matrix_type& E) {
+        template <typename FrequenceMatrix>
+        double pearson_chi_squared(const FrequenceMatrix& O, const FrequenceMatrix& E) {
             assert(O.size1() == E.size1());
             assert(O.size2() == E.size2());
             double x2=0.0;
@@ -114,7 +116,8 @@ namespace ealib {
          
          It has a range of 0 (no association) to 1 (perfect association).
          */
-        double cramers_v(const frequency_matrix_type& O, const frequency_matrix_type& E, std::size_t N) {
+        template <typename FrequenceMatrix>
+        double cramers_v(const FrequenceMatrix& O, const FrequenceMatrix& E, std::size_t N) {
             assert(O.size1() == E.size1());
             assert(O.size2() == E.size2());
             double k=static_cast<double>(std::min(O.size1(), O.size2()));

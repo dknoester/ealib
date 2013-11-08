@@ -201,8 +201,9 @@ namespace ealib {
     /*! Spatial topology.
      */
     template <typename EA>
-    struct spatial {
-        typedef EA ea_type; //<! EA type using this topology.        
+    class spatial {
+    public:
+        typedef EA ea_type; //<! EA type using this topology.
         typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
         typedef typename ea_type::individual_type individual_type; //!< Pointer to individual type.
         
@@ -530,17 +531,6 @@ namespace ealib {
             return _locs(y, x);
         }
         
-        /*! Serialize this topology.
-         
-         \warning: this leaves the pointer to the individual (in each location)
-         unconnected.  this has to be fixed up after deserialization.
-         */
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("locations", _locs);
-            ar & boost::serialization::make_nvp("append_count", _append_count);
-        }
-        
         /*! This is called after deserialization (load); the idea here is that we
          need to iterate through the population, and link the locations to their
          respective organisms.
@@ -551,8 +541,51 @@ namespace ealib {
             }
         }
 
+    protected:
         std::size_t _append_count; //!< Number of locations that have been appended to.
         location_matrix_type _locs; //!< Matrix of all locations in this topology.
+
+    private:
+		friend class boost::serialization::access;
+        
+        /*! Serialize this environment.
+         
+         \warning: this leaves the pointer to the individual (in each location)
+         unconnected.  this has to be fixed up after deserialization.
+         
+         \warning: This is split up to avoid a compiler bug triggered somewhere
+         in the boost serialization code.
+         */
+		template<class Archive>
+		void save(Archive & ar, const unsigned int version) const {
+            std::size_t size1=_locs.size1();
+            std::size_t size2=_locs.size2();
+            ar & boost::serialization::make_nvp("append_count", _append_count);
+            ar & boost::serialization::make_nvp("size1", size1);
+            ar & boost::serialization::make_nvp("size2", size2);
+            
+            for(std::size_t i=0; i<_locs.size1(); ++i) {
+                for(std::size_t j=0; j<_locs.size2(); ++j) {
+                    ar & boost::serialization::make_nvp("location", _locs(i,j));
+                }
+            }
+		}
+		
+		template<class Archive>
+		void load(Archive & ar, const unsigned int version) {
+            std::size_t size1=0, size2=0;
+            ar & boost::serialization::make_nvp("append_count", _append_count);
+            ar & boost::serialization::make_nvp("size1", size1);
+            ar & boost::serialization::make_nvp("size2", size2);
+
+            _locs.resize(size1,size2);
+            for(std::size_t i=0; i<_locs.size1(); ++i) {
+                for(std::size_t j=0; j<_locs.size2(); ++j) {
+                    ar & boost::serialization::make_nvp("location", _locs(i,j));
+                }
+            }
+		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
 } // ea
 
