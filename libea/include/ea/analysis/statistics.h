@@ -176,7 +176,6 @@ namespace ealib {
             
             return sae;
         }
-
         
     } // analysis
 } // ea
