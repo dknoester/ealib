@@ -199,7 +199,6 @@ namespace ealib {
             return output_range * x / x_range;
         }
         
-        
         //! Normalize the range [f,l) to v, outputting results to o, and return an iterator to the end of the range.
         template <typename ForwardIterator, typename OutputIterator>
         ForwardIterator normalize(ForwardIterator f, ForwardIterator l, OutputIterator o, double v) {

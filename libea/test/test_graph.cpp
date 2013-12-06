@@ -88,5 +88,4 @@ BOOST_AUTO_TEST_CASE(test_graph_growth) {
     default_rng_type rng(1);
     Graph G;
     graph::grow_network(G, 100, desc, rng);
-//    std::cout << graph2string(G) << std::endl;
 }

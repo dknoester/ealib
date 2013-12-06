@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
-#include <ea/neuroevolution.h>
-#include <ann/feed_forward.h>
+#include <ea/ann/graph/neuroevolution.h>
+#include <ea/ann/graph/feed_forward.h>
 #include <ea/graph.h>
 #include "test.h"
 

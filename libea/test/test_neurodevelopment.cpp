@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
-#include <ea/neurodevelopment.h>
-#include <ann/feed_forward.h>
+#include <ea/ann/graph/neurodevelopment.h>
+#include <ea/ann/graph/feed_forward.h>
 #include <ea/graph.h>
 #include "test.h"
 

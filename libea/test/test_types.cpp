@@ -20,8 +20,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include <ea/cmdline_interface.h>
-#include <ea/digital_evolution.h>
-#include <ea/digital_evolution/population_founder.h>
+#include <ea/devo/digital_evolution.h>
+#include <ea/devo/population_founder.h>
 #include <ea/line_of_descent.h>
 #include <ea/generational_models/nsga2.h>
 #include <ea/meta_population.h>

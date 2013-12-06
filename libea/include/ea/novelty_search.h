@@ -38,7 +38,6 @@
 #include <ea/mutation.h>
 #include <ea/selection.h>
 #include <ea/population.h>
-#include <ea/structure.h>
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>

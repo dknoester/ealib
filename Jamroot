@@ -1,7 +1,2 @@
 use-project /libea : libea ;
-use-project /libmkv : libmkv ;
-use-project /libann : libann ;
-
 build-project libea ;
-build-project libmkv ;
-build-project libann ;

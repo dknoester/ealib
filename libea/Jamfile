@@ -6,24 +6,25 @@ if $(PREFIX) = "" {
     PREFIX = "/usr/local" ;
 }
 
-alias libea : : : : <include>./include ;
-
-lib libea_runner :
-    src/main.cpp
-    src/cmdline_interface.cpp
-    libea
+alias libea :
     /boost//program_options
     /boost//serialization
     /boost//signals
     /boost//iostreams
     /boost//regex
     /site-config//z
+    : : : <include>./include ;
+
+lib libea_runner :
+    src/main.cpp
+    src/cmdline_interface.cpp
+    libea
     ;
 
 run test/test_digital_evolution.cpp
     test/test_checkpoint.cpp
     test/test_circular.cpp
-    test/test_ea.cpp
+    test/test.cpp
     test/test_evolutionary_algorithm.cpp
     test/test_graph.cpp
     test/test_meta_population.cpp
@@ -34,16 +35,19 @@ run test/test_digital_evolution.cpp
     test/test_types.cpp
     test/test_rng.cpp
     test/test_novelty_search.cpp
-    src/runner.cpp
     libea
-    /libann
-    /boost//program_options
-    /boost//serialization
-    /boost//signals
-    /boost//iostreams
-    /boost//regex
     /boost//unit_test_framework
-    /site-config//z
+    ;
+    
+run test/test_deep_markov_network.cpp
+    test/test_markov_network.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+run test/test_neural_network.cpp
+    libea
+    /boost//unit_test_framework
     ;
 
 alias install : install-lib install-headers ;

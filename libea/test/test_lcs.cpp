@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "test.h"
-#include <ea/learning_classifier.h>
+#include <ea/lcs/learning_classifier.h>
 
 
 //! Novelty search.

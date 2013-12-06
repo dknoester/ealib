@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _TEST_LIBEA_H_
-#define _TEST_LIBEA_H_
+#ifndef _TEST_H_
+#define _TEST_H_
 
 #include <boost/test/unit_test.hpp>
 #include <boost/archive/xml_oarchive.hpp>

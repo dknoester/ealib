@@ -32,6 +32,12 @@
 
 namespace ealib {
     
+    //! Tag that indicates a single population is being used.
+    struct singlePopulationS { };
+    
+    //! Tag that indicates multiple populations are being used.
+    struct multiPopulationS { };
+
     /*! Population; a container for individuals.
 	 */
 	template <typename Individual, typename IndividualPtr>

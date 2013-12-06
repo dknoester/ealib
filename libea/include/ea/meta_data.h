@@ -130,7 +130,7 @@ namespace ealib {
         }
         
         //! Operator==
-        bool operator==(const meta_data& that) {
+        bool operator==(const meta_data& that) const {
             return std::equal(_strings.begin(), _strings.end(), that._strings.begin());
         }
         

@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "test.h"
-#include <ea/digital_evolution.h>
-#include <ea/digital_evolution/spatial.h>
+#include <ea/devo/digital_evolution.h>
+#include <ea/devo/spatial.h>
 //#include <ea/digital_evolution/well_mixed.h>
 
 template <typename EA>

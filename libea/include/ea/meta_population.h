@@ -29,7 +29,6 @@
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
 #include <ea/population.h>
-#include <ea/structure.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
 #include <ea/rng.h>
