@@ -124,7 +124,7 @@
 		423CBDF6157D0E450003A644 /* test_checkpoint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_checkpoint.cpp; sourceTree = "<group>"; };
 		423CBDF9157D0E450003A644 /* test_meta_data.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_data.cpp; sourceTree = "<group>"; };
 		423CBDFB157D0E450003A644 /* test_rng.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_rng.cpp; sourceTree = "<group>"; };
-		423CBE57157D0FCC0003A644 /* libea_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = libea_test; path = test_ealib; sourceTree = BUILT_PRODUCTS_DIR; };
+		423CBE57157D0FCC0003A644 /* test_ealib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_ealib; sourceTree = BUILT_PRODUCTS_DIR; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
 		4245004516D3BA8E007827D7 /* test_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_types.cpp; sourceTree = "<group>"; };
 		426064EE16F0D36700C5B117 /* test_neurodevelopment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neurodevelopment.cpp; sourceTree = "<group>"; };
@@ -314,7 +314,7 @@
 			isa = PBXGroup;
 			children = (
 				423CBD9F157D0E0B0003A644 /* libea.a */,
-				423CBE57157D0FCC0003A644 /* libea_test */,
+				423CBE57157D0FCC0003A644 /* test_ealib */,
 				428B712718490E8F00E3BB4E /* test_mkv */,
 				428B7204184F664D00E3BB4E /* test_mkv copy */,
 			);
@@ -646,7 +646,7 @@
 			);
 			name = test_ealib;
 			productName = libea_test;
-			productReference = 423CBE57157D0FCC0003A644 /* libea_test */;
+			productReference = 423CBE57157D0FCC0003A644 /* test_ealib */;
 			productType = "com.apple.product-type.tool";
 		};
 		428B711C18490E8F00E3BB4E /* test_mkv */ = {

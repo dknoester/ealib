@@ -29,13 +29,13 @@
 #include <ea/comparators.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
-#include <ea/fitness_function.h>
+#include <ea/attributes.h>
 
 namespace ealib {
     
     //! Attributes that must be added to individuals to support NSGA2.
     template <typename EA>
-    struct nsga2_attributes : attr::fitness_attribute<EA> {
+    struct nsga2_attributes : attr::default_attributes<EA> {
         typedef typename EA::population_type population_type;
         
         //! Constructor.
@@ -45,14 +45,14 @@ namespace ealib {
         //! Serialize some of these attributes.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
+            ar & boost::serialization::make_nvp("default_attr", boost::serialization::base_object<attr::default_attributes<EA> >(*this));
             ar & BOOST_SERIALIZATION_NVP(rank);
             ar & BOOST_SERIALIZATION_NVP(distance);
         }
         
         population_type S; //!< Population of individuals that are dominated by this individual.
-        std::size_t n; //!< Number of individuals dominating this individual.
-        std::size_t rank; //!< Rank of this individual.
+        int n; //!< Number of individuals dominating this individual.
+        int rank; //!< Rank of this individual.
         double distance; //<! Crowding distance.
     };
     

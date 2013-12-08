@@ -20,6 +20,7 @@
 #ifndef _EA_MKV_MARKOV_NETWORK_H_
 #define _EA_MKV_MARKOV_NETWORK_H_
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/tuple/tuple.hpp>
 
 #include <ea/configuration.h>
@@ -123,6 +124,12 @@ namespace ealib {
         //! Retrieve state variable i (const-qualified).
         const int& operator()(std::size_t i) const { return _T(i); }
         
+        //! Retrieve an iterator to the beginning of the inputs.
+        iterator begin_input() { return &_T[0]; }
+        
+        //! Retrieve an iterator to the end of the inputs.
+        iterator end_input() { return &_T[0] + _nin; }
+
         //! Retrieve an iterator to the beginning of the outputs.
         iterator begin_output() { return &_T[0] + _nin; }
         
@@ -131,10 +138,10 @@ namespace ealib {
         
         /*! Zero-copy update.
          
-         \param f points to the inputs to this network.
+         \param f is any type that supports operator[] (e.g., RA iterator or sequence).
          */
-        template <typename RandomAccessIterator>
-        void update(RandomAccessIterator f, std::size_t n=1) {
+        template <typename RandomAccess>
+        void update(RandomAccess f, std::size_t n=1) {
             for( ; n>0; --n) {
                 for(typename gate_vector_type::iterator i=_gates.begin(); i!=_gates.end(); ++i) {
                     // get the input to this gate:
@@ -214,6 +221,11 @@ namespace ealib {
             //! Called as the final step of EA initialization.
             virtual void initialize(EA& ea) {
                 desc = desc_type(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea));
+            }
+            
+            //! Disable a gate type.
+            void disable(gate_type g) {
+                translator.disable(g);
             }
             
             desc_type desc; //!< Description for Markov network (# in, out, & hidden).

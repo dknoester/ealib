@@ -23,6 +23,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
+#include <boost/serialization/vector.hpp>
 #include <limits>
 #include <string>
 #include <vector>
@@ -281,8 +282,8 @@ namespace ealib {
         
         //! Serialize this fitness value.
         template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) { 
-            ar & boost::serialization::make_nvp("f", _f);
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("value_type", _f);
         }
         
         value_type _f; //!< Fitness value.

@@ -1,6 +1,6 @@
 LIBEA_INCLUDE = ./libea/include
 HEADER_SEARCH_PATHS = $(LIBEA_INCLUDE) $(HOME)/include /usr/local/include
-OTHER_CPLUSPLUSFLAGS = -DBOOST_SIGNALS_NO_DEPRECATION_WARNING
+OTHER_CPLUSPLUSFLAGS = -DBOOST_SIGNALS_NO_DEPRECATION_WARNING -ftemplate-depth=255
 OTHER_LDFLAGS = -lboost_iostreams -lboost_program_options -lboost_regex -lboost_serialization -lboost_signals
 LIBRARY_SEARCH_PATHS = $(HOME)/lib /usr/local/lib
 USE_HEADERMAP = NO

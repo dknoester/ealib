@@ -123,7 +123,7 @@ namespace ealib {
         
         /*! Zero-copy update.
          
-         \param f points to a list of RandomAccessIterators, one for each layer.
+         \param f points to a list of RandomAccess, one for each layer.
          */
         template <typename ForwardIterator>
         void update(ForwardIterator f, std::size_t n=1) {
@@ -132,29 +132,23 @@ namespace ealib {
             }
         }
         
-        /*! Cascading update, assumes that input to layer zero has been set.
-         */
-        void cascade_update(std::size_t n=1) {
-            markov_network_ptr last=_layers[0];
-            last->update();
-            
-            for(std::size_t i=1; i<_layers.size(); ++i) {
-                _layers[i]->update(last->begin_output(),n);
-                last = _layers[i];
-            }
-        }
-        
         /*! Zero-copy cascading update.
          */
-        template <typename RandomAccessIterator>
-        void cascade_update(RandomAccessIterator f, std::size_t n=1) {
+        template <typename RandomAccess>
+        void cascade_update(RandomAccess f, std::size_t n=1) {
             markov_network_ptr last=_layers[0];
-            last->update(f);
+            last->update(f,n);
             
             for(std::size_t i=1; i<_layers.size(); ++i) {
                 _layers[i]->update(last->begin_output(), n);
                 last = _layers[i];
             }
+        }
+        
+        /*! Cascading update, assumes that input to layer zero has been set.
+         */
+        void cascade_update(std::size_t n=1) {
+            cascade_update(_layers[0].begin_input(), n);
         }
         
     private:
@@ -196,6 +190,11 @@ namespace ealib {
                 for(std::size_t i=0; i<get<MKV_LAYERS_N>(ea); ++i) {
                     desc.push_back(desc_type(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea)));
                 }
+            }
+            
+            //! Disable a gate type.
+            void disable(gate_type g) {
+                translator.disable(g);
             }
             
             desc_vector_type desc; //!< Description for the deep Markov network (# in, out, & hidden).
