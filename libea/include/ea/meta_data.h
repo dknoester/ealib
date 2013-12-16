@@ -59,6 +59,9 @@ namespace ealib {
         attribute() {
         }
         
+        virtual ~attribute() {
+        }
+
         //! Convert this attribute's value to a string.
         virtual std::string to_string() { return boost::lexical_cast<std::string>(_value); }
         
@@ -278,6 +281,7 @@ namespace ealib {
 /* This macro defines a new attribute. */
 #define LIBEA_MD_DECL( name, key_string, type ) \
 struct name : ealib::attribute<type> { \
+    virtual ~name() { } \
     inline static const char* key() { return key_string; } \
 }
 

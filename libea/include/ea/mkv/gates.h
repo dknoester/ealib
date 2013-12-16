@@ -31,8 +31,7 @@ namespace ealib {
     namespace mkv {
         
         namespace bnu = boost::numeric::ublas;
-        
-        typedef bnu::vector<int> state_vector_type; //!< State vector type.
+
         typedef bnu::vector<std::size_t> index_vector_type; //!< Index vector (logical vector).
         typedef bnu::vector<double> weight_vector_type; //!< Type for feedback weights vector.
         

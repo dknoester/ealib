@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
 	};
     cvector<int> genome(data, data+32);
 
-    markov_network<default_rng_type> N(2,2,1);
+    markov_network< > N(2,2,1);
     translate_genome(genome,
                      start_codon(),
                      genome_translator(1, 8, 1, 8),
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_gate) {
 	};
     cvector<int> genome(data, data+32);
     
-    markov_network<default_rng_type> N(2,2,1);
+    markov_network< > N(2,2,1);
     translate_genome(genome,
                      start_codon(),
                      genome_translator(1, 8, 1, 8),
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network) {
     };
     cvector<int> genome(data, data+76);
 
-    markov_network<default_rng_type> N(2,2,2,42);
+    markov_network< > N(2,2,2,42);
     translate_genome(genome,
                      start_codon(),
                      genome_translator(1, 8, 1, 8),

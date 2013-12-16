@@ -22,9 +22,13 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/shared_ptr.hpp>
+#include <functional>
 
 #include <ea/configuration.h>
 #include <ea/cmdline_interface.h>
+#include <ea/functional.h>
 #include <ea/representations/circular_genome.h>
 #include <ea/mutation.h>
 #include <ea/translation.h>
@@ -42,15 +46,23 @@ namespace ealib {
     
     
     /*! Markov Network.
+     
+     \param StateType state variable type
+     \param UpdateFunction updates state variables
+     \param RandomNumberGenerator
      */
-    template <typename RandomNumberGenerator=default_rng_type>
+    template <typename StateType=int,
+    typename UpdateFunction=binary_or<StateType>,
+    typename RandomNumberGenerator=default_rng_type>
     class markov_network {
     public:
-        typedef mkv::state_vector_type state_vector_type; //!< Convenience typedef for the state vector.
-        typedef int* iterator; //!< Type for iterators over state variables.
+        typedef StateType state_type; //!< State variable type.
+        typedef boost::numeric::ublas::vector<state_type> state_vector_type; //!< State vector type.
+        typedef state_type* iterator; //!< Type for iterators over state variables.
         typedef mkv::abstract_gate<RandomNumberGenerator> abstract_gate_type; //!< Type of abstract gate held by this network.
         typedef boost::shared_ptr<abstract_gate_type> abstract_gate_ptr; //!< Abstract gate pointer type.
         typedef std::vector<abstract_gate_ptr> gate_vector_type; //!< Type for a vector of abstract gates.
+        typedef UpdateFunction update_function_type; //!< Binary function that updates state variables.
         typedef RandomNumberGenerator rng_type; //!< Random number generator type.
         
         //! Constructor.
@@ -124,6 +136,12 @@ namespace ealib {
         //! Retrieve state variable i (const-qualified).
         const int& operator()(std::size_t i) const { return _T(i); }
         
+        //! Retrieve output state variable i.
+        int& output(std::size_t i) { return _T[_nin+i]; }
+
+        //! Retrieve output state variable i (const-qualified).
+        const int& output(std::size_t i) const { return _T[_nin+i]; }
+        
         //! Retrieve an iterator to the beginning of the inputs.
         iterator begin_input() { return &_T[0]; }
         
@@ -138,36 +156,43 @@ namespace ealib {
         
         /*! Zero-copy update.
          
+         This function calculates the input to each gate from its state variables,
+         runs the gate on that input, and then sends that output to other state
+         variables.
+         
+         The default update function is a binary or
+         
          \param f is any type that supports operator[] (e.g., RA iterator or sequence).
          */
         template <typename RandomAccess>
         void update(RandomAccess f, std::size_t n=1) {
             for( ; n>0; --n) {
                 for(typename gate_vector_type::iterator i=_gates.begin(); i!=_gates.end(); ++i) {
-                    // get the input to this gate:
+                    // calculate the input to this gate
                     mkv::index_vector_type& inputs=(*i)->inputs;
-                    int x=0;
+                    state_type x=0;
                     for(std::size_t j=0; j<inputs.size(); ++j) {
                         std::size_t k=inputs[j];
                         if(k<_nin) {
-                            x |= (f[k] & 0x01) << j;
+                            x = _uf(x, (f[k] & 0x01) << j);
                         } else {
-                            x |= (_T(k) & 0x01) << j;
+                            x = _uf(x, (_T(k) & 0x01) << j);
                         }
                     }
                     
                     // calculate the output:
-                    int y = (**i)(x,_rng);
+                    state_type y = (**i)(x,_rng);
                     
                     // set the output from this gate:
                     mkv::index_vector_type& outputs=(*i)->outputs;
                     for(std::size_t j=0; j<outputs.size(); ++j) {
-                        _Tplus1(outputs[j]) |= ((y>>j) & 0x01);
+                        state_type& t = _Tplus1(outputs[j]);
+                        t = _uf(t, ((y>>j) & 0x01));
                     }
                 }
             }
             std::swap(_T,_Tplus1);
-            std::fill(_Tplus1.begin()+_nin, _Tplus1.end(), 0); // don't reset internal inputs
+            std::fill(_Tplus1.begin()+_nin, _Tplus1.end(), state_type()); // don't reset internal inputs
         }
         
         //! Update this Markov network n times, assuming all inputs have been set.
@@ -176,6 +201,7 @@ namespace ealib {
         }
 
     protected:
+        update_function_type _uf; //! Update functor.
         rng_type _rng; //<! Random number generator.
         std::size_t _nin, _nout, _nhid; //!< Number of inputs, outputs, and hidden state variables.
         gate_vector_type _gates; //!< Vector of gates.

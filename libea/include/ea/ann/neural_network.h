@@ -122,12 +122,11 @@ namespace ealib {
             std::transform(_Tplus1.begin(), _Tplus1.end(), _Tplus1.begin(), _fout);
             // rotate t,t+1
             std::swap(_T,_Tplus1);
-            return _T;
         }
         
     protected:
         // the various update methods need access to internals:
-        friend class simple_update;
+        friend struct simple_update;
 
         input_conditioning_type _fin; //!< Input conditioning function.
         output_conditioning_type _fout; //!< Output conditioning function.

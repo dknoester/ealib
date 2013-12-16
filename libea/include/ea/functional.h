@@ -20,8 +20,23 @@
 #ifndef _EA_FUNCTIONAL_H_
 #define _EA_FUNCTIONAL_H_
 
+#include <functional>
+
 namespace ealib {
     
+    template <typename T>
+    struct binary_or : std::binary_function<T,T,T> {
+        typedef std::binary_function<T,T,T> parent;
+        typedef typename parent::first_argument_type first_argument_type;
+        typedef typename parent::second_argument_type second_argument_type;
+        typedef typename parent::result_type result_type;
+        
+        result_type operator()(first_argument_type x, second_argument_type y) {
+            return x | y;
+        }
+    };
+    
+
     /*! Compose two adaptable unary functions f and g into a single unary function 
      h such that h(x) = f(g(x)).
      */

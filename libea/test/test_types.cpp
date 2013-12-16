@@ -124,6 +124,8 @@ template <typename EA>
 struct test_population_lod_tool : public ealib::analysis::unary_function<EA> {
     static const char* name() { return "test_population_lod_tool"; }
     
+    virtual ~test_population_lod_tool() { }
+    
     virtual void operator()(EA& ea) {
         using namespace ealib;
         using namespace ealib::analysis;

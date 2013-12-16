@@ -38,6 +38,9 @@ namespace ealib {
         
         abstract_task() : _limit(0.0), _exclusive(false) { }
         
+        virtual ~abstract_task() {
+        }
+        
         //! Returns the name of this task.
         virtual const std::string& name() = 0;
         
@@ -106,6 +109,9 @@ namespace ealib {
         
         //! Constructor.
         task(const std::string& name) : _name(name) {
+        }
+        
+        virtual ~task() {
         }
         
         //! Returns the name of this task.

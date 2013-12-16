@@ -13,7 +13,8 @@ alias libea :
     /boost//iostreams
     /boost//regex
     /site-config//z
-    : : : <include>./include ;
+    : : : <include>./include
+    ;
 
 lib libea_runner :
     src/main.cpp
@@ -36,6 +37,7 @@ run test/test_digital_evolution.cpp
     test/test_rng.cpp
     test/test_novelty_search.cpp
     libea
+    src/cmdline_interface.cpp
     /boost//unit_test_framework
     ;
     

@@ -20,12 +20,17 @@
 #ifndef _EA_DATAFILE_H_
 #define _EA_DATAFILE_H_
 
+#include <boost/algorithm/string/trim_all.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/regex.hpp>
+
 #include <iomanip>
 #include <sstream>
 #include <fstream>
 #include <vector>
 #include <string>
 #include <bitset>
+
 #include <ea/algorithm.h>
 #include <ea/exceptions.h>
 
@@ -181,41 +186,84 @@ namespace ealib {
         std::ostringstream _row;
     };
     
-    
-//    class idatafile {
-//    public:
-//
-//        idatafile(const std::string& fname) {        
-//        }
-//        
-//        if(!has_checkpoint(vm)) {
-//            throw fatal_error_exception("required checkpoint file not found.");
-//        }
-//        std::string cpfile(vm["checkpoint"].as<std::string>());
-//        std::ifstream ifs(cpfile.c_str());
-//        std::cerr << "loading " << cpfile << "... ";
-//        
-//        // is this a gzipped file?  test by checking file extension...
-//        static const boost::regex e(".*\\.gz$");
-//        if(boost::regex_match(cpfile, e)) {
-//            namespace bio = boost::iostreams;
-//            bio::filtering_stream<bio::input> f;
-//            f.push(bio::gzip_decompressor());
-//            f.push(ifs);
-//            checkpoint_load(ea, f);
-//        } else {
-//            checkpoint_load(ea, ifs);
-//        }
-//        std::cerr << "done." << std::endl;
-//
-//        template <typename EA>
-//        void checkpoint_load(EA& ea, std::istream& in) {
-//            boost::archive::xml_iarchive ia(in);
-//            ia >> BOOST_SERIALIZATION_NVP(ea);
-//        }
-//
-//    };
-    
+
+    /*! First cut at an input datafile reader.
+     */
+    class idatafile {
+    public:
+        typedef std::vector<std::string> row_type;
+        typedef std::vector<row_type> matrix_type;
+        typedef matrix_type::iterator iterator;
+        typedef matrix_type::const_iterator const_iterator;
+        
+        idatafile(const std::string& filename, const std::string& sep=",") {
+            using namespace boost;
+            
+            std::ifstream infile(filename.c_str());
+        
+            if(!infile.is_open()) {
+                throw file_io_exception("datafile.h::initialize: could not open " + filename);
+            }
+        
+            static const regex comment("^#.*");
+            bool header=false;
+            std::string line;
+            
+            while(getline(infile, line)) {
+                // remove leading & trailing whitespace:
+                trim_all(line);
+                // only consider lines with length > 0:
+                if(line.empty()) {
+                    continue;
+                }
+                // skip all comments:
+                if(regex_match(line, comment)) {
+                    continue;
+                }
+
+                // the first non-comment line is assumed to be the header:
+                if(!header) {
+                    split(_colnames, line, is_any_of(sep));
+                    header = true;
+                    continue;
+                }
+            
+                // split all remaining lines into fields, add them to the string matrix:
+                row_type row;
+                split(row, line, is_any_of(sep));
+                _data.push_back(row);
+            }
+        }
+        
+        //! Retrieve an iterator to the beginning of the data matrix.
+        iterator begin() { return _data.begin(); }
+      
+        //! Retrieve an iterator to the beginning of the data matrix (const-qualified).
+        const_iterator begin() const { return _data.begin(); }
+        
+        //! Retrieve an iterator to the end of the data matrix.
+        iterator end() { return _data.end(); }
+        
+        //! Retrieve an iterator to the end of the data matrix (const-qualified).
+        const_iterator end() const { return _data.end(); }
+        
+        /*! Convenience method to translate this datafile to a different format.
+         
+         The value_type of Container must provide a constructor that can accept
+         a row_type.  Container must support push_back.
+         */
+        template <typename Container>
+        void translate(Container& c) {
+            for(iterator i=begin(); i!=end(); ++i) {
+                c.push_back(typename Container::value_type(*i));
+            }
+        }
+        
+    protected:
+        row_type _colnames;
+        matrix_type _data;
+    };
+
 } // ea
 
 #endif

@@ -34,10 +34,6 @@ namespace ealib {
      with care.
 	 */
 	struct heaviside : std::unary_function<double,double> {
-        typedef std::unary_function<double,double> base_type;
-        typedef typename base_type::argument_type argument_type;
-        typedef typename base_type::result_type result_type;
-
 		//! Constructor.
 		heaviside() {
 		}
@@ -62,10 +58,6 @@ namespace ealib {
      Lambda was selected to provides a nice sigmoid over the full domain.
 	 */
     struct logistic : std::unary_function<double,double> {
-        typedef std::unary_function<double,double> base_type;
-        typedef typename base_type::argument_type argument_type;
-        typedef typename base_type::result_type result_type;
-
 		//! Constructor.
 		logistic(double l=6.0) : lambda(l) {
 		}
@@ -93,10 +85,6 @@ namespace ealib {
      Lambda was selected to provides a nice sigmoid over the full domain.
 	 */
     struct hyperbolic_tangent : std::unary_function<double,double> {
-        typedef std::unary_function<double,double> base_type;
-        typedef typename base_type::argument_type argument_type;
-        typedef typename base_type::result_type result_type;
-
 		//! Constructor.
 		hyperbolic_tangent(double l=3.0) : _lambda(l) { }
 		

@@ -21,6 +21,8 @@
 #define _EA_EVENTS_H_
 
 #include <boost/bind.hpp>
+
+#define BOOST_SIGNALS_NO_DEPRECATION_WARNING
 #include <boost/signal.hpp>
 #include <ea/meta_data.h>
 

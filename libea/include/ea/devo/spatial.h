@@ -40,6 +40,7 @@ namespace ealib {
         template <typename EA>
         struct abstract_resource {
             abstract_resource(const std::string& name) : _name(name) { }
+            virtual ~abstract_resource() { }
             //! Update resource levels, if needed, based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) = 0;
             virtual double consume(typename EA::individual_type& org, EA& ea) = 0;
@@ -55,6 +56,7 @@ namespace ealib {
         template <typename EA>
         struct unlimited : abstract_resource<EA> {
             unlimited(const std::string& name) : abstract_resource<EA>(name) { }
+            virtual ~unlimited() { }
             void update(double) { }
             double consume(typename EA::individual_type& org, EA& ea) { return 1.0; }
             void reset() { }
@@ -69,6 +71,7 @@ namespace ealib {
             : abstract_resource<EA>(name), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
             }
             
+            virtual ~limited() { }
             void update(double delta_t) {
                 _level += delta_t * (_inflow - (_outflow * _level));
                 _level = std::max(0.0, _level);
@@ -104,6 +107,8 @@ namespace ealib {
                 _T.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea));
                 reset();
             }
+            
+            virtual ~spatial() { }
             
             void update(double delta_t) {
                 // for stability...

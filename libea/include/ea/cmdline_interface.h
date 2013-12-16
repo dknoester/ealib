@@ -262,8 +262,8 @@ namespace ealib {
             lifecycle::advance_all(ea);
         }
         
-		//! Run the EA.
-		void run(ea_type& ea) {
+        //! Initialize an EA.
+        void initialize_ea(ea_type& ea) {
             ea.configure();
             apply(ea);
             
@@ -277,7 +277,17 @@ namespace ealib {
                 add_event<datafiles::runtime>(this,ea);
             }
             ea.initial_population();
+        }
+
+        //! Continue an already initialized EA for another epoch.
+        void continue_ea(ea_type& ea) {
             lifecycle::advance_all(ea);
+        }
+
+		//! Run the EA.
+		void run(ea_type& ea) {
+            initialize_ea(ea);
+            continue_ea(ea);
         }
         
     protected:

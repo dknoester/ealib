@@ -141,7 +141,6 @@ BOOST_AUTO_TEST_CASE(test_deep_markov_network) {
 	};
 
     int* in;
-    int inputs[2] = { 4, 2 };
     
     in=tc0;
     N.cascade_update(in);
