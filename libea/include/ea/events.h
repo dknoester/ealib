@@ -22,7 +22,10 @@
 
 #include <boost/bind.hpp>
 
+#ifndef BOOST_SIGNALS_NO_DEPRECATION_WARNING
 #define BOOST_SIGNALS_NO_DEPRECATION_WARNING
+#endif
+
 #include <boost/signal.hpp>
 #include <ea/meta_data.h>
 
