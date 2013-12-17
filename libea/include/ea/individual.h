@@ -26,6 +26,10 @@
 
 namespace ealib {
     
+    LIBEA_MD_DECL(IND_NAME, "individual.name", long);
+    LIBEA_MD_DECL(IND_GENERATION, "individual.generation", double);
+    LIBEA_MD_DECL(IND_BIRTH_UPDATE, "individual.birth_update", long);
+    
 	/*! Definition of EALib individuals.
      
      Individuals in EALib are containers for a representation, attributes, and meta-data.
@@ -38,18 +42,15 @@ namespace ealib {
         typedef meta_data md_type; //!< Meta-data type.
 		
 		//! Constructor.
-		individual() : _name(0), _generation(0.0), _update(0) {
+		individual() {
 		}
         
 		//! Constructor that builds an individual from a representation.
-		individual(const representation_type& r) : _name(0), _generation(0.0), _update(0), _repr(r) {
+		individual(const representation_type& r) : _repr(r) {
 		}
         
         //! Copy constructor.
         individual(const individual& that) {
-            _name = that._name;
-            _generation = that._generation;
-            _update = that._update;
             _repr = that._repr;
             _md = that._md;
             _attr = that._attr;
@@ -58,9 +59,6 @@ namespace ealib {
         //! Assignment operator.
         individual& operator=(const individual& that) {
             if(this != &that) {
-                _name = that._name;
-                _generation = that._generation;
-                _update = that._update;
                 _repr = that._repr;
                 _md = that._md;
                 _attr = that._attr;
@@ -71,24 +69,6 @@ namespace ealib {
         //! Destructor.
         virtual ~individual() {
         }
-        
-        //! Retrieve this individual's name.
-        long& name() { return _name; }
-		
-        //! Retrieve this individual's name (const-qualified).
-        const long& name() const { return _name; }
-        
-        //! Retrieve this individual's generation.
-        double& generation() { return _generation; }
-        
-        //! Retrieve this individual's generation (const-qualified).
-        const double& generation() const { return _generation; }
-        
-        //! Retrieve this individual's birth update.
-        long& birth_update() { return _update; }
-        
-        //! Retrieve this individual's update (const-qualified).
-        const long& update() const { return _update; }
         
 		//! Retrieve this individual's representation.
 		representation_type& repr() { return _repr; }
@@ -111,14 +91,11 @@ namespace ealib {
         //! Cast this individual to a std::string.
         operator std::string() {
             std::ostringstream s;
-            s << "individual=" << name() << ", generation=" << generation();
+            s << "individual=" << get<IND_NAME>(*this) << ", generation=" << get<IND_GENERATION>(*this);
             return s.str();
         }
         
 	protected:
-        long _name; //!< Name (id number) of this individual.
-        double _generation; //!< Generation of this individual.
-        long _update; //!< Update at which this individual was born.
 		representation_type _repr; //!< This individual's representation.
         meta_data _md; //!< This individual's meta data.
         attr_type _attr; //!< This individual's attributes.
@@ -129,10 +106,7 @@ namespace ealib {
         //! Serialize this individual.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("name", _name);
-            ar & boost::serialization::make_nvp("generation", _generation);
             ar & boost::serialization::make_nvp("representation", _repr);
-            ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("meta_data", _md);
             ar & boost::serialization::make_nvp("attributes", _attr);
 		}

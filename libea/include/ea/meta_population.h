@@ -32,6 +32,8 @@
 #include <ea/meta_data.h>
 #include <ea/events.h>
 #include <ea/rng.h>
+#include <ea/fitness_functions/constant.h>
+#include <ea/mutation.h>
 
 namespace ealib {
     namespace generational_models {
@@ -54,13 +56,37 @@ namespace ealib {
 
     struct null_representation { };
     
+    template <typename MEA>
+    struct meta_population_individual : public MEA::ea_type {
+        typedef typename MEA::ea_type ea_type; //!< EA type.
+        typedef typename MEA::individual_attr_type attr_type; //!< Attributes type for this individual.
+
+        //! Retrieve this individual's attributes.
+        attr_type& attr() { return _attr; }
+        
+        //! Retrieve this individual's attributes (const-qualified).
+        const attr_type& attr() const { return _attr; }
+
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("ea", boost::serialization::base_object<ea_type>(*this));
+            ar & boost::serialization::make_nvp("attributes", _attr);
+		}
+
+        attr_type _attr; //!< This EA's attributes.
+    };
+
     /*! Metapopulation evolutionary algorithm, where individuals in the population
      are themselves evolutionary algorithms.
      */
     template <
     typename EA,
-    template <typename> class ConfigurationStrategy,
+    typename MutationOperator=mutation::operators::null_mutation,
+	typename FitnessFunction=constant,
+    template <typename> class ConfigurationStrategy=abstract_configuration,
+	typename RecombinationOperator=recombination::meta_population_asexual,
     typename GenerationalModel=generational_models::meta_population,
+    template <typename> class IndividualAttrs=attr::fitness_attribute,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=default_rng_type>
@@ -68,28 +94,40 @@ namespace ealib {
     public:
         //! Tag indicating the structure of this population.
         typedef multiPopulationS population_structure_tag;
+        //! Type of the EA that this meta_population holds.
+        typedef EA ea_type;
+        //! Meta-data type.
+        typedef MetaData md_type;
         //! Representation (null, in the normal case).
         typedef null_representation representation_type;
-        //! Configuration object type.
-        typedef ConfigurationStrategy<meta_population> configuration_type;
+        //! Random number generator type.
+        typedef RandomNumberGenerator rng_type;
+        //! Fitness function type.
+        typedef FitnessFunction fitness_function_type;
+        //! Fitness type.
+        typedef typename fitness_function_type::fitness_type fitness_type;
+        //! Attributes attached to individuals.
+        typedef IndividualAttrs<meta_population> individual_attr_type;
         //! Type of individual held by this metapopulation.
-        typedef EA individual_type;
+        typedef meta_population_individual<meta_population> individual_type;
         //! Individual pointer type.
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
+        //! Configuration object type.
+        typedef ConfigurationStrategy<meta_population> configuration_type;
         //! Type of population container.
         typedef ealib::population<individual_type,individual_ptr_type> population_type;
         //! Type of the population container used by the subpopulations:
         typedef typename individual_type::population_type subpopulation_type;
         //! Type of the individual used by the subpopulations:
         typedef typename individual_type::individual_type subindividual_type;
-        //! Generational model.
+        //! Mutation operator type.
+        typedef MutationOperator mutation_operator_type;
+        //! Crossover operator type.
+        typedef RecombinationOperator recombination_operator_type;
+        //! Generational model type.
         typedef GenerationalModel generational_model_type;
         //! Event handler.
         typedef EventHandler<meta_population> event_handler_type;
-        //! Meta-data type.
-        typedef MetaData md_type;
-        //! Random number generator type.
-        typedef RandomNumberGenerator rng_type;        
         //! Iterator for embedded EAs.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator for embedded EAs.
@@ -126,6 +164,8 @@ namespace ealib {
          meta-population and all subpopulations.
          */
         void initialize() {
+            initialize_fitness_function(_fitness_function, *this);
+            
             // if this is a new EA, population size is 0.  if we came from a checkpoint,
             // then don't build more subpopulations!
             for(std::size_t i=_population.size(); i<get<META_POPULATION_SIZE>(*this); ++i) {
@@ -202,6 +242,9 @@ namespace ealib {
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }
         
+        //! Accessor for the fitness function object.
+        fitness_function_type& fitness_function() { return _fitness_function; }
+        
         //! Accessor for the generational model object.
         generational_model_type& generational_model() { return _generational_model; }
         
@@ -267,6 +310,7 @@ namespace ealib {
 
     protected:
         rng_type _rng; //!< Random number generator.
+        fitness_function_type _fitness_function; //!< Fitness function object.
         meta_data _md; //!< Meta-data for the meta-population.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
@@ -279,6 +323,7 @@ namespace ealib {
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
             ar & boost::serialization::make_nvp("rng", _rng);
+            ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
             ar & boost::serialization::make_nvp("meta_data", _md);
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
             
@@ -292,6 +337,7 @@ namespace ealib {
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("rng", _rng);
+            ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
             ar & boost::serialization::make_nvp("meta_data", _md);
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
 

@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <utility>
 
+#include <ea/individual.h>
 
 namespace ealib {
     
@@ -30,9 +31,9 @@ namespace ealib {
      */
     template <typename EA>
     void inherits_from(typename EA::individual_type& parent, typename EA::individual_type& offspring, EA& ea) {
-        offspring.name() = next<INDIVIDUAL_COUNT>(ea);
-        offspring.generation() = parent.generation() + 1.0;
-        offspring.birth_update() = ea.current_update();
+        put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), offspring);
+        put<IND_GENERATION>(get<IND_GENERATION>(parent)+1.0, offspring);
+        put<IND_BIRTH_UPDATE>(ea.current_update(), offspring);
     }
     
     
@@ -86,6 +87,37 @@ namespace ealib {
             void operator()(Population& parents, Population& offspring, EA& ea) {
                 offspring.insert(offspring.end(),
                                  ea.make_individual(parents.front()->repr()));
+            }
+        };
+        
+        
+        struct meta_population_asexual {
+            std::size_t capacity() const { return 1; }
+
+            //! Asexual reproduction (copies a single parent's representation).
+            template <typename Population, typename EA>
+            void operator()(Population& parents, Population& offspring, EA& ea) {
+//                // p is a subpopulation
+//                typename EA::individual_ptr_type p = ea.make_individual();
+//                
+//                // and fill up the subpopulation
+//                typedef typename Population::value_type::element_type::population_type propagule_type;
+//                propagule_type propagule;
+//                ea.rng().sample_without_replacement(parents[0]->population().begin(),
+//                                                    parents[0]->population().end(),
+//                                                    std::back_inserter(propagule),
+//                                                    prop_size);
+//                for(typename propagule_type::iterator i=propagule.begin(); i!=propagule.end(); ++i) {
+//                    // grab the original part of the propagule's genome; note that it could have been
+//                    // changed (implicit-like mutations):
+//                    typename EA::individual_type::representation_type r((*i)->repr().begin(),
+//                                                                        (*i)->repr().begin()+(*i)->hw().original_size());
+//                    typename EA::individual_type::individual_ptr_type q = p->make_individual(r);
+//                    
+//                    p->append(q);
+//                }
+//                
+//                offspring.insert(offspring.end(),p);
             }
         };
         

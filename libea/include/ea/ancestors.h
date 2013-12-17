@@ -24,7 +24,7 @@
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
 #include <ea/generators.h>
-
+#include <ea/individual.h>
 
 namespace ealib {
     
@@ -43,9 +43,9 @@ namespace ealib {
 
         // build the placeholder ancestor:
         typename EA::individual_ptr_type ap = ea.make_individual(typename EA::representation_type());
-        ap->name() = next<INDIVIDUAL_COUNT>(ea);
-        ap->generation() = -1.0;
-        ap->birth_update() = ea.current_update();
+        put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);
+        put<IND_GENERATION>(-1.0, *ap);
+        put<IND_BIRTH_UPDATE>(ea.current_update(), *ap);
      
         // wrap it in a population:
         typename EA::population_type parents;

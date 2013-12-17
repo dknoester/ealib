@@ -189,6 +189,14 @@ namespace ealib {
         
         namespace operators {
             
+            /*! Null mutation.
+             */
+            struct null_mutation {
+                template <typename EA>
+                void operator()(typename EA::individual_type& ind, EA& ea) {
+                }
+            };
+
             /*! Single-point mutation.
              */
             template <typename MutationType>

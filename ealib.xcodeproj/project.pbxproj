@@ -259,6 +259,8 @@
 		42B55B6F1641C2C500F240C5 /* test_evolutionary_algorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_evolutionary_algorithm.cpp; sourceTree = "<group>"; };
 		42B55B701641C2C500F240C5 /* test_information.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_information.cpp; sourceTree = "<group>"; };
 		42B55B711641C2C500F240C5 /* test_novelty_search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_novelty_search.cpp; sourceTree = "<group>"; };
+		42C661221860981F004476D3 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		42C661251860A403004476D3 /* constant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constant.h; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -518,6 +520,7 @@
 				428B7246184F77AB00E3BB4E /* replication.h */,
 				428B7247184F77AB00E3BB4E /* schedulers.h */,
 				428B7248184F77AB00E3BB4E /* spatial.h */,
+				42C661221860981F004476D3 /* graph.h */,
 				428B7249184F77AB00E3BB4E /* task_library.h */,
 				428B724A184F77AB00E3BB4E /* well_mixed.h */,
 			);
@@ -529,6 +532,7 @@
 			children = (
 				428B7250184F77AB00E3BB4E /* all_ones.h */,
 				428B7251184F77AB00E3BB4E /* benchmarks.h */,
+				42C661251860A403004476D3 /* constant.h */,
 				428B7252184F77AB00E3BB4E /* direct.h */,
 				428B7253184F77AB00E3BB4E /* nk_model.h */,
 				428B7254184F77AB00E3BB4E /* target.h */,

@@ -108,9 +108,9 @@ namespace ealib {
                     accumulator_set<double, stats<tag::min, tag::mean, tag::max> > fit;
                     
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
-                        gen(j->generation());
+                        gen(get<IND_GENERATION>(*j));
                         fit(static_cast<double>(ealib::fitness(*j,*i)));
-                        mpgen(j->generation());
+                        mpgen(get<IND_GENERATION>(*j));
                         mpfit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
                     

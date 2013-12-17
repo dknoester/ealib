@@ -120,35 +120,10 @@ namespace ealib {
             BOOST_CONCEPT_ASSERT((AttributeConcept<attr_type>));
             BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
 
-            detail::same_type(long(), x.name());
-            detail::same_type(double(), x.generation());
-            detail::same_type(long(), x.birth_update());
             detail::same_type(representation_type(), x.repr());
-            
-            x.name() = long();
-            x.generation() = double();
-            x.birth_update() = long();
             x.repr() = representation_type();
 		}
-        
-        //! Retrieve this individual's name.
-        long& name();
-		
-        //! Retrieve this individual's name (const-qualified).
-        const long& name() const;
-        
-        //! Retrieve this individual's generation.
-        double& generation();
-        
-        //! Retrieve this individual's generation (const-qualified).
-        const double& generation() const;
-        
-        //! Retrieve this individual's update.
-        long& update();
-        
-        //! Retrieve this individual's update (const-qualified).
-        const long& update() const;
-        
+
         //! Retrieve this individual's representation.
 		representation_type& repr();
         

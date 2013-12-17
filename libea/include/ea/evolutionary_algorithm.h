@@ -84,6 +84,8 @@ namespace ealib {
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Configuration object type.
         typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
+        //! Phenotype.
+        typedef typename configuration_type::phenotype phenotype;
         //! Encoding type.
         typedef typename configuration_type::encoding_type encoding_type;
         //! Mutation operator type.

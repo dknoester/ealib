@@ -21,7 +21,9 @@
 #define _EA_ANALYSIS_POPULATION_H_
 
 #include <boost/lexical_cast.hpp>
+
 #include <ea/datafile.h>
+#include <ea/individual.h>
 
 namespace ealib {
     namespace analysis {
@@ -35,7 +37,8 @@ namespace ealib {
                 datafile df("unary_population_fitness.dat");
                 df.add_field("individual").add_field("fitness");
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                    df.write(i->name()).write(static_cast<double>(ealib::fitness(*i,ea))).endl();
+                    df.write(get<IND_NAME>(*i))
+                    .write(static_cast<double>(ealib::fitness(*i,ea))).endl();
                 }
             }
         };
@@ -53,7 +56,7 @@ namespace ealib {
                 }
                 
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                    df.write(i->name());
+                    df.write(get<IND_NAME>(*i));
                     for(std::size_t j=0; j<ea.fitness_function().size(); ++j) {
                         df.write(static_cast<double>(ealib::fitness(*i,ea)[j]));
                     }
