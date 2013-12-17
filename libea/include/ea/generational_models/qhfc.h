@@ -34,6 +34,7 @@
 #include <ea/selection/random.h>
 #include <ea/generational_models/crowding.h>
 
+LIBEA_MD_DECL(QHFC_POP_SCALE, "ea.generational_model.qhfc.population_scale", double);
 LIBEA_MD_DECL(QHFC_DETECT_EXPORT_NUM, "ea.generational_model.qhfc.detect_export_num", double);
 LIBEA_MD_DECL(QHFC_CATCHUP_GEN, "ea.generational_model.qhfc.catchup_gen", double);
 LIBEA_MD_DECL(QHFC_PERCENT_REFILL, "ea.generational_model.qhfc.percent_refill", double);
