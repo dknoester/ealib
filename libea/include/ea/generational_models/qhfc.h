@@ -45,7 +45,6 @@ LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.generational_model.qhfc.admission_level"
 LIBEA_MD_DECL(QHFC_LAST_PROGRESS_GEN, "ea.generational_model.qhfc.last_progess_gen", double);
 LIBEA_MD_DECL(QHFC_LAST_PROGRESS_MAX, "ea.generational_model.qhfc.last_progess_max", double);
 
-
 namespace ealib {
 	namespace generational_models {
 		
