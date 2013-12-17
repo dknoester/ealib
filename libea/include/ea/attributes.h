@@ -37,6 +37,13 @@ namespace ealib {
             }
         };
         
+        template <typename EA>
+        struct none {
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+            }
+        };
+        
     } // attr
     
     namespace access {

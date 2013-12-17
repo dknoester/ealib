@@ -90,6 +90,12 @@ namespace ealib {
             }
         };
         
+        struct none {
+            std::size_t capacity() const { return 1; }
+            template <typename Population, typename EA>
+            void operator()(Population& parents, Population& offspring, EA& ea) {
+            }
+        };
         
         struct meta_population_asexual {
             std::size_t capacity() const { return 1; }

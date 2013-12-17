@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_GENERATIONAL_MODELS_QHFC_H_
-#define _EA_GENERATIONAL_MODELS_QHFC_H_
+#ifndef _EA_QHFC_H_
+#define _EA_QHFC_H_
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
@@ -33,6 +33,9 @@
 #include <ea/selection/elitism.h>
 #include <ea/selection/random.h>
 #include <ea/generational_models/crowding.h>
+#include <ea/meta_population.h>
+#include <ea/evolutionary_algorithm.h>
+
 
 LIBEA_MD_DECL(QHFC_POP_SCALE, "ea.generational_model.qhfc.population_scale", double);
 LIBEA_MD_DECL(QHFC_DETECT_EXPORT_NUM, "ea.generational_model.qhfc.detect_export_num", double);
@@ -261,11 +264,52 @@ namespace ealib {
         };
         
     } // generational_models
+
+    //! Configuration object for QHFC.
+    template <typename EA>
+    struct qhfc_configuration : public abstract_configuration<EA> {
+        //! Called as the final step of EA initialization.
+        virtual void initialize(EA& ea) {
+            // set the population sizes of the various different subpopulations:
+            std::size_t base_size=get<POPULATION_SIZE>(ea);
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                put<POPULATION_SIZE>(base_size, *i);
+                base_size *= get<QHFC_POP_SCALE>(ea);
+            }
+        }
+    };
     
+    
+    /*! QHFC evolutinoary algorithm definition.
+     */
+    template <
+	typename Representation,
+	typename MutationOperator,
+    typename RecombinationOperator,
+	typename FitnessFunction,
+    template <typename> class ConfigurationStrategy>
+    struct qhfc
+    : meta_population<
+    // embedded ea type:
+    evolutionary_algorithm<Representation,
+    MutationOperator,
+    FitnessFunction,
+    ConfigurationStrategy,
+    RecombinationOperator,
+    generational_models::deterministic_crowding< > >,
+    // mp types:
+    mutation::operators::null_mutation,
+    constant,
+    qhfc_configuration,
+    recombination::none,
+    generational_models::qhfc,
+    attr::none> {
+    };
+    
+
     namespace datafiles {
         
-        /*! QHFC datafile.
-         */
+        //! QHFC datafile.
         template <typename EA>
         struct qhfc : record_statistics_event<EA> {
             qhfc(EA& ea)
