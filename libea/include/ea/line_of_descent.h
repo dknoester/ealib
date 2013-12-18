@@ -40,9 +40,12 @@
 #include <ea/devo/organism.h>
 
 namespace ealib {
+    LIBEA_MD_DECL(FIXATION_TIME, "individual.fixation_time", long);
+
     namespace attr {
 
-        //! Default phenotype attribute.
+        /*! Line of descent (LoD) attribute.
+         */
         template <typename EA>
         struct lod_attributes {
             typedef typename EA::individual_ptr_type individual_ptr_type;
@@ -273,6 +276,7 @@ namespace ealib {
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
     
+    
     /*! Chains together offspring and their parents, called for every inheritance event.
      */
     template <typename EA>
@@ -294,6 +298,7 @@ namespace ealib {
             }
         }
     };
+    
     
     /*! Meta-population enabled LOD event.
      */
@@ -318,8 +323,9 @@ namespace ealib {
         event_list_type _events;
     };
     
+    
     namespace datafiles {
-        
+    
         //! Line-of-descent from the default ancestor to the current MRCA.
         template <typename EA>
         struct mrca_lineage : end_of_epoch_event<EA> {
@@ -370,9 +376,9 @@ namespace ealib {
             
             meta_population_lod_event<EA> _lod_event;
         };
+        
     } // datafiles
     
-    LIBEA_MD_DECL(FIXATION_TIME, "individual.fixation_time", long);
     
     /*! Tracks the update at which individuals along the line of descent have fixed
      in the population.

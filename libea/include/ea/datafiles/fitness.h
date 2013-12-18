@@ -28,6 +28,7 @@
 #include <boost/accumulators/statistics/min.hpp>
 #include <ea/datafile.h>
 #include <ea/attributes.h>
+#include <ea/meta_population.h>
 
 
 namespace ealib {
@@ -87,6 +88,7 @@ namespace ealib {
                 }
                 
                 _mp.add_field("update")
+                .add_field("mean_size")
                 .add_field("mean_generation")
                 .add_field("min_fitness")
                 .add_field("mean_fitness")
@@ -98,7 +100,8 @@ namespace ealib {
             
             virtual void operator()(EA& ea) {
                 using namespace boost::accumulators;
-                
+
+                accumulator_set<double, stats<tag::mean> > mpsize;
                 accumulator_set<double, stats<tag::mean> > mpgen;
                 accumulator_set<double, stats<tag::min, tag::mean, tag::max> > mpfit;
                 
@@ -110,6 +113,7 @@ namespace ealib {
                     for(typename EA::individual_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         gen(get<IND_GENERATION>(*j));
                         fit(static_cast<double>(ealib::fitness(*j,*i)));
+                        mpsize(i->size());
                         mpgen(get<IND_GENERATION>(*j));
                         mpfit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
@@ -122,6 +126,7 @@ namespace ealib {
                 _df.endl();
                 
                 _mp.write(ea.current_update())
+                .write(mean(mpsize))
                 .write(mean(mpgen))
                 .write(min(mpfit))
                 .write(mean(mpfit))

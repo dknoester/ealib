@@ -46,7 +46,12 @@ namespace ealib {
     LIBEA_MD_DECL(MUTATION_CLIP_MIN, "ea.mutation.clip.min", double);
     LIBEA_MD_DECL(MUTATION_CLIP_MAX, "ea.mutation.clip.max", double);
     LIBEA_MD_DECL(MUTATION_ZERO_P, "ea.mutation.zero.p", double);
-    
+
+    LIBEA_MD_DECL(MUTATION_SUBPOP_DELETION_P, "ea.mutation.subpopulation.deletion.p", double);
+    LIBEA_MD_DECL(MUTATION_SUBPOP_INSERTION_P, "ea.mutation.subpopulation.insertion.p", double);
+    LIBEA_MD_DECL(MUTATION_SUBPOP_MIN_SIZE, "ea.mutation.subpopulation.min_size", int);
+    LIBEA_MD_DECL(MUTATION_SUBPOP_MAX_SIZE, "ea.mutation.subpopulation.max_size", int);
+
 	/*! Unconditionally mutate an individual.
 	 */
 	template <typename Mutator, typename EA>
@@ -194,6 +199,32 @@ namespace ealib {
             struct null_mutation {
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
+                }
+            };
+            
+            
+            /*! Subpopulation mutation.
+             
+             Here, the EA is assumed to be a meta-population, individuals are in
+             fact a subpopulation EA, and mutation involves operations on that EA.
+             */
+            struct subpopulation {
+                template <typename EA>
+                void operator()(typename EA::individual_type& ind, EA& ea) {
+                    // first, see if we're going to alter the size of this EA:
+                    if(ind.size() < static_cast<std::size_t>(get<MUTATION_SUBPOP_MAX_SIZE>(ea))
+                       && ea.rng().p(get<MUTATION_SUBPOP_INSERTION_P>(ea))) {
+                        put<POPULATION_SIZE>(get<POPULATION_SIZE>(ind)+1, ind);
+                    }
+
+                    if(ind.size() > static_cast<std::size_t>(get<MUTATION_SUBPOP_MIN_SIZE>(ea))
+                       && ea.rng().p(get<MUTATION_SUBPOP_DELETION_P>(ea))) {
+                        put<POPULATION_SIZE>(get<POPULATION_SIZE>(ind)-1, ind);
+                    }
+
+                    // and now update the subpopulation (this calls the subpopulation
+                    // EA's generational model):
+                    ind.update();
                 }
             };
 

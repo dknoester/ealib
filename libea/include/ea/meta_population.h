@@ -36,6 +36,10 @@
 #include <ea/mutation.h>
 
 namespace ealib {
+    
+    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.meta_population.size", unsigned int);
+    LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.meta_population.competition_period", unsigned int);
+
     namespace generational_models {
         
         /*! Default generational model for a metapopulation EA, where all
@@ -79,6 +83,10 @@ namespace ealib {
 
     /*! Metapopulation evolutionary algorithm, where individuals in the population
      are themselves evolutionary algorithms.
+     
+     By default, a meta-population EA provides something akin to an island model,
+     where the subpopulations are completely isolated from one another, and individuals
+     do not migrate among subpopulations.
      */
     template <
     typename EA,
@@ -175,6 +183,12 @@ namespace ealib {
                 p->md() += md();
                 put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
                 p->rng().reset(get<RNG_SEED>(*p));
+                
+                
+                put<IND_NAME>(next<INDIVIDUAL_COUNT>(*this), *p);
+                put<IND_GENERATION>(0, *p);
+                put<IND_BIRTH_UPDATE>(current_update(), *p);
+                
                 _population.push_back(p);
             }
             // initialize everything:

@@ -230,7 +230,7 @@ namespace ealib {
             //! Translate an individual's representation into a Markov Network.
             virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
                                                  typename EA::rng_type& rng, EA& ea) {
-                phenotype_ptr p(new phenotype(desc, rng));
+                phenotype_ptr p(new phenotype(desc, rng.seed()));
                 translate_genome(ind.repr(), start, translator, *p);
                 return p;
             }

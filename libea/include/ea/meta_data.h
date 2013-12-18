@@ -322,9 +322,6 @@ namespace ealib {
 	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
     LIBEA_MD_DECL(INITIAL_POPULATION_SIZE, "ea.population.initial_size", unsigned int);
 
-	// ea.meta_population.*
-    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.meta_population.size", unsigned int);
-    LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.meta_population.competition_period", unsigned int);
 
 	// ea.selection.*
 	LIBEA_MD_DECL(TOURNAMENT_SELECTION_N, "ea.selection.tournament.n", int);

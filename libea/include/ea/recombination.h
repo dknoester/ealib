@@ -96,34 +96,29 @@ namespace ealib {
             void operator()(Population& parents, Population& offspring, EA& ea) {
             }
         };
-        
-        struct meta_population_asexual {
+
+        /*! Asexual replication of a subpopulation within a meta-population EA.
+         */
+        struct asexual_meta_population {
             std::size_t capacity() const { return 1; }
 
-            //! Asexual reproduction (copies a single parent's representation).
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
-//                // p is a subpopulation
-//                typename EA::individual_ptr_type p = ea.make_individual();
-//                
-//                // and fill up the subpopulation
-//                typedef typename Population::value_type::element_type::population_type propagule_type;
-//                propagule_type propagule;
-//                ea.rng().sample_without_replacement(parents[0]->population().begin(),
-//                                                    parents[0]->population().end(),
-//                                                    std::back_inserter(propagule),
-//                                                    prop_size);
-//                for(typename propagule_type::iterator i=propagule.begin(); i!=propagule.end(); ++i) {
-//                    // grab the original part of the propagule's genome; note that it could have been
-//                    // changed (implicit-like mutations):
-//                    typename EA::individual_type::representation_type r((*i)->repr().begin(),
-//                                                                        (*i)->repr().begin()+(*i)->hw().original_size());
-//                    typename EA::individual_type::individual_ptr_type q = p->make_individual(r);
-//                    
-//                    p->append(q);
-//                }
-//                
-//                offspring.insert(offspring.end(),p);
+                // these are subpopulations:
+                typename EA::individual_ptr_type p = parents.front();
+                typename EA::individual_ptr_type o = ea.make_individual();
+                o->md() += p->md(); // preserve meta data and rng
+                put<RNG_SEED>(ea.rng().seed(), *o);
+                o->rng().reset(get<RNG_SEED>(*o));
+
+                // copy all individuals from the first parent subpopulation
+                // into the offspring subpopulation:
+                for(typename Population::value_type::element_type::iterator i=p->begin(); i!=p->end(); ++i) {
+                    typename EA::individual_type::individual_ptr_type q = o->make_individual(*i);
+                    o->append(q);
+                }
+                
+                offspring.insert(offspring.end(), o);
             }
         };
         
