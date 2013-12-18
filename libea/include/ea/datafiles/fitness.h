@@ -53,9 +53,9 @@ namespace ealib {
                 accumulator_set<double, stats<tag::mean> > gen;
                 accumulator_set<double, stats<tag::min, tag::mean, tag::max> > fit;
                 
-                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    gen((*i)->generation());
-                    fit(static_cast<double>(ealib::fitness(**i,ea)));
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    gen(get<IND_GENERATION>(*i));
+                    fit(static_cast<double>(ealib::fitness(*i,ea)));
                 }
                 
                 _df.write(ea.current_update())
