@@ -303,7 +303,7 @@ namespace ealib {
     qhfc_configuration,
     recombination::none,
     generational_models::qhfc,
-    attr::none> {
+    attr::no_attributes> {
     };
     
 

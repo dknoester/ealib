@@ -20,6 +20,7 @@
 #ifndef _EA_LINE_OF_DESCENT_H_
 #define _EA_LINE_OF_DESCENT_H_
 
+#include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/regex.hpp>
@@ -38,148 +39,37 @@
 #include <ea/individual.h>
 #include <ea/devo/organism.h>
 
-
 namespace ealib {
-    
-    /*! Wrapper class for individuals to enable line of descent (lod) tracking.
-     */
-    template <typename EA>
-	class individual_lod : public individual<EA> {
-    public:
-        typedef individual<EA> base_type;
-        typedef typename EA::individual_ptr_type individual_ptr_type;
-        typedef typename EA::representation_type representation_type;
-        typedef std::set<individual_ptr_type> parent_set_type;
-        
-        //! Constructor.
-        individual_lod() : base_type() {
-        }
-        
-        //! Constructor.
-        individual_lod(const representation_type& r) : base_type(r) {
-        }
-        
-        //! Copy constructor.
-        individual_lod(const individual_lod& that) : base_type(that) {
-            _lod_parents = that._lod_parents;
-        }
-        
-        //! Assignment operator.
-        individual_lod& operator=(const individual_lod& that) {
-            if(this != & that) {
-                base_type::operator=(that);
-                _lod_parents = that._lod_parents;
+    namespace attr {
+
+        //! Default phenotype attribute.
+        template <typename EA>
+        struct lod_attributes {
+            typedef typename EA::individual_ptr_type individual_ptr_type;
+            typedef std::set<individual_ptr_type> parent_set_type;
+            
+            //! Constructor.
+            lod_attributes() {
             }
-            return *this;
-        }
-        
-        //! Destructor.
-        virtual ~individual_lod() {
-        }
-        
-        //! Retrieve the set of this individual's parents.
-        parent_set_type& lod_parents() { return _lod_parents; }
-        
-        //! Shorthand for asexual populations.
-        individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
-        
-        //! Returns true if this individual has parents.
-        bool has_parents() { return (_lod_parents.size() > 0); }
-        
-        //! Returns true if this individual is an ancestor (i.e., an invalid individual).
-        bool is_ancestor() { return base_type::generation() < 0.0; }
-        
-    protected:
-        parent_set_type _lod_parents; //!< This individual's set of parents.
-    };
-   
-    
-    template <typename EA>
-	class organism_lod : public organism<EA> {
-    public:
-        typedef organism<EA> base_type;
-        typedef typename EA::individual_ptr_type individual_ptr_type;
-        typedef typename EA::representation_type representation_type;
-        typedef std::set<individual_ptr_type> parent_set_type;
-        
-        //! Constructor.
-        organism_lod() : base_type() {
-        }
-        
-        //! Constructor.
-        organism_lod(const representation_type& r) : base_type(r) {
-        }
-        
-        //! Copy constructor.
-        organism_lod(const organism_lod& that) : base_type(that) {
-            _lod_parents = that._lod_parents;
-        }
-        
-        //! Assignment operator.
-        organism_lod& operator=(const organism_lod& that) {
-            if(this != & that) {
-                base_type::operator=(that);
-                _lod_parents = that._lod_parents;
+
+            //! Retrieve all of this individual's parents.
+            parent_set_type& lod_parents() { return _lod_parents; }
+            
+            //! Shorthand for asexual populations.
+            individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
+            
+            //! Returns true if this individual has parents.
+            bool has_parents() { return (_lod_parents.size() > 0); }
+            
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
             }
-            return *this;
-        }
+
+            parent_set_type _lod_parents; //!< Set of pointers to this individual's parents.
+        };
         
-        //! Destructor.
-        virtual ~organism_lod() {
-        }
-        
-        //! Retrieve the set of this individual's parents.
-        parent_set_type& lod_parents() { return _lod_parents; }
-        
-        //! Shorthand for asexual populations.
-        individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
-        
-        //! Returns true if this individual has parents.
-        bool has_parents() { return (_lod_parents.size() > 0); }
-        
-    protected:
-        parent_set_type _lod_parents; //!< This individual's set of parents.
-    };
+    } // attr
     
-    template <typename EA>
-	class population_lod : public EA {
-    public:
-        typedef boost::shared_ptr<population_lod> parent_ptr_type;
-        typedef std::set<parent_ptr_type> parent_set_type;
-        
-        //! Constructor.
-        population_lod() : EA() {
-        }
-        
-        //! Copy constructor.
-        population_lod(const population_lod& that) : EA(that) {
-        }
-        
-        //! Assignment operator.
-        population_lod& operator=(const population_lod& that) {
-            if(this != & that) {
-                EA::operator=(that);
-                _lod_parents.clear();
-            }
-            return *this;
-        }
-        
-        //! Destructor.
-        virtual ~population_lod() {
-        }
-        
-        //! Retrieve the set of this individual's parents.
-        parent_set_type& lod_parents() { return _lod_parents; }
-        
-        //! Shorthand for asexual populations.
-        parent_ptr_type lod_parent() { return *_lod_parents.begin(); }
-        
-        //! Returns true if this individual has parents.
-        bool has_parents() { return (_lod_parents.size() > 0); }
-        
-    protected:
-        parent_set_type _lod_parents; //!< This individual's set of parents.
-    };
     
     /*! Contains line of descent information.
      
@@ -193,12 +83,22 @@ namespace ealib {
     template <typename EA>
     class line_of_descent {
     public:
+        //! Type of the EA this LoD is based on.
         typedef EA ea_type;
+        //! Type for individuals in the LoD.
         typedef typename ea_type::individual_type individual_type;
+        //! Type for pointers to individuals in the LoD.
         typedef typename ea_type::individual_ptr_type individual_ptr_type;
+        //! Type for a lineage, a list of individuals.
         typedef std::list<individual_ptr_type> lineage_type;
-        typedef typename lineage_type::iterator iterator;
-        typedef typename lineage_type::reverse_iterator reverse_iterator;
+        //! Iterator over this LoD's lineage.
+        typedef boost::indirect_iterator<typename lineage_type::iterator> iterator;
+        //! Const iterator over this LoD's lineage.
+        typedef boost::indirect_iterator<typename lineage_type::const_iterator> const_iterator;
+        //! Reverse iterator over this LoD's lineage.
+        typedef boost::indirect_iterator<typename lineage_type::reverse_iterator> reverse_iterator;
+        //! Const reverse iterator over this LoD's lineage.
+        typedef boost::indirect_iterator<typename lineage_type::const_reverse_iterator> const_reverse_iterator;
         
         //! Constructor.
         line_of_descent() {
@@ -208,15 +108,47 @@ namespace ealib {
         virtual ~line_of_descent() {
         }
         
-        //! Returns the lineage.
-        lineage_type& lineage() { return _lod; }
+        //! Returns a begin iterator to the population.
+        iterator begin() {
+            return iterator(_lod.begin());
+        }
         
-        iterator begin() { return _lod.begin(); }
-        iterator end() { return _lod.end(); }
-        reverse_iterator rbegin() { return _lod.rbegin(); }
-        reverse_iterator rend() { return _lod.rend(); }
+        //! Returns an end iterator to the population.
+        iterator end() {
+            return iterator(_lod.end());
+        }
         
-        //! Returns the size (number of genomes) on the current lineage.
+        //! Returns a begin iterator to the population (const-qualified).
+        const_iterator begin() const {
+            return const_iterator(_lod.begin());
+        }
+        
+        //! Returns an end iterator to the population (const-qualified).
+        const_iterator end() const {
+            return const_iterator(_lod.end());
+        }
+        
+        //! Returns a reverse begin iterator to the population.
+        reverse_iterator rbegin() {
+            return reverse_iterator(_lod.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population.
+        reverse_iterator rend() {
+            return reverse_iterator(_lod.rend());
+        }
+        
+        //! Returns a reverse begin iterator to the population (const-qualified).
+        const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(_lod.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population (const-qualified).
+        const_reverse_iterator rend() const {
+            return const_reverse_iterator(_lod.rend());
+        }
+        
+        //! Returns the size (number of individuals) on the current lineage.
         std::size_t size() const { return _lod.size(); }
         
         //! Calculate the most recent common ancestor's lineage.
@@ -272,8 +204,8 @@ namespace ealib {
             lineage_type lod;
             
             lod.push_back(p);
-            while(p->lod_parents().size()>0) {
-                p = p->lod_parent();
+            while(p->attr().lod_parents().size()>0) {
+                p = p->attr().lod_parent();
                 lod.push_front(p);
             }
             
@@ -297,8 +229,8 @@ namespace ealib {
             individual_ptr_type parent;
             individual_ptr_type m=offspring;
             
-            while(offspring->has_parents()) {
-                parent = offspring->lod_parent();
+            while(offspring->attr().has_parents()) {
+                parent = offspring->attr().lod_parent();
                 
                 if(parent.use_count() < offspring.use_count()) {
                     m = offspring;
@@ -320,7 +252,7 @@ namespace ealib {
         template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
             std::size_t s = _lod.size();
-            ar & boost::serialization::make_nvp("lineage_size", s);
+            ar & boost::serialization::make_nvp("size", s);
             for(typename lineage_type::const_iterator i=_lod.begin(); i!=_lod.end(); ++i) {
                 ar & boost::serialization::make_nvp("individual", **i);
             }
@@ -329,7 +261,7 @@ namespace ealib {
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
             std::size_t s;
-            ar & boost::serialization::make_nvp("lineage_size", s);
+            ar & boost::serialization::make_nvp("size", s);
             _lod.clear();
             for(std::size_t i=0; i<s; ++i) {
                 individual_ptr_type p(new individual_type());
@@ -358,7 +290,7 @@ namespace ealib {
                                 typename EA::individual_type& offspring,
                                 EA& ea) {
             for(typename EA::population_type::iterator i=parents.begin(); i!=parents.end(); ++i) {
-                offspring.lod_parents().insert(*i);
+                offspring.attr().lod_parents().insert(*i);
             }
         }
     };

@@ -39,9 +39,10 @@ namespace ealib {
     namespace generational_models {
         
         /*! Default generational model for a metapopulation EA, where all
-         subpopulations are updated in lock-step.
+         subpopulations are updated in lock-step, and do not themselves engage in
+         a subpopulation-level evolutionary process.
          */
-		struct meta_population : public generational_model {
+		struct isolated_subpopulations : public generational_model {
 			//! Apply this generational model to the meta_population EA.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
@@ -84,9 +85,9 @@ namespace ealib {
     typename MutationOperator=mutation::operators::null_mutation,
 	typename FitnessFunction=constant,
     template <typename> class ConfigurationStrategy=abstract_configuration,
-	typename RecombinationOperator=recombination::meta_population_asexual,
-    typename GenerationalModel=generational_models::meta_population,
-    template <typename> class IndividualAttrs=attr::fitness_attribute,
+	typename RecombinationOperator=recombination::none,
+    typename GenerationalModel=generational_models::isolated_subpopulations,
+    template <typename> class IndividualAttrs=attr::no_attributes,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=default_rng_type>

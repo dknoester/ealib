@@ -24,13 +24,22 @@
 #include <ea/meta_data.h>
 #include <ea/fitness_function.h>
 #include <ea/phenotype.h>
+#include <ea/line_of_descent.h>
 
 namespace ealib {
     namespace attr {
 
-        //! Default attributes for individuals in an evolutionary algorithm.
+        /*! Default attributes for individuals in an evolutionary algorithm.
+         
+         The default attributes include a bit more than what might be strictly necessary,
+         just to limit the number of hoops that need to be jumped through when doing
+         fairly common things.  I.e., they include fitness, phenotype, and line of
+         descent attributes.  Of these, only fitness is currently serialized.  Note
+         that this has the ramification that we do NOT save LoD information across
+         checkpoints.
+         */
         template <typename EA>
-        struct default_attributes : attr::fitness_attribute<EA>, attr::phenotype_attribute<EA> {
+        struct default_attributes : attr::fitness_attribute<EA>, attr::phenotype_attribute<EA>, attr::lod_attributes<EA> {
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
                 ar & boost::serialization::make_nvp("fitness_attr", boost::serialization::base_object<attr::fitness_attribute<EA> >(*this));
@@ -38,7 +47,7 @@ namespace ealib {
         };
         
         template <typename EA>
-        struct none {
+        struct no_attributes {
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
             }

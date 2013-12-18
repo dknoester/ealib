@@ -135,7 +135,7 @@ struct test_population_lod_tool : public ealib::analysis::unary_function<EA> {
         
         for( ; i!=lod.end(); ++i) {
             typename EA::individual_ptr_type control_ea = ea.make_individual();
-            typename EA::individual_type::individual_ptr_type o = (*i)->make_individual((*i)->founder().repr());
+            typename EA::individual_type::individual_ptr_type o = i->make_individual(i->founder().repr());
             o->hw().initialize();
             control_ea->append(o);
         }
@@ -162,62 +162,29 @@ public:
 
 //! A variety of digital evolution / artificial life simulation definitions.
 BOOST_AUTO_TEST_CASE(test_digevo_types) {
-//    //! Single population:
-//    typedef digital_evolution<digevo_configuration, spatial, empty_neighbor, round_robin> ea_type1;
-//    ea_type1 ea1;
-//    
-//    //! Meta-population, no founders:
-//    typedef meta_population<ea_type1> mea_type1;
-//    mea_type1 mea1;
-//    
-//    //! Meta-population, with founders:
-//    typedef meta_population<population_founder<ea_type1> > mea_type2;
-//    mea_type2 mea2;
-//    
-//    //! Meta-population, with founders and LOD tracking:
-//    typedef meta_population<population_lod<population_founder<ea_type1> > > mea_type3;
-//    mea_type3 mea3;
-//    cli<mea_type3> cli3;
+    //! Single population:
+    typedef digital_evolution<digevo_configuration, spatial, empty_neighbor, round_robin> ea_type1;
+    ea_type1 ea1;
+
+    //! Meta-population, no founders:
+    typedef meta_population<ea_type1> mea_type1;
+    mea_type1 mea1;
+
+    //! Meta-population, with founders:
+    typedef meta_population<population_founder<ea_type1> > mea_type2;
+    mea_type2 mea2;
+
+    //! Meta-population, with founders and LOD tracking:
+    typedef meta_population<
+    population_founder<ea_type1>,
+    mutation::operators::null_mutation,
+	constant,
+    abstract_configuration,
+	recombination::none,
+    generational_models::isolated_subpopulations,
+    attr::lod_attributes
+    > mea_type3;
+    cli<mea_type3> cli3;
 }
 
 
-
-BOOST_AUTO_TEST_CASE(test_types) {
-	using namespace ealib;
-    
-    { // default
-        evolutionary_algorithm<
-        bitstring,
-        mutation::operators::per_site<mutation::site::bit>,
-        all_ones> ea;
-    }
-    
-    { // steady state
-        evolutionary_algorithm<
-        bitstring,
-        mutation::operators::per_site<mutation::site::bit>,
-        all_ones,
-        abstract_configuration,
-        recombination::two_point_crossover,
-        generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-        attr::default_attributes,
-        individual_lod
-        > ea;
-    }
-    
-    { // nsga2
-        typedef evolutionary_algorithm<
-        bitstring,
-        mutation::operators::per_site<mutation::site::bit>,
-        multi_all_ones,
-        abstract_configuration,
-        recombination::two_point_crossover,
-        generational_models::nsga2,
-        nsga2_attributes
-        > ea_type;
-        ea_type ea;
-        
-        analysis::multivalued_population_fitness<ea_type> mpf;
-        mpf(ea);
-    }
-}
