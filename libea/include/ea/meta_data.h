@@ -120,10 +120,10 @@ namespace ealib {
 		}
 		
         //! Copy meta-data from that to this (may overwrite this).
-        meta_data& operator+=(meta_data& that) {
+        meta_data& operator+=(const meta_data& that) {
             if(this != &that) {
                 flush();
-                that.flush();
+                const_cast<meta_data*>(&that)->flush();
                 _values.clear();
                 for(md_string_type::const_iterator i=that._strings.begin(); i!=that._strings.end(); ++i) {
                     _strings.insert(*i);

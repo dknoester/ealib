@@ -77,6 +77,15 @@ namespace ealib {
     
     namespace recombination {
         
+        /*! Null recombination operator; a placeholder.
+         */
+        struct no_recombination {
+            std::size_t capacity() const { return 0; }
+            template <typename Population, typename EA>
+            void operator()(Population& parents, Population& offspring, EA& ea) {
+            }
+        };
+        
         /*! Asexual reproduction.
          */
         struct asexual {
@@ -85,40 +94,7 @@ namespace ealib {
             //! Asexual reproduction (copies a single parent's representation).
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
-                offspring.insert(offspring.end(),
-                                 ea.make_individual(parents.front()->repr()));
-            }
-        };
-        
-        struct none {
-            std::size_t capacity() const { return 1; }
-            template <typename Population, typename EA>
-            void operator()(Population& parents, Population& offspring, EA& ea) {
-            }
-        };
-
-        /*! Asexual replication of a subpopulation within a meta-population EA.
-         */
-        struct asexual_meta_population {
-            std::size_t capacity() const { return 1; }
-
-            template <typename Population, typename EA>
-            void operator()(Population& parents, Population& offspring, EA& ea) {
-                // these are subpopulations:
-                typename EA::individual_ptr_type p = parents.front();
-                typename EA::individual_ptr_type o = ea.make_individual();
-                o->md() += p->md(); // preserve meta data and rng
-                put<RNG_SEED>(ea.rng().seed(), *o);
-                o->rng().reset(get<RNG_SEED>(*o));
-
-                // copy all individuals from the first parent subpopulation
-                // into the offspring subpopulation:
-                for(typename Population::value_type::element_type::iterator i=p->begin(); i!=p->end(); ++i) {
-                    typename EA::individual_type::individual_ptr_type q = o->make_individual(*i);
-                    o->append(q);
-                }
-                
-                offspring.insert(offspring.end(), o);
+                offspring.insert(offspring.end(), ea.make_individual(*parents.front()));
             }
         };
         

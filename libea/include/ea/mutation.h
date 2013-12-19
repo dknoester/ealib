@@ -194,21 +194,21 @@ namespace ealib {
         
         namespace operators {
             
-            /*! Null mutation.
+            /*! Null mutation operator; a placeholder.
              */
-            struct null_mutation {
+            struct no_mutation {
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
                 }
             };
             
             
-            /*! Subpopulation mutation.
+            /*! Variable-size subpopulation mutation.
              
              Here, the EA is assumed to be a meta-population, individuals are in
              fact a subpopulation EA, and mutation involves operations on that EA.
              */
-            struct subpopulation {
+            struct variable_size_subpopulation {
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
                     // first, see if we're going to alter the size of this EA:

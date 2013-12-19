@@ -223,7 +223,6 @@ namespace ealib {
 
         //! Analyze an EA instance.
 		void analyze(ea_type& ea) {
-            ea.configure();
             load_if(ea);
             apply(ea);
             ea.initialize();
@@ -241,7 +240,6 @@ namespace ealib {
         
         //! Continue a previously-checkpointed EA.
 		void continue_checkpoint(ea_type& ea) {
-            ea.configure();
             load(ea);
             
             // conditionally apply command-line and/or file parameters:
@@ -264,7 +262,6 @@ namespace ealib {
         
         //! Initialize an EA.
         void initialize_ea(ea_type& ea) {
-            ea.configure();
             apply(ea);
             
             if(exists<RNG_SEED>(ea)) {

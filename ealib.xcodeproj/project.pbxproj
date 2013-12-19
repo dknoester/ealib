@@ -328,6 +328,8 @@
 		42C6615D1860E008004476D3 /* test_mp copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test_mp copy"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42C661791860FBE5004476D3 /* test_ealib copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test_ealib copy"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42C6617A1860FC0B004476D3 /* test_lod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_lod.cpp; sourceTree = "<group>"; };
+		42C661831862805D004476D3 /* in_place.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = in_place.h; sourceTree = "<group>"; };
+		42C6618418628626004476D3 /* isolated_subpopulations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isolated_subpopulations.h; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -534,8 +536,8 @@
 				428B7278184F77AB00E3BB4E /* recombination.h */,
 				428B7279184F77AB00E3BB4E /* representations */,
 				428B727F184F77AB00E3BB4E /* rng.h */,
-				428B7280184F77AB00E3BB4E /* selection */,
 				428B7288184F77AB00E3BB4E /* selection.h */,
+				428B7280184F77AB00E3BB4E /* selection */,
 				428B725F184F77AB00E3BB4E /* translation.h */,
 			);
 			path = ea;
@@ -642,6 +644,8 @@
 			children = (
 				428B7258184F77AB00E3BB4E /* crowding.h */,
 				428B7259184F77AB00E3BB4E /* generational.h */,
+				42C661831862805D004476D3 /* in_place.h */,
+				42C6618418628626004476D3 /* isolated_subpopulations.h */,
 				428B725A184F77AB00E3BB4E /* moran_process.h */,
 				428B725B184F77AB00E3BB4E /* nsga2.h */,
 				428B725D184F77AB00E3BB4E /* steady_state.h */,

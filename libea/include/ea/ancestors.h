@@ -42,7 +42,7 @@ namespace ealib {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 
         // build the placeholder ancestor:
-        typename EA::individual_ptr_type ap = ea.make_individual(typename EA::representation_type());
+        typename EA::individual_ptr_type ap = ea.make_individual();
         put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);
         put<IND_GENERATION>(-1.0, *ap);
         put<IND_BIRTH_UPDATE>(ea.current_update(), *ap);
@@ -99,6 +99,14 @@ namespace ealib {
     
     
     namespace ancestors {
+        
+        //! Generates a default-constructed representation.
+        struct default_representation {
+            template <typename EA>
+            typename EA::representation_type operator()(EA& ea) {
+                return typename EA::representation_type();
+            }
+        };
         
         /*! Generates a representation from random bits.
          */

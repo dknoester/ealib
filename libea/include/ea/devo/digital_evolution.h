@@ -134,8 +134,28 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
 
         //! Default constructor.
-        digital_evolution() : _name(0), _generation(0.0), _update(0) {
+        digital_evolution() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
+        }
+        
+        //! Copy constructor (note that this is *not* a complete copy).
+        digital_evolution(const digital_evolution& that) {
+            if(this != & that) {
+                _rng = that._rng;
+                // env doesn't copy...
+                // scheduler doesn't copy...
+                _md = that._md;
+                // events doesn't copy...
+                // isa doesn't copy...
+                // tasklib doesn't copy...
+                // configurator doesn't copy...
+                // copy individuals:
+                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+                    individual_ptr_type q = make_individual(*i);
+                    append(q);
+                }
+                configure();
+            }
         }
         
         //! Configure this EA.
@@ -161,6 +181,12 @@ namespace ealib {
             _configurator.reset(*this);
         }
 
+        //! Reset the RNG.
+        void reset_rng(unsigned int s) {
+            put<RNG_SEED>(s,*this); // save the seed!
+            _rng.reset(s);
+        }
+        
         //! Clear the population.
         void clear() {
             _population.clear();
@@ -193,11 +219,17 @@ namespace ealib {
         }
 
         //! Build an individual from the given representation.
-        individual_ptr_type make_individual(const representation_type& r) {
+        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
-        
+
+        //! Build an individual from the given representation.
+        individual_ptr_type make_individual(const individual_type& ind) {
+            individual_ptr_type p(new individual_type(ind));
+            return p;
+        }
+
         //! Append individual x to the population and environment.
         void append(individual_ptr_type p) {
             _population.insert(_population.end(), p);
@@ -222,21 +254,6 @@ namespace ealib {
                 _population.insert(_population.end(), offspring);
                 _events.birth(*offspring, *parent, *this);
             }
-        }
-        
-        //! Retrieve this population's name.
-        unsigned long& name() {
-            return _name;
-        }
-        
-        //! Retrieve this population's generation.
-        double& generation() {
-            return _generation;
-        }
-        
-        //! Retrieve this population's update.
-        unsigned long& birth_update() {
-            return _update;
         }
         
         //! Accessor for the random number generator.
@@ -317,9 +334,6 @@ namespace ealib {
         }
         
     protected:
-        unsigned long _name; //!< The name of this EA (primarily used during meta-population runs).
-        double _generation; //!< Generation "".
-        unsigned long _update; //!< Update (of birth) "".
         rng_type _rng; //!< Random number generator.
         environment_type _env; //!< Environment object.
         scheduler_type _scheduler; //!< Scheduler instance.
@@ -339,9 +353,6 @@ namespace ealib {
             ar & boost::serialization::make_nvp("scheduler", _scheduler);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("name", _name);
-            ar & boost::serialization::make_nvp("generation", _generation);
-            ar & boost::serialization::make_nvp("update", _update);
 		}
 		
 		template<class Archive>
@@ -351,9 +362,6 @@ namespace ealib {
             ar & boost::serialization::make_nvp("scheduler", _scheduler);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("name", _name);
-            ar & boost::serialization::make_nvp("generation", _generation);
-            ar & boost::serialization::make_nvp("update", _update);
             
             // now we have to fix up the connection between the environment and organisms:
             _env.attach(*this);

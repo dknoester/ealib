@@ -32,6 +32,7 @@
 #include <ea/meta_data.h>
 #include <ea/events.h>
 #include <ea/rng.h>
+#include <ea/generational_models/isolated_subpopulations.h>
 #include <ea/fitness_functions/constant.h>
 #include <ea/mutation.h>
 
@@ -40,25 +41,6 @@ namespace ealib {
     LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.meta_population.size", unsigned int);
     LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.meta_population.competition_period", unsigned int);
 
-    namespace generational_models {
-        
-        /*! Default generational model for a metapopulation EA, where all
-         subpopulations are updated in lock-step, and do not themselves engage in
-         a subpopulation-level evolutionary process.
-         */
-		struct isolated_subpopulations : public generational_model {
-			//! Apply this generational model to the meta_population EA.
-			template <typename Population, typename EA>
-			void operator()(Population& population, EA& ea) {
-				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-                for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
-                    (*i)->update();
-                }
-            }
-        };        
-    }
-
     struct null_representation { };
     
     template <typename MEA>
@@ -66,6 +48,14 @@ namespace ealib {
         typedef typename MEA::ea_type ea_type; //!< EA type.
         typedef typename MEA::individual_attr_type attr_type; //!< Attributes type for this individual.
 
+        //! Default constructor.
+        meta_population_individual() {
+        }
+        
+        //! Copy constructor.
+        meta_population_individual(const ea_type& ea) : MEA::ea_type(ea) {
+        }
+        
         //! Retrieve this individual's attributes.
         attr_type& attr() { return _attr; }
         
@@ -80,6 +70,25 @@ namespace ealib {
 
         attr_type _attr; //!< This EA's attributes.
     };
+    
+
+    /*! Meta-population configuration object.
+     */
+    template <typename EA>
+    class meta_population_configuration : public abstract_configuration<EA> {
+    public:
+        //! Called to generate the initial EA (meta-)population.
+        virtual void initial_population(EA& ea) {
+            generate_ancestors(ancestors::default_representation(), get<META_POPULATION_SIZE>(ea), ea);
+
+            // now initialize and build the initial populations for each subpopulation:
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                i->initialize();
+                i->initial_population();
+            }
+        }
+    };
+
 
     /*! Metapopulation evolutionary algorithm, where individuals in the population
      are themselves evolutionary algorithms.
@@ -90,10 +99,10 @@ namespace ealib {
      */
     template <
     typename EA,
-    typename MutationOperator=mutation::operators::null_mutation,
+    typename MutationOperator=mutation::operators::no_mutation,
 	typename FitnessFunction=constant,
-    template <typename> class ConfigurationStrategy=abstract_configuration,
-	typename RecombinationOperator=recombination::none,
+    template <typename> class ConfigurationStrategy=meta_population_configuration,
+	typename RecombinationOperator=recombination::no_recombination,
     typename GenerationalModel=generational_models::isolated_subpopulations,
     template <typename> class IndividualAttrs=attr::no_attributes,
     template <typename> class EventHandler=event_handler,
@@ -103,14 +112,14 @@ namespace ealib {
     public:
         //! Tag indicating the structure of this population.
         typedef multiPopulationS population_structure_tag;
-        //! Type of the EA that this meta_population holds.
-        typedef EA ea_type;
         //! Meta-data type.
         typedef MetaData md_type;
-        //! Representation (null, in the normal case).
-        typedef null_representation representation_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
+        //! Representation (the type of the subpopulation).
+        typedef EA representation_type;
+        //! Subpopulation EA type.
+        typedef EA ea_type;
         //! Fitness function type.
         typedef FitnessFunction fitness_function_type;
         //! Fitness type.
@@ -150,6 +159,7 @@ namespace ealib {
         meta_population() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<meta_population>));
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<individual_type>));
+            configure();
         }
         
         //! Configure this EA.
@@ -163,9 +173,6 @@ namespace ealib {
          in each subpopulation, not the subpopulations themselves.
          */
         void initial_population() {
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->initial_population();
-            }
             _configurator.initial_population(*this);
         }
 
@@ -174,28 +181,18 @@ namespace ealib {
          */
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
-            
-            // if this is a new EA, population size is 0.  if we came from a checkpoint,
-            // then don't build more subpopulations!
-            for(std::size_t i=_population.size(); i<get<META_POPULATION_SIZE>(*this); ++i) {
-                individual_ptr_type p(new individual_type());
-                p->configure();
-                p->md() += md();
-                put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
-                p->rng().reset(get<RNG_SEED>(*p));
-                
-                
-                put<IND_NAME>(next<INDIVIDUAL_COUNT>(*this), *p);
-                put<IND_GENERATION>(0, *p);
-                put<IND_BIRTH_UPDATE>(current_update(), *p);
-                
-                _population.push_back(p);
-            }
-            // initialize everything:
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->initialize();
-            }
             _configurator.initialize(*this);
+        }
+
+        //! Append individual x to the population.
+        void append(individual_ptr_type x) {
+            _population.insert(_population.end(), x);
+        }
+        
+        //! Append the range of individuals [f,l) to the population.
+        template <typename ForwardIterator>
+        void append(ForwardIterator f, ForwardIterator l) {
+            _population.insert(_population.end(), f, l);
         }
 
         //! Reset all populations.
@@ -239,14 +236,21 @@ namespace ealib {
             _generational_model.next_update();
             _events.record_statistics(*this);
         }
+
+        //! Make a new subpopulation from a representation (ea_type).
+        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
+            individual_ptr_type p(new individual_type(r));
+            p->md() += md(); // WARNING: Meta-data comes from the meta-population.
+            p->reset_rng(_rng.seed());
+            p->initialize();
+            return p;
+        }
         
-        //! Called to build a new empty, but initialized, subpopulation.
-        individual_ptr_type make_individual() {
-            individual_ptr_type p(new individual_type());
-            p->configure();
-            p->md() += md();
-            put<RNG_SEED>(rng()(std::numeric_limits<int>::max()), *p);
-            p->rng().reset(get<RNG_SEED>(*p));
+        //! Make a new subpopulation from a copy of another.
+        individual_ptr_type make_individual(const individual_type& ind) {
+            individual_ptr_type p(new individual_type(ind));
+            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
+            p->reset_rng(_rng.seed());
             p->initialize();
             return p;
         }
@@ -256,7 +260,10 @@ namespace ealib {
         
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }
-        
+
+        //! Accessor for this EA's meta-data (const-qualified).
+        const md_type& md() const { return _md; }
+
         //! Accessor for the fitness function object.
         fitness_function_type& fitness_function() { return _fitness_function; }
         

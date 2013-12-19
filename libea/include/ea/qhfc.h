@@ -280,7 +280,7 @@ namespace ealib {
     };
     
     
-    /*! QHFC evolutinoary algorithm definition.
+    /*! QHFC evolutionary algorithm definition.
      */
     template <
 	typename Representation,
@@ -298,10 +298,10 @@ namespace ealib {
     RecombinationOperator,
     generational_models::deterministic_crowding< > >,
     // mp types:
-    mutation::operators::null_mutation,
+    mutation::operators::no_mutation,
     constant,
     qhfc_configuration,
-    recombination::none,
+    recombination::no_recombination,
     generational_models::qhfc,
     attr::no_attributes> {
     };

@@ -111,6 +111,25 @@ namespace ealib {
         evolutionary_algorithm() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
             BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
+            configure();
+        }
+
+        //! Copy constructor (note that this is *not* a complete copy).
+        evolutionary_algorithm(const evolutionary_algorithm& that) {
+            if(this != & that) {
+                _rng = that._rng;
+                _fitness_function = that._fitness_function;
+                _md = that._md;
+                // gm doesn't copy...
+                // events doesn't copy...
+                // configurator doesn't copy...
+                // copy individuals:
+                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+                    individual_ptr_type q = make_individual(*i);
+                    append(q);
+                }
+                configure();
+            }
         }
         
         //! Configure this EA.
@@ -135,6 +154,12 @@ namespace ealib {
             _configurator.reset(*this);
         }
         
+        //! Reset the RNG.
+        void reset_rng(unsigned int s) {
+            put<RNG_SEED>(s,*this); // save the seed!
+            _rng.reset(s);
+        }
+
         //! Remove all individuals in this EA.
         void clear() {
             _population.clear();
@@ -162,14 +187,14 @@ namespace ealib {
         }
         
         //! Build an individual from the given representation.
-        individual_ptr_type make_individual(const representation_type& r) {
+        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
-        
+
         //! Build a copy of an individual.
-        individual_ptr_type make_individual(const individual_type& r) {
-            individual_ptr_type p(new individual_type(r));
+        individual_ptr_type make_individual(const individual_type& ind) {
+            individual_ptr_type p(new individual_type(ind));
             return p;
         }
         
@@ -199,6 +224,9 @@ namespace ealib {
         
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }
+
+        //! Accessor for this EA's meta-data (const-qualified).
+        const md_type& md() const { return _md; }
         
         //! Accessor for the fitness function object.
         fitness_function_type& fitness_function() { return _fitness_function; }
