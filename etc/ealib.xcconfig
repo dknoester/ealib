@@ -4,6 +4,7 @@ OTHER_CPLUSPLUSFLAGS = -ftemplate-depth=255
 OTHER_LDFLAGS = -lboost_iostreams -lboost_program_options -lboost_regex -lboost_serialization -lboost_signals
 LIBRARY_SEARCH_PATHS = $(HOME)/lib /usr/local/lib
 USE_HEADERMAP = NO
+GCC_INLINES_ARE_PRIVATE_EXTERN = NO
 GCC_SYMBOLS_PRIVATE_EXTERN = NO
 GCC_OPTIMIZATION_LEVEL = 0
 WARNING_CFLAGS = -Wno-parentheses
