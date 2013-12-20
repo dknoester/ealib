@@ -22,14 +22,24 @@
 
 
 BOOST_AUTO_TEST_CASE(test_qhfc) {
-    typedef qhfc<
-    bitstring,
-    mutation::operators::per_site<mutation::site::bit>,
-    recombination::two_point_crossover,
-    all_ones,
-    configuration> qhfc_type;
     
-    qhfc_type M;
+    typedef meta_population<
+    // embedded ea type:
+    evolutionary_algorithm<bitstring,
+    mutation::operators::per_site<mutation::site::bit>,
+    all_ones,
+    configuration,
+    recombination::two_point_crossover,
+    generational_models::deterministic_crowding< > >,
+    // mp types:
+    mutation::operators::no_mutation,
+    constant,
+    qhfc_configuration,
+    recombination::no_recombination,
+    generational_models::qhfc,
+    attr::no_attributes> ea_type;
+    
+    ea_type M;
     M.configure();
     put<POPULATION_SIZE>(50,M);
     put<META_POPULATION_SIZE>(5,M);

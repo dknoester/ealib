@@ -26,6 +26,7 @@
 #include <boost/shared_ptr.hpp>
 #include <limits>
 
+#include <ea/attributes.h>
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
 #include <ea/population.h>

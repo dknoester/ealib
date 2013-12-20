@@ -1,19 +1,19 @@
-/* digital_evolution.h 
- * 
+/* digital_evolution.h
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester, Heather J. Goldsby.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -45,7 +45,7 @@
 #include <ea/rng.h>
 
 
-namespace ealib {    
+namespace ealib {
     
     /*! Artificial life top-level evolutionary algorithm.
      
@@ -54,7 +54,7 @@ namespace ealib {
      their fitness evaluated.  This means that each individual is "visited" more
      than once during each generation, and in fact, the traditional (EA) fitness
      is a function of both the individual's behavior and the population in which
-     it lives.  Moreover, replication in an artificial life system is driven 
+     it lives.  Moreover, replication in an artificial life system is driven
      by the individual, instead of externally (e.g., by a generational model).
      
      A final complicating factor is that individuals in artificial life interact
@@ -66,7 +66,7 @@ namespace ealib {
      that are typically found in an EA.  Thus, the digital_evolution class found
      here.
      
-     In general, the design of this class is based on concepts from the Avida 
+     In general, the design of this class is based on concepts from the Avida
      platform for digital evolution~\cite{ofria2004}.
      
      In order to preserve as much compatibility between EA and AL components,
@@ -132,7 +132,7 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-
+        
         //! Default constructor.
         digital_evolution() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
@@ -141,22 +141,20 @@ namespace ealib {
         
         //! Copy constructor (note that this is *not* a complete copy).
         digital_evolution(const digital_evolution& that) {
-            if(this != & that) {
-                _rng = that._rng;
-                // env doesn't copy...
-                // scheduler doesn't copy...
-                _md = that._md;
-                // events doesn't copy...
-                // isa doesn't copy...
-                // tasklib doesn't copy...
-                // configurator doesn't copy...
-                // copy individuals:
-                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
-                    individual_ptr_type q = make_individual(*i);
-                    append(q);
-                }
-                configure();
+            _rng = that._rng;
+            // env doesn't copy...
+            // scheduler doesn't copy...
+            _md = that._md;
+            // events doesn't copy...
+            // isa doesn't copy...
+            // tasklib doesn't copy...
+            // configurator doesn't copy...
+            // copy individuals:
+            for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+                individual_ptr_type q = make_individual(*i);
+                append(q);
             }
+            configure();
         }
         
         //! Configure this EA.
@@ -176,12 +174,12 @@ namespace ealib {
             _isa.initialize(*this);
             _configurator.initialize(*this);
         }
-
+        
         //! Reset the population.
         void reset() {
             _configurator.reset(*this);
         }
-
+        
         //! Reset the RNG.
         void reset_rng(unsigned int s) {
             put<RNG_SEED>(s,*this); // save the seed!
@@ -192,12 +190,12 @@ namespace ealib {
         void clear() {
             _population.clear();
         }
-
+        
         //! Begin a new epoch.
         void begin_epoch() {
             _events.record_statistics(*this);
         }
-
+        
         //! End an epoch.
         void end_epoch() {
             _events.end_of_epoch(*this);
@@ -218,19 +216,19 @@ namespace ealib {
                 update();
             }
         }
-
+        
         //! Build an individual from the given representation.
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
-
+        
         //! Build an individual from the given representation.
         individual_ptr_type make_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
             return p;
         }
-
+        
         //! Append individual x to the population and environment.
         void append(individual_ptr_type p) {
             _population.insert(_population.end(), p);
@@ -288,7 +286,7 @@ namespace ealib {
         std::size_t size() const {
             return _population.size();
         }
-
+        
         //! Return the n'th individual in the population.
         individual_type& operator[](std::size_t n) {
             return *_population[n];
@@ -344,7 +342,7 @@ namespace ealib {
         isa_type _isa; //!< Instruction set architecture.
         tasklib_type _tasklib; //!< Task library.
         configuration_type _configurator; //!< Configuration object.
-
+        
     private:
         friend class boost::serialization::access;
 		template<class Archive>
@@ -369,7 +367,7 @@ namespace ealib {
         }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
-
+    
 } // ea
 
 #endif

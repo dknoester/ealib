@@ -23,7 +23,6 @@
 #include <ea/devo/digital_evolution.h>
 #include <ea/devo/population_founder.h>
 #include <ea/line_of_descent.h>
-#include <ea/generational_models/nsga2.h>
 #include <ea/meta_population.h>
 #include "test.h"
 

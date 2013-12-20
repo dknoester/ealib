@@ -28,6 +28,7 @@
 #include <boost/accumulators/statistics/min.hpp>
 #include <ea/datafile.h>
 #include <ea/attributes.h>
+#include <ea/meta_population.h>
 
 
 namespace ealib {

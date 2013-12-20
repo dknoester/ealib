@@ -1,19 +1,19 @@
 /* evolutionary_algorithm.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -45,8 +45,8 @@ namespace ealib {
 	/*! Generic evolutionary algorithm class.
 	 
 	 This class is designed to be generic, such that all the main features of evolutionary
-	 algorithms can be easily incorporated.  The focus of this class is on the 
-	 common features of most EAs, while leaving the problem-specific components 
+	 algorithms can be easily incorporated.  The focus of this class is on the
+	 common features of most EAs, while leaving the problem-specific components
 	 easily customizable.
 	 */
 	template <
@@ -106,30 +106,28 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-
+        
         //! Default constructor.
         evolutionary_algorithm() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
             BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
             configure();
         }
-
+        
         //! Copy constructor (note that this is *not* a complete copy).
         evolutionary_algorithm(const evolutionary_algorithm& that) {
-            if(this != & that) {
-                _rng = that._rng;
-                _fitness_function = that._fitness_function;
-                _md = that._md;
-                // gm doesn't copy...
-                // events doesn't copy...
-                // configurator doesn't copy...
-                // copy individuals:
-                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
-                    individual_ptr_type q = make_individual(*i);
-                    append(q);
-                }
-                configure();
+            _rng = that._rng;
+            _fitness_function = that._fitness_function;
+            _md = that._md;
+            // gm doesn't copy...
+            // events doesn't copy...
+            // configurator doesn't copy...
+            // copy individuals:
+            for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+                individual_ptr_type q = make_individual(*i);
+                append(q);
             }
+            configure();
         }
         
         //! Configure this EA.
@@ -141,7 +139,7 @@ namespace ealib {
         void initial_population() {
             _configurator.initial_population(*this);
         }
-                
+        
         //! Initialize this EA.
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
@@ -159,7 +157,7 @@ namespace ealib {
             put<RNG_SEED>(s,*this); // save the seed!
             _rng.reset(s);
         }
-
+        
         //! Remove all individuals in this EA.
         void clear() {
             _population.clear();
@@ -174,14 +172,14 @@ namespace ealib {
         void end_epoch() {
             _events.end_of_epoch(*this);
         }
-
+        
         //! Advance this EA by one update.
         void update() {
             if(!_population.empty()) {
                 _generational_model(_population, *this);
             }
             _events.end_of_update(*this);
-
+            
             _generational_model.next_update();
             _events.record_statistics(*this);
         }
@@ -191,7 +189,7 @@ namespace ealib {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
-
+        
         //! Build a copy of an individual.
         individual_ptr_type make_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
@@ -213,7 +211,7 @@ namespace ealib {
         void erase(iterator i) {
             _population.erase(i.base());
         }
-
+        
         //! Erase the given range from the population.
         void erase(iterator f, iterator l) {
             _population.erase(f.base(), l.base());
@@ -224,7 +222,7 @@ namespace ealib {
         
         //! Accessor for this EA's meta-data.
         md_type& md() { return _md; }
-
+        
         //! Accessor for this EA's meta-data (const-qualified).
         const md_type& md() const { return _md; }
         
@@ -239,7 +237,7 @@ namespace ealib {
         
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
-
+        
         //! Returns the configuration object.
         configuration_type& configuration() { return _configurator; }
         
@@ -250,7 +248,7 @@ namespace ealib {
         std::size_t size() const {
             return _population.size();
         }
-
+        
         //! Return the n'th individual in the population.
         individual_type& operator[](std::size_t n) {
             return *_population[n];
@@ -295,7 +293,7 @@ namespace ealib {
         const_reverse_iterator rend() const {
             return const_reverse_iterator(_population.rend());
         }
-
+        
     protected:
         rng_type _rng; //!< Random number generator.
         fitness_function_type _fitness_function; //!< Fitness function object.
@@ -304,7 +302,7 @@ namespace ealib {
         event_handler_type _events; //!< Event handler.
         configuration_type _configurator; //!< Configuration object.
         population_type _population; //!< Population instance.
-
+        
     private:
         friend class boost::serialization::access;
         template<class Archive>

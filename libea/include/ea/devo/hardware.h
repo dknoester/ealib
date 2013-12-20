@@ -327,7 +327,7 @@ namespace ealib {
          
          If the label is found, return the distance to it from the IP,
          otherwise return -1 */
-        int findLabel(std::deque<int> label) {
+        int findLabel(const std::deque<int>& label) {
             if (label.size() > 0) {
                 int d = 0; 
                 int i = _head_position[IP];
@@ -359,7 +359,7 @@ namespace ealib {
          If the label complement is found, return the distance to it from the IP,
          and the complement size. */
         std::pair<int, int> findComplementLabel() {
-            std::pair <int, int> retVal; 
+            std::pair <int, int> retVal;
             if (_label_stack.size() > 0) {
                 std::deque<int> comp = getLabelComplement();
                 int dist = findLabel(comp);

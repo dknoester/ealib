@@ -145,7 +145,6 @@ namespace ealib {
          */
         template <typename EA>
         void prepare_new(EA& ea) {
-            ea.configure();
             ea.initialize();
             ea.initial_population();
         }
@@ -155,7 +154,6 @@ namespace ealib {
          */
         template <typename EA>
         void prepare_new(EA& ea, meta_data& md) {
-            ea.configure();
             ea.md() += md;
             ea.initialize();
             ea.initial_population();
@@ -166,7 +164,6 @@ namespace ealib {
          */
         template <typename Checkpoint, typename EA>
         void prepare_checkpoint(Checkpoint& cp, EA& ea) {
-            ea.configure();
             load_checkpoint(cp, ea);
             ea.initialize();
         }
@@ -176,7 +173,6 @@ namespace ealib {
          */
         template <typename Checkpoint, typename EA>
         void prepare_checkpoint(Checkpoint& cp, EA& ea, meta_data& md) {
-            ea.configure();
             load_checkpoint(cp, ea);
             ea.md() += md;
             ea.initialize();
