@@ -28,6 +28,8 @@ namespace ealib {
         /*! Default generational model for a metapopulation EA, where all
          subpopulations are updated in lock-step, and do not themselves engage in
          a subpopulation-level evolutionary process.
+         
+         This generational model can be used to support an island model GA.
          */
         struct isolated_subpopulations : public generational_model {
             //! Apply this generational model to the meta_population EA.

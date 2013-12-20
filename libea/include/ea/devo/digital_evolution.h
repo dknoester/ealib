@@ -136,6 +136,7 @@ namespace ealib {
         //! Default constructor.
         digital_evolution() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
+            configure();
         }
         
         //! Copy constructor (note that this is *not* a complete copy).

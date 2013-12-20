@@ -31,10 +31,12 @@
 #include <ea/population.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
+#include <ea/configuration.h>
 #include <ea/rng.h>
 #include <ea/generational_models/isolated_subpopulations.h>
 #include <ea/fitness_functions/constant.h>
 #include <ea/mutation.h>
+#include <ea/recombination.h>
 
 namespace ealib {
     

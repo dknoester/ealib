@@ -1,24 +1,24 @@
 /* nsga2.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2012 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_GENERATIONAL_MODELS_NSGA2_H_
-#define _EA_GENERATIONAL_MODELS_NSGA2_H_
+#ifndef _EA_NSGA2_H_
+#define _EA_NSGA2_H_
 
 #include <boost/serialization/nvp.hpp>
 #include <algorithm>
@@ -32,6 +32,21 @@
 #include <ea/attributes.h>
 
 namespace ealib {
+    
+    /*! NSGA2 evolutionary algorithm.
+     
+     Note: This is due for cleanup, just like QHFC.  For now, declare an NSGA2
+     instance like this:
+     typedef evolutionary_algorithm<
+     bitstring,
+     mutation::operators::per_site<mutation::site::bitflip>, // mutation operator
+     multi_all_ones,
+     configuration,
+     recombination::two_point_crossover,
+     generational_models::nsga2,
+     nsga2_attributes
+     > ea_type;
+     */
     
     //! Attributes that must be added to individuals to support NSGA2.
     template <typename EA>
@@ -56,7 +71,7 @@ namespace ealib {
         double distance; //<! Crowding distance.
     };
     
-
+    
     /*! Crowding comparison operator, <_n.
      
      If a has lower rank than b, return true.
@@ -87,7 +102,7 @@ namespace ealib {
             
             //! Initializing constructor.
 			template <typename Population, typename EA>
-			nsga2(std::size_t n, Population& src, EA& ea) { 
+			nsga2(std::size_t n, Population& src, EA& ea) {
             }
             
             //! Returns true if a dominates b.
@@ -177,7 +192,7 @@ namespace ealib {
                 // the set of all possible parents are pulled from the best fronts:
                 for(std::size_t i=0; (i<F.size()) && (dst.size()<n); ++i) {
                     crowding_distance(F[i],ea);
-                    dst.insert(dst.end(), 
+                    dst.insert(dst.end(),
                                F[i].begin(),
                                F[i].begin() + std::min(F[i].size(), (n-dst.size())));
                 }
@@ -189,7 +204,7 @@ namespace ealib {
 		
 		/*! NSGA 2 generational model.
 		 
-         This generational model defines the NSGA 2 multiobjective evolutionary 
+         This generational model defines the NSGA 2 multiobjective evolutionary
          optimization algorithm EA~\cite{deb}.  It is comprised of three parts (below),
          and then the algorithm itself.
 		 
@@ -252,7 +267,7 @@ namespace ealib {
          ++generation
 		 */
 		struct nsga2 : public generational_model {
-
+            
             //! Apply NSGA2 to produce the next generation.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
@@ -266,7 +281,7 @@ namespace ealib {
                 select_n<selection::nsga2>(population, parents, n, ea);
                 
                 // select parents & recombine to create offspring:
-                Population offspring;                
+                Population offspring;
                 recombine_n(parents, offspring,
                             selection::tournament<access::attributes,crowding_comparator>(n,parents,ea),
                             typename EA::recombination_operator_type(),

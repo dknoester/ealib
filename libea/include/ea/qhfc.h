@@ -37,19 +37,42 @@
 #include <ea/evolutionary_algorithm.h>
 
 
-LIBEA_MD_DECL(QHFC_POP_SCALE, "ea.generational_model.qhfc.population_scale", double);
-LIBEA_MD_DECL(QHFC_DETECT_EXPORT_NUM, "ea.generational_model.qhfc.detect_export_num", double);
-LIBEA_MD_DECL(QHFC_CATCHUP_GEN, "ea.generational_model.qhfc.catchup_gen", double);
-LIBEA_MD_DECL(QHFC_PERCENT_REFILL, "ea.generational_model.qhfc.percent_refill", double);
-LIBEA_MD_DECL(QHFC_BREED_TOP_FREQ, "ea.generational_model.qhfc.breed_top_freq", double);
-LIBEA_MD_DECL(QHFC_NO_PROGRESS_GEN, "ea.generational_model.qhfc.no_progess_gen", double);
-
-// run time only:
-LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.generational_model.qhfc.admission_level", double);
-LIBEA_MD_DECL(QHFC_LAST_PROGRESS_GEN, "ea.generational_model.qhfc.last_progess_gen", double);
-LIBEA_MD_DECL(QHFC_LAST_PROGRESS_MAX, "ea.generational_model.qhfc.last_progess_max", double);
-
 namespace ealib {
+    
+    /*! QHFC evolutionary algorithm.
+     
+     Note: working on cleaning this up, but for right now, here's how to declare
+     an instance of the QHFC algorithm:
+     
+     typedef meta_population<
+     // embedded ea type:
+     evolutionary_algorithm<bitstring,
+     mutation::operators::per_site<mutation::site::bitflip>,
+     all_ones,
+     configuration,
+     recombination::two_point_crossover,
+     generational_models::deterministic_crowding< > >,
+     // mp types:
+     mutation::operators::no_mutation,
+     constant,
+     qhfc_configuration,
+     recombination::no_recombination,
+     generational_models::qhfc,
+     attr::no_attributes> ea_type;
+     */
+    
+    LIBEA_MD_DECL(QHFC_POP_SCALE, "ea.generational_model.qhfc.population_scale", double);
+    LIBEA_MD_DECL(QHFC_DETECT_EXPORT_NUM, "ea.generational_model.qhfc.detect_export_num", double);
+    LIBEA_MD_DECL(QHFC_CATCHUP_GEN, "ea.generational_model.qhfc.catchup_gen", double);
+    LIBEA_MD_DECL(QHFC_PERCENT_REFILL, "ea.generational_model.qhfc.percent_refill", double);
+    LIBEA_MD_DECL(QHFC_BREED_TOP_FREQ, "ea.generational_model.qhfc.breed_top_freq", double);
+    LIBEA_MD_DECL(QHFC_NO_PROGRESS_GEN, "ea.generational_model.qhfc.no_progess_gen", double);
+    
+    // run time only:
+    LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.generational_model.qhfc.admission_level", double);
+    LIBEA_MD_DECL(QHFC_LAST_PROGRESS_GEN, "ea.generational_model.qhfc.last_progess_gen", double);
+    LIBEA_MD_DECL(QHFC_LAST_PROGRESS_MAX, "ea.generational_model.qhfc.last_progess_max", double);
+    
 	namespace generational_models {
 		
 		/*! QHFC generational model.
@@ -278,34 +301,6 @@ namespace ealib {
             }
         }
     };
-    
-    
-    /*! QHFC evolutionary algorithm definition.
-     */
-    template <
-	typename Representation,
-	typename MutationOperator,
-    typename RecombinationOperator,
-	typename FitnessFunction,
-    template <typename> class ConfigurationStrategy>
-    struct qhfc
-    : meta_population<
-    // embedded ea type:
-    evolutionary_algorithm<Representation,
-    MutationOperator,
-    FitnessFunction,
-    ConfigurationStrategy,
-    RecombinationOperator,
-    generational_models::deterministic_crowding< > >,
-    // mp types:
-    mutation::operators::no_mutation,
-    constant,
-    qhfc_configuration,
-    recombination::no_recombination,
-    generational_models::qhfc,
-    attr::no_attributes> {
-    };
-    
 
     namespace datafiles {
         

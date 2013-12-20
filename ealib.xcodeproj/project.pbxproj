@@ -189,6 +189,7 @@
 		423CBE57157D0FCC0003A644 /* test_ealib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_ealib; sourceTree = BUILT_PRODUCTS_DIR; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
 		4245004516D3BA8E007827D7 /* test_digital_evolution_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution_types.cpp; sourceTree = "<group>"; };
+		4252D4DA18648E3F00A54FC5 /* nsga2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nsga2.h; sourceTree = "<group>"; };
 		426064EE16F0D36700C5B117 /* test_neurodevelopment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neurodevelopment.cpp; sourceTree = "<group>"; };
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
 		4281FEDA16C45C840066610C /* test_graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_graph.cpp; sourceTree = "<group>"; };
@@ -272,7 +273,6 @@
 		428B7258184F77AB00E3BB4E /* crowding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crowding.h; sourceTree = "<group>"; };
 		428B7259184F77AB00E3BB4E /* generational.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generational.h; sourceTree = "<group>"; };
 		428B725A184F77AB00E3BB4E /* moran_process.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = moran_process.h; sourceTree = "<group>"; };
-		428B725B184F77AB00E3BB4E /* nsga2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nsga2.h; sourceTree = "<group>"; };
 		428B725D184F77AB00E3BB4E /* steady_state.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = steady_state.h; sourceTree = "<group>"; };
 		428B725E184F77AB00E3BB4E /* generators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generators.h; sourceTree = "<group>"; };
 		428B725F184F77AB00E3BB4E /* translation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translation.h; sourceTree = "<group>"; };
@@ -530,6 +530,7 @@
 				428B7271184F77AB00E3BB4E /* mkv */,
 				428B7274184F77AB00E3BB4E /* mutation.h */,
 				428B7275184F77AB00E3BB4E /* novelty_search.h */,
+				4252D4DA18648E3F00A54FC5 /* nsga2.h */,
 				428B7276184F77AB00E3BB4E /* phenotype.h */,
 				428B7277184F77AB00E3BB4E /* population.h */,
 				42C661351860D6E1004476D3 /* qhfc.h */,
@@ -647,7 +648,6 @@
 				42C661831862805D004476D3 /* in_place.h */,
 				42C6618418628626004476D3 /* isolated_subpopulations.h */,
 				428B725A184F77AB00E3BB4E /* moran_process.h */,
-				428B725B184F77AB00E3BB4E /* nsga2.h */,
 				428B725D184F77AB00E3BB4E /* steady_state.h */,
 			);
 			path = generational_models;
