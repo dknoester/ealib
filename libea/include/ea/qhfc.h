@@ -301,6 +301,38 @@ namespace ealib {
             }
         }
     };
+    
+    
+    /*! QHFC evolutionary algorithm definition.
+     
+     Note: It's be nice for something like this to work, but the event types don't
+     work out -- the cmdline interface tries to add events to QHFC?  needs some looking
+     into...
+     */
+    //    template <
+    //	typename Representation,
+    //	typename MutationOperator,
+    //    typename RecombinationOperator,
+    //	typename FitnessFunction,
+    //    template <typename> class ConfigurationStrategy>
+    //    struct qhfc
+    //    : meta_population<
+    //    // embedded ea type:
+    //    evolutionary_algorithm<Representation,
+    //    MutationOperator,
+    //    FitnessFunction,
+    //    ConfigurationStrategy,
+    //    RecombinationOperator,
+    //    generational_models::deterministic_crowding< > >,
+    //    // mp types:
+    //    mutation::operators::no_mutation,
+    //    constant,
+    //    qhfc_configuration,
+    //    recombination::no_recombination,
+    //    generational_models::qhfc,
+    //    attr::no_attributes> {
+    //    };
+    
 
     namespace datafiles {
         
