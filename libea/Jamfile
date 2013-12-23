@@ -33,7 +33,6 @@ run test/test_digital_evolution.cpp
     test/test_meta_data.cpp
     test/test_neuroevolution.cpp
     test/test_neurodevelopment.cpp
-    test/test_types.cpp
     test/test_rng.cpp
     test/test_novelty_search.cpp
     libea
