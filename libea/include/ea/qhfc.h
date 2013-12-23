@@ -290,7 +290,7 @@ namespace ealib {
 
     //! Configuration object for QHFC.
     template <typename EA>
-    struct qhfc_configuration : public abstract_configuration<EA> {
+    struct qhfc_configuration : public meta_population_configuration<EA> {
         //! Called as the final step of EA initialization.
         virtual void initialize(EA& ea) {
             // set the population sizes of the various different subpopulations:
