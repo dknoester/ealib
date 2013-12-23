@@ -119,7 +119,7 @@ namespace ealib {
                 std::sort(all.begin(), all.end(), comparators::fitness<typename EA::individual_type>(ea[0]));
                 std::size_t spsize=all.size() / get<META_POPULATION_SIZE>(ea);
                 for(typename EA::reverse_iterator i=ea.rbegin(); i!=ea.rend(); ++i) { // subpop
-                    i->configuration().initial_population(*i); // refill...
+                    i->initial_population();
                     for(std::size_t j=0; j<spsize; ++j) {
                         (*i)[j] = *all.back(); // overwrite
                         put<QHFC_ADMISSION_LEVEL>(static_cast<double>(ealib::fitness(*all.back(),*i)), *i);
@@ -169,7 +169,7 @@ namespace ealib {
                 
                 if((f+1) == l) {
                     // bottom population; need to generate the imports
-                    f->configuration().fill_population(*f);
+                    generate_ancestors(get<POPULATION_SIZE>(*f) - f->size(), *f);
                 } else {
                     // not at the bottom, need to import
                     typename EA::subpopulation_type imports = import_from_below(f+1, l, n, ea);
@@ -290,7 +290,10 @@ namespace ealib {
 
     //! Configuration object for QHFC.
     template <typename EA>
-    struct qhfc_configuration : public meta_population_configuration<EA> {
+    struct qhfc_configuration : public abstract_configuration<EA> {
+        //! Type used to generate random representations (used to create the initial population):
+        typedef ancestors::default_representation representation_generator_type;
+        
         //! Called as the final step of EA initialization.
         virtual void initialize(EA& ea) {
             // set the population sizes of the various different subpopulations:

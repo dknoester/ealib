@@ -88,6 +88,8 @@ namespace ealib {
         typedef typename configuration_type::phenotype phenotype;
         //! Encoding type.
         typedef typename configuration_type::encoding_type encoding_type;
+        //! Ancestor generator type.
+        typedef typename configuration_type::representation_generator_type representation_generator_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
@@ -137,7 +139,7 @@ namespace ealib {
         
         //! Build the initial population.
         void initial_population() {
-            _configurator.initial_population(*this);
+            generate_ancestors(representation_generator_type(), get<POPULATION_SIZE>(*this)-_population.size(), *this);
         }
         
         //! Initialize this EA.

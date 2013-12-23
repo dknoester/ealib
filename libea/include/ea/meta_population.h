@@ -75,22 +75,22 @@ namespace ealib {
     };
     
 
-    /*! Meta-population configuration object.
-     */
-    template <typename EA>
-    class meta_population_configuration : public abstract_configuration<EA> {
-    public:
-        //! Called to generate the initial EA (meta-)population.
-        virtual void initial_population(EA& ea) {
-            generate_ancestors(ancestors::default_representation(), get<META_POPULATION_SIZE>(ea), ea);
-
-            // now initialize and build the initial populations for each subpopulation:
-            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                i->initialize();
-                i->initial_population();
-            }
-        }
-    };
+//    /*! Meta-population configuration object.
+//     */
+//    template <typename EA>
+//    class meta_population_configuration : public abstract_configuration<EA> {
+//    public:
+//        //! Called to generate the initial EA (meta-)population.
+//        virtual void initial_population(EA& ea) {
+//            generate_ancestors(ancestors::default_representation(), get<META_POPULATION_SIZE>(ea), ea);
+//
+//            // now initialize and build the initial populations for each subpopulation:
+//            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+//                i->initialize();
+//                i->initial_population();
+//            }
+//        }
+//    };
 
 
     /*! Metapopulation evolutionary algorithm, where individuals in the population
@@ -104,7 +104,7 @@ namespace ealib {
     typename EA,
     typename MutationOperator=mutation::operators::no_mutation,
 	typename FitnessFunction=constant,
-    template <typename> class ConfigurationStrategy=meta_population_configuration,
+    template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::no_recombination,
     typename GenerationalModel=generational_models::isolated_subpopulations,
     template <typename> class IndividualAttrs=attr::no_attributes,
@@ -135,20 +135,26 @@ namespace ealib {
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         //! Configuration object type.
         typedef ConfigurationStrategy<meta_population> configuration_type;
-        //! Type of population container.
-        typedef ealib::population<individual_type,individual_ptr_type> population_type;
-        //! Type of the population container used by the subpopulations:
-        typedef typename individual_type::population_type subpopulation_type;
-        //! Type of the individual used by the subpopulations:
-        typedef typename individual_type::individual_type subindividual_type;
+        //! Phenotype.
+        typedef typename configuration_type::phenotype phenotype;
+        //! Encoding type.
+        typedef typename configuration_type::encoding_type encoding_type;
+        //! Ancestor generator type.
+        typedef typename configuration_type::representation_generator_type representation_generator_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
         typedef RecombinationOperator recombination_operator_type;
         //! Generational model type.
         typedef GenerationalModel generational_model_type;
+        //! Type of population container.
+        typedef ealib::population<individual_type,individual_ptr_type> population_type;
         //! Event handler.
         typedef EventHandler<meta_population> event_handler_type;
+        //! Type of the population container used by the subpopulations:
+        typedef typename individual_type::population_type subpopulation_type;
+        //! Type of the individual used by the subpopulations:
+        typedef typename individual_type::individual_type subindividual_type;
         //! Iterator for embedded EAs.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator for embedded EAs.
@@ -170,17 +176,25 @@ namespace ealib {
             _configurator.configure(*this);
         }
  
-        /*! Generates the initial population.
+        /*! Generate the initial population.
          
-         In a meta-population EA, we define the "initial population" as the individuals
-         in each subpopulation, not the subpopulations themselves.
+         \warning This constructs, initializes, and generates the initial population
+         for all of the subpopulations.
          */
         void initial_population() {
-            _configurator.initial_population(*this);
+            // construct the ancestral subpopulations:
+            generate_ancestors(representation_generator_type(), get<META_POPULATION_SIZE>(*this)-_population.size(), *this);
+            
+            // initialize and build the initial populations for each subpopulation:
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->initialize();
+                i->initial_population();
+            }
         }
 
-        /*! Construct and initialize the entire population structure, including the
-         meta-population and all subpopulations.
+        /*! Initialize the meta-population.
+         
+         \warning: This does not initialize the subpopulations.
          */
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);

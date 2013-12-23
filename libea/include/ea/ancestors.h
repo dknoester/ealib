@@ -64,6 +64,15 @@ namespace ealib {
         ea.append(ancestral.begin(), ancestral.end());
     }
 
+    
+    /*! Convenience method to generate the default ancestors, as given by
+     the configuration object's ancestor typedef.
+     */
+    template <typename EA>
+	void generate_ancestors(std::size_t n, EA& ea) {
+        generate_ancestors(typename EA::representation_generator_type(), n, ea);
+    }
+    
 
     /*! Fill the EA with individuals copied from the given representation.
      
