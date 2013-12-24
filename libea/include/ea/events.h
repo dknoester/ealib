@@ -21,16 +21,24 @@
 #define _EA_EVENTS_H_
 
 #include <boost/bind.hpp>
-
 #ifndef BOOST_SIGNALS_NO_DEPRECATION_WARNING
 #define BOOST_SIGNALS_NO_DEPRECATION_WARNING
 #endif
-
 #include <boost/signal.hpp>
+#include <vector>
+
 #include <ea/meta_data.h>
 
 namespace ealib {
-
+    
+    /*! Base class for events.
+     */
+    struct event {
+        virtual ~event() {
+        }
+        boost::signals::scoped_connection conn;
+    };
+    
     /*! Contains event handlers for generic events of interest within an evolutionary
 	 algorithm.
 	 
@@ -40,7 +48,9 @@ namespace ealib {
 	 */
 	template <typename EA>
 	struct event_handler {
-		
+
+        typedef std::vector<boost::shared_ptr<event> > slot_vector_type; //!< Storage for slots (event handlers).
+
         /*! Called after the fitness of an individual has been evaluated.
          */
         boost::signal<void(typename EA::individual_type&, // individual
@@ -69,18 +79,26 @@ namespace ealib {
         /*! Called at the beginning of epochs and at the end of every generation.
 		 */
 		boost::signal<void(EA&)> record_statistics;
+        
+        /*! Add a slot (event handler) to the events for this EA.
+         */
+        template <template <typename> class Event>
+        void add_event(EA& ea) {
+            typedef Event<EA> event_type;
+            boost::shared_ptr<event_type> p(new event_type(ea));
+            _slots.push_back(p);
+        }
+        
+        slot_vector_type _slots; //!< Connected slots (event handlers).
     };
 
-    
-    /*! Base class for different events.
+    /*! Free-method to easily add an event to the list of events that are registered for an EA.
      */
-    struct event {
-        virtual ~event() {
-        }        
-        boost::signals::scoped_connection conn;
-    };
-    
-    
+    template <template <typename> class Event, typename EA>
+    void add_event(EA& ea) {
+        ea.events().template add_event<Event>(ea);
+    }
+
     template <typename EA>
     struct fitness_evaluated_event : event {
         fitness_evaluated_event(EA& ea) {
