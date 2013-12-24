@@ -102,13 +102,6 @@ namespace ealib {
         ci->_tools[tool_type::name()] = p;
     }
     
-    //! Add an event to the list of events that are registered for an EA.
-    template <template <typename> class Event, typename EA>
-    void add_event(cmdline_interface<EA>* ci, EA& ea) {
-        typedef Event<EA> event_type;
-        boost::shared_ptr<event_type> p(new event_type(ea));
-        ci->_events.push_back(p);
-    }
     
     /*! This selector is used with the command-line interface to automatically 
      register the command line interface.
@@ -124,7 +117,6 @@ namespace ealib {
         typedef ealib::analysis::unary_function<ea_type> tool_type; //!< Type for analysis tools.
         typedef boost::shared_ptr<tool_type> tool_ptr_type; //!< Pointer type for analysis tools.
         typedef std::map<std::string, tool_ptr_type> tool_registry; //!< Storage for analysis tools.
-        typedef std::vector<boost::shared_ptr<ealib::event> > event_list; //!< Storage for events.
         
         //! Registering constructor.
         cmdline_interface() : ea_interface(), _ea_options("Configuration file and command-line options") {
@@ -255,7 +247,7 @@ namespace ealib {
             ea.initialize();
             gather_events(ea);
             if(_vm.count("verbose")) {
-                add_event<datafiles::runtime>(this,ea);
+                add_event<datafiles::runtime>(ea);
             }
             lifecycle::advance_all(ea);
         }
@@ -271,7 +263,7 @@ namespace ealib {
             ea.initialize();
             gather_events(ea);
             if(_vm.count("verbose")) {
-                add_event<datafiles::runtime>(this,ea);
+                add_event<datafiles::runtime>(ea);
             }
             ea.initial_population();
         }
@@ -354,12 +346,10 @@ namespace ealib {
         // craziness.
         template <typename T, typename U> friend void add_option(cmdline_interface<U>*);
         template <template <typename> class T, typename U> friend void add_tool(cmdline_interface<U>* ci);
-        template <template <typename> class T, typename U> friend void add_event(cmdline_interface<U>* ci, U& u);
 
         boost::program_options::options_description _ea_options; //!< Options that are configured for this EA.
         boost::program_options::variables_map _vm; //!< Variables (loaded from options).
         tool_registry _tools; //!< Registry for EA analysis tools.
-        event_list _events; //!< List of all the events attached to an EA.
     };
 
 } // ea
