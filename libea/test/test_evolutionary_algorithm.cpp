@@ -24,6 +24,6 @@
 BOOST_AUTO_TEST_CASE(test_evolutionary_algorithm) {
     using namespace ealib;
     
-    evolutionary_algorithm<bitstring, mutation::operators::per_site<mutation::site::bitflip>, all_ones> E;
+    evolutionary_algorithm<bitstring, mutation::operators::per_site<mutation::site::bitflip>, all_ones, configuration> E;
     
 }

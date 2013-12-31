@@ -35,15 +35,17 @@ using namespace ealib;
 
 template <typename EA>
 struct configuration : public abstract_configuration<EA> {
-    //! Called to generate the initial EA population.
-    void initial_population(EA& ea) {
-        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea), ea);
-    }
+    typedef ancestors::random_bitstring representation_generator_type;
     
-    //! Called to generate n individuals into the given population.
-    void fill_population(EA& ea) {
-        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea)-ea.size(), ea);
-    }
+//    //! Called to generate the initial EA population.
+//    void initial_population(EA& ea) {
+//        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea), ea);
+//    }
+//    
+//    //! Called to generate n individuals into the given population.
+//    void fill_population(EA& ea) {
+//        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea)-ea.size(), ea);
+//    }
 };
 
 typedef evolutionary_algorithm<

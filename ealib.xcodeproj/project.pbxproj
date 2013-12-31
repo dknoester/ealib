@@ -34,11 +34,9 @@
 		423CBE66157D0FF50003A644 /* test_meta_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF9157D0E450003A644 /* test_meta_data.cpp */; };
 		423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDFB157D0E450003A644 /* test_rng.cpp */; };
 		423CBE75157D10C80003A644 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
-		426064F016F0D36800C5B117 /* test_neurodevelopment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426064EE16F0D36700C5B117 /* test_neurodevelopment.cpp */; };
 		426A04A617B1205B000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		426A04A917B123F9000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		4281FEDC16C45E890066610C /* test_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEDA16C45C840066610C /* test_graph.cpp */; };
-		4281FEF016C464BE0066610C /* test_neuroevolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */; };
 		42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_circular.cpp */; };
 		428B712218490E8F00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		428B7152184F5EC900E3BB4E /* test_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428B714F184F5EC900E3BB4E /* test_markov_network.cpp */; };
@@ -331,6 +329,7 @@
 		42C661831862805D004476D3 /* in_place.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = in_place.h; sourceTree = "<group>"; };
 		42C6618418628626004476D3 /* isolated_subpopulations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isolated_subpopulations.h; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
+		42E1920E1872705C009EF3A7 /* stop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stop.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -539,6 +538,7 @@
 				428B727F184F77AB00E3BB4E /* rng.h */,
 				428B7288184F77AB00E3BB4E /* selection.h */,
 				428B7280184F77AB00E3BB4E /* selection */,
+				42E1920E1872705C009EF3A7 /* stop.h */,
 				428B725F184F77AB00E3BB4E /* translation.h */,
 			);
 			path = ea;
@@ -895,9 +895,7 @@
 				42B55B731641C2C500F240C5 /* test.cpp in Sources */,
 				42B55B741641C2C500F240C5 /* test_evolutionary_algorithm.cpp in Sources */,
 				42B55B751641C2C500F240C5 /* test_information.cpp in Sources */,
-				4281FEF016C464BE0066610C /* test_neuroevolution.cpp in Sources */,
 				42B55B761641C2C500F240C5 /* test_novelty_search.cpp in Sources */,
-				426064F016F0D36800C5B117 /* test_neurodevelopment.cpp in Sources */,
 				421D68B81735719700A45DD6 /* test_analysis.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

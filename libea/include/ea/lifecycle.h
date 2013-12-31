@@ -185,6 +185,9 @@ namespace ealib {
             ea.begin_epoch();
             for( ; n>0; --n) {
                 ea.update();
+                if(ea.stop()) {
+                    break;
+                }
             }
             ea.end_epoch();
         }

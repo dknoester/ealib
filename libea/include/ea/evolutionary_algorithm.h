@@ -35,6 +35,7 @@
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
 #include <ea/selection.h>
+#include <ea/stop.h>
 #include <ea/population.h>
 #include <ea/recombination.h>
 #include <ea/events.h>
@@ -56,6 +57,7 @@ namespace ealib {
     template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::two_point_crossover,
 	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
+    typename StopCondition=dont_stop,
     template <typename> class IndividualAttrs=attr::default_attributes,
     template <typename> class Individual=individual,
 	template <typename,typename> class Population=ealib::population,
@@ -70,6 +72,8 @@ namespace ealib {
         typedef MetaData md_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
+        //! Function that checks for a stopping condition.
+        typedef StopCondition stop_condition_type;
         //! Representation type.
         typedef Representation representation_type;
         //! Fitness function type.
@@ -186,6 +190,11 @@ namespace ealib {
             _events.record_statistics(*this);
         }
         
+        //! Returns trus if this EA should be stopped.
+        bool stop() {
+            return _stop(*this);
+        }
+        
         //! Build an individual from the given representation.
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
@@ -300,11 +309,12 @@ namespace ealib {
         rng_type _rng; //!< Random number generator.
         fitness_function_type _fitness_function; //!< Fitness function object.
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
+        stop_condition_type _stop; //!< Checks for an early stopping condition.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
         configuration_type _configurator; //!< Configuration object.
         population_type _population; //!< Population instance.
-        
+
     private:
         friend class boost::serialization::access;
         template<class Archive>

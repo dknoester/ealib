@@ -31,9 +31,7 @@ struct graph_fitness : public fitness_function<unary_fitness<double> > {
 
 template <typename EA>
 struct graph_configuration : public abstract_configuration<EA> {
-    void initial_population(EA& ea) {
-        generate_ancestors(ancestors::random_graph(), get<POPULATION_SIZE>(ea), ea);
-    }
+    typedef ancestors::random_graph representation_generator_type;
 };
 
 typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex, graph::mutable_edge> Graph;

@@ -37,6 +37,8 @@ struct graph_fitness : public fitness_function<unary_fitness<double> > {
 
 template <typename EA>
 struct graph_configuration : public abstract_configuration<EA> {
+    typedef random_ann representation_generator_type;
+
     void initial_population(EA& ea) {
 //        generate_ancestors(random_ann(), get<POPULATION_SIZE>(ea), ea);
     }
