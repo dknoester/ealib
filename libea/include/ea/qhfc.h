@@ -333,6 +333,7 @@ namespace ealib {
     qhfc_configuration,
     recombination::no_recombination,
     generational_models::qhfc,
+    dont_stop,
     attr::no_attributes> {
     };
     

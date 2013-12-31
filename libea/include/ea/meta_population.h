@@ -38,6 +38,7 @@
 #include <ea/fitness_functions/constant.h>
 #include <ea/mutation.h>
 #include <ea/recombination.h>
+#include <ea/stop.h>
 
 namespace ealib {
     
@@ -107,6 +108,7 @@ namespace ealib {
     template <typename> class ConfigurationStrategy=abstract_configuration,
 	typename RecombinationOperator=recombination::no_recombination,
     typename GenerationalModel=generational_models::isolated_subpopulations,
+    typename StopCondition=dont_stop,
     template <typename> class IndividualAttrs=attr::no_attributes,
     template <typename> class EventHandler=event_handler,
 	typename MetaData=meta_data,
@@ -119,6 +121,8 @@ namespace ealib {
         typedef MetaData md_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
+        //! Function that checks for a stopping condition.
+        typedef StopCondition stop_condition_type;
         //! Representation (the type of the subpopulation).
         typedef EA representation_type;
         //! Subpopulation EA type.
@@ -254,6 +258,11 @@ namespace ealib {
             _events.record_statistics(*this);
         }
 
+        //! Returns trus if this EA should be stopped.
+        bool stop() {
+            return _stop(*this);
+        }
+
         //! Make a new subpopulation from a representation (ea_type).
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
@@ -351,6 +360,7 @@ namespace ealib {
         rng_type _rng; //!< Random number generator.
         fitness_function_type _fitness_function; //!< Fitness function object.
         meta_data _md; //!< Meta-data for the meta-population.
+        stop_condition_type _stop; //!< Checks for an early stopping condition.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
         configuration_type _configurator; //!< Configuration object.
