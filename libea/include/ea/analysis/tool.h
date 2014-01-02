@@ -25,6 +25,7 @@ namespace ea {
     namespace analysis {
         template <typename EA>
         struct unary_function {
+            virtual ~unary_function() { }
             virtual void operator()(EA& ea) = 0;
         };
     }

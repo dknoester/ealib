@@ -71,6 +71,8 @@ namespace ea {
         task(const std::string& name) : _name(name) {
         }
         
+        virtual ~task() { }
+        
         //! Returns the name of this task.
         virtual const std::string& name() {
             return _name;

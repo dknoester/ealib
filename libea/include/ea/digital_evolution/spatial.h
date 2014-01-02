@@ -42,6 +42,7 @@ namespace ea {
         //! Abstract resource type.
         struct abstract_resource {
             abstract_resource(const std::string& name) : _name(name) { }
+            virtual ~abstract_resource() { }
             //! Update resource levels, if needed, based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) = 0;
             //! Consume resources.

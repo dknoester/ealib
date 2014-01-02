@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-               BuildableName = "libnn_test"
+               BuildableName = "libann_test"
                BlueprintName = "libann_test"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-            BuildableName = "libnn_test"
+            BuildableName = "libann_test"
             BlueprintName = "libann_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
@@ -52,7 +52,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-            BuildableName = "libnn_test"
+            BuildableName = "libann_test"
             BlueprintName = "libann_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
@@ -70,7 +70,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4281FC4F15CAE0FB00167444"
-            BuildableName = "libnn_test"
+            BuildableName = "libann_test"
             BlueprintName = "libann_test"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>

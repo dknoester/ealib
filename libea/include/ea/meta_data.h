@@ -260,6 +260,7 @@ namespace ea {
 /* This macro defines a new attribute. */
 #define LIBEA_MD_DECL( name, key_string, type ) \
 struct name : ea::attribute<type> { \
+virtual ~name() { } \
     inline static const char* key() { return key_string; } \
 }
 

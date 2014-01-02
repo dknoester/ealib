@@ -29,6 +29,7 @@
 template <typename Hardware, typename EA> \
 struct name : ea::instructions::abstract_instruction<Hardware,EA> { \
 name(std::size_t cost) : ea::instructions::abstract_instruction<Hardware,EA>(#name,cost) { } \
+virtual ~name() { } \
 virtual void operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea); }; \
 template<typename Hardware,typename EA> void name<Hardware,EA>::operator()(Hardware& hw, typename EA::individual_ptr_type p, EA& ea)
 
