@@ -24,9 +24,9 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ea/attributes.h>
+#include <ea/individual.h>
+
 #include <ea/concepts.h>
-#include <ea/configuration.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
 #include <ea/phenotype.h>
@@ -40,6 +40,7 @@
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>
+#include <ea/configuration.h>
 
 namespace ealib {
     
@@ -50,60 +51,56 @@ namespace ealib {
 	 common features of most EAs, while leaving the problem-specific components
 	 easily customizable.
 	 */
-	template <
-	typename Representation,
-	typename MutationOperator,
-	typename FitnessFunction,
-    template <typename> class ConfigurationStrategy=abstract_configuration,
-	typename RecombinationOperator=recombination::two_point_crossover,
-	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
-    typename StopCondition=dont_stop,
-    template <typename> class IndividualAttrs=attr::default_attributes,
-    template <typename> class Individual=individual,
-	template <typename,typename> class Population=ealib::population,
-	template <typename> class EventHandler=event_handler,
-	typename MetaData=meta_data,
-	typename RandomNumberGenerator=ealib::default_rng_type>
-	class evolutionary_algorithm {
+	template
+    < typename Individual
+    , typename AncestorGenerator
+	, typename FitnessFunction
+	, typename MutationOperator
+	, typename RecombinationOperator
+	, typename GenerationalModel
+    , typename EarlyStopCondition
+//    , typename InitialPopulationGenerator
+    , typename Configuration
+    > class evolutionary_algorithm {
     public:
-        //! Tag indicating the structure of this population.
+        //! Tag for the population structure of this evolutionary algorithm.
         typedef singlePopulationS population_structure_tag;
-        //! Meta-data type.
-        typedef MetaData md_type;
-        //! Random number generator type.
-        typedef RandomNumberGenerator rng_type;
-        //! Function that checks for a stopping condition.
-        typedef StopCondition stop_condition_type;
+        //! Individual type.
+        typedef Individual individual_type;
+        //! Individual pointer type.
+        typedef typename individual_type::individual_ptr_type individual_ptr_type;
         //! Representation type.
-        typedef Representation representation_type;
+        typedef typename individual_type::representation_type representation_type;
+        //! Encoding type.
+        typedef typename individual_type::encoding_type encoding_type;
+        //! Phenotype type.
+        typedef typename individual_type::phenotype_type phenotype_type;
+        //! Phenotype pointer type.
+        typedef typename individual_type::phenotype_ptr_type phenotype_ptr_type;
+        //! Ancestor generator type.
+        typedef AncestorGenerator ancestor_generator_type;
         //! Fitness function type.
         typedef FitnessFunction fitness_function_type;
         //! Fitness type.
-        typedef typename fitness_function_type::fitness_type fitness_type;
-        //! Attributes attached to individuals.
-        typedef IndividualAttrs<evolutionary_algorithm> individual_attr_type;
-        //! Individual type.
-        typedef Individual<evolutionary_algorithm> individual_type;
-        //! Individual pointer type.
-        typedef boost::shared_ptr<individual_type> individual_ptr_type;
-        //! Configuration object type.
-        typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
-        //! Phenotype.
-        typedef typename configuration_type::phenotype phenotype;
-        //! Encoding type.
-        typedef typename configuration_type::encoding_type encoding_type;
-        //! Ancestor generator type.
-        typedef typename configuration_type::representation_generator_type representation_generator_type;
+        typedef typename fitness_function_type::value_type fitness_value_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
         typedef RecombinationOperator recombination_operator_type;
         //! Generational model type.
         typedef GenerationalModel generational_model_type;
-        //! Population type.
-        typedef Population<individual_type, individual_ptr_type> population_type;
+        //! Function that checks for an early stopping condition.
+        typedef EarlyStopCondition stop_condition_type;
+        //! Configuration methods type.
+        typedef Configuration configuration_type;
+        //! Meta-data type.
+        typedef meta_data md_type;
+        //! Random number generator type.
+        typedef default_rng_type rng_type;
         //! Event handler.
-        typedef EventHandler<evolutionary_algorithm> event_handler_type;
+        typedef event_handler<evolutionary_algorithm> event_handler_type;
+        //! Population type.
+        typedef population<individual_type,individual_ptr_type> population_type;
         //! Iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator over this EA's population.
@@ -112,7 +109,7 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-        
+
         //! Default constructor.
         evolutionary_algorithm() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
@@ -138,24 +135,24 @@ namespace ealib {
         
         //! Configure this EA.
         void configure() {
-            _configurator.configure(*this);
+            _configuration.configure(*this);
         }
         
         //! Build the initial population.
         void initial_population() {
-            generate_ancestors(representation_generator_type(), get<POPULATION_SIZE>(*this)-_population.size(), *this);
+            generate_ancestors(ancestor_generator_type(), get<POPULATION_SIZE>(*this)-_population.size(), *this);
         }
         
         //! Initialize this EA.
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
-            _configurator.initialize(*this);
+            _configuration.initialize(*this);
         }
         
         //! Reset the population.
         void reset() {
             nullify_fitness(_population.begin(), _population.end(), *this);
-            _configurator.reset(*this);
+            _configuration.reset(*this);
         }
         
         //! Reset the RNG.
@@ -250,7 +247,7 @@ namespace ealib {
         event_handler_type& events() { return _events; }
         
         //! Returns the configuration object.
-        configuration_type& configuration() { return _configurator; }
+        configuration_type& config() { return _configuration; }
         
         //! Accessor for the population model object.
         population_type& population() { return _population; }
@@ -312,9 +309,9 @@ namespace ealib {
         stop_condition_type _stop; //!< Checks for an early stopping condition.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
-        configuration_type _configurator; //!< Configuration object.
+        configuration_type _configuration; //!< User-defined configuration methods.
         population_type _population; //!< Population instance.
-
+        
     private:
         friend class boost::serialization::access;
         template<class Archive>
@@ -325,8 +322,9 @@ namespace ealib {
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
             ar & boost::serialization::make_nvp("meta_data", _md);
         }
+
     };
     
 } // ea
-
+    
 #endif

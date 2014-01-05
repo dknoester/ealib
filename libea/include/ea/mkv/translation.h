@@ -224,7 +224,7 @@ namespace ealib {
         
         /*! Generates random Markov network-based individuals.
          */
-        struct ancestor {
+        struct ancestor_generator {
             template <typename EA>
             typename EA::representation_type operator()(EA& ea) {
                 using namespace ealib;
@@ -236,7 +236,7 @@ namespace ealib {
                     std::size_t csize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
                                                get<MUTATION_INDEL_MAX_SIZE>(ea));
                     int j=ea.rng()(repr.size()-csize);
-                    genome_translator& t = ea.configuration().translator;
+                    genome_translator& t = ea.config().translator;
                     int gate=*ea.rng().choice(t.enabled().begin(), t.enabled().end());
                     repr[j] = gate;
                     repr[j+1] = 255-gate;

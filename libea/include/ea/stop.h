@@ -24,7 +24,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 
-#include <ea/attributes.h>
+#include <ea/traits.h>
 #include <ea/meta_data.h>
 
 namespace ealib {

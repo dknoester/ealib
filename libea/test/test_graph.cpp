@@ -29,18 +29,15 @@ struct graph_fitness : public fitness_function<unary_fitness<double> > {
     }
 };
 
-template <typename EA>
-struct graph_configuration : public abstract_configuration<EA> {
-    typedef ancestors::random_graph representation_generator_type;
-};
 
 typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex, graph::mutable_edge> Graph;
 
 typedef evolutionary_algorithm<
 Graph,
+ancestors::random_graph,
 mutation::graph_mutator,
 graph_fitness,
-graph_configuration,
+abstract_configuration,
 recombination::asexual
 > graph_ea;
 

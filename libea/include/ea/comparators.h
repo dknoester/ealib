@@ -20,7 +20,7 @@
 #ifndef _EA_COMPARATORS_H_
 #define _EA_COMPARATORS_H_
 
-#include <ea/attributes.h>
+#include <ea/traits.h>
 #include <ea/fitness_function.h>
 
 namespace ealib {

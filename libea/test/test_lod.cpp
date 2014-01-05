@@ -47,7 +47,7 @@ public:
     }
     
     virtual void gather_events(EA& ea) {
-        add_event<lod_event>(this,ea);
+        add_event<lod_event>(ea);
     };
 };
 

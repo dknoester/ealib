@@ -29,7 +29,7 @@
 #include <ea/comparators.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
-#include <ea/attributes.h>
+#include <ea/traits.h>
 
 namespace ealib {
     
@@ -49,23 +49,23 @@ namespace ealib {
      */
     
     //! Attributes that must be added to individuals to support NSGA2.
-    template <typename EA>
-    struct nsga2_attributes : attr::default_attributes<EA> {
-        typedef typename EA::population_type population_type;
+    template <typename T>
+    struct nsga2_traits : default_traits<T> {
+        typedef std::vector<typename T::individual_ptr_type> dominated_population_type;
         
         //! Constructor.
-        nsga2_attributes() : n(0), rank(0), distance(0.0) {
+        nsga2_traits() : n(0), rank(0), distance(0.0) {
         }
         
         //! Serialize some of these attributes.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("default_attr", boost::serialization::base_object<attr::default_attributes<EA> >(*this));
+            ar & boost::serialization::make_nvp("default_attr", boost::serialization::base_object<default_traits<T> >(*this));
             ar & BOOST_SERIALIZATION_NVP(rank);
             ar & BOOST_SERIALIZATION_NVP(distance);
         }
         
-        population_type S; //!< Population of individuals that are dominated by this individual.
+        dominated_population_type S; //!< Population of individuals that are dominated by this individual.
         int n; //!< Number of individuals dominating this individual.
         int rank; //!< Rank of this individual.
         double distance; //<! Crowding distance.
@@ -108,8 +108,8 @@ namespace ealib {
             //! Returns true if a dominates b.
             template <typename Individual, typename EA>
             bool dominates(Individual& a, Individual& b, EA& ea) {
-                const typename Individual::attr_type::fitness_type& fa=ealib::fitness(a,ea);
-                const typename Individual::attr_type::fitness_type& fb=ealib::fitness(b,ea);
+                const typename Individual::traits_type::fitness_type& fa=ealib::fitness(a,ea);
+                const typename Individual::traits_type::fitness_type& fb=ealib::fitness(b,ea);
                 assert(fa.size() == fb.size());
                 
                 bool any=false, all=true;
@@ -125,7 +125,7 @@ namespace ealib {
             template <typename Population, typename EA>
             void crowding_distance(Population& I, EA& ea) {
                 for(typename Population::iterator i=I.begin(); i!=I.end(); ++i) {
-                    (*i)->attr().distance = 0.0;
+                    (*i)->traits().distance = 0.0;
                 }
                 
                 std::size_t M = ealib::fitness(**I.begin(),ea).size(); // how many objectives?
@@ -133,11 +133,11 @@ namespace ealib {
                 for(std::size_t m=0; m<M; ++m) {
                     std::sort(I.begin(), I.end(), comparators::objective<EA>(m,ea));
                     
-                    (*I.begin())->attr().distance = std::numeric_limits<double>::max();
-                    (*I.rbegin())->attr().distance = std::numeric_limits<double>::max();
+                    (*I.begin())->traits().distance = std::numeric_limits<double>::max();
+                    (*I.rbegin())->traits().distance = std::numeric_limits<double>::max();
                     
                     for(std::size_t i=1; i<(I.size()-1); ++i) {
-                        I[i]->attr().distance += (I[i+1]->attr().fitness()[m] - I[i-1]->attr().fitness()[m]) / ea.fitness_function().range(m);
+                        I[i]->traits().distance += (I[i+1]->traits().fitness()[m] - I[i-1]->traits().fitness()[m]) / ea.fitness_function().range(m);
                     }
                 }
             }
@@ -146,20 +146,20 @@ namespace ealib {
             template <typename Population, typename PopulationMap, typename EA>
             void nondominated_sort(Population& P, std::size_t n, PopulationMap& F, EA& ea) {
                 for(typename Population::iterator p=P.begin(); p!=P.end(); ++p) {
-                    (*p)->attr().S.clear();
-                    (*p)->attr().n = 0;
+                    (*p)->traits().S.clear();
+                    (*p)->traits().n = 0;
                     
                     for(typename Population::iterator q=P.begin(); q!=P.end(); ++q) {
                         if(p!=q) {
                             if(dominates(**p,**q,ea)) {
-                                (*p)->attr().S.push_back(*q);
+                                (*p)->traits().S.push_back(*q);
                             } else if(dominates(**q,**p,ea)) {
-                                ++(*p)->attr().n;
+                                ++(*p)->traits().n;
                             }
                         }
                     }
-                    if((*p)->attr().n == 0) {
-                        (*p)->attr().rank = 0;
+                    if((*p)->traits().n == 0) {
+                        (*p)->traits().rank = 0;
                         F[0].push_back(*p);
                     }
                 }
@@ -168,10 +168,10 @@ namespace ealib {
                 while((!F[i].empty()) && (n>0)) {
                     Population Q;
                     for(typename Population::iterator p=F[i].begin(); p!=F[i].end(); ++p) {
-                        for(typename Population::iterator q=(*p)->attr().S.begin(); q!=(*p)->attr().S.end(); ++q) {
-                            --(*q)->attr().n;
-                            if((*q)->attr().n == 0) {
-                                (*q)->attr().rank = i+1;
+                        for(typename Population::iterator q=(*p)->traits().S.begin(); q!=(*p)->traits().S.end(); ++q) {
+                            --(*q)->traits().n;
+                            if((*q)->traits().n == 0) {
+                                (*q)->traits().rank = i+1;
                                 Q.push_back(*q);
                             }
                         }
@@ -283,7 +283,7 @@ namespace ealib {
                 // select parents & recombine to create offspring:
                 Population offspring;
                 recombine_n(parents, offspring,
-                            selection::tournament<access::attributes,crowding_comparator>(n,parents,ea),
+                            selection::tournament<access::traits,crowding_comparator>(n,parents,ea),
                             typename EA::recombination_operator_type(),
                             n, ea);
                 

@@ -21,9 +21,7 @@
 #define _EA_PHENOTYPE_H_
 
 namespace ealib {
-
-    // **** Warning: this is not yet well-developed.
-
+    
     /* The idea here is that some kinds of EAs require that an individual's genotype
      be converted to another form prior to fitness evaluation.  This is usually
      referred to as the "encoding type."
@@ -39,7 +37,9 @@ namespace ealib {
      */
     struct indirectS { };
     
-    /* These difference encoding types are used when make_phenotype() is called
+    /* Generative encodings are not yet defined.
+     
+     These different encoding types are used when make_phenotype() is called
      on an individual.  Note that the default is directS.
      
      To be clear about definitions:
@@ -53,82 +53,81 @@ namespace ealib {
      (generative).
      */
     
-    namespace attr {
+    namespace traits {
+        
+        namespace detail {
+            /* The below are used to automatically determine the correct type
+             for the phenotype pointer.
+             */
+            template <typename T, typename Encoding>
+            struct phenotype_ptr {
+            };
+            
+            template <typename T>
+            struct phenotype_ptr<T, directS> {
+                typedef typename T::phenotype_type* ptr_type;
+            };
+            
+            template <typename T>
+            struct phenotype_ptr<T, indirectS> {
+                typedef boost::shared_ptr<typename T::phenotype_type> ptr_type;
+            };
+        }
+        
+        
+        //! Phenotype trait for an individual.
+        template <typename T>
+        struct phenotype_trait {
 
-        //! Default phenotype attribute.
-        template <typename EA>
-        struct phenotype_attribute {
+            /*! Type of the pointer to the phenotype.
+             
+             In the case of a direct encoding, phenotype_ptr should be a plain-old
+             pointer.  In **all** other cases, it should be an auto-deleting pointer
+             like boost::shared_ptr< >.  We use a bit of indirection & partial
+             template specialization to take care of this automatically.
+             */
+            typedef typename detail::phenotype_ptr<T,typename T::encoding_type>::ptr_type phenotype_ptr_type;
             
             //! Constructor.
-            phenotype_attribute() {
+            phenotype_trait() {
             }
             
             //! Returns true if a phenotype is present.
             bool has_phenotype() {
                 return _p != 0;
             }
-            
-            /*! Pointer to the phenotype.
-             
-             In the case of a direct encoding, phenotype_ptr should be a plain-old
-             pointer.  In **all** other cases, it should be an auto-deleting pointer
-             like boost::shared_ptr< >.
-             */
-            typename EA::configuration_type::phenotype_ptr _p;
+
+            phenotype_ptr_type _p; //<! Pointer to this individual's phenotype.
         };
         
-    } // attr
-
+    } // traits
+    
     namespace detail {
         
         //! Direct encoding; returns the individual's representation (its genotype).
         template <typename EA>
-        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, directS, EA& ea) {
+        typename EA::phenotype_type& phenotype(typename EA::individual_type& ind, directS, EA& ea) {
             return ind.repr();
         }
         
-        //! Direct encoding; returns the individual's representation (its genotype).
-        template <typename EA>
-        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, directS, typename EA::rng_type& rng, EA& ea) {
-            return ind.repr();
-        }
-
         //! Indirect encoding; returns a pointer to a phenotype that has been translated from the genotype.
         template <typename EA>
-        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, indirectS, EA& ea) {
-            if(!ind.attr().has_phenotype()) {
-                typename EA::configuration_type::phenotype_ptr p = ea.configuration().make_phenotype(ind,ea);
-                ind.attr()._p = p;
+        typename EA::phenotype_type& phenotype(typename EA::individual_type& ind, indirectS, EA& ea) {
+            if(!ind.traits().has_phenotype()) {
+                typename EA::phenotype_ptr_type p = ind.traits().make_phenotype(ind,ea);
+                ind.traits()._p = p;
             }
-            
-            return *ind.attr()._p;
+            return *ind.traits()._p;
         }
         
-        //! Indirect encoding; returns a pointer to a stochastic phenotype that has been translated from the genotype.
-        template <typename EA>
-        typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, indirectS,
-                                                                      typename EA::rng_type& rng, EA& ea) {
-            if(!ind.attr().has_phenotype()) {
-                typename EA::configuration_type::phenotype_ptr p = ea.configuration().make_phenotype(ind,rng,ea);
-                ind.attr()._p = p;
-            }
-            
-            return *ind.attr()._p;
-        }
     } // detail
     
-    //! Phenotype attribute accessor; lazily decodes a genotype into a phenotype.
+    //! Phenotype trait accessor; lazily decodes a genotype into a phenotype.
     template <typename EA>
-    typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, EA& ea) {
+    typename EA::phenotype_type& phenotype(typename EA::individual_type& ind, EA& ea) {
         return detail::phenotype(ind, typename EA::encoding_type(), ea);
     }
     
-    //! Phenotype attribute accessor; lazily decodes a genotype into a stochastic phenotype.
-    template <typename EA>
-    typename EA::configuration_type::phenotype& phenotype(typename EA::individual_type& ind, typename EA::rng_type& rng, EA& ea) {
-        return detail::phenotype(ind, typename EA::encoding_type(), rng, ea);
-    }
-
 } // ealib
 
 #endif

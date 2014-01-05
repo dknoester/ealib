@@ -113,11 +113,11 @@ namespace ealib {
 	struct IndividualConcept {
 	public:
         typedef typename X::representation_type representation_type; //!< Underlying representation for this individual; its genome.
-        typedef typename X::attr_type attr_type; //!< Attributes for this individual.
+//        typedef typename X::attr_type attr_type; //!< Attributes for this individual.
         
 		BOOST_CONCEPT_USAGE(IndividualConcept) {
             BOOST_CONCEPT_ASSERT((RepresentationConcept<representation_type>));
-            BOOST_CONCEPT_ASSERT((AttributeConcept<attr_type>));
+//            BOOST_CONCEPT_ASSERT((AttributeConcept<attr_type>));
             BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
 
             detail::same_type(representation_type(), x.repr());
@@ -216,21 +216,21 @@ namespace ealib {
         typedef typename X::const_reverse_iterator const_reverse_iterator; //!< Const reverse iterator over a population.
 		
 		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
-            BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
-            BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
-            BOOST_CONCEPT_ASSERT((SuppliesRNGConcept<X>));
-
-            // lifecycle methods; see lifecycle.h
-            x.configure();
-            x.initial_population();
-            x.initialize();
-            x.reset();
-            x.clear();
-            x.begin_epoch();
-            x.end_epoch();
-            x.update();
-
-            detail::same_type(p, x.population());
+//            BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
+//            BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
+//            BOOST_CONCEPT_ASSERT((SuppliesRNGConcept<X>));
+//
+//            // lifecycle methods; see lifecycle.h
+//            x.configure();
+//            x.initial_population();
+//            x.initialize();
+//            x.reset();
+//            x.clear();
+//            x.begin_epoch();
+//            x.end_epoch();
+//            x.update();
+//
+//            detail::same_type(p, x.population());
 		}
         
         //! Configure this EA.

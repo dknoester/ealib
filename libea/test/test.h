@@ -35,7 +35,7 @@ using namespace ealib;
 
 template <typename EA>
 struct configuration : public abstract_configuration<EA> {
-    typedef ancestors::random_bitstring representation_generator_type;
+//    typedef ancestors::random_bitstring representation_generator_type;
     
 //    //! Called to generate the initial EA population.
 //    void initial_population(EA& ea) {
@@ -50,16 +50,16 @@ struct configuration : public abstract_configuration<EA> {
 
 typedef evolutionary_algorithm<
 bitstring,
+ancestors::random_bitstring,
 mutation::operators::per_site<mutation::site::bit>,
-all_ones,
-configuration
+all_ones
 > all_ones_ea;
 
 typedef evolutionary_algorithm<
 bitstring,
+ancestors::random_bitstring,
 mutation::operators::per_site<mutation::site::bit>,
-multi_all_ones,
-configuration
+multi_all_ones
 > multi_all_ones_ea;
 
 

@@ -176,6 +176,7 @@ BOOST_AUTO_TEST_CASE(test_digevo_types) {
     //! Meta-population, with founders and LOD tracking:
     typedef meta_population<
     population_founder<ea_type1>,
+    ancestors::default_representation,
     mutation::operators::no_mutation,
 	constant,
     abstract_configuration,

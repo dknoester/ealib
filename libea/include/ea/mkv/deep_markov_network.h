@@ -182,11 +182,6 @@ namespace ealib {
             virtual void configure(EA& ea) {
             }
             
-            //! Called to generate the initial EA population.
-            virtual void initial_population(EA& ea) {
-                generate_ancestors(mkv::ancestor(), get<POPULATION_SIZE>(ea), ea);
-            }
-            
             //! Called as the final step of EA initialization.
             virtual void initialize(EA& ea) {
                 for(std::size_t i=0; i<get<MKV_LAYERS_N>(ea); ++i) {

@@ -70,7 +70,7 @@ namespace ealib {
      */
     template <typename EA>
 	void generate_ancestors(std::size_t n, EA& ea) {
-        generate_ancestors(typename EA::representation_generator_type(), n, ea);
+        generate_ancestors(typename EA::ancestor_generator_type(), n, ea);
     }
     
 

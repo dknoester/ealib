@@ -40,19 +40,19 @@
 #include <ea/devo/organism.h>
 
 namespace ealib {
-    LIBEA_MD_DECL(FIXATION_TIME, "individual.fixation_time", long);
 
-    namespace attr {
-
+    
+    namespace traits {
+        
         /*! Line of descent (LoD) attribute.
          */
-        template <typename EA>
-        struct lod_attributes {
-            typedef typename EA::individual_ptr_type individual_ptr_type;
+        template <typename T>
+        struct lod_traits {
+            typedef typename T::individual_ptr_type individual_ptr_type;
             typedef std::set<individual_ptr_type> parent_set_type;
             
             //! Constructor.
-            lod_attributes() {
+            lod_traits() {
             }
 
             //! Retrieve all of this individual's parents.
@@ -71,7 +71,7 @@ namespace ealib {
             parent_set_type _lod_parents; //!< Set of pointers to this individual's parents.
         };
         
-    } // attr
+    } // traits
     
     
     /*! Contains line of descent information.
@@ -207,8 +207,8 @@ namespace ealib {
             lineage_type lod;
             
             lod.push_back(p);
-            while(p->attr().lod_parents().size()>0) {
-                p = p->attr().lod_parent();
+            while(p->traits().lod_parents().size()>0) {
+                p = p->traits().lod_parent();
                 lod.push_front(p);
             }
             
@@ -232,8 +232,8 @@ namespace ealib {
             individual_ptr_type parent;
             individual_ptr_type m=offspring;
             
-            while(offspring->attr().has_parents()) {
-                parent = offspring->attr().lod_parent();
+            while(offspring->traits().has_parents()) {
+                parent = offspring->traits().lod_parent();
                 
                 if(parent.use_count() < offspring.use_count()) {
                     m = offspring;
@@ -294,7 +294,7 @@ namespace ealib {
                                 typename EA::individual_type& offspring,
                                 EA& ea) {
             for(typename EA::population_type::iterator i=parents.begin(); i!=parents.end(); ++i) {
-                offspring.attr().lod_parents().insert(*i);
+                offspring.traits().lod_parents().insert(*i);
             }
         }
     };
@@ -379,7 +379,8 @@ namespace ealib {
         
     } // datafiles
     
-    
+    LIBEA_MD_DECL(FIXATION_TIME, "individual.fixation_time", long);
+
     /*! Tracks the update at which individuals along the line of descent have fixed
      in the population.
      

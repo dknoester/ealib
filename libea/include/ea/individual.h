@@ -20,9 +20,11 @@
 #ifndef _EA_INDIVIDUAL_H_
 #define _EA_INDIVIDUAL_H_
 
-#include <sstream>
 #include <boost/serialization/nvp.hpp>
+#include <sstream>
 #include <ea/meta_data.h>
+#include <ea/phenotype.h>
+#include <ea/traits.h>
 
 namespace ealib {
     
@@ -30,18 +32,34 @@ namespace ealib {
     LIBEA_MD_DECL(IND_GENERATION, "individual.generation", double);
     LIBEA_MD_DECL(IND_BIRTH_UPDATE, "individual.birth_update", long);
     
-	/*! Definition of EALib individuals.
-     
-     Individuals in EALib are containers for a representation, attributes, and meta-data.
+    /*! Individual within an evolutionary algorithm.
 	 */
-	template <typename EA>
-	class individual {
+	template
+    < typename Representation
+    , typename FitnessFunction
+    , typename Phenotype=Representation
+    , typename Encoding=directS
+    , template <typename> class Traits=ealib::default_traits
+    > class individual {
 	public:
-		typedef typename EA::representation_type representation_type; //!< Representation type; the "genome."
-        typedef typename EA::individual_attr_type attr_type; //!< Attributes type for this individual.
-        typedef meta_data md_type; //!< Meta-data type.
-		
-		//! Constructor.
+        //! Representation type; the "genome."
+		typedef Representation representation_type;
+        //! Fitness value type for this individual.
+        typedef typename FitnessFunction::fitness_type fitness_type;
+        //! Phenotype for this individual.
+        typedef Phenotype phenotype_type;
+        //! Encoding of this individual.
+        typedef Encoding encoding_type;
+        //! Pointer to this individual.
+        typedef boost::shared_ptr<individual> individual_ptr_type;
+        //! Traits for this individual.
+        typedef Traits<individual> traits_type;
+        //! Phenotype pointer type.
+        typedef typename traits_type::phenotype_ptr_type phenotype_ptr_type;
+        //! Meta-data type.
+        typedef meta_data md_type;
+        
+        //! Constructor.
 		individual() {
 		}
         
@@ -53,7 +71,7 @@ namespace ealib {
         individual(const individual& that) {
             _repr = that._repr;
             _md = that._md;
-            _attr = that._attr;
+            _traits = that._traits;
         }
         
         //! Assignment operator.
@@ -61,7 +79,7 @@ namespace ealib {
             if(this != &that) {
                 _repr = that._repr;
                 _md = that._md;
-                _attr = that._attr;
+                _traits = that._traits;
             }
             return *this;
         }
@@ -83,10 +101,10 @@ namespace ealib {
         const meta_data& md() const { return _md; }
         
         //! Retrieve this individual's attributes.
-        attr_type& attr() { return _attr; }
+        traits_type& traits() { return _traits; }
         
         //! Retrieve this individual's attributes (const-qualified).
-        const attr_type& attr() const { return _attr; }
+        const traits_type& traits() const { return _traits; }
         
         //! Cast this individual to a std::string.
         operator std::string() {
@@ -95,23 +113,23 @@ namespace ealib {
             return s.str();
         }
         
-	protected:
-		representation_type _repr; //!< This individual's representation.
+    protected:
+        representation_type _repr; //!< This individual's representation.
         meta_data _md; //!< This individual's meta data.
-        attr_type _attr; //!< This individual's attributes.
+        traits_type _traits; //!< This individual's traits.
         
-	private:
-		friend class boost::serialization::access;
+    private:
+        friend class boost::serialization::access;
         
         //! Serialize this individual.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("representation", _repr);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("attributes", _attr);
-		}
-	};
+            ar & boost::serialization::make_nvp("traits", _traits);
+        }
+    };
     
-} // ea
+} // ealib
 
 #endif

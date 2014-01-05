@@ -33,7 +33,27 @@
 #include <ea/events.h>
 
 namespace ealib {
+    namespace traits {
+        
+        //! Fitness trait for an individual.
+        template <typename T>
+        struct fitness_trait {
+            typedef typename T::fitness_type fitness_type;
+            
+            //! Retrieve fitness.
+            fitness_type& fitness() { return _v; }
+            
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+                ar & boost::serialization::make_nvp("fitness_type", _v);
+            }
+            
+            fitness_type _v;
+        };
+        
+    } // traits
 
+    
     /* The following are tags that are to be used to indicate properties of a
      given fitness function:
      */
@@ -289,30 +309,6 @@ namespace ealib {
         value_type _f; //!< Fitness value.
     };
 
-    namespace detail {
-        //! Deterministic initialization (no RNG needed).
-        template <typename FitnessFunction, typename EA>
-        void initialize_fitness_function(FitnessFunction& ff, deterministicS, EA& ea) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            ff.initialize(ea);
-        }
-
-        //! Stochastic initialization (RNG needed).
-        template <typename FitnessFunction, typename EA>
-        void initialize_fitness_function(FitnessFunction& ff, stochasticS, EA& ea) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            ealib::next<FF_INITIAL_RNG_SEED>(ea);
-            typename EA::rng_type rng(get<FF_INITIAL_RNG_SEED>(ea)+1); // +1 to avoid clock
-            ff.initialize(rng, ea);
-        }
-    } // detail
-    
-    //! Initialize the fitness function; called prior to any fitness evaluation, but after meta-data.
-    template <typename FitnessFunction, typename EA>
-    void initialize_fitness_function(FitnessFunction& ff, EA& ea) {
-        detail::initialize_fitness_function(ff, typename FitnessFunction::stability_tag(), ea);
-    }
-
     /*! Convenience struct to define typedefs and empty initialization and serialization
      methods for fitness function objects.
      */
@@ -347,30 +343,37 @@ namespace ealib {
     };
     
     
-    namespace attr {
-        //! Fitness attribute.
-        template <typename EA>
-        struct fitness_attribute {
-            typedef typename EA::fitness_type fitness_type;
-            
-            //! Retrieve fitness.
-            fitness_type& fitness() { return _v; }
-            
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
-                ar & boost::serialization::make_nvp("fitness_type", _v);
-            }
-            
-            fitness_type _v;
-        };
-    } // attr
+    namespace detail {
+        //! Deterministic initialization (no RNG needed).
+        template <typename FitnessFunction, typename EA>
+        void initialize_fitness_function(FitnessFunction& ff, deterministicS, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            ff.initialize(ea);
+        }
+        
+        //! Stochastic initialization (RNG needed).
+        template <typename FitnessFunction, typename EA>
+        void initialize_fitness_function(FitnessFunction& ff, stochasticS, EA& ea) {
+            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
+            ealib::next<FF_INITIAL_RNG_SEED>(ea);
+            typename EA::rng_type rng(get<FF_INITIAL_RNG_SEED>(ea)+1); // +1 to avoid clock
+            ff.initialize(rng, ea);
+        }
+    } // detail
+    
+    //! Initialize the fitness function; called prior to any fitness evaluation, but after meta-data.
+    template <typename FitnessFunction, typename EA>
+    void initialize_fitness_function(FitnessFunction& ff, EA& ea) {
+        detail::initialize_fitness_function(ff, typename FitnessFunction::stability_tag(), ea);
+    }
+
     
     namespace detail {
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-            i.attr().fitness() = ea.fitness_function()(i, ea);
+            i.traits().fitness() = ea.fitness_function()(i, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
@@ -381,14 +384,14 @@ namespace ealib {
             int seed = ea.rng().seed();
             typename EA::rng_type rng(seed);
             put<FF_RNG_SEED>(seed, i); // save the seed that was used to evaluate this individual
-            i.attr().fitness() = ea.fitness_function()(i, rng, ea);
+            i.traits().fitness() = ea.fitness_function()(i, rng, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
         //! Constant: calculate fitness only if this individual has not yet been evaluated.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
-            if(i.attr().fitness().is_null()) {
+            if(i.traits().fitness().is_null()) {
                 calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
             }
         }
@@ -416,26 +419,26 @@ namespace ealib {
 		}
 	}
 
-    //! Fitness attribute accessor (may calculate if null).
+    //! Fitness trait accessor (may calculate if null).
     template <typename EA>
-    typename EA::individual_type::attr_type::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
+    typename EA::individual_type::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
-        return ind.attr().fitness();
+        return ind.traits().fitness();
     }
     
     //! Returns true if the individual has a valid fitness.
     template <typename EA>
     bool has_fitness(typename EA::individual_type& i, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        return !i.attr().fitness().is_null();
+        return !i.traits().fitness().is_null();
     }
 
     //! Nullify the fitness of an individual.
     template <typename EA>
     void nullify_fitness(typename EA::individual_type& ind, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        ind.attr().fitness().nullify();
+        ind.traits().fitness().nullify();
     }
 
     //! Nullify fitness for the population range [f,l).
@@ -443,7 +446,7 @@ namespace ealib {
 	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-            (**first).attr().fitness().nullify();
+            (**first).traits().fitness().nullify();
 		}
 	}
 
@@ -456,28 +459,8 @@ namespace ealib {
             nullify_fitness(**first,ea);
 			calculate_fitness(**first,ea);
 		}
-    }    
+    }
 
-    /*! This event periodically (re-)initializes the fitness function for the
-     entire population.
-     
-     Note that this triggers a fitness reevaluation for all individuals in
-     the population.
-     
-     Also note that it is the fitness function's responsibility to store whatever
-     information is needed to recreate the correct landscape for serialization.
-     */
-    template <typename EA>
-    struct reinitialize_fitness_function : periodic_event<FF_INITIALIZATION_PERIOD, EA> {
-        reinitialize_fitness_function(EA& ea) : periodic_event<FF_INITIALIZATION_PERIOD, EA>(ea) {
-        }
-        
-        virtual void operator()(EA& ea) {
-            initialize_fitness_function(ea.fitness_function(), ea);
-            recalculate_fitness(ea.population().begin(), ea.population().end(), ea);
-        }
-    };
-    
-} // ea
+} // ealib
 
 #endif

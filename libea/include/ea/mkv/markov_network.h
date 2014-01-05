@@ -138,7 +138,7 @@ namespace ealib {
         
         //! Retrieve output state variable i.
         int& output(std::size_t i) { return _T[_nin+i]; }
-
+        
         //! Retrieve output state variable i (const-qualified).
         const int& output(std::size_t i) const { return _T[_nin+i]; }
         
@@ -147,7 +147,7 @@ namespace ealib {
         
         //! Retrieve an iterator to the end of the inputs.
         iterator end_input() { return &_T[0] + _nin; }
-
+        
         //! Retrieve an iterator to the beginning of the outputs.
         iterator begin_output() { return &_T[0] + _nin; }
         
@@ -199,7 +199,7 @@ namespace ealib {
         void update(std::size_t n=1) {
             update(_T.begin(), n);
         }
-
+        
     protected:
         update_function_type _uf; //! Update functor.
         rng_type _rng; //<! Random number generator.
@@ -221,31 +221,10 @@ namespace ealib {
         
         /*! Configuration object for EAs that use Markov Networks.
          */
-        template <typename EA>
-        struct configuration : public abstract_configuration<EA> {
-            typedef indirectS encoding_type;
-            typedef markov_network< > phenotype;
-            typedef boost::shared_ptr<phenotype> phenotype_ptr;
-            
-            //! Translate an individual's representation into a Markov Network.
-            virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
-                                                 typename EA::rng_type& rng, EA& ea) {
-                phenotype_ptr p(new phenotype(desc, rng.seed()));
-                translate_genome(ind.repr(), start, translator, *p);
-                return p;
-            }
-            
-            //! Called as the first step of an EA's lifecycle.
-            virtual void configure(EA& ea) {
-            }
-            
-            //! Called to generate the initial EA population.
-            virtual void initial_population(EA& ea) {
-                generate_ancestors(mkv::ancestor(), get<POPULATION_SIZE>(ea), ea);
-            }
-            
-            //! Called as the final step of EA initialization.
-            virtual void initialize(EA& ea) {
+        struct configuration : ealib::default_configuration {
+            //! Called after EA initialization.
+            template <typename EA>
+            void initialize(EA& ea) {
                 desc = desc_type(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea));
             }
             
@@ -258,6 +237,24 @@ namespace ealib {
             start_codon start; //!< Start codon detector.
             genome_translator translator; //!< Genome translator.
         };
+        
+        
+        template <typename T>
+        struct traits : ealib::default_traits<T> {
+            //! Translate an individual's representation into a Markov Network.
+            template <typename EA>
+            typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
+                typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
+                translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
+                return p;
+            }
+            
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+                ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<ealib::default_traits<T> >(*this));
+            }
+        };
+        
         
         typedef circular_genome<int> representation_type;
         typedef mutation::operators::indel<mutation::operators::per_site<mutation::site::uniform_integer> > mutation_type;

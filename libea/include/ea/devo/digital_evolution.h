@@ -42,6 +42,7 @@
 #include <ea/mutation.h>
 #include <ea/population.h>
 #include <ea/recombination.h>
+#include <ea/stop.h>
 #include <ea/rng.h>
 
 
@@ -80,6 +81,7 @@ namespace ealib {
     template <typename> class TaskLibrary=task_library,
     typename Hardware=hardware,
     template <typename> class InstructionSetArchitecture=isa,
+    typename EarlyStopCondition=dont_stop,
 	typename MutationOperator=mutation::operators::per_site<mutation::site::uniform_integer>,
     template <typename> class Individual=organism,
 	template <typename, typename> class Population=ealib::population,
@@ -122,6 +124,8 @@ namespace ealib {
         typedef MetaData md_type;
         //! Random number generator type.
         typedef RandomNumberGenerator rng_type;
+        //! Function that checks for an early stopping condition.
+        typedef EarlyStopCondition stop_condition_type;
         //! Event handler.
         typedef EventHandler<digital_evolution> event_handler_type;
         //! Iterator over this EA's population.
@@ -215,6 +219,11 @@ namespace ealib {
             for( ; n>0; --n) {
                 update();
             }
+        }
+
+        //! Returns trus if this EA should be stopped.
+        bool stop() {
+            return _stop(*this);
         }
         
         //! Build an individual from the given representation.
@@ -338,6 +347,7 @@ namespace ealib {
         scheduler_type _scheduler; //!< Scheduler instance.
         population_type _population; //!< Population instance.
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
+        stop_condition_type _stop; //!< Checks for an early stopping condition.
         event_handler_type _events; //!< Event handler.
         isa_type _isa; //!< Instruction set architecture.
         tasklib_type _tasklib; //!< Task library.

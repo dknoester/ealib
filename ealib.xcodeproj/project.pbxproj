@@ -61,6 +61,8 @@
 		42C6616C1860FBE5004476D3 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
 		42C661741860FBE5004476D3 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42C6617C1860FC0B004476D3 /* test_lod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42C6617A1860FC0B004476D3 /* test_lod.cpp */; };
+		42E1922418771AE9009EF3A7 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
+		42E1922C18771B21009EF3A7 /* test_ealib2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42E1922A18771B21009EF3A7 /* test_ealib2.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -170,6 +172,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		42E1922518771AE9009EF3A7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -230,11 +241,10 @@
 		428B722B184F77AB00E3BB4E /* sigmoid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sigmoid.h; sourceTree = "<group>"; };
 		428B722C184F77AB00E3BB4E /* neural_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neural_network.h; sourceTree = "<group>"; };
 		428B722D184F77AB00E3BB4E /* sigmoid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sigmoid.h; sourceTree = "<group>"; };
-		428B722E184F77AB00E3BB4E /* attributes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = attributes.h; sourceTree = "<group>"; };
+		428B722E184F77AB00E3BB4E /* traits.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = traits.h; sourceTree = "<group>"; };
 		428B722F184F77AB00E3BB4E /* cmdline_interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cmdline_interface.h; sourceTree = "<group>"; };
 		428B7230184F77AB00E3BB4E /* comparators.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = comparators.h; sourceTree = "<group>"; };
 		428B7231184F77AB00E3BB4E /* concepts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = concepts.h; sourceTree = "<group>"; };
-		428B7232184F77AB00E3BB4E /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
 		428B7233184F77AB00E3BB4E /* cvector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cvector.h; sourceTree = "<group>"; };
 		428B7234184F77AB00E3BB4E /* datafile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = datafile.h; sourceTree = "<group>"; };
 		428B7236184F77AB00E3BB4E /* evaluations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evaluations.h; sourceTree = "<group>"; };
@@ -258,7 +268,6 @@
 		428B7249184F77AB00E3BB4E /* task_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_library.h; sourceTree = "<group>"; };
 		428B724A184F77AB00E3BB4E /* well_mixed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = well_mixed.h; sourceTree = "<group>"; };
 		428B724B184F77AB00E3BB4E /* events.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = events.h; sourceTree = "<group>"; };
-		428B724C184F77AB00E3BB4E /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
 		428B724D184F77AB00E3BB4E /* exceptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = exceptions.h; sourceTree = "<group>"; };
 		428B724E184F77AB00E3BB4E /* fitness_function.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fitness_function.h; sourceTree = "<group>"; };
 		428B7250184F77AB00E3BB4E /* all_ones.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = all_ones.h; sourceTree = "<group>"; };
@@ -289,7 +298,7 @@
 		428B726D184F77AB00E3BB4E /* lifecycle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lifecycle.h; sourceTree = "<group>"; };
 		428B726E184F77AB00E3BB4E /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
 		428B726F184F77AB00E3BB4E /* meta_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_data.h; sourceTree = "<group>"; };
-		428B7270184F77AB00E3BB4E /* meta_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_population.h; sourceTree = "<group>"; };
+		428B7270184F77AB00E3BB4E /* metapopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metapopulation.h; sourceTree = "<group>"; };
 		428B7272184F77AB00E3BB4E /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
 		428B7273184F77AB00E3BB4E /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
 		428B7274184F77AB00E3BB4E /* mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutation.h; sourceTree = "<group>"; };
@@ -330,6 +339,11 @@
 		42C6618418628626004476D3 /* isolated_subpopulations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isolated_subpopulations.h; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_meta_population.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_meta_population.cpp; sourceTree = "<group>"; };
 		42E1920E1872705C009EF3A7 /* stop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stop.h; sourceTree = "<group>"; };
+		42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
+		42E1922918771AE9009EF3A7 /* test_ealib copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test_ealib copy"; sourceTree = BUILT_PRODUCTS_DIR; };
+		42E1922A18771B21009EF3A7 /* test_ealib2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_ealib2.cpp; sourceTree = "<group>"; };
+		42E1922D1877487A009EF3A7 /* metapopulation_fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metapopulation_fitness.h; sourceTree = "<group>"; };
+		42E1922E18783995009EF3A7 /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -388,6 +402,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		42E1922318771AE9009EF3A7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42E1922418771AE9009EF3A7 /* libboost_unit_test_framework.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -414,6 +436,7 @@
 				42C661501860DC07004476D3 /* test_mp */,
 				42C6615D1860E008004476D3 /* test_mp copy */,
 				42C661791860FBE5004476D3 /* test_ealib copy */,
+				42E1922918771AE9009EF3A7 /* test_ealib copy */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -450,6 +473,7 @@
 			isa = PBXGroup;
 			children = (
 				42B55B6E1641C2C500F240C5 /* test.cpp */,
+				42E1922A18771B21009EF3A7 /* test_ealib2.cpp */,
 				423CBDF4157D0E450003A644 /* test.h */,
 				428B714E184F5EC900E3BB4E /* test_deep_markov_network.cpp */,
 				428B714F184F5EC900E3BB4E /* test_markov_network.cpp */,
@@ -500,17 +524,16 @@
 				428B721C184F77AB00E3BB4E /* analysis.h */,
 				428B721D184F77AB00E3BB4E /* ancestors.h */,
 				428B721E184F77AB00E3BB4E /* ann */,
-				428B722E184F77AB00E3BB4E /* attributes.h */,
 				428B722F184F77AB00E3BB4E /* cmdline_interface.h */,
 				428B7230184F77AB00E3BB4E /* comparators.h */,
+				42E1922E18783995009EF3A7 /* configuration.h */,
 				428B7231184F77AB00E3BB4E /* concepts.h */,
-				428B7232184F77AB00E3BB4E /* configuration.h */,
 				428B7233184F77AB00E3BB4E /* cvector.h */,
 				428B7234184F77AB00E3BB4E /* datafile.h */,
 				428B7235184F77AB00E3BB4E /* datafiles */,
 				428B723D184F77AB00E3BB4E /* devo */,
 				428B724B184F77AB00E3BB4E /* events.h */,
-				428B724C184F77AB00E3BB4E /* evolutionary_algorithm.h */,
+				42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */,
 				428B724D184F77AB00E3BB4E /* exceptions.h */,
 				428B724E184F77AB00E3BB4E /* fitness_function.h */,
 				428B724F184F77AB00E3BB4E /* fitness_functions */,
@@ -525,7 +548,7 @@
 				428B726D184F77AB00E3BB4E /* lifecycle.h */,
 				428B726E184F77AB00E3BB4E /* line_of_descent.h */,
 				428B726F184F77AB00E3BB4E /* meta_data.h */,
-				428B7270184F77AB00E3BB4E /* meta_population.h */,
+				428B7270184F77AB00E3BB4E /* metapopulation.h */,
 				428B7271184F77AB00E3BB4E /* mkv */,
 				428B7274184F77AB00E3BB4E /* mutation.h */,
 				428B7275184F77AB00E3BB4E /* novelty_search.h */,
@@ -539,6 +562,7 @@
 				428B7288184F77AB00E3BB4E /* selection.h */,
 				428B7280184F77AB00E3BB4E /* selection */,
 				42E1920E1872705C009EF3A7 /* stop.h */,
+				428B722E184F77AB00E3BB4E /* traits.h */,
 				428B725F184F77AB00E3BB4E /* translation.h */,
 			);
 			path = ea;
@@ -597,6 +621,7 @@
 			children = (
 				428B7236184F77AB00E3BB4E /* evaluations.h */,
 				428B7237184F77AB00E3BB4E /* fitness.h */,
+				42E1922D1877487A009EF3A7 /* metapopulation_fitness.h */,
 				428B7238184F77AB00E3BB4E /* population_entropy.h */,
 				428B7239184F77AB00E3BB4E /* priority.h */,
 				428B723A184F77AB00E3BB4E /* reactions.h */,
@@ -838,6 +863,23 @@
 			productReference = 42C661791860FBE5004476D3 /* test_ealib copy */;
 			productType = "com.apple.product-type.tool";
 		};
+		42E1921518771AE9009EF3A7 /* test_ealib2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 42E1922618771AE9009EF3A7 /* Build configuration list for PBXNativeTarget "test_ealib2" */;
+			buildPhases = (
+				42E1921618771AE9009EF3A7 /* Sources */,
+				42E1922318771AE9009EF3A7 /* Frameworks */,
+				42E1922518771AE9009EF3A7 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = test_ealib2;
+			productName = libea_test;
+			productReference = 42E1922918771AE9009EF3A7 /* test_ealib copy */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -867,6 +909,7 @@
 				428B711C18490E8F00E3BB4E /* test_mkv */,
 				42C661361860DC07004476D3 /* test_mp */,
 				42841C8315AFB14100AB18BE /* all */,
+				42E1921518771AE9009EF3A7 /* test_ealib2 */,
 			);
 		};
 /* End PBXProject section */
@@ -946,6 +989,14 @@
 				42C661651860FBE5004476D3 /* cmdline_interface.cpp in Sources */,
 				42C6616C1860FBE5004476D3 /* test.cpp in Sources */,
 				42C6617C1860FC0B004476D3 /* test_lod.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42E1921618771AE9009EF3A7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42E1922C18771B21009EF3A7 /* test_ealib2.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1108,6 +1159,20 @@
 			};
 			name = Release;
 		};
+		42E1922718771AE9009EF3A7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "test_ealib copy";
+			};
+			name = Debug;
+		};
+		42E1922818771AE9009EF3A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "test_ealib copy";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1188,6 +1253,15 @@
 			buildConfigurations = (
 				42C661771860FBE5004476D3 /* Debug */,
 				42C661781860FBE5004476D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		42E1922618771AE9009EF3A7 /* Build configuration list for PBXNativeTarget "test_ealib2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42E1922718771AE9009EF3A7 /* Debug */,
+				42E1922818771AE9009EF3A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
