@@ -128,7 +128,7 @@ namespace ealib {
         //! Fitness function type.
         typedef FitnessFunction fitness_function_type;
         //! Fitness type.
-        typedef typename fitness_function_type::value_type fitness_value_type;
+        typedef typename fitness_function_type::fitness_type fitness_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
@@ -260,14 +260,14 @@ namespace ealib {
             return p;
         }
         
-        //! Make a new subpopulation from a copy of another.
-        individual_ptr_type make_individual(const individual_type& ind) {
-            individual_ptr_type p(new individual_type(ind));
-            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
-            p->reset_rng(_rng.seed());
-            p->initialize();
-            return p;
-        }
+//        //! Make a new subpopulation from a copy of another.
+//        individual_ptr_type copy_individual(const individual_type& ind) {
+//            individual_ptr_type p(new individual_type(ind));
+//            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
+//            p->reset_rng(_rng.seed());
+//            p->initialize();
+//            return p;
+//        }
         
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }

@@ -252,10 +252,10 @@ namespace ealib {
          The value_type of Container must provide a constructor that can accept
          a row_type.  Container must support push_back.
          */
-        template <typename Container>
-        void translate(Container& c) {
+        template <typename Container, typename EA>
+        void translate(Container& c, EA& ea) {
             for(iterator i=begin(); i!=end(); ++i) {
-                c.push_back(typename Container::value_type(*i));
+                c.push_back(typename Container::value_type(*i,ea));
             }
         }
         

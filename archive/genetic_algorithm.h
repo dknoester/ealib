@@ -1,4 +1,4 @@
-/* evolutionary_algorithm.h
+/* genetic_algorithm.h
  *
  * This file is part of EALib.
  *
@@ -17,16 +17,183 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_EVOLUTIONARY_ALGORITHM_H_
-#define _EA_EVOLUTIONARY_ALGORITHM_H_
+#ifndef _EA_GENETIC_ALGORITHM_H_
+#define _EA_GENETIC_ALGORITHM_H_
+
+/* WARNING:
+ 
+ This code is in progress, and is likely to change dramatically.
+ 
+ (testing out an easier mech for properties & named template parameters)
+ 
+ */
+
+
+
+typedef .... ea_type;
+typedef properties<ea_type> props;
+
+
+void configure(ea,props) {
+    props.load(pfile);
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+cmdline_interface<ea_type> cmdline;
+// cmdline may set rng seed & override params
+
+void gather_options(EA& ea) {
+    tie(ea.POPULATION_SIZE, "ea.population_size");
+    tie(ea.REPRESENTATION_SIZE, "ea.representation_size");
+    
+}
+
+//
+void configure(EA& ea) {
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ 
+ configuration strategy == traits
+ individual attrs == traits
+ 
+ for single pop EAs, one config file
+ for meta pop EAs, two: one for the metapop, one for the subpop
+ 
+ 
+ there is a difference between having a property, and storing those properties
+ somewhere.  bottom line: cannot use unified MD store if we need two components
+ to have different values for the same MD element.
+ 
+ to do this, it must be object-based.
+ 
+ */
+
+typedef evolutionary_algorithm
+< representation<bitstring>
+, mutation_operator<per_site<bit_flip> >
+, recombination_operator<two_point_crossover>
+, generational_model<moran_process>
+> ea_type;
+
+template <typename Parameters, typename EA>
+class cmdline_interface : public ea_interface {
+public:
+    void gather_cmdline_options() {
+    }
+    
+protected:
+    
+};
+
+
+template <typename EA>
+struct ea_traits : public abstract_ea_traits {
+    typedef directS encoding_type;
+    typedef typename EA::representation_type phenotype;
+    typedef phenotype* phenotype_ptr;
+    
+    virtual void configure(EA& ea) {
+    }
+    
+    virtual void parameterize(EA& ea) {
+    }
+    
+};
+
+
+struct moran_process {
+    property<double> REPLACEMENT_RATE;
+    
+    void operator()(EA& ea) {
+        ea.POPULATION_SIZE
+        
+        
+    }
+
+
+};
+
+
+class property_tier {
+public:
+    
+};
+
+template <typename EA>
+void configure(ptree& pt, EA& ea) {
+    ptie
+    
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+pmap.tie(ea.moran_process)
+
+typedef evolutionary_algorithm
+< representation<bitstring>
+, mutation_operator<per_site>
+, recombination_operator<two_point_crossover>
+, generational_model<moran_process>
+> ea_type;
+
+ea_type ea; // this is the EA -- ONLY the EA.  still need to set the runtime params
+
+
+ea_properties eprop; // this is one way to set the EA properties; plenty others are possible
+eprop.tie(&ea.POPULATION_SIZE, "ea.population.size")
+.tie(&ea.mutation_operator().PER_SITE_P, "ea.mutation_operator.per_site_p");
+eprop.load(ptree / config file / etc);
+
+
+
+
+
 
 #include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ea/individual.h>
-
+#include <ea/attributes.h>
 #include <ea/concepts.h>
+#include <ea/configuration.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/individual.h>
 #include <ea/phenotype.h>
@@ -40,67 +207,203 @@
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>
-#include <ea/configuration.h>
+
+
+#include <iostream>
+#include <boost/parameter.hpp>
+
+namespace parameter = boost::parameter;
+
+
+BOOST_PARAMETER_TEMPLATE_KEYWORD(representation)
+BOOST_PARAMETER_TEMPLATE_KEYWORD(fitness_function)
+BOOST_PARAMETER_TEMPLATE_KEYWORD(mutation_operator)
+
+using boost::mpl::_;
+using namespace boost::parameter;
+
+typedef boost::parameter::parameters<
+required<tag::representation, is_class<_> >
+, optional<tag::fitness_function, is_class<_> >
+, optional<tag::mutation_operator, is_class<_> >
+> ea_signature;
+
+template <
+class A0,
+class A1 = parameter::void_,
+class A2 = parameter::void_
+>
+class evolutionary_algorithm {
+public:
+    
+    // Create ArgumentPack
+    typedef typename ea_signature::bind<A0,A1,A2>::type args;
+    
+    // Extract first logical parameter.
+    typedef typename parameter::binding<
+    args, tag::representation>::type representation;
+    
+    typedef typename parameter::binding<
+    args, tag::fitness_function>::type fitness_function;
+    
+    typedef typename parameter::binding<
+    args, tag::mutation_operator>::type mutation_operator;
+    
+    void update() {
+        cout << "foo" << endl;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    using namespace ealib;
+    
+    //evolutionary_function(0, _generational_model=7, _fitness_function=12);
+    
+    evolutionary_algorithm<
+    representation<int>,
+    mutation_operator<char>,
+    fitness_function<double>
+    > ea;
+    
+    ea.update();
+    return 0;
+}
+
+
 
 namespace ealib {
     
-	/*! Generic evolutionary algorithm class.
-	 
-	 This class is designed to be generic, such that all the main features of evolutionary
-	 algorithms can be easily incorporated.  The focus of this class is on the
-	 common features of most EAs, while leaving the problem-specific components
-	 easily customizable.
-	 */
-	template
-    < typename Individual
-    , typename AncestorGenerator
-	, typename FitnessFunction
-	, typename MutationOperator
-	, typename RecombinationOperator
-	, typename GenerationalModel
-    , typename EarlyStopCondition
-//    , typename InitialPopulationGenerator
-    , typename Configuration
-    > class evolutionary_algorithm {
+	/*! Canonical genetic algorithm.
+     
+     Genetic algorithms can be thought of as a collection of routines that 
+     stochastically update a population of bitstrings.  Since there are a 
+     variety of ways to do this, the details of updating the population are 
+     factored into a set of function objects (this is the core idea behind 
+     EALib).
+     
+     This class represents the canonical genetic algorithm (GA).  It uses a 
+     bitstring representation, sexual recombination (two-point crossover), has 
+     no population structure to speak of, and employs a steady state 
+     generational model atop fitness proportionate selection.
+     
+     The only template parameter that the user is required to supply is a 
+     fitness function, though the default options may, of course, be overridden.
+     
+     From the user's end, declaring a GA can be as simple as this:
+     
+     struct my_fitness_function {
+     template <typename Individual, typename Phenotype, typename EA>
+       double operator()(Individual& indiv, Phenotype& pheno, EA& ea) {
+         return 1.0;
+       }
+     };
+     
+     typedef genetic_algorithm<my_fitness_function> ga_type;
+     
+     ... and that's it (for declaring the GA).
+     
+     Of course, this does little for actually *using* the GA.  Running the GA
+     requires a bit more work, mostly to configure the various properties that
+     control things like population size, mutation rates, etc.  For that, see
+     interface.h -- Don't worry, it's easy. :-)
+     */
+    
+    
+    
+    
+    
+    template
+    < typename FitnessFunction
+    , typename Representation=representation::bitstring
+	, typename MutationOperator=recombination::two_point_crossover
+    , typename GenerationalModel=generational_model::steady_state<selection::proportionate< >, selection::tournament< > >,
+    > 
+    
+    
+    template <typename> class ConfigurationStrategy,
+    typename RecombinationOperator>
+    struct qhfc
+    : meta_population<
+    // embedded ea type:
+    evolutionary_algorithm<Representation,
+    MutationOperator,
+    FitnessFunction,
+    ConfigurationStrategy,
+    RecombinationOperator,
+    generational_models::deterministic_crowding< > >,
+    // mp types:
+    mutation::operators::no_mutation,
+    constant,
+    qhfc_configuration,
+    recombination::no_recombination,
+    generational_models::qhfc,
+    dont_stop,
+    attr::no_attributes> {
+    };
+    
+    
+    template
+    <typename FitnessFunction
+    > genetic_algorithm
+    : public evolutionary_algorithm
+    < representation<bitstring>
+    >
+    
+    
+	template <
+	typename Representation,
+	typename MutationOperator,
+	typename FitnessFunction,
+    template <typename> class ConfigurationStrategy=abstract_configuration,
+	typename RecombinationOperator=recombination::two_point_crossover,
+	typename GenerationalModel=generational_models::steady_state<selection::proportionate< >, selection::tournament< > >,
+    typename StopCondition=dont_stop,
+    template <typename> class IndividualAttrs=attr::default_attributes,
+    template <typename> class Individual=individual,
+	template <typename,typename> class Population=ealib::population,
+	template <typename> class EventHandler=event_handler,
+	typename MetaData=meta_data,
+	typename RandomNumberGenerator=ealib::default_rng_type>
+	class evolutionary_algorithm {
     public:
-        //! Tag for the population structure of this evolutionary algorithm.
+        //! Tag indicating the structure of this population.
         typedef singlePopulationS population_structure_tag;
-        //! Individual type.
-        typedef Individual individual_type;
-        //! Individual pointer type.
-        typedef typename individual_type::individual_ptr_type individual_ptr_type;
+        //! Meta-data type.
+        typedef MetaData md_type;
+        //! Random number generator type.
+        typedef RandomNumberGenerator rng_type;
+        //! Function that checks for a stopping condition.
+        typedef StopCondition stop_condition_type;
         //! Representation type.
-        typedef typename individual_type::representation_type representation_type;
-        //! Encoding type.
-        typedef typename individual_type::encoding_type encoding_type;
-        //! Phenotype type.
-        typedef typename individual_type::phenotype_type phenotype_type;
-        //! Phenotype pointer type.
-        typedef typename individual_type::phenotype_ptr_type phenotype_ptr_type;
-        //! Ancestor generator type.
-        typedef AncestorGenerator ancestor_generator_type;
+        typedef Representation representation_type;
         //! Fitness function type.
         typedef FitnessFunction fitness_function_type;
         //! Fitness type.
         typedef typename fitness_function_type::fitness_type fitness_type;
+        //! Attributes attached to individuals.
+        typedef IndividualAttrs<evolutionary_algorithm> individual_attr_type;
+        //! Individual type.
+        typedef Individual<evolutionary_algorithm> individual_type;
+        //! Individual pointer type.
+        typedef boost::shared_ptr<individual_type> individual_ptr_type;
+        //! Configuration object type.
+        typedef ConfigurationStrategy<evolutionary_algorithm> configuration_type;
+        //! Phenotype.
+        typedef typename configuration_type::phenotype phenotype;
+        //! Encoding type.
+        typedef typename configuration_type::encoding_type encoding_type;
+        //! Ancestor generator type.
+        typedef typename configuration_type::representation_generator_type representation_generator_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
         typedef RecombinationOperator recombination_operator_type;
         //! Generational model type.
         typedef GenerationalModel generational_model_type;
-        //! Function that checks for an early stopping condition.
-        typedef EarlyStopCondition stop_condition_type;
-        //! Configuration methods type.
-        typedef Configuration configuration_type;
-        //! Meta-data type.
-        typedef meta_data md_type;
-        //! Random number generator type.
-        typedef default_rng_type rng_type;
-        //! Event handler.
-        typedef event_handler<evolutionary_algorithm> event_handler_type;
         //! Population type.
-        typedef population<individual_type,individual_ptr_type> population_type;
+        typedef Population<individual_type, individual_ptr_type> population_type;
+        //! Event handler.
+        typedef EventHandler<evolutionary_algorithm> event_handler_type;
         //! Iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator over this EA's population.
@@ -109,7 +412,7 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-
+        
         //! Default constructor.
         evolutionary_algorithm() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
@@ -135,24 +438,24 @@ namespace ealib {
         
         //! Configure this EA.
         void configure() {
-            _configuration.configure(*this);
+            _configurator.configure(*this);
         }
         
         //! Build the initial population.
         void initial_population() {
-            generate_ancestors(ancestor_generator_type(), get<POPULATION_SIZE>(*this)-_population.size(), *this);
+            generate_ancestors(representation_generator_type(), get<POPULATION_SIZE>(*this)-_population.size(), *this);
         }
         
         //! Initialize this EA.
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
-            _configuration.initialize(*this);
+            _configurator.initialize(*this);
         }
         
         //! Reset the population.
         void reset() {
             nullify_fitness(_population.begin(), _population.end(), *this);
-            _configuration.reset(*this);
+            _configurator.reset(*this);
         }
         
         //! Reset the RNG.
@@ -247,10 +550,10 @@ namespace ealib {
         event_handler_type& events() { return _events; }
         
         //! Returns the configuration object.
-        configuration_type& config() { return _configuration; }
+        configuration_type& configuration() { return _configurator; }
         
         //! Accessor for the population model object.
-        population_type& get_population(){ return _population; }
+        population_type& population() { return _population; }
         
         //! Return the number of individuals in this EA.
         std::size_t size() const {
@@ -309,7 +612,7 @@ namespace ealib {
         stop_condition_type _stop; //!< Checks for an early stopping condition.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
-        configuration_type _configuration; //!< User-defined configuration methods.
+        configuration_type _configurator; //!< Configuration object.
         population_type _population; //!< Population instance.
         
     private:
@@ -322,9 +625,8 @@ namespace ealib {
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
             ar & boost::serialization::make_nvp("meta_data", _md);
         }
-
     };
     
 } // ea
-    
+
 #endif
