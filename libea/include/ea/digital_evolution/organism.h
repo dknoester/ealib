@@ -187,7 +187,7 @@ namespace ea {
             ar & boost::serialization::make_nvp("hardware", _hw);
             ar & boost::serialization::make_nvp("meta_data", _md);
             //ar & boost::serialization::make_nvp("io_buffer", _io);
-            ar & boost::serialization::make_nvp("location_handle", _location);
+            //ar & boost::serialization::make_nvp("location_handle", _location);
 		}
 		
 		template<class Archive>
@@ -206,7 +206,7 @@ namespace ea {
             ar & boost::serialization::make_nvp("hardware", _hw);
             ar & boost::serialization::make_nvp("meta_data", _md);
             //ar & boost::serialization::make_nvp("io_buffer", _io);
-            ar & boost::serialization::make_nvp("location_handle", _location);
+            //ar & boost::serialization::make_nvp("location_handle", _location);
         }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};	

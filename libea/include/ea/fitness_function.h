@@ -137,22 +137,22 @@ namespace ea {
         
         template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
-			bool null_fitness=is_null();
-			ar & BOOST_SERIALIZATION_NVP(null_fitness);
-			if(!null_fitness) {
+//			bool null_fitness=is_null();
+//			ar & BOOST_SERIALIZATION_NVP(null_fitness);
+//			if(!null_fitness) {
 				ar & boost::serialization::make_nvp("f", _f);
-			}
+//			}
 		}
 		
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
-			bool null_fitness=true;
-			ar & BOOST_SERIALIZATION_NVP(null_fitness);
-			if(null_fitness) {
-                nullify();
-			} else {
+//			bool null_fitness=true;
+//			ar & BOOST_SERIALIZATION_NVP(null_fitness);
+//			if(null_fitness) {
+//                nullify();
+//			} else {
 				ar & boost::serialization::make_nvp("f", _f);
-			}
+//			}
 		}
         
         value_type _f; //!< Fitness value.
