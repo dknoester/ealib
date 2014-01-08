@@ -251,6 +251,46 @@ namespace ea {
         //! Retrieves this AL's scheduler.
         scheduler_type& scheduler() { return _scheduler; }
         
+        //! Returns a begin iterator to the population.
+        iterator begin() {
+            return iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population.
+        iterator end() {
+            return iterator(_population.end());
+        }
+        
+        //! Returns a begin iterator to the population (const-qualified).
+        const_iterator begin() const {
+            return const_iterator(_population.begin());
+        }
+        
+        //! Returns an end iterator to the population (const-qualified).
+        const_iterator end() const {
+            return const_iterator(_population.end());
+        }
+        
+        //! Returns a reverse begin iterator to the population.
+        reverse_iterator rbegin() {
+            return reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population.
+        reverse_iterator rend() {
+            return reverse_iterator(_population.rend());
+        }
+        
+        //! Returns a reverse begin iterator to the population (const-qualified).
+        const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(_population.rbegin());
+        }
+        
+        //! Returns a reverse end iterator to the population (const-qualified).
+        const_reverse_iterator rend() const {
+            return const_reverse_iterator(_population.rend());
+        }
+
     protected:
         unsigned long _name;
         double _generation;
