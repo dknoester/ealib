@@ -159,6 +159,7 @@ namespace ea {
                 }                
             } else {
                 for(iterator i=begin(); i!=end(); ++i) {
+                    i->md() = md();
                     i->initialize();
                 }
             }
