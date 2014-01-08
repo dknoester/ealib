@@ -163,27 +163,12 @@ namespace ealib {
         
         /*! Configuration object for EAs that use Markov Networks.
          */
-        template <typename EA>
-        struct deep_configuration : public abstract_configuration<EA> {
-            typedef indirectS encoding_type;
-            typedef deep_markov_network< > phenotype;
-            typedef boost::shared_ptr<phenotype> phenotype_ptr;
+        struct deep_configuration : ealib::default_configuration {
             typedef std::vector<desc_type> desc_vector_type;
-            
-            //! Translate an individual's representation into a Markov Network.
-            virtual phenotype_ptr make_phenotype(typename EA::individual_type& ind,
-                                                 typename EA::rng_type& rng, EA& ea) {
-                phenotype_ptr p(new phenotype(desc.begin(), desc.end(), rng.seed()));
-                translate_genome(ind.repr(), start, translator, *p);
-                return p;
-            }
-            
-            //! Called as the first step of an EA's lifecycle.
-            virtual void configure(EA& ea) {
-            }
-            
-            //! Called as the final step of EA initialization.
-            virtual void initialize(EA& ea) {
+
+            //! Called after EA initialization.
+            template <typename EA>
+            void initialize(EA& ea) {
                 for(std::size_t i=0; i<get<MKV_LAYERS_N>(ea); ++i) {
                     desc.push_back(desc_type(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea)));
                 }
@@ -194,9 +179,25 @@ namespace ealib {
                 translator.disable(g);
             }
             
-            desc_vector_type desc; //!< Description for the deep Markov network (# in, out, & hidden).
+            desc_vector_type desc; //!< Description for Markov network (# in, out, & hidden).
             start_codon start; //!< Start codon detector.
             deep_genome_translator translator; //!< Genome translator.
+        };
+        
+        
+        template <typename T>
+        struct deep_traits {
+            //! Translate an individual's representation into a Markov Network.
+            template <typename EA>
+            typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
+                typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
+                translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
+                return p;
+            }
+            
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+            }
         };
         
     } // mkv

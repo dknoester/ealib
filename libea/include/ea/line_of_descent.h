@@ -44,15 +44,15 @@ namespace ealib {
     
     namespace traits {
         
-        /*! Line of descent (LoD) attribute.
+        /*! Line of descent (LoD) trait.
          */
         template <typename T>
-        struct lod_traits {
+        struct lod_trait {
             typedef typename T::individual_ptr_type individual_ptr_type;
             typedef std::set<individual_ptr_type> parent_set_type;
             
             //! Constructor.
-            lod_traits() {
+            lod_trait() {
             }
 
             //! Retrieve all of this individual's parents.
@@ -64,6 +64,7 @@ namespace ealib {
             //! Returns true if this individual has parents.
             bool has_parents() { return (_lod_parents.size() > 0); }
             
+            //! Serialize this LoD trait.
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
             }
@@ -227,8 +228,8 @@ namespace ealib {
          mrca happens to be the progenitor).
          */
         individual_ptr_type mrca(ea_type& ea) {
-            assert(ea.population().size()>0);
-            individual_ptr_type offspring=*ea.population().begin();
+            assert(ea.get_population().size()>0);
+            individual_ptr_type offspring=*ea.get_population().begin();
             individual_ptr_type parent;
             individual_ptr_type m=offspring;
             

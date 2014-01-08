@@ -238,9 +238,10 @@ namespace ealib {
             genome_translator translator; //!< Genome translator.
         };
         
-        
+        /*! Markov network specific traits for an individual.
+         */
         template <typename T>
-        struct traits : ealib::default_traits<T> {
+        struct traits {
             //! Translate an individual's representation into a Markov Network.
             template <typename EA>
             typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
@@ -251,10 +252,8 @@ namespace ealib {
             
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
-                ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<ealib::default_traits<T> >(*this));
             }
         };
-        
         
         typedef circular_genome<int> representation_type;
         typedef mutation::operators::indel<mutation::operators::per_site<mutation::site::uniform_integer> > mutation_type;

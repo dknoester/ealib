@@ -324,8 +324,6 @@ namespace ealib {
 
 
 	// ea.selection.*
-	LIBEA_MD_DECL(TOURNAMENT_SELECTION_N, "ea.selection.tournament.n", int);
-	LIBEA_MD_DECL(TOURNAMENT_SELECTION_K, "ea.selection.tournament.k", int);
 	
     // ea.rng.*
     LIBEA_MD_DECL(RNG_SEED, "ea.rng.seed", unsigned int);

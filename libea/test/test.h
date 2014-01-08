@@ -25,43 +25,21 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <sstream>
 
-#include <ea/analysis.h>
-#include <ea/lifecycle.h>
 #include <ea/evolutionary_algorithm.h>
 #include <ea/representations/bitstring.h>
 #include <ea/fitness_functions/all_ones.h>
+#include <ea/cmdline_interface.h>
+#include <ea/datafiles/fitness.h>
 
 using namespace ealib;
 
-template <typename EA>
-struct configuration : public abstract_configuration<EA> {
-//    typedef ancestors::random_bitstring representation_generator_type;
-    
-//    //! Called to generate the initial EA population.
-//    void initial_population(EA& ea) {
-//        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea), ea);
-//    }
-//    
-//    //! Called to generate n individuals into the given population.
-//    void fill_population(EA& ea) {
-//        generate_ancestors(ancestors::random_bitstring(), get<POPULATION_SIZE>(ea)-ea.size(), ea);
-//    }
-};
-
-typedef evolutionary_algorithm<
-bitstring,
-ancestors::random_bitstring,
-mutation::operators::per_site<mutation::site::bit>,
-all_ones
+typedef evolutionary_algorithm
+< individual<bitstring, all_ones>
+, ancestors::random_bitstring
+, mutation::operators::per_site<mutation::site::bit>
+, recombination::asexual
+, generational_models::steady_state< >
 > all_ones_ea;
-
-typedef evolutionary_algorithm<
-bitstring,
-ancestors::random_bitstring,
-mutation::operators::per_site<mutation::site::bit>,
-multi_all_ones
-> multi_all_ones_ea;
-
 
 template <typename EA>
 void add_std_meta_data(EA& ea) {

@@ -97,6 +97,11 @@ namespace ealib {
                 return _p != 0;
             }
 
+            //! Serialize this phenotype.
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+            }
+
             phenotype_ptr_type _p; //<! Pointer to this individual's phenotype.
         };
         

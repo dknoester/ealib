@@ -27,6 +27,9 @@
 #include <ea/meta_data.h>
 
 namespace ealib {
+    LIBEA_MD_DECL(TOURNAMENT_SELECTION_N, "ea.selection.tournament.n", int);
+	LIBEA_MD_DECL(TOURNAMENT_SELECTION_K, "ea.selection.tournament.k", int);
+
 	namespace selection {
 		
 		/*! Tournament selection.

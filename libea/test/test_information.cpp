@@ -1,4 +1,4 @@
-/* test_analysis.cpp
+/* test_information.cpp
  * 
  * This file is part of EALib.
  * 

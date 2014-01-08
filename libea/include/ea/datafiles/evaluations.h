@@ -27,8 +27,8 @@
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/min.hpp>
 #include <ea/datafile.h>
-#include <ea/attributes.h>
-#include <ea/meta_population.h>
+#include <ea/traits.h>
+#include <ea/metapopulation.h>
 
 
 namespace ealib {
@@ -61,7 +61,7 @@ namespace ealib {
                     
                     for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                         if(ealib::has_fitness(*i,ea)) {
-                            gen(i->generation());
+                            gen(get<IND_GENERATION>(*i));
                             fit(static_cast<double>(ealib::fitness(*i,ea)));
                         }
                     }

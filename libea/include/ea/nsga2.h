@@ -50,7 +50,7 @@ namespace ealib {
     
     //! Attributes that must be added to individuals to support NSGA2.
     template <typename T>
-    struct nsga2_traits : default_traits<T> {
+    struct nsga2_traits {
         typedef std::vector<typename T::individual_ptr_type> dominated_population_type;
         
         //! Constructor.
@@ -60,7 +60,6 @@ namespace ealib {
         //! Serialize some of these attributes.
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("default_attr", boost::serialization::base_object<default_traits<T> >(*this));
             ar & BOOST_SERIALIZATION_NVP(rank);
             ar & BOOST_SERIALIZATION_NVP(distance);
         }

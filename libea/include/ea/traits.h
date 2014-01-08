@@ -43,17 +43,19 @@ namespace ealib {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<traits::fitness_trait<T> >(*this));
+            ar & boost::serialization::make_nvp("phenotype_trait", boost::serialization::base_object<traits::phenotype_trait<T> >(*this));
         }
     };
     
     template <typename T>
-    struct default_lod_traits : traits::fitness_trait<T>, traits::phenotype_trait<T>, traits::lod_traits<T> {
+    struct default_lod_traits : traits::fitness_trait<T>, traits::phenotype_trait<T>, traits::lod_trait<T> {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<traits::fitness_trait<T> >(*this));
+            ar & boost::serialization::make_nvp("phenotype_trait", boost::serialization::base_object<traits::phenotype_trait<T> >(*this));
+            ar & boost::serialization::make_nvp("lod_trait", boost::serialization::base_object<traits::lod_trait<T> >(*this));
         }
     };
-    
     
     template <typename T>
     struct null_traits {

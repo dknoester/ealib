@@ -39,11 +39,13 @@ namespace ealib {
     , typename FitnessFunction
     , typename Phenotype=Representation
     , typename Encoding=directS
-    , template <typename> class Traits=ealib::default_traits
+    , template <typename> class Traits=default_traits
     > class individual {
 	public:
         //! Representation type; the "genome."
 		typedef Representation representation_type;
+        //! Fitness function type.
+        typedef FitnessFunction fitness_function_type;
         //! Fitness value type for this individual.
         typedef typename FitnessFunction::fitness_type fitness_type;
         //! Phenotype for this individual.

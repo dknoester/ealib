@@ -25,7 +25,7 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
-#include <ea/attributes.h>
+#include <ea/traits.h>
 #include <ea/concepts.h>
 #include <ea/configuration.h>
 #include <ea/generational_models/moran_process.h>

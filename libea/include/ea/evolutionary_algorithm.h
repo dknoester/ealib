@@ -54,13 +54,11 @@ namespace ealib {
 	template
     < typename Individual
     , typename AncestorGenerator
-	, typename FitnessFunction
 	, typename MutationOperator
 	, typename RecombinationOperator
 	, typename GenerationalModel
-    , typename EarlyStopCondition
-//    , typename InitialPopulationGenerator
-    , typename Configuration
+    , typename EarlyStopCondition=dont_stop
+    , typename Configuration=default_configuration
     > class evolutionary_algorithm {
     public:
         //! Tag for the population structure of this evolutionary algorithm.
@@ -77,12 +75,10 @@ namespace ealib {
         typedef typename individual_type::phenotype_type phenotype_type;
         //! Phenotype pointer type.
         typedef typename individual_type::phenotype_ptr_type phenotype_ptr_type;
+        //! Fitness function type.
+        typedef typename individual_type::fitness_function_type fitness_function_type;
         //! Ancestor generator type.
         typedef AncestorGenerator ancestor_generator_type;
-        //! Fitness function type.
-        typedef FitnessFunction fitness_function_type;
-        //! Fitness type.
-        typedef typename fitness_function_type::fitness_type fitness_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
