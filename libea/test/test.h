@@ -37,7 +37,7 @@ typedef evolutionary_algorithm
 < individual<bitstring, all_ones>
 , ancestors::random_bitstring
 , mutation::operators::per_site<mutation::site::bit>
-, recombination::asexual
+, recombination::two_point_crossover
 , generational_models::steady_state< >
 > all_ones_ea;
 
@@ -46,7 +46,6 @@ void add_std_meta_data(EA& ea) {
 	put<POPULATION_SIZE>(1024,ea);
 	put<STEADY_STATE_LAMBDA>(2,ea);
 	put<REPRESENTATION_SIZE>(10,ea);
-	put<MUTATION_GENOMIC_P>(0.1,ea);
 	put<MUTATION_PER_SITE_P>(0.1,ea);
 	put<TOURNAMENT_SELECTION_N>(2,ea);
 	put<TOURNAMENT_SELECTION_K>(1,ea);	

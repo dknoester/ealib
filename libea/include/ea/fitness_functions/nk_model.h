@@ -28,7 +28,6 @@ namespace ealib {
     
     LIBEA_MD_DECL(NK_MODEL_N, "ea.fitness_function.nk_model.n", unsigned int);
     LIBEA_MD_DECL(NK_MODEL_K, "ea.fitness_function.nk_model.k", unsigned int);
-    LIBEA_MD_DECL(NK_MODEL_BINS, "ea.fitness_function.nk_model.bins", unsigned int);
 	
     //! Selector for arithmetic NK landscape.
     struct arithmeticS { };
@@ -78,14 +77,13 @@ namespace ealib {
             int ktsize=1<<(K+1);
             int N = get<NK_MODEL_N>(ea);
             nkt.resize(N);
-            int bins = get<NK_MODEL_BINS>(ea,0);
             int seed = get<FF_RNG_SEED>(ea,0);
             // is this a random sample?  if so, get a random seed and save it for later
             // checkpointing.  we do it this way (instead of a 0 seed) because it's
             // quite likely that subsequent k tables could be generated at the same 
             // wall-clock time (which is what a seed of 0 means).
             if(seed == 0) {
-                seed = ea.rng()(std::numeric_limits<int>::max());
+                seed = ea.rng().seed();
                 put<FF_RNG_SEED>(seed,ea);
             }
             
@@ -94,11 +92,7 @@ namespace ealib {
                 kt.resize(ktsize);
                 typename EA::rng_type rng(seed+i);
                 for(int j=0; j<ktsize; ++j) {
-                    if(bins == 0) {
-                        kt[j] = rng.uniform_real_nz(0.0,1.0);
-                    } else {
-                        kt[j] = rng.uniform_integer(0,bins+1) * 1.0/static_cast<double>(bins);
-                    }
+                    kt[j] = rng.uniform_real_nz(0.0,1.0);
                 }
             }
         }

@@ -89,7 +89,7 @@ namespace ealib {
             typedef typename detail::phenotype_ptr<T,typename T::encoding_type>::ptr_type phenotype_ptr_type;
             
             //! Constructor.
-            phenotype_trait() {
+            phenotype_trait() : _p(0) {
             }
             
             //! Returns true if a phenotype is present.

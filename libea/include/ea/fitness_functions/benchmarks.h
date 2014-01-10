@@ -175,6 +175,7 @@ namespace ealib {
     /*! benchmarks - this fitness function allows you to select which fitness function to use - BENCHMARKS_FUNCTION
      */
     struct benchmarks : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
+        
         template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
             switch(get<BENCHMARKS_FUNCTION>(ea,-1)) {

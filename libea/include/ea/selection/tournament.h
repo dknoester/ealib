@@ -53,8 +53,7 @@ namespace ealib {
 				std::size_t K = get<TOURNAMENT_SELECTION_K>(ea);
 				while(n > 0) {
 					Population tourney;
-					std::insert_iterator<Population> tii(tourney,tourney.end());
-					ea.rng().sample_without_replacement(src.begin(), src.end(), tii, N);
+					ea.rng().sample_without_replacement(src.begin(), src.end(), std::back_inserter(tourney), N);
 					
                     std::sort(tourney.begin(), tourney.end(), Comparator<AttributeAccessor,EA>(ea));
                     typename Population::reverse_iterator rl=tourney.rbegin();

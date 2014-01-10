@@ -30,11 +30,15 @@
 #include <set>
 #include <sstream>
 #include <ctime>
+
 #include <ea/algorithm.h>
+#include <ea/meta_data.h>
 
 
 namespace ealib {
-	
+    
+    LIBEA_MD_DECL(RNG_SEED, "ea.rng.seed", unsigned int);
+
 	/*! Provides useful abstractions for dealing with random numbers.
 	 
 	 Note: when many random numbers are needed, consider using the uniform_X_rng
@@ -270,17 +274,14 @@ namespace ealib {
 		void sample_without_replacement(InputIterator first, InputIterator last, OutputIterator output, std::size_t n) {
 			typedef std::vector<std::size_t> replacement_type;
 			std::size_t range = std::distance(first, last);
-			replacement_type replace(range);
-			algorithm::iota(replace.begin(), replace.end());
+            assert(n <= range);
 			
-            assert(n <= replace.size());
-			for(; n>0; --n) {
-				replacement_type::iterator i=replace.begin();
-				std::advance(i, uniform_integer(0, replace.size()));
-                InputIterator t=first;
-                std::advance(t,*i);
-				*output++ = *t;
-				replace.erase(i);
+            replacement_type replace(range);
+			algorithm::iota(replace.begin(), replace.end());
+            std::random_shuffle(replace.begin(), replace.end(), *this);
+            
+			for(std::size_t i=0; n>0; --n, ++i) {
+                *output++ = first[replace[i]];
 			}
 		}
 		

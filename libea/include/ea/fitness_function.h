@@ -33,6 +33,11 @@
 #include <ea/events.h>
 
 namespace ealib {
+
+    LIBEA_MD_DECL(FF_RNG_SEED, "ea.fitness_function.rng_seed", int);
+    LIBEA_MD_DECL(FF_INITIAL_RNG_SEED, "ea.fitness_function.initial_rng_seed", int);
+    LIBEA_MD_DECL(FF_INITIALIZATION_PERIOD, "ea.fitness_function.initialization_period", int);
+
     namespace traits {
         
         //! Fitness trait for an individual.
@@ -256,6 +261,7 @@ namespace ealib {
     typename DirectionTag=maximizeS>
     struct multivalued_fitness {
         typedef unary_fitness<T,DirectionTag> objective_type;
+        typedef DirectionTag direction_tag;
         typedef std::vector<objective_type> value_type;
         
         //! Constructor.
@@ -318,6 +324,7 @@ namespace ealib {
     struct fitness_function {
         typedef T fitness_type;
         typedef typename fitness_type::value_type value_type;
+        typedef typename fitness_type::direction_tag direction_tag;
         typedef ConstantTag constant_tag;
         typedef StabilityTag stability_tag;
         

@@ -310,9 +310,6 @@ namespace ealib {
     LIBEA_MD_DECL(LOCATION_DATA, "ea.environment.location.color", int);
 
     // ea.fitness_function.*
-    LIBEA_MD_DECL(FF_RNG_SEED, "ea.fitness_function.rng_seed", int);
-    LIBEA_MD_DECL(FF_INITIAL_RNG_SEED, "ea.fitness_function.initial_rng_seed", int);
-    LIBEA_MD_DECL(FF_INITIALIZATION_PERIOD, "ea.fitness_function.initialization_period", int);
     
 
     // ea.landscape.*
@@ -326,7 +323,6 @@ namespace ealib {
 	// ea.selection.*
 	
     // ea.rng.*
-    LIBEA_MD_DECL(RNG_SEED, "ea.rng.seed", unsigned int);
     
     // ea.statistics.*
     LIBEA_MD_DECL(RECORDING_PERIOD, "ea.statistics.recording.period", unsigned long);

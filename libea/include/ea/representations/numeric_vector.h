@@ -45,7 +45,11 @@ namespace ealib {
 		
 		//! Constructor.
 		numeric_vector() : base_type() { }
-		
+
+		//! Copy constructor.
+        numeric_vector(const numeric_vector& that) : base_type(that) {
+        }
+        
 		//! Constructor that initializes to the given size.
 		numeric_vector(const std::size_t n) : base_type(n) { }
 
@@ -53,6 +57,14 @@ namespace ealib {
         template <typename InputIterator>
 		numeric_vector(InputIterator f, InputIterator l) : base_type(f, l) {
 		}
+
+        //! Assignment operator.
+        numeric_vector& operator=(const numeric_vector& that) {
+            if(this != &that) {
+                static_cast<base_type*>(this)->operator=(that);
+            }
+            return *this;
+        }
 
         // These enable a more compact serialization of the genome.
 		template<class Archive>

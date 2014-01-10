@@ -21,7 +21,7 @@
 
 /*! Test of EA checkpointing.
  */
-BOOST_AUTO_TEST_CASE(ealib_checkpoint) {
+BOOST_AUTO_TEST_CASE(test_checkpoint) {
     all_ones_ea ea1, ea2;
     add_std_meta_data(ea1);
     ea1.initialize();
@@ -45,5 +45,26 @@ BOOST_AUTO_TEST_CASE(ealib_checkpoint) {
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
         BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
         BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_replicability) {
+    all_ones_ea ea1, ea2;
+    add_std_meta_data(ea1);
+    add_std_meta_data(ea2);
+    ea1.rng().reset(42);
+    ea2.rng().reset(42);
+    
+    lifecycle::prepare_new(ea1);
+    lifecycle::prepare_new(ea2);
+    
+    lifecycle::advance_epoch(100,ea1);
+    lifecycle::advance_epoch(100,ea2);
+    
+    // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
+    for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
+        BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
+        BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
+        BOOST_CHECK(ea1.rng() == ea2.rng());
     }
 }

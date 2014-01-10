@@ -177,9 +177,9 @@ namespace ealib {
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
                 // build the offspring:
-                typename Population::iterator p=parents.begin();
-                typename EA::representation_type o1=(*p)->repr();
-                typename EA::representation_type o2=(*++p)->repr();
+                assert(parents.size() == capacity());
+                typename EA::representation_type o1=parents[0]->repr();
+                typename EA::representation_type o2=parents[1]->repr();
                 
                 // they need to be the same size...
                 assert(o1.size() == o2.size());

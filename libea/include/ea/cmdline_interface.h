@@ -37,6 +37,7 @@
 #include <ea/analysis/tool.h>
 #include <ea/lifecycle.h>
 #include <ea/datafiles/runtime.h>
+#include <ea/rng.h>
 
 namespace ealib {
 

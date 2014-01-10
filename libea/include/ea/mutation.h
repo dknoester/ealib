@@ -28,7 +28,6 @@
 namespace ealib {
     
     // ea.mutation.*
-	LIBEA_MD_DECL(MUTATION_GENOMIC_P, "ea.mutation.genomic.p", double);
 	LIBEA_MD_DECL(MUTATION_PER_SITE_P, "ea.mutation.site.p", double);
 	LIBEA_MD_DECL(MUTATION_DUPLICATION_P, "ea.mutation.duplication.p", double);
 
@@ -92,30 +91,7 @@ namespace ealib {
 		mutate(first, last, mutator, ea);
 	}
 	
-	
-	/*! Probabilistically mutate a range of individuals.
-	 */
-	template <typename ForwardIterator, typename Mutator, typename EA>
-	void mutate_p(ForwardIterator first, ForwardIterator last, Mutator& mutator, const double prob, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
-		for( ; first!=last; ++first) {
-			if(ea.rng().p(prob)) {
-				mutate(ind(first,ea), mutator, ea);
-			}
-		}
-	}
-	
-	
-	/*! Probabilisitically mutate a range of individuals using the EA's embedded types.
-	 */
-	template <typename ForwardIterator, typename EA>
-	void mutate_p(ForwardIterator first, ForwardIterator last, const double prob, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-		typename EA::mutation_operator_type mutator;
-		mutate_p(first, last, mutator, prob, ea);
-	}
-    
+
     namespace mutation {
         
         namespace site {

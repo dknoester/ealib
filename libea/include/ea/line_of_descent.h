@@ -54,16 +54,26 @@ namespace ealib {
             //! Constructor.
             lod_trait() {
             }
+            
+            //! Clear this individual's parents.
+            void lod_clear() {
+                _lod_parents.clear();
+            }
 
             //! Retrieve all of this individual's parents.
             parent_set_type& lod_parents() { return _lod_parents; }
             
             //! Shorthand for asexual populations.
-            individual_ptr_type lod_parent() { return *_lod_parents.begin(); }
+            individual_ptr_type lod_parent() {
+                assert(!_lod_parents.empty());
+                return *_lod_parents.begin();
+            }
             
             //! Returns true if this individual has parents.
-            bool has_parents() { return (_lod_parents.size() > 0); }
-            
+            bool has_parents() {
+                return !_lod_parents.empty();
+            }
+
             //! Serialize this LoD trait.
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
