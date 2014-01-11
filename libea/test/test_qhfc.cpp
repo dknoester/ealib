@@ -18,29 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "test.h"
+#include <ea/fitness_functions/all_ones.h>
 #include <ea/qhfc.h>
 
 
 BOOST_AUTO_TEST_CASE(test_qhfc) {
-    
-    typedef meta_population<
-    // embedded ea type:
-    evolutionary_algorithm<bitstring,
-    mutation::operators::per_site<mutation::site::bit>,
-    all_ones,
-    configuration,
-    recombination::two_point_crossover,
-    generational_models::deterministic_crowding< > >,
-    // mp types:
-    mutation::operators::no_mutation,
-    constant,
-    qhfc_configuration,
-    recombination::no_recombination,
-    generational_models::qhfc,
-    attr::no_attributes> ea_type;
+    typedef qhfc
+    < individual<bitstring,all_ones>
+    , ancestors::random_bitstring
+    , mutation::operators::per_site<mutation::site::bit>
+    , recombination::two_point_crossover
+    > ea_type;
     
     ea_type M;
-    M.configure();
     put<POPULATION_SIZE>(50,M);
     put<META_POPULATION_SIZE>(5,M);
 	put<REPRESENTATION_SIZE>(100,M);

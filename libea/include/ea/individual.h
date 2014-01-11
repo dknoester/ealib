@@ -22,6 +22,7 @@
 
 #include <boost/serialization/nvp.hpp>
 #include <sstream>
+
 #include <ea/meta_data.h>
 #include <ea/phenotype.h>
 #include <ea/traits.h>
@@ -84,10 +85,6 @@ namespace ealib {
                 _traits = that._traits;
             }
             return *this;
-        }
-        
-        //! Destructor.
-        virtual ~individual() {
         }
         
 		//! Retrieve this individual's representation.

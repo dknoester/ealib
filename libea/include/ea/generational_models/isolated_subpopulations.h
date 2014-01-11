@@ -38,7 +38,7 @@ namespace ealib {
                 BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
                 BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
                 for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
-                    (*i)->update();
+                    (*i)->repr().update();
                 }
             }
         };

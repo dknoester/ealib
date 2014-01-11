@@ -1,4 +1,4 @@
-/* test_meta_population.cpp
+/* test_metapopulation.cpp
  *
  * This file is part of EALib.
  *
@@ -18,9 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "test.h"
-#include <ea/meta_population.h>
+#include <ea/metapopulation.h>
 
 BOOST_AUTO_TEST_CASE(test_meta_population) {
-    typedef meta_population<all_ones_ea> mea_type;
-    mea_type M;
+    typedef metapopulation<subpopulation<all_ones_ea,constant> > ea_type;
+    ea_type M;
+    add_std_meta_data(M);
+    put<META_POPULATION_SIZE>(5,M);
+    
+    M.initialize();
+    M.initial_population();
+    lifecycle::advance_epoch(10,M);
 }

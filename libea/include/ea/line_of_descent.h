@@ -31,7 +31,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <set>
 
 #include <ea/datafile.h>
 #include <ea/events.h>
@@ -40,8 +39,6 @@
 #include <ea/devo/organism.h>
 
 namespace ealib {
-
-    
     namespace traits {
         
         /*! Line of descent (LoD) trait.
@@ -49,7 +46,7 @@ namespace ealib {
         template <typename T>
         struct lod_trait {
             typedef typename T::individual_ptr_type individual_ptr_type;
-            typedef std::set<individual_ptr_type> parent_set_type;
+            typedef std::vector<individual_ptr_type> parent_vector_type;
             
             //! Constructor.
             lod_trait() {
@@ -61,12 +58,12 @@ namespace ealib {
             }
 
             //! Retrieve all of this individual's parents.
-            parent_set_type& lod_parents() { return _lod_parents; }
+            parent_vector_type& lod_parents() { return _lod_parents; }
             
             //! Shorthand for asexual populations.
             individual_ptr_type lod_parent() {
                 assert(!_lod_parents.empty());
-                return *_lod_parents.begin();
+                return _lod_parents.front();
             }
             
             //! Returns true if this individual has parents.
@@ -79,7 +76,7 @@ namespace ealib {
             void serialize(Archive& ar, const unsigned int version) {
             }
 
-            parent_set_type _lod_parents; //!< Set of pointers to this individual's parents.
+            parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.
         };
         
     } // traits
@@ -305,7 +302,7 @@ namespace ealib {
                                 typename EA::individual_type& offspring,
                                 EA& ea) {
             for(typename EA::population_type::iterator i=parents.begin(); i!=parents.end(); ++i) {
-                offspring.traits().lod_parents().insert(*i);
+                offspring.traits().lod_parents().push_back(*i);
             }
         }
     };

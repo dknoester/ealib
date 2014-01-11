@@ -39,56 +39,12 @@
 #include <ea/recombination.h>
 #include <ea/stop.h>
 #include <ea/traits.h>
+#include <ea/subpopulation.h>
 
 namespace ealib {
     
     LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.metapopulation.size", unsigned int);
     LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.metapopulation.competition_period", unsigned int);
-
-    template
-    < typename EA
-    , typename FitnessFunction=constant
-    , template <typename> class Traits=default_traits
-    > struct subpopulation : public EA {
-        //! Subpopulation EA type.
-        typedef EA ea_type;
-        //! Synonym for the EA type.
-        typedef ea_type representation_type;
-        //! Fitness value type for this individual.
-        typedef typename FitnessFunction::fitness_type fitness_type;
-        //! Phenotype for this individual.
-        typedef ea_type phenotype_type;
-        //! Encoding of this individual.
-        typedef directS encoding_type;
-        //! Pointer to this individual.
-        typedef boost::shared_ptr<subpopulation> individual_ptr_type;
-        //! Traits for this individual.
-        typedef Traits<subpopulation> traits_type;
-        //! Phenotype pointer type.
-        typedef typename traits_type::phenotype_ptr_type phenotype_ptr_type;
-
-        //! Default constructor.
-        subpopulation() {
-        }
-        
-        //! Copy constructor.
-        subpopulation(const ea_type& ea) : EA(ea) {
-        }
-
-        //! Retrieve this individual's attributes.
-        traits_type& traits() { return _traits; }
-        
-        //! Retrieve this individual's attributes (const-qualified).
-        const traits_type& traits() const { return _traits; }
-        
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("ea", boost::serialization::base_object<ea_type>(*this));
-            ar & boost::serialization::make_nvp("traits", _traits);
-		}
-
-        traits_type _traits; //!< This subpopulation's attributes.
-    };
 
     
     /*! Metapopulation evolutionary algorithm, where individuals in the population
@@ -97,11 +53,14 @@ namespace ealib {
      By default, a meta-population EA provides something akin to an island model,
      where the subpopulations are completely isolated from one another, and individuals
      do not migrate among subpopulations.
+     
+     Note that a metapopulation EA conforms to the same concepts as a single
+     population EA, which means that an "individual" in a metapopulation is an
+     entire subpopulation.
      */
     template
     < typename Subpopulation
     , typename AncestorGenerator=ancestors::default_representation
-	, typename FitnessFunction=constant
     , typename MutationOperator=mutation::operators::no_mutation
     , typename RecombinationOperator=recombination::no_recombination
     , typename GenerationalModel=generational_models::isolated_subpopulations
@@ -113,22 +72,22 @@ namespace ealib {
     public:
         //! Tag indicating the structure of this population.
         typedef multiPopulationS population_structure_tag;
-        //! Subpopulation type (which are themselves EAs).
-        typedef Subpopulation subpopulation_type;
-        //! Subpopulation pointer type.
-        typedef boost::shared_ptr<subpopulation_type> subpopulation_ptr_type;
-        //! Synonym for sub_population_type.
-        typedef subpopulation_type individual_type;
-        //! Synonym for sub_population_ptr_type.
-        typedef subpopulation_ptr_type individual_ptr_type;
-        //! Synonym for the EA type.
-        typedef typename subpopulation_type::representation_type representation_type;
+        //! Individual type (note that this is a *subpopulation*).
+        typedef Subpopulation individual_type;
+        //! Individual pointer type.
+        typedef typename individual_type::individual_ptr_type individual_ptr_type;
+        //! Representation type.
+        typedef typename individual_type::representation_type representation_type;
+        //! Encoding type.
+        typedef typename individual_type::encoding_type encoding_type;
+        //! Phenotype type.
+        typedef typename individual_type::phenotype_type phenotype_type;
+        //! Phenotype pointer type.
+        typedef typename individual_type::phenotype_ptr_type phenotype_ptr_type;
+        //! Fitness function type.
+        typedef typename individual_type::fitness_function_type fitness_function_type;
         //! Ancestor generator type.
         typedef AncestorGenerator ancestor_generator_type;
-        //! Fitness function type.
-        typedef FitnessFunction fitness_function_type;
-        //! Fitness type.
-        typedef typename fitness_function_type::fitness_type fitness_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
         //! Crossover operator type.
@@ -146,7 +105,7 @@ namespace ealib {
         //! Event handler.
         typedef event_handler<metapopulation> event_handler_type;
         //! Population type.
-        typedef population<subpopulation_type,subpopulation_ptr_type> population_type;
+        typedef population<individual_type,individual_ptr_type> population_type;
         //! Iterator over the subpopulations in this metapopulation.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator over this EA's population.
@@ -155,11 +114,16 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-
+        //! Type of the embedded EA.
+        typedef typename individual_type::ea_type subea_type;
+        //! Subpopulation type.
+        typedef typename individual_type::ea_type::population_type subpopulation_type;
+        
+        
+        
         //! Construct a meta-population EA.
         metapopulation() {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<metapopulation>));
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<individual_type>));
             configure();
         }
         
@@ -179,8 +143,8 @@ namespace ealib {
             
             // initialize and build the initial populations for each subpopulation:
             for(iterator i=begin(); i!=end(); ++i) {
-                i->initialize();
-                i->initial_population();
+                i->repr().initialize();
+                i->repr().initial_population();
             }
         }
 
@@ -207,7 +171,7 @@ namespace ealib {
         //! Reset all populations.
         void reset() {
             for(iterator i=begin(); i!=end(); ++i) {
-                i->reset();
+                i->ea().reset();
             }
             _configurator.reset(*this);
         }
@@ -220,7 +184,7 @@ namespace ealib {
         //! Begin an epoch.
         void begin_epoch() {
             for(iterator i=begin(); i!=end(); ++i) {
-                i->begin_epoch();
+                i->repr().begin_epoch();
             }
             _events.record_statistics(*this);
         }
@@ -228,7 +192,7 @@ namespace ealib {
         //! End an epoch.
         void end_epoch() {
             for(iterator i=begin(); i!=end(); ++i) {
-                i->events().end_of_epoch(*i); // don't checkpoint!
+                i->repr().events().end_of_epoch(i->repr()); // don't checkpoint!
             }
             
             _events.end_of_epoch(*this); // checkpoint!
@@ -254,20 +218,20 @@ namespace ealib {
         //! Make a new subpopulation from a representation (ea_type).
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
-            p->md() += md(); // WARNING: Meta-data comes from the meta-population.
-            p->reset_rng(_rng.seed());
-            p->initialize();
+            p->repr().md() += md(); // WARNING: Meta-data comes from the meta-population.
+            p->repr().reset_rng(_rng.seed());
+            p->repr().initialize();
             return p;
         }
         
-//        //! Make a new subpopulation from a copy of another.
-//        individual_ptr_type copy_individual(const individual_type& ind) {
-//            individual_ptr_type p(new individual_type(ind));
-//            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
-//            p->reset_rng(_rng.seed());
-//            p->initialize();
-//            return p;
-//        }
+        //        //! Make a new subpopulation from a copy of another.
+        //        individual_ptr_type copy_individual(const individual_type& ind) {
+        //            individual_ptr_type p(new individual_type(ind));
+        //            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
+        //            p->reset_rng(_rng.seed());
+        //            p->initialize();
+        //            return p;
+        //        }
         
         //! Accessor for the random number generator.
         rng_type& rng() { return _rng; }
@@ -299,7 +263,7 @@ namespace ealib {
         //! Return the number of embedded EAs.
         std::size_t size() const { return _population.size(); }
         
-        //! Return the n'th embedded EAs.
+        //! Return the n'th subpopulation.
         individual_type& operator[](std::size_t n) {
             return *_population[n];
         }
@@ -382,7 +346,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("metapopulation_size", s);
             for(std::size_t i=0; i<s; ++i) {
                 individual_ptr_type p(new individual_type());
-                p->configure();
+                p->ea().configure();
                 ar & boost::serialization::make_nvp("subpopulation", *p);
                 _population.push_back(p);
             }
