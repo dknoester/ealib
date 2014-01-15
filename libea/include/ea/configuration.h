@@ -20,14 +20,27 @@
 #ifndef _EA_CONFIGURATION_H_
 #define _EA_CONFIGURATION_H_
 
+#include <ea/ptr_population.h>
+#include <ea/ancestors.h>
+
 namespace ealib {
+    
+    /*! Functor to fill the population with randomly-generated ancestors.
+     */
+    struct fill_random {
+        template <typename EA>
+        void operator()(EA& ea) {
+            generate_ancestors(typename EA::ancestor_generator_type(), get<POPULATION_SIZE>(ea)-ea.size(), ea);
+        }
+    };
+    
     
     /*! Placeholder for user-defined configuration functions.
      */
     struct default_configuration {
-        //! Called as the last step of construction.
+        //! Called after construction of the EA.
         template <typename EA>
-        void configure(EA& ea) {
+        void after_construction(EA& ea) {
         }
         
         //! Called after EA initialization.

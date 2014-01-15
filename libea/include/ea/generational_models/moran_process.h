@@ -21,7 +21,6 @@
 #define _EA_GENERATIONAL_MODELS_MORAN_PROCESS_H_
 
 #include <ea/meta_data.h>
-#include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>
 
@@ -45,7 +44,7 @@ namespace ealib {
 		 */
         template <typename ParentSelectionStrategy=selection::proportionate< >,
         typename SurvivorSelectionStrategy=selection::random>
-		struct moran_process : public generational_model {
+		struct moran_process {
             typedef ParentSelectionStrategy parent_selection_type;
             typedef SurvivorSelectionStrategy survivor_selection_type;
 

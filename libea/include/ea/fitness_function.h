@@ -342,11 +342,6 @@ namespace ealib {
         std::size_t size() const {
             return 1;
         }
-        
-        //! Serialize this fitness function.
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) { 
-        }
     };
     
     

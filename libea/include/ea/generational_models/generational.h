@@ -21,7 +21,6 @@
 #define _EA_GENERATIONAL_MODELS_GENERATIONAL_H_
 
 #include <ea/meta_data.h>
-#include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 
@@ -44,7 +43,7 @@ namespace ealib {
         template <
         typename ParentSelectionStrategy=selection::proportionate< >,
         typename SurvivorSelectionStrategy=selection::tournament< > >
-		struct generational : public generational_model {
+		struct generational {
             typedef ParentSelectionStrategy parent_selection_type;
             typedef SurvivorSelectionStrategy survivor_selection_type;
 			

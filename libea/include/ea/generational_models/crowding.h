@@ -23,7 +23,6 @@
 #include <algorithm>
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
-#include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 
@@ -39,7 +38,7 @@ namespace ealib {
          - Most fit of both (parent,offspring) pairs survives
 		 */
         template <typename DistanceMeasure=algorithm::hamming_distance_functor>
-		struct deterministic_crowding : public generational_model {
+		struct deterministic_crowding {
             typedef DistanceMeasure distance_measure_type;
 			
 			//! Apply this generational model to the EA to produce a single new generation.

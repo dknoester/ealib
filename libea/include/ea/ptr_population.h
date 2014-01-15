@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_POPULATION_H_
-#define _EA_POPULATION_H_
+#ifndef _EA_PTR_POPULATION_H_
+#define _EA_PTR_POPULATION_H_
 
 #include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -32,6 +32,8 @@
 
 namespace ealib {
     
+	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
+    
     //! Tag that indicates a single population is being used.
     struct singlePopulationS { };
     
@@ -41,43 +43,43 @@ namespace ealib {
     /*! Population; a container for individuals.
 	 */
 	template <typename Individual, typename IndividualPtr>
-	class population : public std::vector<IndividualPtr> {
+	class ptr_population : public std::vector<IndividualPtr> {
 	public:
         typedef Individual individual_type;
         typedef IndividualPtr individual_ptr_type;
 		
-		typedef std::vector<individual_ptr_type> base_type;
-        typedef typename base_type::value_type value_type;
-		typedef typename base_type::iterator iterator;
-		typedef typename base_type::const_iterator const_iterator;
-		typedef typename base_type::reverse_iterator reverse_iterator;
+		typedef std::vector<individual_ptr_type> parent;
+        typedef typename parent::value_type value_type;
+		typedef typename parent::iterator iterator;
+		typedef typename parent::const_iterator const_iterator;
+		typedef typename parent::reverse_iterator reverse_iterator;
 		
 		//! Constructor.
-		population() {
+		ptr_population() {
 		}
         
         //! Initializing constructor.
-        population(std::size_t n) : base_type(n) {
+        ptr_population(std::size_t n) : parent(n) {
         }
 
         //! Initializing constructor.
-        population(std::size_t n, const value_type& t) : base_type(n,t) {
+        ptr_population(std::size_t n, const value_type& t) : parent(n,t) {
         }
 
         //! Initializing constructor.
         template <typename ForwardIterator>
-        population(ForwardIterator f, ForwardIterator l) : base_type(f,l) {
+        ptr_population(ForwardIterator f, ForwardIterator l) : parent(f,l) {
         }
         
         //! Operator ==
-        bool operator==(const population& that) {
+        bool operator==(const ptr_population& that) {
             typedef boost::indirect_iterator<const_iterator> ici;
-            return (base_type::size() == that.size())
-            && std::equal(ici(base_type::begin()), ici(base_type::end()), ici(that.begin()));
+            return (parent::size() == that.size())
+            && std::equal(ici(parent::begin()), ici(parent::end()), ici(that.begin()));
         }
         
         //! Destructor.
-        virtual ~population() {
+        virtual ~ptr_population() {
         }
         
 	private:
@@ -85,9 +87,9 @@ namespace ealib {
         
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
-            std::size_t s = base_type::size();
+            std::size_t s = parent::size();
             ar & boost::serialization::make_nvp("population_size", s);
-            for(const_iterator i=base_type::begin(); i!=base_type::end(); ++i) {
+            for(const_iterator i=parent::begin(); i!=parent::end(); ++i) {
                 ar & boost::serialization::make_nvp("individual", **i);
             }
 		}
@@ -97,10 +99,9 @@ namespace ealib {
             std::size_t s;
             ar & boost::serialization::make_nvp("population_size", s);
             for(std::size_t i=0; i<s; ++i) {
-                individual_type j;
-                ar & boost::serialization::make_nvp("individual", j);
-                individual_ptr_type p(new individual_type(j));
-                base_type::push_back(p);
+                individual_ptr_type p(new individual_type());
+                ar & boost::serialization::make_nvp("individual", *p);
+                parent::push_back(p);
             }
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();		

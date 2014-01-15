@@ -21,7 +21,6 @@
 #define _EA_GENERATIONAL_MODELS_IN_PLACE_H_
 
 #include <ea/meta_data.h>
-#include <ea/generational_model.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 
@@ -43,7 +42,7 @@ namespace ealib {
         template <
         typename ParentSelectionStrategy=selection::proportionate< >,
         typename SurvivorSelectionStrategy=selection::tournament< > >
-        struct in_place : public generational_model {
+        struct in_place {
             typedef ParentSelectionStrategy parent_selection_type;
             typedef SurvivorSelectionStrategy survivor_selection_type;
 			

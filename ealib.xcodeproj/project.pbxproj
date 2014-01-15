@@ -273,7 +273,6 @@
 		428B7253184F77AB00E3BB4E /* nk_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nk_model.h; sourceTree = "<group>"; };
 		428B7254184F77AB00E3BB4E /* target.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = target.h; sourceTree = "<group>"; };
 		428B7255184F77AB00E3BB4E /* functional.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = functional.h; sourceTree = "<group>"; };
-		428B7256184F77AB00E3BB4E /* generational_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generational_model.h; sourceTree = "<group>"; };
 		428B7258184F77AB00E3BB4E /* crowding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crowding.h; sourceTree = "<group>"; };
 		428B7259184F77AB00E3BB4E /* generational.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = generational.h; sourceTree = "<group>"; };
 		428B725A184F77AB00E3BB4E /* moran_process.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = moran_process.h; sourceTree = "<group>"; };
@@ -301,7 +300,7 @@
 		428B7274184F77AB00E3BB4E /* mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutation.h; sourceTree = "<group>"; };
 		428B7275184F77AB00E3BB4E /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		428B7276184F77AB00E3BB4E /* phenotype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = phenotype.h; sourceTree = "<group>"; };
-		428B7277184F77AB00E3BB4E /* population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population.h; sourceTree = "<group>"; };
+		428B7277184F77AB00E3BB4E /* ptr_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ptr_population.h; sourceTree = "<group>"; };
 		428B7278184F77AB00E3BB4E /* recombination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recombination.h; sourceTree = "<group>"; };
 		428B727A184F77AB00E3BB4E /* bitstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bitstring.h; sourceTree = "<group>"; };
 		428B727B184F77AB00E3BB4E /* circular_genome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = circular_genome.h; sourceTree = "<group>"; };
@@ -533,7 +532,6 @@
 				428B724E184F77AB00E3BB4E /* fitness_function.h */,
 				428B724F184F77AB00E3BB4E /* fitness_functions */,
 				428B7255184F77AB00E3BB4E /* functional.h */,
-				428B7256184F77AB00E3BB4E /* generational_model.h */,
 				428B7257184F77AB00E3BB4E /* generational_models */,
 				428B725E184F77AB00E3BB4E /* generators.h */,
 				428B7260184F77AB00E3BB4E /* graph.h */,
@@ -549,7 +547,7 @@
 				428B7275184F77AB00E3BB4E /* novelty_search.h */,
 				4252D4DA18648E3F00A54FC5 /* nsga2.h */,
 				428B7276184F77AB00E3BB4E /* phenotype.h */,
-				428B7277184F77AB00E3BB4E /* population.h */,
+				428B7277184F77AB00E3BB4E /* ptr_population.h */,
 				42C661351860D6E1004476D3 /* qhfc.h */,
 				428B7278184F77AB00E3BB4E /* recombination.h */,
 				428B7279184F77AB00E3BB4E /* representations */,

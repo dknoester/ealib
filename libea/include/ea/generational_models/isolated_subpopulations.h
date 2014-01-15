@@ -20,8 +20,6 @@
 #ifndef _EA_GENERATIONAL_MODELS_ISOLATED_SUBPOPULATIONS_H_
 #define _EA_GENERATIONAL_MODELS_ISOLATED_SUBPOPULATIONS_H_
 
-#include <ea/generational_model.h>
-
 namespace ealib {
 	namespace generational_models {
         
@@ -31,7 +29,7 @@ namespace ealib {
          
          This generational model can be used to support an island model GA.
          */
-        struct isolated_subpopulations : public generational_model {
+        struct isolated_subpopulations {
             //! Apply this generational model to the meta_population EA.
             template <typename Population, typename EA>
             void operator()(Population& population, EA& ea) {

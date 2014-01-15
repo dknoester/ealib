@@ -28,27 +28,6 @@ namespace ealib {
         //! Concept checking helper to ensure that two parameters are the same type.
 		template <typename T> void same_type(const T&, const T&);
 	}
-
-    /*! Attribute concept, used to attach information to individuals.
-     
-     Attributes and meta-data both share a similar purpose, which is to attach information
-     about an individual or EA to an instance.  While meta-data focuses on single-value,
-     string convertible information that is relatively infrequently used, attributes 
-     can be more complex.  For example, an individual's line of descent can be an 
-     attribute, but not meta-data.
-
-     <b>Refinement of:</b>
-	 
-	 <b>Models:</b>
-     */
-	template <typename X>
-	struct AttributeConcept : boost::Assignable<X> {
-	public:
-		BOOST_CONCEPT_USAGE(AttributeConcept) {
-		}
-	private:
-	};
-    
     
     /*! Meta-data concept.
      
@@ -57,14 +36,13 @@ namespace ealib {
 	 <b>Models:</b> ealib::meta_data.
      */
     template <typename X>
-	struct MetaDataConcept : boost::Assignable<X> {
+	struct MetaDataConcept : boost::Assignable<X>, boost::CopyConstructible<X> {
 	public:
 		BOOST_CONCEPT_USAGE(MetaDataConcept) {
 		}
 	private:
         X x;
 	};
-    
     
     /*! Concept to ensure that the given type supports meta-data.
 
@@ -79,14 +57,21 @@ namespace ealib {
         
 		BOOST_CONCEPT_USAGE(SupportsMetaDataConcept) {
             BOOST_CONCEPT_ASSERT((MetaDataConcept<md_type>));
-            detail::same_type(x.md(), md);
+            detail::same_type(x.md(), m);
 		}
+        
+        //! Retrieve this individual's meta data.
+        md_type& md();
+        
+        //! Retrieve this individual's meta data (const-qualified).
+        const md_type& md() const;
+
 	private:
         X x;
-        md_type md;
+        md_type m;
 	};
     
-
+    
     /*! Representation concept.
      
      <b>Refinement of:</b>
@@ -94,7 +79,7 @@ namespace ealib {
 	 <b>Models:</b>
      */
     template <typename X>
-	struct RepresentationConcept {
+	struct RepresentationConcept : boost::CopyConstructible<X> {
 	public:
 		BOOST_CONCEPT_USAGE(RepresentationConcept) {
 		}
@@ -102,7 +87,6 @@ namespace ealib {
         X x;
 	};
 
-    
     /*! Individual concept.
      
      <b>Refinement of:</b>
@@ -110,25 +94,45 @@ namespace ealib {
 	 <b>Models:</b> ealib::individual, ealib::organism.
      */
 	template <typename X>
-	struct IndividualConcept {
+	struct IndividualConcept : boost::CopyConstructible<X> {
 	public:
-        typedef typename X::representation_type representation_type; //!< Underlying representation for this individual; its genome.
-//        typedef typename X::attr_type attr_type; //!< Attributes for this individual.
+        //! Representation type; the "genome."
+        typedef typename X::representation_type representation_type;
+        //! Fitness function type.
+        typedef typename X::fitness_function_type fitness_function_type;
+        //! Fitness value type for this individual.
+        typedef typename X::fitness_type fitness_type;
+        //! Phenotype for this individual.
+        typedef typename X::phenotype_type phenotype_type;
+        //! Encoding of this individual.
+        typedef typename X::encoding_type encoding_type;
+        //! Pointer to this individual.
+        typedef typename X:: individual_ptr_type individual_ptr_type;
+        //! Traits for this individual.
+        typedef typename X::traits_type traits_type;
+        //! Phenotype pointer type.
+        typedef typename X::phenotype_ptr_type phenotype_ptr_type;
         
 		BOOST_CONCEPT_USAGE(IndividualConcept) {
             BOOST_CONCEPT_ASSERT((RepresentationConcept<representation_type>));
-//            BOOST_CONCEPT_ASSERT((AttributeConcept<attr_type>));
             BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
 
             detail::same_type(representation_type(), x.repr());
             x.repr() = representation_type();
 		}
 
-        //! Retrieve this individual's representation.
+		//! Retrieve this individual's representation.
 		representation_type& repr();
         
 		//! Retrieve this individual's representation (const-qualified).
 		const representation_type& repr() const;
+        
+        
+        //! Retrieve this individual's attributes.
+        traits_type& traits();
+        
+        //! Retrieve this individual's attributes (const-qualified).
+        const traits_type& traits() const;
 
 	private:
 		X x; //!< Default constructible.
@@ -142,7 +146,7 @@ namespace ealib {
 
      <b>Refinement of:</b>
 	 
-	 <b>Models:</b> ealib::population.
+	 <b>Models:</b> ealib::ptr_population.
      */
 	template <typename X>
 	struct PopulationConcept : boost::CopyConstructible<X>, boost::RandomAccessContainer<X>, boost::BackInsertionSequence<X> {
@@ -205,7 +209,7 @@ namespace ealib {
 	 
 	 */
 	template <typename X>
-	struct EvolutionaryAlgorithmConcept {
+	struct EvolutionaryAlgorithmConcept : boost::CopyConstructible<X>, SupportsMetaDataConcept<X>, SuppliesRNGConcept<X> {
 	public:
         typedef typename X::individual_type individual_type; //!< Individual; an "agent."
         typedef typename X::individual_ptr_type individual_ptr_type; //!< Pointer type to an individual.
@@ -216,51 +220,20 @@ namespace ealib {
         typedef typename X::const_reverse_iterator const_reverse_iterator; //!< Const reverse iterator over a population.
 		
 		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
-//            BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
-//            BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
-//            BOOST_CONCEPT_ASSERT((SuppliesRNGConcept<X>));
-//
-//            // lifecycle methods; see lifecycle.h
-//            x.configure();
-//            x.initial_population();
-//            x.initialize();
-//            x.reset();
-//            x.clear();
-//            x.begin_epoch();
-//            x.end_epoch();
-//            x.update();
-//
-//            detail::same_type(p, x.population());
+            BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
+            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
+            x.reset(1);
+            x.update();
 		}
         
-        //! Configure this EA.
-        void configure();
-        
-        //! Build the initial population.
-        void initial_population();
-        
-        //! Initialize this EA.
-        void initialize();
-        
-        //! Reset the population.
-        void reset();
-        
-        //! Begin an epoch.
-        void begin_epoch();
-        
-        //! End an epoch.
-        void end_epoch();
+        //! Resets the EA's RNG seed.
+        void reset(unsigned int);
         
         //! Advance this EA by one update.
         void update();
         
-        //! Retrieve the current population.
-        population_type& population();
-        
 	private:
 		X x;
-        population_type p;
-        individual_ptr_type ind;
 	};
     
     

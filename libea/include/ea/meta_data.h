@@ -308,21 +308,6 @@ namespace ealib {
 	
     // ea.environment.*
     LIBEA_MD_DECL(LOCATION_DATA, "ea.environment.location.color", int);
-
-    // ea.fitness_function.*
-    
-
-    // ea.landscape.*
-    LIBEA_MD_DECL(LANDSCAPE_PERIOD, "ea.landscape.period", double);
-
-	// ea.population.*
-	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
-    LIBEA_MD_DECL(INITIAL_POPULATION_SIZE, "ea.population.initial_size", unsigned int);
-
-
-	// ea.selection.*
-	
-    // ea.rng.*
     
     // ea.statistics.*
     LIBEA_MD_DECL(RECORDING_PERIOD, "ea.statistics.recording.period", unsigned long);

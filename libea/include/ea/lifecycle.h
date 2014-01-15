@@ -182,14 +182,14 @@ namespace ealib {
          */
         template <typename EA>
         void advance_epoch(int n, EA& ea) {
-            ea.begin_epoch();
+            ea.events().record_statistics(ea);
             for( ; n>0; --n) {
                 ea.update();
                 if(ea.stop()) {
                     break;
                 }
             }
-            ea.end_epoch();
+            ea.events().end_of_epoch(ea);
         }
         
         //! Advance the EA by all configured epochs.
@@ -205,6 +205,36 @@ namespace ealib {
 			}
 		}
         
+        //! Fill the population with generated individuals.
+        template <typename EA>
+        void fill_population(EA& ea) {
+            typename EA::population_generator_type g;
+            g(ea);
+        }
+        
+        //! Generate the initial population.
+        template <typename EA>
+        void generate_initial_population(EA& ea) {
+            fill_population(ea);
+            ea.configure().initial_population();
+        }
+        
+        //! Reset a population.
+        template <typename EA>
+        void reset_population(EA& ea) {
+            nullify_fitness(ea.begin(), ea.end(), ea);
+            ea.configure().reset();
+        }
+
+
+        //! Initialize an EA.
+        template <typename EA>
+        void initialize(EA& ea) {
+            initialize_fitness_function(ea.fitness_function(), ea);
+            ea.configure().initialize(ea);
+        }
+        
+
     } // lifecycle
 } // ealib
 
