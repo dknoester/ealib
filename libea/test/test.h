@@ -42,6 +42,15 @@ typedef evolutionary_algorithm
 , generational_models::steady_state< >
 > all_ones_ea;
 
+typedef evolutionary_algorithm
+< individual<bitstring, all_ones, bitstring, directS, default_lod_traits>
+, ancestors::random_bitstring
+, mutation::operators::per_site<mutation::site::bit>
+, recombination::two_point_crossover
+, generational_models::steady_state< >
+> all_ones_lod_ea;
+
+
 template <typename EA>
 void add_std_meta_data(EA& ea) {
 	put<POPULATION_SIZE>(1024,ea);

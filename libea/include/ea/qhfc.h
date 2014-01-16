@@ -30,7 +30,6 @@
 #include <ea/datafile.h>
 #include <ea/meta_data.h>
 #include <ea/individual.h>
-#include <ea/generational_model.h>
 #include <ea/selection/elitism.h>
 #include <ea/selection/random.h>
 #include <ea/generational_models/crowding.h>
@@ -80,7 +79,7 @@ namespace ealib {
          
          Highest index is the "top" subpopulation.
          */
-		struct qhfc : public generational_model {
+		struct qhfc {
             
             //! Initialize QHFC; set the admission levels, initial populations.
             template <typename EA>
@@ -109,7 +108,7 @@ namespace ealib {
                 // remove individuals w/ fitness < F
                 typename EA::subpopulation_type all;
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) { // subpop
-                    for(typename EA::subpopulation_type::iterator j=i->get_population().begin(); j!=i->get_population().end(); ++j) {
+                    for(typename EA::subpopulation_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
                         if(ealib::fitness(**j,i->ea()) >= mean_fitness) {
                             all.push_back(*j);
                         }
@@ -121,7 +120,7 @@ namespace ealib {
                 std::sort(all.begin(), all.end(), comparators::fitness<typename EA::subea_type>(ea[0].ea()));
                 std::size_t spsize=all.size() / get<META_POPULATION_SIZE>(ea);
                 for(typename EA::reverse_iterator i=ea.rbegin(); i!=ea.rend(); ++i) { // subpop
-                    i->ea().initial_population();
+                    generate_population(i->ea());
                     for(std::size_t j=0; j<spsize; ++j) {
                         (*i)[j] = *all.back(); // overwrite
                         put<QHFC_ADMISSION_LEVEL>(static_cast<double>(ealib::fitness((*i)[j],i->ea())), *i);
@@ -130,7 +129,7 @@ namespace ealib {
                 }
                 
                 // clean up if there are extras, and set the admission level for sp0:
-                std::copy(all.begin(), all.end(), ea[0].get_population().begin()+spsize);
+                std::copy(all.begin(), all.end(), ea[0].population().begin()+spsize);
                 put<QHFC_ADMISSION_LEVEL>(mean_fitness, ea[0]);
                 
                 // finally, initialize last progress gen and fitness:
@@ -167,15 +166,15 @@ namespace ealib {
 			typename EA::subpopulation_type import_from_below(ForwardIterator f, ForwardIterator l, std::size_t n, EA& ea) {
                 // select n random individuals to export, remove them from this population:
                 typename EA::subpopulation_type exports;
-                algorithm::random_split(f->ea().get_population(), exports, n, ea.rng());
+                algorithm::random_split(f->ea().population(), exports, n, ea.rng());
                 
                 if((f+1) == l) {
                     // bottom population; need to fill up f's population:
-                    f->ea().initial_population();
+                    generate_population(f->ea());
                 } else {
                     // not at the bottom, need to import
                     typename EA::subpopulation_type imports = import_from_below(f+1, l, n, ea);
-                    f->append(imports.begin(), imports.end());
+                    f->insert(f->end(), imports.begin(), imports.end());
                 }
                 
                 return exports;
@@ -194,7 +193,7 @@ namespace ealib {
                 while((catchup_eval++ < (get<QHFC_CATCHUP_GEN>(ea)*f->repr().size())) && (exports.size() < get<QHFC_DETECT_EXPORT_NUM>(ea))) {
                     // grab two parents at random and perform deterministic crowding:
                     typename EA::subpopulation_type pop;
-                    algorithm::random_split(f->get_population(), pop, 2, ea.rng());
+                    algorithm::random_split(f->population(), pop, 2, ea.rng());
                     generational_models::deterministic_crowding< > dc;
                     dc(pop, f->ea());
                     
@@ -206,10 +205,10 @@ namespace ealib {
                             // promote
                             exports.push_back(*j);
                             typename EA::subpopulation_type imports = import_from_below(f+1, l, 1, ea);
-                            f->repr().append(imports.begin(), imports.end());
+                            f->insert(f->end(), imports.begin(), imports.end());
                         } else {
                             // keep
-                            f->append(*j);
+                            f->insert(f->end(), *j);
                         }
                     }
                 }
@@ -219,10 +218,10 @@ namespace ealib {
 
                 // export the exports to i+1 subpopulation
                 typename EA::subpopulation_type next;
-                selection::elitism<selection::random> sel(t->size()-exports.size(), t->get_population(), t->ea());
-                sel(t->get_population(), next, t->size()-exports.size(), t->ea());
+                selection::elitism<selection::random> sel(t->size()-exports.size(), t->population(), t->ea());
+                sel(t->population(), next, t->size()-exports.size(), t->ea());
                 next.insert(next.end(), exports.begin(), exports.end());
-                std::swap(t->get_population(), next);
+                std::swap(t->population(), next);
 
                 return potent;
             }
@@ -254,10 +253,10 @@ namespace ealib {
                                                                                     static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(ea)*top.size()),
                                                                                     ea);
                         typename EA::subpopulation_type next;
-                        selection::elitism<selection::random> sel(top.size()-imports.size(), top.get_population(), top);
-                        sel(top.get_population(), next, top.size()-imports.size(), top);
+                        selection::elitism<selection::random> sel(top.size()-imports.size(), top.population(), top);
+                        sel(top.population(), next, top.size()-imports.size(), top);
                         next.insert(next.end(), imports.begin(), imports.end());
-                        std::swap(top.get_population(), next);
+                        std::swap(top.population(), next);
                     }
                 }
             }
@@ -283,8 +282,8 @@ namespace ealib {
                                                                                     static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(*i)*i->ea().size()),
                                                                                     ea);
                         std::random_shuffle(i->ea().begin(), i->ea().end(), ea.rng());
-                        i->ea().get_population().resize(get<POPULATION_SIZE>(*i)-imports.size());
-                        i->ea().append(imports.begin(), imports.end());
+                        i->ea().population().resize(get<POPULATION_SIZE>(*i)-imports.size());
+                        i->ea().insert(i->ea().end(), imports.begin(), imports.end());
                         i->ea().update();
                     }
                 }

@@ -103,7 +103,7 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-
+        
         //! Default constructor.
         evolutionary_algorithm() : _update(0) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
@@ -123,7 +123,7 @@ namespace ealib {
             }
             _configuration.after_construction(*this);
         }
-
+        
         /*! Assignment operator (note that this is *not* a complete copy).
          
          \warning Not exception safe.
@@ -143,15 +143,15 @@ namespace ealib {
             }
             return *this;
         }
-
+        
         //! Initializes this EA.
-        virtual void initialize() {
+        void initialize() {
             initialize_fitness_function(_fitness_function, *this);
             _configuration.initialize(*this);
         }
-
+        
         //! Marks the beginning of a new epoch.
-        virtual void begin_epoch() {
+        void begin_epoch() {
             _events.record_statistics(*this);
         }
         
@@ -166,24 +166,24 @@ namespace ealib {
         }
         
         //! Marks the end of an epoch.
-        virtual void end_epoch() {
+        void end_epoch() {
             _events.end_of_epoch(*this);
         }
-
+        
         //! Resets this EA's RNG seed.
         void reset(unsigned int s) {
             put<RNG_SEED>(s,*this); // save the seed!
             _rng.reset(s);
         }
-
+        
         //! Returns a new individual built from the given representation.
-        virtual individual_ptr_type make_individual(const representation_type& r=representation_type()) {
+        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
         
         //! Returns a copy of an individual.
-        virtual individual_ptr_type copy_individual(const individual_type& ind) {
+        individual_ptr_type copy_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
             return p;
         }
@@ -205,7 +205,7 @@ namespace ealib {
         
         //! Returns true if this EA should be stopped.
         bool stop() { return _stop(*this); }
-
+        
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
         
@@ -257,10 +257,10 @@ namespace ealib {
         
         //! Erases the given range from the population.
         void erase(iterator f, iterator l) { _population.erase(f.base(), l.base()); }
-
+        
         //! Erases all individuals in this EA.
         void clear() { _population.clear(); }
-
+        
     protected:
         unsigned long _update; //!< Update number for this EA.
         rng_type _rng; //!< Random number generator.
@@ -284,5 +284,5 @@ namespace ealib {
     };
     
 } // ealib
-    
+
 #endif

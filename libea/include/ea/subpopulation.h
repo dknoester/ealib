@@ -105,23 +105,10 @@ namespace ealib {
         const traits_type& traits() const { return _traits; }
         
         //! Accessor for the population model object.
-        typename ea_type::population_type& get_population() { return _ea.get_population(); }
+        typename ea_type::population_type& population() { return _ea.population(); }
         
         //! Return the number of individuals in this EA.
         std::size_t size() const { return _ea.size(); }
-
-        //! Append individual x to the population.
-        void append(typename ea_type::individual_ptr_type x) { _ea.append(x); }
-        
-        //! Append the range of individuals [f,l) to the population.
-        template <typename ForwardIterator>
-        void append(ForwardIterator f, ForwardIterator l) { _ea.append(f,l); }
-        
-        //! Erase the given individual from the population.
-        void erase(iterator i) { _ea.erase(i); }
-        
-        //! Erase the given range from the population.
-        void erase(iterator f, iterator l) { _ea.erase(f,l); }
 
         //! Return the n'th individual in the population.
         typename ea_type::individual_type& operator[](std::size_t n) { return _ea[n]; }
@@ -149,6 +136,22 @@ namespace ealib {
         
         //! Returns a reverse end iterator to the population (const-qualified).
         const_reverse_iterator rend() const { return _ea.rend(); }
+
+        //! Inserts individual x into the population before pos.
+        void insert(iterator pos, typename ea_type::individual_ptr_type x) { _ea.insert(pos, x); }
+        
+        //! Inserts individuals [f,l) into the population before pos.
+        template <typename InputIterator>
+        void insert(iterator pos, InputIterator f, InputIterator l) { _ea.insert(pos, f, l); }
+        
+        //! Erases the given individual from the population.
+        void erase(iterator i) { _ea.erase(i); }
+        
+        //! Erases the given range from the population.
+        void erase(iterator f, iterator l) { _ea.erase(f, l); }
+        
+        //! Erases all individuals in this EA.
+        void clear() { _ea.clear(); }
 
     protected:
         ea_type _ea; //!< This subpopulation's EA.

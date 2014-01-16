@@ -242,7 +242,7 @@ namespace ealib {
             
             // conditionally reset all fitnesses
             if(_vm.count("reset")) {
-                ea.reset();
+                nullify_fitness(ea.begin(), ea.end(), ea);
             }
             
             ea.initialize();
@@ -266,7 +266,7 @@ namespace ealib {
             if(_vm.count("verbose")) {
                 add_event<datafiles::runtime>(ea);
             }
-            ea.initial_population();
+            generate_initial_population(ea);
         }
 
         //! Continue an already initialized EA for another epoch.

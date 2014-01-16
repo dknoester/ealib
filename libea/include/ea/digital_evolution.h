@@ -27,20 +27,20 @@
 
 #include <ea/concepts.h>
 #include <ea/configuration.h>
-#include <ea/devo/events.h>
-#include <ea/devo/ancestors.h>
-#include <ea/devo/hardware.h>
-#include <ea/devo/isa.h>
-#include <ea/devo/organism.h>
-#include <ea/devo/schedulers.h>
-#include <ea/devo/replication.h>
-#include <ea/devo/spatial.h>
-#include <ea/devo/task_library.h>
+#include <ea/digital_evolution/events.h>
+#include <ea/digital_evolution/ancestors.h>
+#include <ea/digital_evolution/hardware.h>
+#include <ea/digital_evolution/isa.h>
+#include <ea/digital_evolution/organism.h>
+#include <ea/digital_evolution/schedulers.h>
+#include <ea/digital_evolution/replication.h>
+#include <ea/digital_evolution/spatial.h>
+#include <ea/digital_evolution/task_library.h>
 #include <ea/ancestors.h>
 
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
-#include <ea/population.h>
+#include <ea/ptr_population.h>
 #include <ea/recombination.h>
 #include <ea/stop.h>
 #include <ea/rng.h>
@@ -84,7 +84,7 @@ namespace ealib {
     typename EarlyStopCondition=dont_stop,
 	typename MutationOperator=mutation::operators::per_site<mutation::site::uniform_integer>,
     template <typename> class Individual=organism,
-	template <typename, typename> class Population=ealib::population,
+	template <typename, typename> class Population=ealib::ptr_population,
 	template <typename> class EventHandler=alife_event_handler,
 	typename MetaData=meta_data,
 	typename RandomNumberGenerator=ealib::default_rng_type>

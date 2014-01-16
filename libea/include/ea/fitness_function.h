@@ -448,7 +448,7 @@ namespace ealib {
 	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
-            (**first).traits().fitness().nullify();
+            first->traits().fitness().nullify();
 		}
 	}
 
@@ -463,13 +463,6 @@ namespace ealib {
 		}
     }
     
-    //! Resets fitness of all individuals in a population.
-    template <typename EA>
-    void reset_population(EA& ea) {
-        nullify_fitness(ea.begin(), ea.end(), ea);
-        ea.configure().reset();
-    }
-
 } // ealib
 
 #endif

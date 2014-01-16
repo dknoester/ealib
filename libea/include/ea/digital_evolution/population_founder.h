@@ -20,8 +20,8 @@
 #ifndef _EA_DIGITAL_EVOLUTION_SUBPOPULATION_FOUNDER_H_
 #define _EA_DIGITAL_EVOLUTION_SUBPOPULATION_FOUNDER_H_
 
-#include <ea/devo/digital_evolution.h>
-#include <ea/devo/hardware.h>
+#include <ea/digital_evolution.h>
+#include <ea/digital_evolution/hardware.h>
 
 namespace ealib {
     

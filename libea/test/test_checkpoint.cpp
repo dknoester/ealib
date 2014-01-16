@@ -24,8 +24,7 @@
 BOOST_AUTO_TEST_CASE(test_checkpoint) {
     all_ones_ea ea1, ea2;
     add_std_meta_data(ea1);
-    ea1.initialize();
-    ea1.initial_population();
+    lifecycle::prepare_new(ea1);
     
     // run and checkpoint ea1:
     lifecycle::advance_epoch(10,ea1);

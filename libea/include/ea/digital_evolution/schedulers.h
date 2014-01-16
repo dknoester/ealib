@@ -26,7 +26,6 @@
 #include <limits>
 #include <list>
 #include <map>
-#include <ea/generational_model.h>
 #include <ea/fitness_function.h>
 
 namespace ealib {    
@@ -69,7 +68,7 @@ namespace ealib {
      has twice as many individuals as a lower runlevel).
      */
     template <typename EA>
-    struct runlevel_queue : generational_model {
+    struct runlevel_queue {
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
         typedef std::list<typename EA::individual_ptr_type> queue_type;
         typedef std::map<int,queue_type> runlevelq_type;
@@ -157,7 +156,7 @@ namespace ealib {
      priority 1.0.
      */
     template <typename EA>
-    struct priority_proportional : generational_model {
+    struct priority_proportional {
         typedef EA ea_type;
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
         typedef std::vector<long> exc_list;
@@ -219,7 +218,7 @@ namespace ealib {
      Grants organisms an amount of CPU time equal to their priority.
      */
     template <typename EA>
-    struct weighted_round_robin : generational_model {
+    struct weighted_round_robin {
         typedef EA ea_type;
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
 
@@ -277,7 +276,7 @@ namespace ealib {
      per update.
      */
     template <typename EA>
-    struct round_robin : generational_model {
+    struct round_robin {
         typedef EA ea_type;
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
         
@@ -328,7 +327,7 @@ namespace ealib {
         }
     };
     
-} // ea
+} // ealib
 
 //
 //    /*! Priority tree-based scheduler.

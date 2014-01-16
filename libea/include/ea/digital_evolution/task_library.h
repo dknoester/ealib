@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 #include <ea/meta_data.h>
-#include <ea/devo/events.h>
+#include <ea/digital_evolution/events.h>
 
 namespace ealib {
     

@@ -44,6 +44,6 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     put<QHFC_NO_PROGRESS_GEN>(2,M);
     
     M.initialize();
-    M.initial_population();
+    generate_initial_population(M);
     lifecycle::advance_epoch(10,M);
 }

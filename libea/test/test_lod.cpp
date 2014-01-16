@@ -17,9 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include "test.h"
 #include <ea/cmdline_interface.h>
 #include <ea/line_of_descent.h>
-#include "test.h"
 
 template <typename EA>
 struct test_population_lod_tool : public ealib::analysis::unary_function<EA> {
@@ -52,6 +53,6 @@ public:
 };
 
 BOOST_AUTO_TEST_CASE(test_lod) {
-    cli<all_ones_ea> ea;
+    cli<all_ones_lod_ea> ea;
     
 }
