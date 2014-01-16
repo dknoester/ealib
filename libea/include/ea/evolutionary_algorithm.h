@@ -54,7 +54,7 @@ namespace ealib {
 	, typename GenerationalModel
     , typename EarlyStopCondition=dont_stop
     , typename UserDefinedConfiguration=default_configuration
-    , typename PopulationGenerator=fill_random
+    , typename PopulationGenerator=fill_population
     > class evolutionary_algorithm {
     public:
         //! Tag for the population structure of this evolutionary algorithm.
@@ -117,23 +117,44 @@ namespace ealib {
             _rng = that._rng;
             _fitness_function = that._fitness_function;
             _md = that._md;
-            // gm doesn't copy...
-            // events doesn't copy...
-            // configurator doesn't copy...
-            // copy individuals:
             for(const_iterator i=that.begin(); i!=that.end(); ++i) {
                 individual_ptr_type q = copy_individual(*i);
                 insert(end(),q);
             }
             _configuration.after_construction(*this);
         }
-        
-        //! Resets this EA's RNG seed.
-        void reset(unsigned int s) {
-            put<RNG_SEED>(s,*this); // save the seed!
-            _rng.reset(s);
+
+        /*! Assignment operator (note that this is *not* a complete copy).
+         
+         \warning Not exception safe.
+         */
+        evolutionary_algorithm& operator=(const evolutionary_algorithm& that) {
+            if(this != &that) {
+                _update = that._update;
+                _rng = that._rng;
+                _fitness_function = that._fitness_function;
+                _md = that._md;
+                clear();
+                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+                    individual_ptr_type q = copy_individual(*i);
+                    insert(end(),q);
+                }
+                _configuration.after_construction(*this);
+            }
+            return *this;
         }
-                
+
+        //! Initializes this EA.
+        void initialize() {
+            initialize_fitness_function(_fitness_function, *this);
+            _configuration.initialize(*this);
+        }
+
+        //! Marks the beginning of a new epoch.
+        void begin_epoch() {
+            _events.record_statistics(*this);
+        }
+        
         //! Advances this EA by one update.
         void update() {
             if(!_population.empty()) {
@@ -144,6 +165,17 @@ namespace ealib {
             _events.record_statistics(*this);
         }
         
+        //! Marks the end of an epoch.
+        void end_epoch() {
+            _events.end_of_epoch(*this);
+        }
+
+        //! Resets this EA's RNG seed.
+        void reset(unsigned int s) {
+            put<RNG_SEED>(s,*this); // save the seed!
+            _rng.reset(s);
+        }
+
         //! Returns a new individual built from the given representation.
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
@@ -184,80 +216,50 @@ namespace ealib {
         population_type& population() { return _population; }
         
         //! Returns the size of this EA's population.
-        std::size_t size() const {
-            return _population.size();
-        }
+        std::size_t size() const { return _population.size(); }
         
         //! Returns the n'th individual in the population.
-        individual_type& operator[](std::size_t n) {
-            return *_population[n];
-        }
+        individual_type& operator[](std::size_t n) { return *_population[n]; }
         
         //! Returns a begin iterator to the population.
-        iterator begin() {
-            return iterator(_population.begin());
-        }
+        iterator begin() { return iterator(_population.begin()); }
         
         //! Returns an end iterator to the population.
-        iterator end() {
-            return iterator(_population.end());
-        }
+        iterator end() { return iterator(_population.end()); }
         
         //! Returns a begin iterator to the population (const-qualified).
-        const_iterator begin() const {
-            return const_iterator(_population.begin());
-        }
+        const_iterator begin() const { return const_iterator(_population.begin()); }
         
         //! Returns an end iterator to the population (const-qualified).
-        const_iterator end() const {
-            return const_iterator(_population.end());
-        }
+        const_iterator end() const { return const_iterator(_population.end()); }
         
         //! Returns a reverse begin iterator to the population.
-        reverse_iterator rbegin() {
-            return reverse_iterator(_population.rbegin());
-        }
+        reverse_iterator rbegin() { return reverse_iterator(_population.rbegin()); }
         
         //! Returns a reverse end iterator to the population.
-        reverse_iterator rend() {
-            return reverse_iterator(_population.rend());
-        }
+        reverse_iterator rend() { return reverse_iterator(_population.rend()); }
         
         //! Returns a reverse begin iterator to the population (const-qualified).
-        const_reverse_iterator rbegin() const {
-            return const_reverse_iterator(_population.rbegin());
-        }
+        const_reverse_iterator rbegin() const { return const_reverse_iterator(_population.rbegin()); }
         
         //! Returns a reverse end iterator to the population (const-qualified).
-        const_reverse_iterator rend() const {
-            return const_reverse_iterator(_population.rend());
-        }
+        const_reverse_iterator rend() const { return const_reverse_iterator(_population.rend()); }
         
         //! Inserts individual x into the population before pos.
-        void insert(iterator pos, individual_ptr_type x) {
-            _population.insert(pos.base(), x);
-        }
+        void insert(iterator pos, individual_ptr_type x) { _population.insert(pos.base(), x); }
         
         //! Inserts individuals [f,l) into the population before pos.
         template <typename InputIterator>
-        void insert(iterator pos, InputIterator f, InputIterator l) {
-            _population.insert(pos.base(), f, l);
-        }
+        void insert(iterator pos, InputIterator f, InputIterator l) { _population.insert(pos.base(), f, l); }
         
         //! Erases the given individual from the population.
-        void erase(iterator i) {
-            _population.erase(i.base());
-        }
+        void erase(iterator i) { _population.erase(i.base()); }
         
         //! Erases the given range from the population.
-        void erase(iterator f, iterator l) {
-            _population.erase(f.base(), l.base());
-        }
+        void erase(iterator f, iterator l) { _population.erase(f.base(), l.base()); }
 
         //! Erases all individuals in this EA.
-        void clear() {
-            _population.clear();
-        }
+        void clear() { _population.clear(); }
 
     protected:
         unsigned long _update; //!< Update number for this EA.
@@ -281,6 +283,6 @@ namespace ealib {
         }
     };
     
-} // ea
+} // ealib
     
 #endif

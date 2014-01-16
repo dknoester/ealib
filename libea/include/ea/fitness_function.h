@@ -462,6 +462,13 @@ namespace ealib {
 			calculate_fitness(**first,ea);
 		}
     }
+    
+    //! Resets fitness of all individuals in a population.
+    template <typename EA>
+    void reset_population(EA& ea) {
+        nullify_fitness(ea.begin(), ea.end(), ea);
+        ea.configure().reset();
+    }
 
 } // ealib
 

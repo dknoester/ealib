@@ -31,9 +31,7 @@
 
 
 namespace ealib {
-    
-	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
-    
+        
     //! Tag that indicates a single population is being used.
     struct singlePopulationS { };
     

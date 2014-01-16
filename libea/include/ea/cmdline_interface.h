@@ -33,7 +33,7 @@
 #include <ea/concepts.h>
 #include <ea/events.h>
 #include <ea/meta_data.h>
-#include <ea/population.h>
+#include <ea/ptr_population.h>
 #include <ea/analysis/tool.h>
 #include <ea/lifecycle.h>
 #include <ea/datafiles/runtime.h>

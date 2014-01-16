@@ -46,7 +46,6 @@
 		42C661381860DC07004476D3 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		42C6613F1860DC07004476D3 /* test_metapopulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42D68D89163F891F00659AE1 /* test_metapopulation.cpp */; };
 		42C661401860DC07004476D3 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
-		42C661471860DC07004476D3 /* test_qhfc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42C661321860D2FF004476D3 /* test_qhfc.cpp */; };
 		42C6614B1860DC07004476D3 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42C661531860E008004476D3 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		42C661551860E008004476D3 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
@@ -957,7 +956,6 @@
 				42C661381860DC07004476D3 /* cmdline_interface.cpp in Sources */,
 				42C6613F1860DC07004476D3 /* test_metapopulation.cpp in Sources */,
 				42C661401860DC07004476D3 /* test.cpp in Sources */,
-				42C661471860DC07004476D3 /* test_qhfc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

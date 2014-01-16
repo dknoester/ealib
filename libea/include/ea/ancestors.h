@@ -40,13 +40,13 @@ namespace ealib {
 	template <typename RepresentationGenerator, typename EA>
 	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-
+        
         // build the placeholder ancestor:
         typename EA::individual_ptr_type ap = ea.make_individual();
         put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);
         put<IND_GENERATION>(-1.0, *ap);
         put<IND_BIRTH_UPDATE>(ea.current_update(), *ap);
-     
+        
         // wrap it in a population:
         typename EA::population_type parents;
         parents.push_back(ap);
@@ -56,14 +56,13 @@ namespace ealib {
         for( ; n>0; --n) {
             ancestral.push_back(ea.make_individual(g(ea)));
         }
-
+        
         // trigger inheritance:
         inherits(parents, ancestral, ea);
         
         // and add all the ancestors to the EA:
-        ea.append(ancestral.begin(), ancestral.end());
+        ea.insert(ea.end(), ancestral.begin(), ancestral.end());
     }
-
     
     /*! Convenience method to generate the default ancestors, as given by
      the configuration object's ancestor typedef.
@@ -73,38 +72,49 @@ namespace ealib {
         generate_ancestors(typename EA::ancestor_generator_type(), n, ea);
     }
     
-
-    /*! Fill the EA with individuals copied from the given representation.
-     
-     As opposed to the above method, where we generate ancestors, here we copy the
-     given representation n times.
-     */
+    //! Fill the population with generated individuals.
     template <typename EA>
-    void fill_population(const typename EA::representation_type& r, std::size_t n, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        
-        // build the placeholder ancestor:
-        typename EA::individual_ptr_type ap = ea.make_individual(typename EA::representation_type());
-        ap->name() = next<INDIVIDUAL_COUNT>(ea);
-        ap->generation() = -1.0;
-        ap->birth_update() = ea.current_update();
-        
-        // wrap it in a population:
-        typename EA::population_type parents;
-        parents.push_back(ap);
-        
-        // now, build the real ancestral population:
-        typename EA::population_type ancestral;
-        for( ; n>0; --n) {
-            ancestral.push_back(ea.make_individual(r));
-        }
-        
-        // trigger inheritance:
-        inherits(parents, ancestral, ea);
-        
-        // and add all the ancestors to the EA:
-        ea.append(ancestral.begin(), ancestral.end());
+    void generate_population(EA& ea) {
+        typename EA::population_generator_type g;
+        g(ea);
     }
+    
+    //! Generate the ancestral (initial) population.
+    template <typename EA>
+    void generate_initial_population(EA& ea) {
+        generate_population(ea);
+        ea.config().initial_population(ea);
+    }
+    
+    /*! Function object that fills the population with ancestors.
+     */
+    struct fill_population {
+        template <typename EA>
+        void operator()(EA& ea) {
+            generate_ancestors(get<POPULATION_SIZE>(ea)-ea.size(), ea);
+        }
+    };
+    
+    /*! Function object that dills the metapopulation with subpopulations, which
+     are themselves then filled.
+     
+     Note: generate_ancestors uses metapopulation.make_individual to build the
+     subpopulations.  metapopulation.make_individual calls initialize on the 
+     subpopulation.  it *does not* fill the subpopulation with individuals, so
+     we do that explicitly.
+     */
+    struct fill_metapopulation {
+        template <typename EA>
+        void operator()(EA& ea) {
+            // construct the ancestral subpopulations:
+            generate_ancestors(get<META_POPULATION_SIZE>(ea)-ea.size(), ea);
+            
+            // now build the initial populations for each subpopulation:
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                generate_initial_population(i->ea());
+            }
+        }
+    };
     
     
     namespace ancestors {

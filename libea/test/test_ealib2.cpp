@@ -22,5 +22,6 @@ BOOST_AUTO_TEST_CASE(test_ea2) {
     > ea_type;
 
     ea_type ea;
+    lifecycle::prepare_new(ea);
     lifecycle::advance_epoch(10,ea);
 }

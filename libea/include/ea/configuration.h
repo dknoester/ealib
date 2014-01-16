@@ -24,17 +24,7 @@
 #include <ea/ancestors.h>
 
 namespace ealib {
-    
-    /*! Functor to fill the population with randomly-generated ancestors.
-     */
-    struct fill_random {
-        template <typename EA>
-        void operator()(EA& ea) {
-            generate_ancestors(typename EA::ancestor_generator_type(), get<POPULATION_SIZE>(ea)-ea.size(), ea);
-        }
-    };
-    
-    
+     
     /*! Placeholder for user-defined configuration functions.
      */
     struct default_configuration {

@@ -146,7 +146,7 @@ namespace ealib {
         template <typename EA>
         void prepare_new(EA& ea) {
             ea.initialize();
-            ea.initial_population();
+            generate_initial_population(ea);
         }
         
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
@@ -155,8 +155,7 @@ namespace ealib {
         template <typename EA>
         void prepare_new(EA& ea, meta_data& md) {
             ea.md() += md;
-            ea.initialize();
-            ea.initial_population();
+            prepare_new(ea);
         }
         
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
@@ -165,31 +164,33 @@ namespace ealib {
         template <typename Checkpoint, typename EA>
         void prepare_checkpoint(Checkpoint& cp, EA& ea) {
             load_checkpoint(cp, ea);
-            ea.initialize();
+            initialize(ea);
         }
         
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
          state using a checkpoint, given meta-data.
+         
+         Meta-data is assigned after checkpoint load to provide for overriding.
          */
         template <typename Checkpoint, typename EA>
         void prepare_checkpoint(Checkpoint& cp, EA& ea, meta_data& md) {
             load_checkpoint(cp, ea);
             ea.md() += md;
-            ea.initialize();
+            initialize(ea);
         }
         
         /*! Advance the EA by one epoch of n updates.
          */
         template <typename EA>
         void advance_epoch(int n, EA& ea) {
-            ea.events().record_statistics(ea);
+            ea.begin_epoch();
             for( ; n>0; --n) {
                 ea.update();
                 if(ea.stop()) {
                     break;
                 }
             }
-            ea.events().end_of_epoch(ea);
+            ea.end_epoch();
         }
         
         //! Advance the EA by all configured epochs.
@@ -204,37 +205,6 @@ namespace ealib {
                 }
 			}
 		}
-        
-        //! Fill the population with generated individuals.
-        template <typename EA>
-        void fill_population(EA& ea) {
-            typename EA::population_generator_type g;
-            g(ea);
-        }
-        
-        //! Generate the initial population.
-        template <typename EA>
-        void generate_initial_population(EA& ea) {
-            fill_population(ea);
-            ea.configure().initial_population();
-        }
-        
-        //! Reset a population.
-        template <typename EA>
-        void reset_population(EA& ea) {
-            nullify_fitness(ea.begin(), ea.end(), ea);
-            ea.configure().reset();
-        }
-
-
-        //! Initialize an EA.
-        template <typename EA>
-        void initialize(EA& ea) {
-            initialize_fitness_function(ea.fitness_function(), ea);
-            ea.configure().initialize(ea);
-        }
-        
-
     } // lifecycle
 } // ealib
 

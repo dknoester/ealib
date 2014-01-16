@@ -27,6 +27,6 @@ BOOST_AUTO_TEST_CASE(test_meta_population) {
     put<META_POPULATION_SIZE>(5,M);
     
     M.initialize();
-    M.initial_population();
+    generate_initial_population(M);
     lifecycle::advance_epoch(10,M);
 }

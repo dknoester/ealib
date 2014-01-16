@@ -22,14 +22,12 @@
 
 #include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
-#include <limits>
 
 #include <ea/configuration.h>
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
-#include <ea/population.h>
+#include <ea/ptr_population.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
 #include <ea/rng.h>
@@ -42,11 +40,7 @@
 #include <ea/subpopulation.h>
 
 namespace ealib {
-    
-    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.metapopulation.size", unsigned int);
-    LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.metapopulation.competition_period", unsigned int);
-
-    
+        
     /*! Metapopulation evolutionary algorithm, where individuals in the population
      are themselves evolutionary algorithms.
      
@@ -65,9 +59,8 @@ namespace ealib {
     , typename RecombinationOperator=recombination::no_recombination
     , typename GenerationalModel=generational_models::isolated_subpopulations
     , typename EarlyStopCondition=dont_stop
-    , typename Configuration=default_configuration
-    , typename MetaData=meta_data
-    , typename RandomNumberGenerator=default_rng_type
+    , typename UserDefinedConfiguration=default_configuration
+    , typename PopulationGenerator=fill_metapopulation
     > class metapopulation {
     public:
         //! Tag indicating the structure of this population.
@@ -96,8 +89,10 @@ namespace ealib {
         typedef GenerationalModel generational_model_type;
         //! Function that checks for an early stopping condition.
         typedef EarlyStopCondition stop_condition_type;
-        //! Configuration methods type.
-        typedef Configuration configuration_type;
+        //! User-defined configuration methods type.
+        typedef UserDefinedConfiguration configuration_type;
+        //! Population generator type.
+        typedef PopulationGenerator population_generator_type;
         //! Meta-data type.
         typedef meta_data md_type;
         //! Random number generator type.
@@ -105,7 +100,7 @@ namespace ealib {
         //! Event handler.
         typedef event_handler<metapopulation> event_handler_type;
         //! Population type.
-        typedef population<individual_type,individual_ptr_type> population_type;
+        typedef ptr_population<individual_type,individual_ptr_type> population_type;
         //! Iterator over the subpopulations in this metapopulation.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator over this EA's population.
@@ -119,239 +114,197 @@ namespace ealib {
         //! Subpopulation type.
         typedef typename individual_type::ea_type::population_type subpopulation_type;
         
-        
-        
         //! Construct a meta-population EA.
-        metapopulation() {
+        metapopulation() : _update(0) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<metapopulation>));
-            configure();
+            _configuration.after_construction(*this);
         }
         
-        //! Configure this EA.
-        void configure() {
-            _configurator.configure(*this);
-        }
- 
-        /*! Generate the initial population.
-         
-         \warning This constructs, initializes, and generates the initial population
-         for all of the subpopulations.
-         */
-        void initial_population() {
-            // construct the ancestral subpopulations:
-            generate_ancestors(ancestor_generator_type(), get<META_POPULATION_SIZE>(*this)-_population.size(), *this);
-            
-            // initialize and build the initial populations for each subpopulation:
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->repr().initialize();
-                i->repr().initial_population();
+        //! Copy constructor (note that this is *not* a complete copy).
+        metapopulation(const metapopulation& that) {
+            _update = that._update;
+            _rng = that._rng;
+            _fitness_function = that._fitness_function;
+            _md = that._md;
+            for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+                individual_ptr_type q = copy_individual(*i);
+                insert(end(),q);
             }
+            _configuration.after_construction(*this);
         }
-
-        /*! Initialize the meta-population.
+        
+        /*! Assignment operator (note that this is *not* a complete copy).
          
-         \warning: This does not initialize the subpopulations.
+         \warning Not exception safe.
          */
+        metapopulation& operator=(const evolutionary_algorithm& that) {
+            if(this != &that) {
+                _update = that._update;
+                _rng = that._rng;
+                _fitness_function = that._fitness_function;
+                _md = that._md;
+                clear();
+                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+                    individual_ptr_type q = copy_individual(*i);
+                    insert(end(),q);
+                }
+                _configuration.after_construction(*this);
+            }
+            return *this;
+        }
+        
+        //! Initializes this EA and any existing subpopulations.
         void initialize() {
-            initialize_fitness_function(_fitness_function, *this);
-            _configurator.initialize(*this);
-        }
-
-        //! Append individual x to the population.
-        void append(individual_ptr_type x) {
-            _population.insert(_population.end(), x);
-        }
-        
-        //! Append the range of individuals [f,l) to the population.
-        template <typename ForwardIterator>
-        void append(ForwardIterator f, ForwardIterator l) {
-            _population.insert(_population.end(), f, l);
-        }
-
-        //! Reset all populations.
-        void reset() {
             for(iterator i=begin(); i!=end(); ++i) {
-                i->ea().reset();
+                i->ea().initialize();
             }
-            _configurator.reset(*this);
+            initialize_fitness_function(_fitness_function, *this);
+            _configuration.initialize(*this);
         }
-        
-        //! Clear the population.
-        void clear() {
-            _population.clear();
-        }
-        
+
         //! Begin an epoch.
         void begin_epoch() {
             for(iterator i=begin(); i!=end(); ++i) {
-                i->repr().begin_epoch();
+                i->ea().begin_epoch();
             }
             _events.record_statistics(*this);
         }
-        
-        //! End an epoch.
-        void end_epoch() {
-            for(iterator i=begin(); i!=end(); ++i) {
-                i->repr().events().end_of_epoch(i->repr()); // don't checkpoint!
-            }
-            
-            _events.end_of_epoch(*this); // checkpoint!
-        }
-        
+
         //! Advance this EA by one update.
         void update() {
             if(!_population.empty()) {
                 _generational_model(_population, *this);
             }
             _events.end_of_update(*this);
-            
-            // update counter and statistics are handled *between* updates:
-            _generational_model.next_update();
+            ++_update;
             _events.record_statistics(*this);
         }
 
-        //! Returns trus if this EA should be stopped.
-        bool stop() {
-            return _stop(*this);
+        //! End an epoch.
+        void end_epoch() {
+            for(iterator i=begin(); i!=end(); ++i) {
+                i->ea().events().end_of_epoch(i->ea()); // don't checkpoint!
+            }
+            _events.end_of_epoch(*this); // checkpoint!
         }
-
-        //! Make a new subpopulation from a representation (ea_type).
+        
+        //! Resets this EA's RNG seed.
+        void reset(unsigned int s) {
+            put<RNG_SEED>(s,*this); // save the seed!
+            _rng.reset(s);
+        }
+        
+        //! Returns a new individual built from the given representation.
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
-            p->repr().md() += md(); // WARNING: Meta-data comes from the meta-population.
-            p->repr().reset_rng(_rng.seed());
-            p->repr().initialize();
+            p->ea().md() += md(); // WARNING: Meta-data comes from the meta-population.
+            p->ea().reset(_rng.seed());
+            p->ea().initialize();
             return p;
         }
         
-        //        //! Make a new subpopulation from a copy of another.
-        //        individual_ptr_type copy_individual(const individual_type& ind) {
-        //            individual_ptr_type p(new individual_type(ind));
-        //            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
-        //            p->reset_rng(_rng.seed());
-        //            p->initialize();
-        //            return p;
-        //        }
+        //! Returns a copy of an individual.
+        individual_ptr_type copy_individual(const individual_type& ind) {
+            individual_ptr_type p(new individual_type(ind));
+            p->ea().md() += ind.md(); // WARNING: Meta-data comes from the individual.
+            p->ea().reset(_rng.seed());
+            p->ea().initialize();
+            return p;
+        }
+
+        //! Returns the current update of this EA.
+        unsigned long current_update() { return _update; }
         
-        //! Accessor for the random number generator.
+        //! Returns the random number generator.
         rng_type& rng() { return _rng; }
         
-        //! Accessor for this EA's meta-data.
-        md_type& md() { return _md; }
-
-        //! Accessor for this EA's meta-data (const-qualified).
-        const md_type& md() const { return _md; }
-
-        //! Accessor for the fitness function object.
+        //! Returns the fitness function object.
         fitness_function_type& fitness_function() { return _fitness_function; }
         
-        //! Accessor for the generational model object.
-        generational_model_type& generational_model() { return _generational_model; }
+        //! Returns this EA's meta-data.
+        md_type& md() { return _md; }
         
-        //! Returns the current update of this EA.
-        unsigned long current_update() { return _generational_model.current_update(); }
-
+        //! Returns this EA's meta-data (const-qualified).
+        const md_type& md() const { return _md; }
+        
+        //! Returns true if this EA should be stopped.
+        bool stop() { return _stop(*this); }
+        
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
         
         //! Returns the configuration object.
-        configuration_type& configuration() { return _configurator; }        
+        configuration_type& config() { return _configuration; }
 
-        //! Return the population.
+        //! Returns this EA's population.
         population_type& population() { return _population; }
         
-        //! Return the number of embedded EAs.
+        //! Returns the size of this EA's population.
         std::size_t size() const { return _population.size(); }
         
-        //! Return the n'th subpopulation.
-        individual_type& operator[](std::size_t n) {
-            return *_population[n];
-        }
+        //! Returns the n'th individual in the population.
+        individual_type& operator[](std::size_t n) { return *_population[n]; }
         
-        //! Returns a begin iterator to the embedded EAs.
-        iterator begin() {
-            return iterator(_population.begin());
-        }
+        //! Returns a begin iterator to the population.
+        iterator begin() { return iterator(_population.begin()); }
         
-        //! Returns an end iterator to the embedded EAs.
-        iterator end() {
-            return iterator(_population.end());
-        }
+        //! Returns an end iterator to the population.
+        iterator end() { return iterator(_population.end()); }
         
-        //! Returns a begin iterator to the embedded EAs (const-qualified).
-        const_iterator begin() const {
-            return const_iterator(_population.begin());
-        }
+        //! Returns a begin iterator to the population (const-qualified).
+        const_iterator begin() const { return const_iterator(_population.begin()); }
         
-        //! Returns an end iterator to the embedded EAs (const-qualified).
-        const_iterator end() const {
-            return const_iterator(_population.end());
-        }
+        //! Returns an end iterator to the population (const-qualified).
+        const_iterator end() const { return const_iterator(_population.end()); }
         
-        //! Returns a reverse begin iterator to the embedded EAs.
-        reverse_iterator rbegin() {
-            return reverse_iterator(_population.rbegin());
-        }
+        //! Returns a reverse begin iterator to the population.
+        reverse_iterator rbegin() { return reverse_iterator(_population.rbegin()); }
         
-        //! Returns a reverse end iterator to the embedded EAs.
-        reverse_iterator rend() {
-            return reverse_iterator(_population.rend());
-        }
+        //! Returns a reverse end iterator to the population.
+        reverse_iterator rend() { return reverse_iterator(_population.rend()); }
         
-        //! Returns a reverse begin iterator to the embedded EAs (const-qualified).
-        const_reverse_iterator rbegin() const {
-            return const_reverse_iterator(_population.rbegin());
-        }
+        //! Returns a reverse begin iterator to the population (const-qualified).
+        const_reverse_iterator rbegin() const { return const_reverse_iterator(_population.rbegin()); }
         
-        //! Returns a reverse end iterator to the embedded EAs (const-qualified).
-        const_reverse_iterator rend() const {
-            return const_reverse_iterator(_population.rend());
-        }
+        //! Returns a reverse end iterator to the population (const-qualified).
+        const_reverse_iterator rend() const { return const_reverse_iterator(_population.rend()); }
+        
+        //! Inserts individual x into the population before pos.
+        void insert(iterator pos, individual_ptr_type x) { _population.insert(pos.base(), x); }
+        
+        //! Inserts individuals [f,l) into the population before pos.
+        template <typename InputIterator>
+        void insert(iterator pos, InputIterator f, InputIterator l) { _population.insert(pos.base(), f, l); }
+        
+        //! Erases the given individual from the population.
+        void erase(iterator i) { _population.erase(i.base()); }
+        
+        //! Erases the given range from the population.
+        void erase(iterator f, iterator l) { _population.erase(f.base(), l.base()); }
+        
+        //! Erases all individuals in this EA.
+        void clear() { _population.clear(); }
 
     protected:
+        unsigned long _update; //!< Update number for this EA.
         rng_type _rng; //!< Random number generator.
+        md_type _md; //!< Meta-data for this evolutionary algorithm instance.
+        population_type _population; //!< Population instance.
         fitness_function_type _fitness_function; //!< Fitness function object.
-        meta_data _md; //!< Meta-data for the meta-population.
         stop_condition_type _stop; //!< Checks for an early stopping condition.
         generational_model_type _generational_model; //!< Generational model instance.
         event_handler_type _events; //!< Event handler.
-        configuration_type _configurator; //!< Configuration object.
-        population_type _population; //!< List of EAs in this meta-population.
-
+        configuration_type _configuration; //!< User-defined configuration methods.
+        
     private:
         friend class boost::serialization::access;
-        
-		template<class Archive>
-		void save(Archive & ar, const unsigned int version) const {
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("generational_model", _generational_model);
-            
-            std::size_t s = size();
-            ar & boost::serialization::make_nvp("metapopulation_size", s);
-            for(const_iterator i=begin(); i!=end(); ++i) {
-                ar & boost::serialization::make_nvp("subpopulation", *i);
-            }
-		}
-		
-		template<class Archive>
-		void load(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
-            ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("generational_model", _generational_model);
-
-            std::size_t s;
-            ar & boost::serialization::make_nvp("metapopulation_size", s);
-            for(std::size_t i=0; i<s; ++i) {
-                individual_ptr_type p(new individual_type());
-                p->ea().configure();
-                ar & boost::serialization::make_nvp("subpopulation", *p);
-                _population.push_back(p);
-            }
-		}
-		BOOST_SERIALIZATION_SPLIT_MEMBER();
+            ar & boost::serialization::make_nvp("population", _population);
+        }
     };
     
 }

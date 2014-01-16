@@ -309,6 +309,11 @@ namespace ealib {
     // ea.environment.*
     LIBEA_MD_DECL(LOCATION_DATA, "ea.environment.location.color", int);
     
+	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
+    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.metapopulation.size", unsigned int);
+    LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.metapopulation.competition_period", unsigned int);
+    
+
     // ea.statistics.*
     LIBEA_MD_DECL(RECORDING_PERIOD, "ea.statistics.recording.period", unsigned long);
     

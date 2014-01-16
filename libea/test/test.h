@@ -28,6 +28,7 @@
 #include <ea/evolutionary_algorithm.h>
 #include <ea/representations/bitstring.h>
 #include <ea/fitness_functions/all_ones.h>
+#include <ea/generational_models/steady_state.h>
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/fitness.h>
 
