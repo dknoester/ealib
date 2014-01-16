@@ -145,13 +145,13 @@ namespace ealib {
         }
 
         //! Initializes this EA.
-        void initialize() {
+        virtual void initialize() {
             initialize_fitness_function(_fitness_function, *this);
             _configuration.initialize(*this);
         }
 
         //! Marks the beginning of a new epoch.
-        void begin_epoch() {
+        virtual void begin_epoch() {
             _events.record_statistics(*this);
         }
         
@@ -166,7 +166,7 @@ namespace ealib {
         }
         
         //! Marks the end of an epoch.
-        void end_epoch() {
+        virtual void end_epoch() {
             _events.end_of_epoch(*this);
         }
 
@@ -177,13 +177,13 @@ namespace ealib {
         }
 
         //! Returns a new individual built from the given representation.
-        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
+        virtual individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
         
         //! Returns a copy of an individual.
-        individual_ptr_type copy_individual(const individual_type& ind) {
+        virtual individual_ptr_type copy_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
             return p;
         }
