@@ -57,7 +57,7 @@ namespace ealib {
     , typename PopulationGenerator=fill_population
     > class evolutionary_algorithm {
     public:
-        //! Tag for the population structure of this evolutionary algorithm.
+        //! Tag indicating the structure of this population.
         typedef singlePopulationS population_structure_tag;
         //! Individual type.
         typedef Individual individual_type;
@@ -77,7 +77,7 @@ namespace ealib {
         typedef AncestorGenerator ancestor_generator_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
-        //! Crossover operator type.
+        //! Recombination operator type.
         typedef RecombinationOperator recombination_operator_type;
         //! Generational model type.
         typedef GenerationalModel generational_model_type;
@@ -115,7 +115,6 @@ namespace ealib {
         evolutionary_algorithm(const evolutionary_algorithm& that) {
             _update = that._update;
             _rng = that._rng;
-            _fitness_function = that._fitness_function;
             _md = that._md;
             for(const_iterator i=that.begin(); i!=that.end(); ++i) {
                 individual_ptr_type q = copy_individual(*i);
@@ -132,7 +131,6 @@ namespace ealib {
             if(this != &that) {
                 _update = that._update;
                 _rng = that._rng;
-                _fitness_function = that._fitness_function;
                 _md = that._md;
                 clear();
                 for(const_iterator i=that.begin(); i!=that.end(); ++i) {
@@ -194,14 +192,14 @@ namespace ealib {
         //! Returns the random number generator.
         rng_type& rng() { return _rng; }
         
-        //! Returns the fitness function object.
-        fitness_function_type& fitness_function() { return _fitness_function; }
-        
         //! Returns this EA's meta-data.
         md_type& md() { return _md; }
         
         //! Returns this EA's meta-data (const-qualified).
         const md_type& md() const { return _md; }
+        
+        //! Returns the fitness function object.
+        fitness_function_type& fitness_function() { return _fitness_function; }
         
         //! Returns true if this EA should be stopped.
         bool stop() { return _stop(*this); }

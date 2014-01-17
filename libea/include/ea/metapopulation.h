@@ -83,7 +83,7 @@ namespace ealib {
         typedef AncestorGenerator ancestor_generator_type;
         //! Mutation operator type.
         typedef MutationOperator mutation_operator_type;
-        //! Crossover operator type.
+        //! Recombination operator type.
         typedef RecombinationOperator recombination_operator_type;
         //! Generational model type.
         typedef GenerationalModel generational_model_type;
