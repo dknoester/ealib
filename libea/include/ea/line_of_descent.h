@@ -36,7 +36,6 @@
 #include <ea/events.h>
 #include <ea/lifecycle.h>
 #include <ea/individual.h>
-#include <ea/digital_evolution/organism.h>
 
 namespace ealib {
     namespace traits {

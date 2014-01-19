@@ -40,10 +40,15 @@ namespace ealib {
      into its own struct, and then have instructions manipulate that directly.
      */
     class hardware {
-    public:            
-        typedef circular_genome<unsigned int> representation_type;
+    public:
+        //! Type of ISA needed by this hardware.
         
-        const static int NOP_A = 0; 
+        //! Type of representation needed for this hardware.
+        typedef circular_genome<unsigned int> representation_type;
+        //! Type of mutation needed by this representation.
+        typedef mutation::operators::per_site<mutation::site::uniform_integer> mutation_operator_type;
+        
+        const static int NOP_A = 0;
         const static int NOP_B = 1; 
         const static int NOP_C = 2;
         const static int NOP_X = 3;
@@ -378,9 +383,12 @@ namespace ealib {
             }
         }
         
-        //! Retrieve this hardware's representation (its genome).
+        //! Retrieve this hardware's representation.
         representation_type& repr() { return _repr; }
-        
+
+        //! Retrieve this hardware's representation (const-qualified).
+        const representation_type& repr() const { return _repr; }
+
         void push_stack(int x) { _stack.push_front(x); while(_stack.size() > 10) { _stack.pop_back(); } }
         bool empty_stack() { return _stack.empty(); }
         int pop_stack() { int x = _stack.front(); _stack.pop_front(); return x; }

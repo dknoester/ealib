@@ -32,7 +32,10 @@ namespace ealib {
     
     LIBEA_MD_DECL(SCHEDULER_TIME_SLICE, "ea.scheduler.time_slice", unsigned int);
     
-//    
+    typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
+
+    
+//
 //    namespace attr {
 //        
 //        //! Fitness attribute.
@@ -217,15 +220,10 @@ namespace ealib {
      
      Grants organisms an amount of CPU time equal to their priority.
      */
-    template <typename EA>
     struct weighted_round_robin {
-        typedef EA ea_type;
         typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
 
-        void initialize(EA& ea) {
-        }
-
-        template <typename Population>
+        template <typename Population, typename EA>
         void operator()(Population& population, EA& ea) {
             // WARNING: Population is unstable!  Must use []-indexing.
             std::random_shuffle(population.begin(), population.end(), ea.rng());
@@ -247,7 +245,7 @@ namespace ealib {
                 if((budget % eff_population_size) == 0) {
                     ea.env().partial_update(delta_t, ea);
                 }
-                typename ea_type::individual_ptr_type p=population[i];
+                typename EA::individual_ptr_type p=population[i];
                 i = (i+1) % last;
                 
                 if(p->alive()) {
@@ -260,7 +258,7 @@ namespace ealib {
             
             Population next;
             for(std::size_t i=0; i<population.size(); ++i) {
-                typename ea_type::individual_ptr_type p=population[i];
+                typename EA::individual_ptr_type p=population[i];
                 if(p->alive()) {
                     next.push_back(p);
                 }

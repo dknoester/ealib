@@ -25,28 +25,72 @@
 #include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ea/concepts.h>
-#include <ea/configuration.h>
 #include <ea/digital_evolution/events.h>
 #include <ea/digital_evolution/ancestors.h>
-#include <ea/digital_evolution/hardware.h>
-#include <ea/digital_evolution/isa.h>
+#include <ea/digital_evolution/discrete_spatial_environment.h>
+//#include <ea/digital_evolution/hardware.h>
+//#include <ea/digital_evolution/isa.h>
+//#include <ea/digital_evolution/organism.h>
 #include <ea/digital_evolution/organism.h>
 #include <ea/digital_evolution/schedulers.h>
-#include <ea/digital_evolution/replication.h>
-#include <ea/digital_evolution/spatial.h>
-#include <ea/digital_evolution/task_library.h>
-#include <ea/ancestors.h>
+//#include <ea/digital_evolution/replication.h>
+//#include <ea/digital_evolution/spatial.h>
+//#include <ea/digital_evolution/task_library.h>
+//#include <ea/ancestors.h>
 
+#include <ea/concepts.h>
+#include <ea/configuration.h>
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
+
 #include <ea/ptr_population.h>
 #include <ea/recombination.h>
-#include <ea/stop.h>
 #include <ea/rng.h>
+#include <ea/stop.h>
 
 
 namespace ealib {
+//    
+//    
+//    namespace traits {
+//        
+//        template <typename T>
+//        struct alife_trait {
+//            typedef typename T::individual_ptr_type individual_ptr_type;
+//            typedef std::vector<individual_ptr_type> parent_vector_type;
+//            
+//            //! Constructor.
+//            lod_trait() {
+//            }
+//            
+//            //! Clear this individual's parents.
+//            void lod_clear() {
+//                _lod_parents.clear();
+//            }
+//            
+//            //! Retrieve all of this individual's parents.
+//            parent_vector_type& lod_parents() { return _lod_parents; }
+//            
+//            //! Shorthand for asexual populations.
+//            individual_ptr_type lod_parent() {
+//                assert(!_lod_parents.empty());
+//                return _lod_parents.front();
+//            }
+//            
+//            //! Returns true if this individual has parents.
+//            bool has_parents() {
+//                return !_lod_parents.empty();
+//            }
+//            
+//            //! Serialize this LoD trait.
+//            template <class Archive>
+//            void serialize(Archive& ar, const unsigned int version) {
+//            }
+//            
+//            parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.
+//        };
+//        
+//    } // traits
     
     /*! Artificial life top-level evolutionary algorithm.
      
@@ -74,15 +118,16 @@ namespace ealib {
      the "organisms" in AL are referred to as "individuals."
      */
     template
-    < typename Individual // genome, isa, hardware, environment
-    , typename AncestorGenerator // =selfrep_ancestor
-    , typename MutationOperator // =mutation::operators::per_site<mutation::site::uniform_integer>
-	, typename RecombinationOperator // =recombination::asexual
+    < typename Individual
+    , typename AncestorGenerator=selfrep_ancestor
+//    , typename Environment=spatial
+	, typename RecombinationOperator=recombination::asexual
+    , typename Scheduler=weighted_round_robin
     , typename EarlyStopCondition=dont_stop
     , typename UserDefinedConfiguration=default_configuration
     , typename PopulationGenerator=fill_population
-    , typename Scheduler=weighted_round_robin
-    , typename ReplacementStrategy=random_neighbor
+//    , typename ReplacementStrategy=random_neighbor
+//    , template <typename> class Hardware=avida_hardware
     > class digital_evolution {
     public:
         //! Tag indicating the structure of this population.
@@ -93,270 +138,327 @@ namespace ealib {
         typedef typename individual_type::individual_ptr_type individual_ptr_type;
         //! Representation type.
         typedef typename individual_type::representation_type representation_type;
-        //! ISA type.
-        typedef typename individual_type::isa_type isa_type;
-        //! Environment type.
-        typedef typename individual_type::environment_type environment_type;
+        //! Mutation operator type.
+        typedef typename individual_type::mutation_operator_type mutation_operator_type;
+
         //! Ancestor generator type.
         typedef AncestorGenerator ancestor_generator_type;
-        //! Mutation operator type.
-        typedef MutationOperator mutation_operator_type;
         //! Recombination operator type.
         typedef RecombinationOperator recombination_operator_type;
+        //! Scheduler type.
+        typedef Scheduler scheduler_type;
         //! Function that checks for an early stopping condition.
         typedef EarlyStopCondition stop_condition_type;
         //! User-defined configuration methods type.
         typedef UserDefinedConfiguration configuration_type;
         //! Population generator type.
         typedef PopulationGenerator population_generator_type;
-        //! Scheduler type.
-        typedef Scheduler scheduler_type;
-        //! Replacment strategy type.
-        typedef ReplacementStrategy replacement_type;
-        //! Task library type.
-        typedef task_library<digital_evolution> task_library_type;
-        //! Population type.
-        typedef ptr_population<individual_type, individual_ptr_type> population_type;
-        //! Value type stored in population.
-        typedef typename population_type::value_type population_entry_type;
         //! Meta-data type.
         typedef meta_data md_type;
         //! Random number generator type.
         typedef default_rng_type rng_type;
         //! Event handler.
-        typedef alife_event_handler<digital_evolution> event_handler_type;
-        //! Iterator over this EA's population.
-        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
-        //! Const iterator over this EA's population.
-        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
-        //! Reverse iterator over this EA's population.
-        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
-        //! Const reverse iterator over this EA's population.
-        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-        
-        //! Default constructor.
-        digital_evolution() : _update(0) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
-            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
-            _configuration.after_construction(*this);
-        }
-        
-        //! Copy constructor (note that this is *not* a complete copy).
-        digital_evolution(const digital_evolution& that) {
-            _update = that._update;
-            _rng = that._rng;
-            _md = that._md;
-            for(const_iterator i=that.begin(); i!=that.end(); ++i) {
-                individual_ptr_type q = copy_individual(*i);
-                insert(end(),q);
-            }
-            _configuration.after_construction(*this);
-        }
-        
-        /*! Assignment operator (note that this is *not* a complete copy).
-         
-         \warning Not exception safe.
-         */
-        digital_evolution& operator=(const digital_evolution& that) {
-            if(this != &that) {
-                _update = that._update;
-                _rng = that._rng;
-                _md = that._md;
-                clear();
-                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
-                    individual_ptr_type q = copy_individual(*i);
-                    insert(end(),q);
-                }
-                _configuration.after_construction(*this);
-            }
-            return *this;
-        }
-        
-        //! Initializes this EA.
-        void initialize() {
-            _env.initialize(*this);
-            _scheduler.initialize(*this);
-            _isa.initialize(*this);
-            _configurator.initialize(*this);
-        }
-        
-        //! Marks the beginning of a new epoch.
-        void begin_epoch() {
-            _events.record_statistics(*this);
-        }
-        
-        //! Advances this EA by one update.
-        void update() {
-            _scheduler(_population, *this);
-            _events.end_of_update(*this);
-            _events.record_statistics(*this);
-        }
-
-        //! Marks the end of an epoch.
-        void end_epoch() {
-            _events.end_of_epoch(*this);
-        }
-        
-        //! Resets this EA's RNG seed.
-        void reset(unsigned int s) {
-            put<RNG_SEED>(s,*this); // save the seed!
-            _rng.reset(s);
-        }        
-
-        //! Build an individual from the given representation.
-        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
-            individual_ptr_type p(new individual_type(r));
-            return p;
-        }
-        
-        //! Build an individual from the given representation.
-        individual_ptr_type copy_individual(const individual_type& ind) {
-            individual_ptr_type p(new individual_type(ind));
-            return p;
-        }
-        
-        //! Returns the current update of this EA.
-        unsigned long current_update() { return _update; }
-        
-        //! Returns the random number generator.
-        rng_type& rng() { return _rng; }
-        
-        //! Returns this EA's meta-data.
-        md_type& md() { return _md; }
-        
-        //! Returns this EA's meta-data (const-qualified).
-        const md_type& md() const { return _md; }
-        
-        //! Retrieves this AL's environment.
-        environment_type& env() { return _env; }
-        
-        //! Returns true if this EA should be stopped.
-        bool stop() { return _stop(*this); }
-        
-        //! Returns the event handler.
-        event_handler_type& events() { return _events; }
-        
-        //! Returns the configuration object.
-        configuration_type& config() { return _configuration; }
-        
-        //! Retrieves this AL's instruction set architecture.
-        isa_type& isa() { return _isa; }
-        
-        //! Retrieves this AL's task library.
-        tasklib_type& tasklib() { return _tasklib; }
-        
-        //! Returns this EA's population.
-        population_type& population() { return _population; }
-        
-        //! Returns the size of this EA's population.
-        std::size_t size() const { return _population.size(); }
-        
-        //! Returns the n'th individual in the population.
-        individual_type& operator[](std::size_t n) { return *_population[n]; }
-        
-        //! Returns a begin iterator to the population.
-        iterator begin() { return iterator(_population.begin()); }
-        
-        //! Returns an end iterator to the population.
-        iterator end() { return iterator(_population.end()); }
-        
-        //! Returns a begin iterator to the population (const-qualified).
-        const_iterator begin() const { return const_iterator(_population.begin()); }
-        
-        //! Returns an end iterator to the population (const-qualified).
-        const_iterator end() const { return const_iterator(_population.end()); }
-        
-        //! Returns a reverse begin iterator to the population.
-        reverse_iterator rbegin() { return reverse_iterator(_population.rbegin()); }
-        
-        //! Returns a reverse end iterator to the population.
-        reverse_iterator rend() { return reverse_iterator(_population.rend()); }
-        
-        //! Returns a reverse begin iterator to the population (const-qualified).
-        const_reverse_iterator rbegin() const { return const_reverse_iterator(_population.rbegin()); }
-        
-        //! Returns a reverse end iterator to the population (const-qualified).
-        const_reverse_iterator rend() const { return const_reverse_iterator(_population.rend()); }
-        
-        //! Inserts individual x into the population before pos.
-        void insert(iterator pos, individual_ptr_type x) { _population.insert(pos.base(), x); }
-        
-        //! Inserts individuals [f,l) into the population before pos.
-        template <typename InputIterator>
-        void insert(iterator pos, InputIterator f, InputIterator l) { _population.insert(pos.base(), f, l); }
-        
-        //! Erases the given individual from the population.
-        void erase(iterator i) { _population.erase(i.base()); }
-        
-        //! Erases the given range from the population.
-        void erase(iterator f, iterator l) { _population.erase(f.base(), l.base()); }
-        
-        //! Erases all individuals in this EA.
-        void clear() { _population.clear(); }
-
+        typedef digital_evolution_event_handler<digital_evolution> event_handler_type;
+        //! Environment type.
+        typedef discrete_spatial_environment<digital_evolution> environment_type;
+//        //! Population type.
+//        typedef ptr_population<individual_type,individual_ptr_type> population_type;
+//        //! Iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
+//        //! Const iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
+//        //! Reverse iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
+//        //! Const reverse iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
 
         
-        //! Append individual x to the population and environment.
-        void append(individual_ptr_type p) {
-            _population.insert(_population.end(), p);
-            _env.append(p);
-        }
         
-        //! Append the range of individuals [f,l) to the population and environment.
-        template <typename ForwardIterator>
-        void append(ForwardIterator f, ForwardIterator l) {
-            _population.insert(_population.end(), f, l);
-            _env.append(f, l);
-        }
         
-        //! (Re-)Place an offspring in the population, if possible.
-        void replace(individual_ptr_type parent, individual_ptr_type offspring) {
-            replacement_type r;
-            std::pair<typename environment_type::iterator, bool> l=r(parent, *this);
-            
-            if(l.second) {
-                _env.replace(l.first, offspring, *this);
-                offspring->priority() = parent->priority();
-                _population.insert(_population.end(), offspring);
-                _events.birth(*offspring, *parent, *this);
-            }
-        }
+//        typedef Hardware<digital_evolution> hardware_type;
+//        typedef typename hardware_type::representation_type representation_type;
+//        typedef typename hardware_type::isa_type isa_type
+//        typedef typename hardware_type::mutation_type mutation_type
+//        typedef Environment environment_type;
+//        typedef typename environment_type::position_type position_type;
+//        typedef Scheduler scheduler_type;
+//        typedef typename scheduler_type::priority_type priority_type;
+//        typedef organism<representation_type,priority_type,position_type> individual_type;
+//        
+//        //! Individual type.
+//        typedef Individual individual_type;
+//        //! Individual pointer type.
+//        typedef typename individual_type::individual_ptr_type individual_ptr_type;
+//        //! Representation type.
+//        typedef typename individual_type::representation_type representation_type;
+//        //! ISA type.
+//        typedef typename individual_type::isa_type isa_type;
+//        //! Environment type.
+//        typedef typename individual_type::environment_type environment_type;
+//        //! Ancestor generator type.
+//        typedef AncestorGenerator ancestor_generator_type;
+//        //! Mutation operator type.
+//        typedef MutationOperator mutation_operator_type;
+//        //! Recombination operator type.
+//        typedef RecombinationOperator recombination_operator_type;
+//        //! Function that checks for an early stopping condition.
+//        typedef EarlyStopCondition stop_condition_type;
+//        //! User-defined configuration methods type.
+//        typedef UserDefinedConfiguration configuration_type;
+//        //! Population generator type.
+//        typedef PopulationGenerator population_generator_type;
+//        //! Scheduler type.
+//        typedef Scheduler scheduler_type;
+//        //! Replacment strategy type.
+//        typedef ReplacementStrategy replacement_type;
+//        //! Task library type.
+//        typedef task_library<digital_evolution> task_library_type;
+//        //! Population type.
+//        typedef ptr_population<individual_type, individual_ptr_type> population_type;
+//        //! Value type stored in population.
+//        typedef typename population_type::value_type population_entry_type;
+//        //! Meta-data type.
+//        typedef meta_data md_type;
+//        //! Random number generator type.
+//        typedef default_rng_type rng_type;
+//        //! Event handler.
+//        typedef alife_event_handler<digital_evolution> event_handler_type;
+//        //! Iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::iterator> iterator;
+//        //! Const iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
+//        //! Reverse iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
+//        //! Const reverse iterator over this EA's population.
+//        typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
+//        
+//        //! Default constructor.
+//        digital_evolution() : _update(0) {
+//            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
+//            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
+//            _configuration.after_construction(*this);
+//        }
+//        
+//        //! Copy constructor (note that this is *not* a complete copy).
+//        digital_evolution(const digital_evolution& that) {
+//            _update = that._update;
+//            _rng = that._rng;
+//            _md = that._md;
+//            for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+//                individual_ptr_type q = copy_individual(*i);
+//                insert(end(),q);
+//            }
+//            _configuration.after_construction(*this);
+//        }
+//        
+//        /*! Assignment operator (note that this is *not* a complete copy).
+//         
+//         \warning Not exception safe.
+//         */
+//        digital_evolution& operator=(const digital_evolution& that) {
+//            if(this != &that) {
+//                _update = that._update;
+//                _rng = that._rng;
+//                _md = that._md;
+//                clear();
+//                for(const_iterator i=that.begin(); i!=that.end(); ++i) {
+//                    individual_ptr_type q = copy_individual(*i);
+//                    insert(end(),q);
+//                }
+//                _configuration.after_construction(*this);
+//            }
+//            return *this;
+//        }
+//        
+//        //! Initializes this EA.
+//        void initialize() {
+//            _env.initialize(*this);
+//            _isa.initialize(*this);
+//            _configurator.initialize(*this);
+//        }
+//        
+//        //! Marks the beginning of a new epoch.
+//        void begin_epoch() {
+//            _events.record_statistics(*this);
+//        }
+//        
+//        //! Advances this EA by one update.
+//        void update() {
+//            _scheduler(_population, *this);
+//            _events.end_of_update(*this);
+//            _events.record_statistics(*this);
+//        }
+//
+//        //! Execute an individual for n cycles.
+//        inline void execute(std::size_t n, individual_ptr_type p) {
+////            _hw.execute(n,p,_tracecb,ea);
+//        }
+//        
+//        //! Marks the end of an epoch.
+//        void end_epoch() {
+//            _events.end_of_epoch(*this);
+//        }
+//        
+//        //! Resets this EA's RNG seed.
+//        void reset(unsigned int s) {
+//            put<RNG_SEED>(s,*this); // save the seed!
+//            _rng.reset(s);
+//        }        
+//
+//        //! Build an individual from the given representation.
+//        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
+//            individual_ptr_type p(new individual_type(r));
+//            return p;
+//        }
+//        
+//        //! Build an individual from the given representation.
+//        individual_ptr_type copy_individual(const individual_type& ind) {
+//            individual_ptr_type p(new individual_type(ind));
+//            return p;
+//        }
+//        
+//        //! Returns the current update of this EA.
+//        unsigned long current_update() { return _update; }
+//        
+//        //! Returns the random number generator.
+//        rng_type& rng() { return _rng; }
+//        
+//        //! Returns this EA's meta-data.
+//        md_type& md() { return _md; }
+//        
+//        //! Returns this EA's meta-data (const-qualified).
+//        const md_type& md() const { return _md; }
+//        
+//        //! Retrieves this AL's environment.
+//        environment_type& env() { return _env; }
+//        
+//        //! Returns true if this EA should be stopped.
+//        bool stop() { return _stop(*this); }
+//        
+//        //! Returns the event handler.
+//        event_handler_type& events() { return _events; }
+//        
+//        //! Returns the configuration object.
+//        configuration_type& config() { return _configuration; }
+//        
+//        //! Retrieves this AL's instruction set architecture.
+//        isa_type& isa() { return _isa; }
+//        
+//        //! Retrieves this AL's task library.
+//        tasklib_type& tasklib() { return _tasklib; }
+//        
+//        //! Returns this EA's population.
+//        population_type& population() { return _population; }
+//        
+//        //! Returns the size of this EA's population.
+//        std::size_t size() const { return _population.size(); }
+//        
+//        //! Returns the n'th individual in the population.
+//        individual_type& operator[](std::size_t n) { return *_population[n]; }
+//        
+//        //! Returns a begin iterator to the population.
+//        iterator begin() { return iterator(_population.begin()); }
+//        
+//        //! Returns an end iterator to the population.
+//        iterator end() { return iterator(_population.end()); }
+//        
+//        //! Returns a begin iterator to the population (const-qualified).
+//        const_iterator begin() const { return const_iterator(_population.begin()); }
+//        
+//        //! Returns an end iterator to the population (const-qualified).
+//        const_iterator end() const { return const_iterator(_population.end()); }
+//        
+//        //! Returns a reverse begin iterator to the population.
+//        reverse_iterator rbegin() { return reverse_iterator(_population.rbegin()); }
+//        
+//        //! Returns a reverse end iterator to the population.
+//        reverse_iterator rend() { return reverse_iterator(_population.rend()); }
+//        
+//        //! Returns a reverse begin iterator to the population (const-qualified).
+//        const_reverse_iterator rbegin() const { return const_reverse_iterator(_population.rbegin()); }
+//        
+//        //! Returns a reverse end iterator to the population (const-qualified).
+//        const_reverse_iterator rend() const { return const_reverse_iterator(_population.rend()); }
+//        
+//        //! Inserts individual x into the population before pos.
+//        void insert(iterator pos, individual_ptr_type x) { _population.insert(pos.base(), x); }
+//        
+//        //! Inserts individuals [f,l) into the population before pos.
+//        template <typename InputIterator>
+//        void insert(iterator pos, InputIterator f, InputIterator l) { _population.insert(pos.base(), f, l); }
+//        
+//        //! Erases the given individual from the population.
+//        void erase(iterator i) { _population.erase(i.base()); }
+//        
+//        //! Erases the given range from the population.
+//        void erase(iterator f, iterator l) { _population.erase(f.base(), l.base()); }
+//        
+//        //! Erases all individuals in this EA.
+//        void clear() { _population.clear(); }
+//
+//
+//        
+//        //! Append individual x to the population and environment.
+//        void append(individual_ptr_type p) {
+//            _population.insert(_population.end(), p);
+//            _env.append(p);
+//        }
+//        
+//        //! Append the range of individuals [f,l) to the population and environment.
+//        template <typename ForwardIterator>
+//        void append(ForwardIterator f, ForwardIterator l) {
+//            _population.insert(_population.end(), f, l);
+//            _env.append(f, l);
+//        }
+//        
+//        //! (Re-)Place an offspring in the population, if possible.
+//        void replace(individual_ptr_type parent, individual_ptr_type offspring) {
+//            replacement_type r;
+//            std::pair<typename environment_type::iterator, bool> l=r(parent, *this);
+//            
+//            if(l.second) {
+//                _env.replace(l.first, offspring, *this);
+//                offspring->priority() = parent->priority();
+//                _population.insert(_population.end(), offspring);
+//                _events.birth(*offspring, *parent, *this);
+//            }
+//        }
 
         
     protected:
         unsigned long _update; //!< Update number for this EA.
         rng_type _rng; //!< Random number generator.
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
-        population_type _population; //!< Population instance.
-        environment_type _env; //!< Environment object.
-        stop_condition_type _stop; //!< Checks for an early stopping condition.
-        event_handler_type _events; //!< Event handler.
-        configuration_type _configuration; //!< User-defined configuration methods.
-        scheduler_type _scheduler; //!< Scheduler instance.
-        isa_type _isa; //!< Instruction set architecture.
-        tasklib_type _tasklib; //!< Task library.
+//        population_type _population; //!< Population instance.
+//        environment_type _env; //!< Environment object.
+//        stop_condition_type _stop; //!< Checks for an early stopping condition.
+//        event_handler_type _events; //!< Event handler.
+//        configuration_type _configuration; //!< User-defined configuration methods.
+//        scheduler_type _scheduler; //!< Scheduler instance.
+//        isa_type _isa; //!< Instruction set architecture.
+//        tasklib_type _tasklib; //!< Task library.
         
     private:
         friend class boost::serialization::access;
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
-            ar & boost::serialization::make_nvp("update", _update);
-            ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("population", _population);
-            ar & boost::serialization::make_nvp("environment", _env);
+//            ar & boost::serialization::make_nvp("update", _update);
+//            ar & boost::serialization::make_nvp("rng", _rng);
+//            ar & boost::serialization::make_nvp("meta_data", _md);
+//            ar & boost::serialization::make_nvp("population", _population);
+//            ar & boost::serialization::make_nvp("environment", _env);
 		}
 		
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("update", _update);
-            ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("population", _population);
-            ar & boost::serialization::make_nvp("environment", _env);
-            
-            // now we have to fix up the connection between the environment and organisms:
-            _env.attach(*this);
+//            ar & boost::serialization::make_nvp("update", _update);
+//            ar & boost::serialization::make_nvp("rng", _rng);
+//            ar & boost::serialization::make_nvp("meta_data", _md);
+//            ar & boost::serialization::make_nvp("population", _population);
+//            ar & boost::serialization::make_nvp("environment", _env);
+//            
+//            // now we have to fix up the connection between the environment and organisms:
+//            _env.attach(*this);
         }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };

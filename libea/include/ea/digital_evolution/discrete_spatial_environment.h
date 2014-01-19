@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_SPATIAL_H_
-#define _EA_SPATIAL_H_
+#ifndef _EA_DIGITAL_EVOLUTION_DISCRETE_SPATIAL_ENVIRONMENT_H_
+#define _EA_DIGITAL_EVOLUTION_DISCRETE_SPATIAL_ENVIRONMENT_H_
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -27,192 +27,32 @@
 #include <utility>
 #include <vector>
 #include <stdexcept>
+
 #include <ea/algorithm.h>
 #include <ea/meta_data.h>
+#include <ea/digital_evolution/position.h>
+#include <ea/digital_evolution/resources.h>
 
 LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
 LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
 
 namespace ealib {
     
-    namespace resources {
-        //! Abstract resource type.
-        template <typename EA>
-        struct abstract_resource {
-            abstract_resource(const std::string& name) : _name(name) { }
-            virtual ~abstract_resource() { }
-            //! Update resource levels, if needed, based on elapsed time since last update (as a fraction of update length).
-            virtual void update(double delta_t) = 0;
-            virtual double consume(typename EA::individual_type& org, EA& ea) = 0;
-            virtual void reset() = 0;
-            virtual void clear() = 0;
-            virtual double level() = 0;
-            virtual const std::string& name() { return _name; }
-
-            std::string _name;
-        };
-        
-        //! Unlimited resource type.
-        template <typename EA>
-        struct unlimited : abstract_resource<EA> {
-            unlimited(const std::string& name) : abstract_resource<EA>(name) { }
-            virtual ~unlimited() { }
-            void update(double) { }
-            double consume(typename EA::individual_type& org, EA& ea) { return 1.0; }
-            void reset() { }
-            void clear() { }
-            double level() { return 1.0; }
-        };
-        
-        //! Limited resource type.
-        template <typename EA>
-        struct limited : abstract_resource<EA> {
-            limited(const std::string& name, double initial, double inflow, double outflow, double consume)
-            : abstract_resource<EA>(name), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
-            }
-            
-            virtual ~limited() { }
-            void update(double delta_t) {
-                _level += delta_t * (_inflow - (_outflow * _level));
-                _level = std::max(0.0, _level);
-            }
-            
-            double consume(typename EA::individual_type& org, EA& ea) {
-                double r = std::max(0.0, _level*_consume);
-                _level = std::max(0.0, _level-r);
-                return r;
-            }
-            
-            void reset() { _level = _initial; }
-
-            void clear() { _level = 0.0; }
-            
-            double level() { return _level; }
-            
-            double _initial; //!< Initial resource level
-            double _level; //!< Current resource level.
-            double _inflow; //!< Amount of resource flowing in per update.
-            double _outflow; //!< Rate at which resource flows out per update.
-            double _consume; //!< Fraction of resource consumed.
-        };
-        
-        //! Spatial resources type.
-        template <typename EA>
-        struct spatial : abstract_resource<EA> {
-            typedef boost::numeric::ublas::matrix<double> matrix_type; //!< Type for matrix that will store resource levels.
-
-            spatial(const std::string& name, double diffuse, double initial, double inflow, double outflow, double consume, EA& ea)
-            : abstract_resource<EA>(name), _diffuse(diffuse), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
-                _R.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea));
-                _T.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea));
-                reset();
-            }
-            
-            virtual ~spatial() { }
-            
-            void update(double delta_t) {
-                // for stability...
-                assert(delta_t < (1.0/(2.0*_diffuse)));
-
-                // last row and column indices...
-                std::size_t ni=_R.size1()-1;
-                std::size_t nj=_R.size2()-1;
-
-                // inflow to the top row...
-                for(std::size_t j=0; j<nj; ++j) {
-                    _R(0,j) += _inflow;
-                }
-
-                // outflow from the bottom row...
-                for(std::size_t j=0; j<nj; ++j) {
-                    _R(ni,j) = std::max(0.0, _R(ni,j) - _outflow);
-                }
-
-                // diffuse
-                // based on: http://www.timteatro.net/2010/10/29/performance-python-solving-the-2d-diffusion-equation-with-numpy/
-                for(std::size_t i=1; i<ni; ++i) {
-                    for(std::size_t j=1; j<nj; ++j) {
-                        double uxx = _R(i+1,j) - 2*_R(i,j) + _R(i-1,j);
-                        double uyy = _R(i,j+1) - 2*_R(i,j) + _R(i,j-1);
-                        _T(i,j) = _R(i,j) + delta_t * _diffuse * (uxx+uyy);
-                    }
-                }
-                _R.swap(_T);
-            }
-            
-            double consume(typename EA::individual_type& org, EA& ea) {
-                typename EA::environment_type::location_ptr_type p = ea.env().handle2ptr(org.location());
-                double level = _R(p->x, p->y);
-                double r = std::max(0.0, level*_consume);
-                _R(p->x, p->y) = std::max(0.0, level-r);
-                return r;
-            }
-            
-            void reset() {
-                _R = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), _initial);
-                _T = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), _initial);
-            }
-            
-            void clear() {
-                _R = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), 0.0);
-                _T = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), 0.0);
-            }
-            
-            double level() {  }
-            
-            matrix_type _R; //!< Matrix for current resource levels at each cell.
-            matrix_type _T; //!< Matrix for updating resource levels at each cell.
-            double _diffuse; //!< Diffusion constant for this resource.
-            double _initial; //!< Initial resource level
-            double _level; //!< Current resource level.
-            double _inflow; //!< Amount of resource flowing in per update.
-            double _outflow; //!< Rate at which resource flows out per update.
-            double _consume; //!< Fraction of resource consumed.
-        };
-        
-    } // resources
-    
-    //! Helper method that builds an unlimited resource and adds it to the environment.
-    template <typename EA>
-    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, EA& ea) {
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::unlimited<EA>(name));
-        ea.env().add_resource(p);
-        return p;
-    }
-    
-    //! Helper method that builds a limited resource and adds it to the environment.
-    template <typename EA>
-    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::limited<EA>(name, initial, inflow, outflow, consume));
-        ea.env().add_resource(p);
-        return p;
-    }
-    
-    //! Helper method that builds a spatial resource and adds it to the environment.
-    template <typename EA>
-    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name,
-                                                                   double diffuse,
-                                                                   double initial, double inflow, double outflow, double consume, EA& ea) {
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::spatial<EA>(name, diffuse, initial, inflow, outflow, consume, ea));
-        ea.env().add_resource(p);
-        return p;
-    }
-    
-    
-    
-    /*! Spatial topology.
+    /*! Discrete spatial environment.
+     
+     This environment is divided into discrete cells.
      */
     template <typename EA>
-    class spatial {
+    class discrete_spatial_environment {
     public:
-        typedef EA ea_type; //<! EA type using this topology.
+        //! EA type using this topology.
+        typedef EA ea_type;
+        
         typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
+        
         typedef typename ea_type::individual_type individual_type; //!< Pointer to individual type.
         
-        typedef boost::shared_ptr<resources::abstract_resource<ea_type> > resource_ptr_type;
+        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type;
         typedef std::vector<resource_ptr_type> resource_list_type;
         resource_list_type _resources;
         
@@ -224,13 +64,6 @@ namespace ealib {
             }
         }
         
-        /*! Type that is contained (and owned) by organisms to uniquely identify
-         their location in the environment.
-         
-         \warning: This type must be serializable.
-         */
-        typedef std::pair<std::size_t, std::size_t> location_handle_type;
-
         /*! Location type.
          
          While locations logically "live" inside organisms, they are interpreted 
@@ -282,7 +115,7 @@ namespace ealib {
                 heading = algorithm::roll(heading+h, 0, 7);
             }
             
-            location_handle_type handle() { return std::make_pair(y,x); }
+            position_type handle() { return std::make_pair(y,x); }
             
             individual_ptr_type p; //!< Individual (if any) at this location.
             int heading; //!< Heading of organism, in degrees.
@@ -303,8 +136,8 @@ namespace ealib {
 
         typedef boost::numeric::ublas::matrix<location_type> location_matrix_type; //! Container type for locations.
         
-        location_ptr_type handle2ptr(const location_handle_type& handle) {
-            return &_locs(handle.first, handle.second);
+        location_ptr_type handle2ptr(const position_type& pos) {
+            return &_locs(pos[0], pos[1]);
         }
         
         /*! Spatial neighborhood iterator.
@@ -361,11 +194,11 @@ namespace ealib {
         };                
         
         //! Constructor.
-        spatial() : _append_count(0) {
+        discrete_spatial_environment() : _append_count(0) {
         }
         
         //! Operator==.
-        bool operator==(const spatial& that) {
+        bool operator==(const discrete_spatial_environment& that) {
             if(_locs.size1() != that._locs.size1())
                 return false;
             if(_locs.size2() != that._locs.size2())

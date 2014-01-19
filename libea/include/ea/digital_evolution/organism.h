@@ -32,6 +32,10 @@
 #include <deque>
 #include <vector>
 #include <map>
+
+#include <ea/digital_evolution/position.h>
+#include <ea/digital_evolution/hardware.h>
+#include <ea/digital_evolution/schedulers.h>
 #include <ea/meta_data.h>
 
 namespace ealib {
@@ -44,14 +48,16 @@ namespace ealib {
 	 3) A container for a priority
 	 4) A container for meta data
 	 */
-	template <typename EA>
-	class organism {
+    class organism {
 	public:
-        typedef EA ea_type;
-		typedef typename ea_type::representation_type representation_type;
-        typedef typename ea_type::hardware_type hardware_type;
-		typedef typename ea_type::scheduler_type::priority_type priority_type;
-        typedef typename ea_type::environment_type::location_handle_type location_handle_type;
+        //! Individual pointer type.
+        typedef boost::shared_ptr<organism> individual_ptr_type;
+        //! Type of hardware operating this organism.
+        typedef hardware hardware_type;
+        //! Type of representation used by the hardware.
+        typedef hardware_type::representation_type representation_type;
+        //! Type of mutation needed by the representation.
+        typedef hardware_type::mutation_operator_type mutation_operator_type;
 
         typedef int io_type; //!< Type for input and output values.
         typedef std::deque<io_type> iobuffer_type; //!< Type for buffering inputs and outputs.
@@ -78,7 +84,7 @@ namespace ealib {
             _inputs = that._inputs;
             _outputs = that._outputs;
             _phenotype = that._phenotype;
-            _location = that._location;
+            _position = that._position;
             _tracecb = 0;
         }
         
@@ -95,7 +101,7 @@ namespace ealib {
                 _inputs = that._inputs;
                 _outputs = that._outputs;
                 _phenotype = that._phenotype;
-                _location = that._location;
+                _position = that._position;
                 _tracecb = 0;
             }
             return *this;
@@ -113,7 +119,7 @@ namespace ealib {
             && (_inputs == that._inputs)
             && (_outputs == that._outputs)
             && (_phenotype == that._phenotype)
-            && (_location == that._location);
+            && (_position == that._position);
         }
 
         //! Retrieve this organism's name.
@@ -170,14 +176,9 @@ namespace ealib {
         //! Retrieve this organism's phenotype.
         phenotype_map_type& phenotype() { return _phenotype; }
         
-        //! Retrieve a pointer to this organism's location.
-        location_handle_type& location() { return _location; }
+        //! Return's this organism's position.
+        position_type& position() { return _position; }
         
-        //! Execute this organism for n cycles.
-        inline void execute(std::size_t n, typename ea_type::individual_ptr_type p, ea_type& ea) {
-            _hw.execute(n,p,_tracecb,ea);
-        }
-
         //! Turn on hardware tracing for this organism.
         void trace(typename hardware_type::abstract_hardware_trace* cb) {
             _tracecb = cb;
@@ -199,7 +200,7 @@ namespace ealib {
         iobuffer_type _inputs; //!< This organism's inputs.
         iobuffer_type _outputs; //!< This organism's outputs.
         phenotype_map_type _phenotype; //!< This organism's phenotype.
-        location_handle_type _location; //!< This organism's location.
+        position_type _position; //!< This organism's position.
         typename hardware_type::abstract_hardware_trace* _tracecb; //!< Trace handler, if so configured.
 
 	private:
@@ -224,7 +225,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("inputs", _inputs);
             ar & boost::serialization::make_nvp("outputs", _outputs);
             ar & boost::serialization::make_nvp("phenotype", _phenotype);
-            ar & boost::serialization::make_nvp("location_handle", _location);
+            ar & boost::serialization::make_nvp("position", _position);
 		}
 		
 		template<class Archive>
@@ -245,7 +246,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("inputs", _inputs);
             ar & boost::serialization::make_nvp("outputs", _outputs);
             ar & boost::serialization::make_nvp("phenotype", _phenotype);
-            ar & boost::serialization::make_nvp("location_handle", _location);
+            ar & boost::serialization::make_nvp("position", _position);
         }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};	
