@@ -419,7 +419,7 @@ namespace ealib {
          or equal to the task's limit.
          */
         DIGEVO_INSTRUCTION_DECL(sense_env) {
-            typedef typename EA::tasklib_type::tasklist_type tasklist_type;
+            typedef typename EA::task_library_type::tasklist_type tasklist_type;
             tasklist_type& tasklist = ea.tasklib().tasks();
             
             int env=0;
@@ -499,17 +499,17 @@ namespace ealib {
         
         //! Rotate the organism to the heading in ?bx?.
         DIGEVO_INSTRUCTION_DECL(rotate) {
-            ea.env().handle2ptr(p->location())->set_heading(hw.getRegValue(hw.modifyRegister()));
+            ea.env().location(p->position())->set_heading(hw.getRegValue(hw.modifyRegister()));
         }
         
         //! Rotate the organism clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_cw) {
-            ea.env().handle2ptr(p->location())->alter_heading(-1);
+            ea.env().location(p->position())->alter_heading(-1);
         }
         
         //! Rotate the organism counter-clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_ccw) {
-            ea.env().handle2ptr(p->location())->alter_heading(1);
+            ea.env().location(p->position())->alter_heading(1);
         }
         
         //! Execute the next instruction if ?bx? < ?cx?.

@@ -1,4 +1,4 @@
-/* attributes.h
+/* traits.h
  *
  * This file is part of EALib.
  *
@@ -28,7 +28,6 @@
 
 namespace ealib {
     
-    
     /*! Default traits for individuals in an evolutionary algorithm.
      
      The default traits include a bit more than what might be strictly
@@ -43,7 +42,6 @@ namespace ealib {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<traits::fitness_trait<T> >(*this));
-            ar & boost::serialization::make_nvp("phenotype_trait", boost::serialization::base_object<traits::phenotype_trait<T> >(*this));
         }
     };
     
@@ -52,7 +50,6 @@ namespace ealib {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<traits::fitness_trait<T> >(*this));
-            ar & boost::serialization::make_nvp("phenotype_trait", boost::serialization::base_object<traits::phenotype_trait<T> >(*this));
             ar & boost::serialization::make_nvp("lod_trait", boost::serialization::base_object<traits::lod_trait<T> >(*this));
         }
     };

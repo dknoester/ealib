@@ -34,31 +34,38 @@ namespace ealib {
     
     typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
 
+    namespace traits {
+
+        template <typename T>
+        struct priority_trait {
+            //! Returns this individual's priority.
+            priority_type& priority() { return _v; }
+            
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version) {
+                ar & boost::serialization::make_nvp("priority", _v);
+            }
+            
+            priority_type _v;
+        };
+        
+    } // traits
     
-//
-//    namespace attr {
-//        
-//        //! Fitness attribute.
-//        template <typename EA>
-//        struct priority_attribute {
-//            typedef typename EA::fitness_type fitness_type;
-//            
-//            //! Retrieve fitness.
-//            fitness_type& fitness() { return _v; }
-//            
-//            template <class Archive>
-//            void serialize(Archive& ar, const unsigned int version) {
-//                ar & boost::serialization::make_nvp("fitness_attr", _v);
-//            }
-//            
-//            fitness_type _v;
-//        };
-//        
-//    } // attr
-    
+    namespace access {
+        
+        //! Priority accessor functor.
+        struct priority {
+            template <typename EA>
+            priority_type& operator()(typename EA::individual_type& ind, EA& ea) {
+                return ind.traits().priority();
+            }
+        };
+        
+    } // access
+
     //! Priority attribute accessor.
     template <typename EA>
-    typename EA::scheduler_type::priority_type& priority(typename EA::individual_type& ind, EA& ea) {
+    priority_type& priority(typename EA::individual_type& ind, EA& ea) {
         return ind.priority();
     }
     

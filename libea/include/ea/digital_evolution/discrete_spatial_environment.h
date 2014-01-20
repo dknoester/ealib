@@ -115,7 +115,12 @@ namespace ealib {
                 heading = algorithm::roll(heading+h, 0, 7);
             }
             
-            position_type handle() { return std::make_pair(y,x); }
+            position_type position() {
+                position_type pos;
+                pos.push_back(x);
+                pos.push_back(y);
+                return pos;
+            }
             
             individual_ptr_type p; //!< Individual (if any) at this location.
             int heading; //!< Heading of organism, in degrees.
@@ -136,7 +141,7 @@ namespace ealib {
 
         typedef boost::numeric::ublas::matrix<location_type> location_matrix_type; //! Container type for locations.
         
-        location_ptr_type handle2ptr(const position_type& pos) {
+        location_ptr_type location(const position_type& pos) {
             return &_locs(pos[0], pos[1]);
         }
         
@@ -228,8 +233,8 @@ namespace ealib {
         
         //! Retrieve the neighborhood of the given individual.
         std::pair<iterator,iterator> neighborhood(individual_ptr_type p, ea_type& ea) {
-            return std::make_pair(iterator(*handle2ptr(p->location()),0,_locs,ea),
-                                  iterator(*handle2ptr(p->location()),8,_locs,ea));
+            return std::make_pair(iterator(*location(p->position()),0,_locs,ea),
+                                  iterator(*location(p->position()),8,_locs,ea));
         }
         
         //! Retrieve the neighbor at the specified direction
@@ -240,7 +245,7 @@ namespace ealib {
         
         //! Retrieve the currently faced neighboring location of the given individual.
         iterator neighbor(individual_ptr_type p, ea_type& ea) {
-            return iterator(*handle2ptr(p->location()),handle2ptr(p->location())->heading,_locs,ea);
+            return iterator(*location(p->position()),location(p->position())->heading,_locs,ea);
         }
         
         //! Given two orgs, rotate them to face one another.
@@ -306,7 +311,7 @@ namespace ealib {
                 ea.events().death(*l.p,ea);
             }
             l.p = p;
-            p->location() = l.handle();
+            p->position() = l.position();
         }
 
         //! Append individual x to the environment.
@@ -339,7 +344,7 @@ namespace ealib {
          eventual spatial resources.
          */
         double reaction(resource_ptr_type r, individual_type& org, ea_type& ea) {
-            return r->consume(org,ea);
+            return r->consume(org.position());
         }
         
         //! Add a resource to this environment.

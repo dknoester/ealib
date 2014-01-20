@@ -172,7 +172,7 @@ namespace ealib {
         /*! Updates the priority for the given individual.
          */
         void prioritize(individual_type& org, EA& ea) {
-            typename EA::priority_type p=1.0;
+            priority_type p=1.0;
             
             for(typename tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
                 abstract_task_type& task=(**i);
@@ -227,8 +227,8 @@ namespace ealib {
     
     //! Helper method that builds tasks and adds them to the task library.
     template <typename Predicate, typename Catalyst, typename EA>
-    typename EA::tasklib_type::task_ptr_type make_task(const std::string& name, EA& ea) {
-        typedef typename EA::tasklib_type::task_ptr_type task_ptr_type;
+    typename EA::task_library_type::task_ptr_type make_task(const std::string& name, EA& ea) {
+        typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         task_ptr_type p(new task<Predicate,Catalyst,EA>(name));
         ea.tasklib().append(p);
         return p;

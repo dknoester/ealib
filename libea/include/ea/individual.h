@@ -29,10 +29,6 @@
 
 namespace ealib {
     
-    LIBEA_MD_DECL(IND_NAME, "individual.name", long);
-    LIBEA_MD_DECL(IND_GENERATION, "individual.generation", double);
-    LIBEA_MD_DECL(IND_BIRTH_UPDATE, "individual.birth_update", long);
-    
     /*! Individual within an evolutionary algorithm.
 	 */
 	template
@@ -104,14 +100,7 @@ namespace ealib {
         
         //! Retrieve this individual's attributes (const-qualified).
         const traits_type& traits() const { return _traits; }
-        
-        //! Cast this individual to a std::string.
-        operator std::string() {
-            std::ostringstream s;
-            s << "individual=" << get<IND_NAME>(*this) << ", generation=" << get<IND_GENERATION>(*this);
-            return s.str();
-        }
-        
+
     protected:
         representation_type _repr; //!< This individual's representation.
         meta_data _md; //!< This individual's meta data.

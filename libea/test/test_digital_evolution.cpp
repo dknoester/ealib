@@ -24,7 +24,7 @@
 template <typename EA>
 struct test_configuration : public abstract_configuration<EA> {
     
-    typedef typename EA::tasklib_type::task_ptr_type task_ptr_type;
+    typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
     typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
     
     //! Called as the final step of EA construction.
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
 
 
 BOOST_AUTO_TEST_CASE(test_al_type) {
-    typedef al_type::tasklib_type::task_ptr_type task_ptr_type;
+    typedef al_type::task_library_type::task_ptr_type task_ptr_type;
     al_type al;
     
     put<POPULATION_SIZE>(100,al);

@@ -40,7 +40,7 @@ namespace ealib {
 	template <typename RepresentationGenerator, typename EA>
 	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
         BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        
+
         // build the placeholder ancestor:
         typename EA::individual_ptr_type ap = ea.make_individual();
         put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);
@@ -86,7 +86,7 @@ namespace ealib {
         ea.config().initial_population(ea);
     }
     
-    /*! Function object that fills the population with ancestors.
+    /*! Fills the entire population with ancestors.
      */
     struct fill_population {
         template <typename EA>
@@ -95,7 +95,16 @@ namespace ealib {
         }
     };
     
-    /*! Function object that dills the metapopulation with subpopulations, which
+    /*! Inserts a single ancestor into the population.
+     */
+    struct single_ancestor {
+        template <typename EA>
+        void operator()(EA& ea) {
+            generate_ancestors(1, ea);
+        }
+    };
+    
+    /*! Function object that fills the metapopulation with subpopulations, which
      are themselves then filled.
      
      Note: generate_ancestors uses metapopulation.make_individual to build the

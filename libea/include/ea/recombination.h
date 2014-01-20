@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <utility>
 
-#include <ea/individual.h>
+#include <ea/meta_data.h>
 
 namespace ealib {
     
@@ -36,7 +36,6 @@ namespace ealib {
         put<IND_BIRTH_UPDATE>(ea.current_update(), offspring);
     }
     
-    
     /*! Common inheritance details.
      */
     template <typename Population, typename EA>
@@ -47,7 +46,6 @@ namespace ealib {
         }
     }
     
-    
     /*! Recombine parents to generate offspring via the given recombination operator.
      */
     template <typename Population, typename Recombinator, typename EA>
@@ -55,7 +53,6 @@ namespace ealib {
         rec(parents, offspring, ea);
         inherits(parents, offspring, ea);
     }
-    
     
     /*! Recombine parents selected from the given population to generate n offspring.
      */

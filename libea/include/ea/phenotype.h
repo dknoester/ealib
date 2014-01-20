@@ -75,16 +75,21 @@ namespace ealib {
         }
         
         
-        //! Phenotype trait for an individual.
+        /*! Phenotype trait for an individual.
+
+         In the case of a direct encoding, phenotype_ptr should be a plain-old
+         pointer.  In **all** other cases, it should be an auto-deleting pointer
+         like boost::shared_ptr< >.  We use a bit of indirection & partial
+         template specialization to take care of this automatically.
+         
+         Phenotypes *ARE NOT* serializable - They must be generated from their
+         representations.
+         */
         template <typename T>
         struct phenotype_trait {
 
             /*! Type of the pointer to the phenotype.
              
-             In the case of a direct encoding, phenotype_ptr should be a plain-old
-             pointer.  In **all** other cases, it should be an auto-deleting pointer
-             like boost::shared_ptr< >.  We use a bit of indirection & partial
-             template specialization to take care of this automatically.
              */
             typedef typename detail::phenotype_ptr<T,typename T::encoding_type>::ptr_type phenotype_ptr_type;
             
@@ -95,11 +100,6 @@ namespace ealib {
             //! Returns true if a phenotype is present.
             bool has_phenotype() {
                 return _p != 0;
-            }
-
-            //! Serialize this phenotype.
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
             }
 
             phenotype_ptr_type _p; //<! Pointer to this individual's phenotype.

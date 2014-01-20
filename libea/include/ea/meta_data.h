@@ -286,6 +286,22 @@ struct name : ealib::attribute<type> { \
 }
 
 namespace ealib {
+    LIBEA_MD_DECL(IND_NAME, "individual.name", long);
+    LIBEA_MD_DECL(IND_GENERATION, "individual.generation", double);
+    LIBEA_MD_DECL(IND_BIRTH_UPDATE, "individual.birth_update", long);
+    
+    LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
+    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.metapopulation.size", unsigned int);
+
+    LIBEA_MD_DECL(REPRESENTATION_SIZE, "ea.representation.size", int);
+    LIBEA_MD_DECL(REPRESENTATION_INITIAL_SIZE, "ea.representation.initial_size", int);
+	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
+	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
+
+    
+    
+    
+    
     // ea.novelty_search.*
     LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);
     LIBEA_MD_DECL(NOVELTY_NEIGHBORHOOD_SIZE, "ea.novelty_search.neighborhood.size", int);
@@ -295,10 +311,6 @@ namespace ealib {
     LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);
     
 	// ea.representation.*
-	LIBEA_MD_DECL(REPRESENTATION_SIZE, "ea.representation.size", int);
-    LIBEA_MD_DECL(REPRESENTATION_INITIAL_SIZE, "ea.representation.initial_size", int);
-	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
-	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
 	LIBEA_MD_DECL(REALSTRING_MEAN, "ea.representation.realstring.mean", double);
 	LIBEA_MD_DECL(REALSTRING_VARIANCE, "ea.representation.realstring.variance", double);
 	LIBEA_MD_DECL(INTSTRING_MEAN, "ea.representation.intstring.mean", int);
@@ -309,8 +321,6 @@ namespace ealib {
     // ea.environment.*
     LIBEA_MD_DECL(LOCATION_DATA, "ea.environment.location.color", int);
     
-	LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
-    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.metapopulation.size", unsigned int);
     LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.metapopulation.competition_period", unsigned int);
     
 

@@ -30,12 +30,12 @@ namespace ealib {
 	struct digital_evolution_event_handler : event_handler<EA> {
         //! Called when an individual performs a task.
         boost::signal<void(typename EA::individual_type&, // individual
-                           typename EA::tasklib_type::task_ptr_type, // task pointer
+                           typename EA::task_library_type::task_ptr_type, // task pointer
                            EA&)> task;
         
         //! Called when an individual participates in a reaction.
         boost::signal<void(typename EA::individual_type&, // individual
-                           typename EA::tasklib_type::task_ptr_type, // task pointer
+                           typename EA::task_library_type::task_ptr_type, // task pointer
                            double r, // resources consumed
                            EA&)> reaction;
         
@@ -57,7 +57,7 @@ namespace ealib {
         }
         virtual ~task_event() { }
         virtual void operator()(typename EA::individual_type&, // individual
-                                typename EA::tasklib_type::task_ptr_type, // task pointer
+                                typename EA::task_library_type::task_ptr_type, // task pointer
                                 EA&) = 0;
     };
 
@@ -68,7 +68,7 @@ namespace ealib {
         }
         virtual ~reaction_event() { }
         virtual void operator()(typename EA::individual_type&, // individual
-                                typename EA::tasklib_type::task_ptr_type, // task pointer
+                                typename EA::task_library_type::task_ptr_type, // task pointer
                                 double, // resources consumed
                                 EA&) = 0;
     };

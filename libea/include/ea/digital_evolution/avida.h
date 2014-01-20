@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_digital_evolution_DIGITAL_EVOLUTION_HARDWARE_H_
-#define _EA_digital_evolution_DIGITAL_EVOLUTION_HARDWARE_H_
+#ifndef _EA_DIGITAL_EVOLUTION_AVIDA_HARDWARE_H_
+#define _EA_DIGITAL_EVOLUTION_AVIDA_HARDWARE_H_
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/deque.hpp>
@@ -27,9 +27,26 @@
 #include <strings.h>
 
 #include <ea/representations/circular_genome.h>
-
+#include <ea/mutation.h>
 
 namespace ealib {
+    
+    /*! Digital evolution traits.
+     */
+    template <typename T>
+    struct avida_traits {
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+        }
+    };
+    
+    //! Digital evolution LoD traits.
+    template <typename T>
+    struct avida_lod_traits : traits::lod_trait<T> {
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+        }
+    };
     
     /*! Digital evolution hardware.
      
@@ -39,10 +56,8 @@ namespace ealib {
      \todo There are good odds that much can be gained by splitting out status information
      into its own struct, and then have instructions manipulate that directly.
      */
-    class hardware {
+    class avida_hardware {
     public:
-        //! Type of ISA needed by this hardware.
-        
         //! Type of representation needed for this hardware.
         typedef circular_genome<unsigned int> representation_type;
         //! Type of mutation needed by this representation.
@@ -75,17 +90,17 @@ namespace ealib {
         };
         
         //! Constructor.
-        hardware() {
+        avida_hardware() {
             initialize();
         }
         
         //! Constructor.
-        hardware(const representation_type& repr) : _repr(repr) {
+        avida_hardware(const representation_type& repr) : _repr(repr) {
             initialize();
         }
 
         //! Copy constructor.
-        hardware(const hardware& that) {
+        avida_hardware(const avida_hardware& that) {
             initialize();
             _repr = that._repr;
             std::copy(that._head_position, that._head_position+NUM_HEADS, _head_position);
@@ -100,7 +115,7 @@ namespace ealib {
         }
         
         //! Assignment operator.
-        hardware& operator=(const hardware& that) {
+        avida_hardware& operator=(const avida_hardware& that) {
             if(this != &that) {
                 initialize();
                 _repr = that._repr;
@@ -119,11 +134,11 @@ namespace ealib {
 
         
         //! Destructor.
-        ~hardware() {
+        ~avida_hardware() {
         }
         
         //! Returns true if hardware(s) are equivalent.
-        bool operator==(const hardware& that) const {
+        bool operator==(const avida_hardware& that) const {
             bool r = (_repr == that._repr);
             r = r && std::equal(_head_position, _head_position+NUM_HEADS, that._head_position);
             r = r && std::equal(_regfile, _regfile+NUM_REGISTERS, that._regfile);
@@ -157,10 +172,10 @@ namespace ealib {
          the organism as dead.
          */
         template <typename EA>
-        void execute(std::size_t n, typename EA::individual_ptr_type p, abstract_hardware_trace* cb, EA& ea) {
-            if(cb != 0) {
-                cb->top_half();
-            }
+        void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
+//            if(cb != 0) {
+//                cb->top_half();
+//            }
 
             std::size_t attempts=0;
             // while we have cycles to spend and we haven't exhausted our attempts
@@ -186,9 +201,9 @@ namespace ealib {
                 // if cost is again 0, everything's been paid and we should execute the instruction:
                 if(_cost == 0) {
                     (*inst)(*this, p, ea);
-                    if(cb != 0) {
-                        cb->instruction_executed(_repr[_head_position[IP]]);
-                    }
+//                    if(cb != 0) {
+//                        cb->instruction_executed(_repr[_head_position[IP]]);
+//                    }
                     
                     // if we spent any cycles on this instruction, clear the label stack:
                     if(spent > 0) {
@@ -205,9 +220,9 @@ namespace ealib {
                 p->alive() = false;
             }
             
-            if(cb != 0) {
-                cb->bottom_half();
-            }
+//            if(cb != 0) {
+//                cb->bottom_half();
+//            }
         }
         
         //! Mark this hardware as having replicated (reinitialize).
@@ -404,7 +419,20 @@ namespace ealib {
         std::pair<int,int> pop_msg() { std::pair<int,int> msg=_msgs.front(); _msgs.pop_front(); return msg; }
         
         std::size_t original_size() { return _orig_size; }
+        
+//        //! Turn on hardware tracing for this organism.
+//        void trace(typename hardware_type::abstract_hardware_trace* cb) {
+//            _tracecb = cb;
+//        }
+//        
+//        //! Turn off hardware tracing for this organism.
+//        void clear_trace() {
+//            _tracecb = 0;
+//        }
+
     protected:
+//        typename hardware_type::abstract_hardware_trace* _tracecb; //!< Trace handler, if so configured.
+
         representation_type _repr; //!< This hardware's "program".
         int _head_position[NUM_HEADS]; //!< Positions of the various heads.
         int _regfile[NUM_REGISTERS]; //!< ...

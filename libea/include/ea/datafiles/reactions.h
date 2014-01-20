@@ -49,7 +49,7 @@ namespace ealib {
             }
             
             void on_task(typename EA::individual_type& ind, // individual
-                         typename EA::tasklib_type::task_ptr_type t, // task pointer
+                         typename EA::task_library_type::task_ptr_type t, // task pointer
                          double r, // resources consumed
                          EA& ea) {
                 _tasks[t->name()] += r;

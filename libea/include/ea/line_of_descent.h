@@ -41,6 +41,8 @@ namespace ealib {
     namespace traits {
         
         /*! Line of descent (LoD) trait.
+         
+         LoDs *ARE NOT* serializable.
          */
         template <typename T>
         struct lod_trait {
@@ -68,11 +70,6 @@ namespace ealib {
             //! Returns true if this individual has parents.
             bool has_parents() {
                 return !_lod_parents.empty();
-            }
-
-            //! Serialize this LoD trait.
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
             }
 
             parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.

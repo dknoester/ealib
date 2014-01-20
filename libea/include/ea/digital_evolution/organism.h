@@ -34,12 +34,12 @@
 #include <map>
 
 #include <ea/digital_evolution/position.h>
-#include <ea/digital_evolution/hardware.h>
+#include <ea/digital_evolution/avida.h>
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/meta_data.h>
 
 namespace ealib {
-	    
+	   
 	/*! Definition of an organism.
 	 
 	 Organisms within ealib are four things:
@@ -48,35 +48,37 @@ namespace ealib {
 	 3) A container for a priority
 	 4) A container for meta data
 	 */
-    class organism {
+    template
+    < typename Hardware=avida_hardware
+    , template <typename> class Traits=avida_traits
+    > class organism {
 	public:
         //! Individual pointer type.
         typedef boost::shared_ptr<organism> individual_ptr_type;
         //! Type of hardware operating this organism.
-        typedef hardware hardware_type;
+        typedef Hardware hardware_type;
         //! Type of representation used by the hardware.
-        typedef hardware_type::representation_type representation_type;
-        //! Type of mutation needed by the representation.
-        typedef hardware_type::mutation_operator_type mutation_operator_type;
+        typedef typename hardware_type::representation_type representation_type;
+        //! Traits for this individual.
+        typedef Traits<organism> traits_type;
+        //! Meta-data type.
+        typedef meta_data md_type;
 
         typedef int io_type; //!< Type for input and output values.
         typedef std::deque<io_type> iobuffer_type; //!< Type for buffering inputs and outputs.
 		typedef std::map<std::string, double> phenotype_map_type; //!< Type for storing phenotype information.
 
 		//! Constructor.
-		organism() : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0), _tracecb(0) {
+		organism() : _priority(1.0), _alive(true) {
 		}
         
 		//! Constructor that builds an organism from a representation.
 		organism(const representation_type& r) 
-        : _name(0), _generation(0.0), _update(0), _alive(true), _priority(1.0), _hw(r), _tracecb(0) {
+        : _hw(r), _priority(1.0), _alive(true) {
 		}
         
         //! Copy constructor.
         organism(const organism& that) {
-            _name = that._name;
-            _generation = that._generation;
-            _update = that._update;
             _alive = that._alive;
             _priority = that._priority;
             _hw = that._hw;
@@ -85,15 +87,11 @@ namespace ealib {
             _outputs = that._outputs;
             _phenotype = that._phenotype;
             _position = that._position;
-            _tracecb = 0;
         }
         
         //! Assignment operator.
         organism& operator=(const organism& that) {
             if(this != &that) {
-                _name = that._name;
-                _generation = that._generation;
-                _update = that._update;
                 _alive = that._alive;
                 _priority = that._priority;
                 _hw = that._hw;
@@ -102,17 +100,13 @@ namespace ealib {
                 _outputs = that._outputs;
                 _phenotype = that._phenotype;
                 _position = that._position;
-                _tracecb = 0;
             }
             return *this;
         }
 
         //! Returns true if hardware(s) are equivalent.
         bool operator==(const organism& that) const {
-            return (_name == that._name)
-            && (_generation == that._generation)
-            && (_update == that._update)
-            && (_alive == that._alive)
+            return (_alive == that._alive)
             && (_priority == that._priority)
             && (_hw == that._hw)
             && (_md == that._md)
@@ -121,136 +115,88 @@ namespace ealib {
             && (_phenotype == that._phenotype)
             && (_position == that._position);
         }
+        
+        //! Returns this organism's hardware.
+        hardware_type& hw() { return _hw; }
+        
+        //! Returns this organism's hardware (const-qualified).
+        const hardware_type& hw() const { return _hw; }
 
-        //! Retrieve this organism's name.
-        long& name() { return _name; }
-		
-        //! Retrieve this organism's id (const-qualified).
-        const long& name() const { return _name; }
-        
-        //! Retrieve this organism's generation.
-        double& generation() { return _generation; }
-        
-        //! Retrieve this organism's generation (const-qualified).
-        const double& generation() const { return _generation; }
-        
-        //! Retrieve this organism's update.
-        unsigned long& birth_update() { return _update; }
-        
-        //! Retrieve this organism's update (const-qualified).
-        const unsigned long& birth_update() const { return _update; }
-        
-		//! Retrieve this organism's priority.
-		priority_type& priority() { return _priority; }
-		
-		//! Retrieve this organism's priority (const-qualified).
-		const priority_type& priority() const { return _priority; }
-		
-		//! Retrieve this organism's representation.
+		//! Returns this organism's representation.
 		representation_type& repr() { return _hw.repr(); }
         
-		//! Retrieve this organism's representation (const-qualified).
+		//! Returns this organism's representation (const-qualified).
 		const representation_type& repr() const { return _hw.repr(); }
         
-        //! Retreive this organism's hardware.
-        hardware_type& hw() { return _hw; }
+        //! Returns this organism's priority.
+		priority_type& priority() { return _priority; }
+		
+		//! Returns this organism's priority (const-qualified).
+		const priority_type& priority() const { return _priority; }
 
-        //! Retreive this organism's hardware (const-qualified).
-        const hardware_type& hw() const { return _hw; }
+        //! Returns this organism's position.
+        position_type& position() { return _position; }
+
+        //! Returns this organism's position (const-qualified).
+        const position_type& position() const { return _position; }
         
-        //! Retrieve this organism's meta data.
-        meta_data& md() { return _md; }
-        
-        //! Retrieve this organism's meta data (const-qualified).
-        const meta_data& md() const { return _md; }
-        
-        //! Retrieve whether this organism is alive.
+        //! Returns true if this organism is alive, false otherwise.
         bool& alive() { return _alive; }
         
-        //! Retrieve this organism's inputs.
+        //! Returns this organism's inputs.
         iobuffer_type& inputs() { return _inputs; }
 
-        //! Retrieve this organism's outputs.
+        //! Returns this organism's outputs.
         iobuffer_type& outputs() { return _outputs; }
 
-        //! Retrieve this organism's phenotype.
+        //! Returns this organism's phenotype.
         phenotype_map_type& phenotype() { return _phenotype; }
         
-        //! Return's this organism's position.
-        position_type& position() { return _position; }
-        
-        //! Turn on hardware tracing for this organism.
-        void trace(typename hardware_type::abstract_hardware_trace* cb) {
-            _tracecb = cb;
+        //! Execute an individual for n cycles.
+        template <typename EA>
+        inline void execute(std::size_t n, individual_ptr_type p, EA& ea) {
+            _hw.execute(n, p, ea);
         }
+
+        //! Returns this organism's meta data.
+        meta_data& md() { return _md; }
         
-        //! Turn off hardware tracing for this organism.
-        void clear_trace() {
-            _tracecb = 0;
-        }
+        //! Returns this organism's meta data (const-qualified).
+        const meta_data& md() const { return _md; }
+        
+        //! Returns this individual's traits.
+        traits_type& traits() { return _traits; }
+        
+        //! Returns this individual's traits (const-qualified).
+        const traits_type& traits() const { return _traits; }
         
 	protected:
-        long _name; //!< Name (id number) of this organism.
-        double _generation; //!< Generation of this organism.
-        unsigned long _update; //!< Update at which this organism was born.
-        bool _alive; //!< Is this organism currently alive?
-		priority_type _priority; //!< This organism's priority.
         hardware_type _hw; //!< This organism's virtual hardware.
-        meta_data _md; //!< This organism's meta data.
+		priority_type _priority; //!< This organism's priority.
+        position_type _position; //!< This organism's position.
+        bool _alive; //!< Is this organism currently alive?
         iobuffer_type _inputs; //!< This organism's inputs.
         iobuffer_type _outputs; //!< This organism's outputs.
         phenotype_map_type _phenotype; //!< This organism's phenotype.
-        position_type _position; //!< This organism's position.
-        typename hardware_type::abstract_hardware_trace* _tracecb; //!< Trace handler, if so configured.
+        meta_data _md; //!< This organism's meta data.
+        traits_type _traits; //!< This organism's traits.
 
 	private:
-		/* These enable serialization and de-serialization of organisms.
-		 This would be easy, except for the fact that we can't round-trip NaNs.  So,
-		 we store a flag instead of priority in that case.
-         */ 
 		friend class boost::serialization::access;
 		template<class Archive>
-		void save(Archive & ar, const unsigned int version) const {
-            ar & boost::serialization::make_nvp("name", _name);
-            ar & boost::serialization::make_nvp("generation", _generation);
-            ar & boost::serialization::make_nvp("update", _update);
-            ar & boost::serialization::make_nvp("alive", _alive);
-			bool null_priority=_priority.is_null();
-			ar & BOOST_SERIALIZATION_NVP(null_priority);
-			if(!null_priority) {
-				ar & boost::serialization::make_nvp("priority", _priority);
-			}
+        void serialize(Archive & ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("hardware", _hw);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("priority", _priority);
+            ar & boost::serialization::make_nvp("position", _position);
+            ar & boost::serialization::make_nvp("alive", _alive);
             ar & boost::serialization::make_nvp("inputs", _inputs);
             ar & boost::serialization::make_nvp("outputs", _outputs);
             ar & boost::serialization::make_nvp("phenotype", _phenotype);
-            ar & boost::serialization::make_nvp("position", _position);
+            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("traits", _traits);
 		}
-		
-		template<class Archive>
-		void load(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("name", _name);
-            ar & boost::serialization::make_nvp("generation", _generation);
-            ar & boost::serialization::make_nvp("update", _update);
-            ar & boost::serialization::make_nvp("alive", _alive);
-			bool null_priority=true;
-			ar & BOOST_SERIALIZATION_NVP(null_priority);
-			if(null_priority) {
-                _priority.nullify();
-			} else {
-				ar & boost::serialization::make_nvp("priority", _priority);
-			}
-            ar & boost::serialization::make_nvp("hardware", _hw);
-            ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("inputs", _inputs);
-            ar & boost::serialization::make_nvp("outputs", _outputs);
-            ar & boost::serialization::make_nvp("phenotype", _phenotype);
-            ar & boost::serialization::make_nvp("position", _position);
-        }
-		BOOST_SERIALIZATION_SPLIT_MEMBER();
-	};	
+	};
     
-} // ea
+} // ealib
 
 #endif
