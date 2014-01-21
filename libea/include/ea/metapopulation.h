@@ -32,7 +32,6 @@
 #include <ea/events.h>
 #include <ea/rng.h>
 #include <ea/generational_models/isolated_subpopulations.h>
-#include <ea/fitness_functions/constant.h>
 #include <ea/mutation.h>
 #include <ea/recombination.h>
 #include <ea/stop.h>

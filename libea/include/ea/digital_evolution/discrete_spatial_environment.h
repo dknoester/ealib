@@ -379,7 +379,7 @@ namespace ealib {
          */
         void attach(ea_type& ea) {
             for(typename ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                handle2ptr((*i)->location())->p = *i;
+//                handle2ptr((*i)->location())->p = *i;
             }
         }
 

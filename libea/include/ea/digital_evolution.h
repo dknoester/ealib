@@ -25,6 +25,10 @@
 #include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
 
+
+#include <ea/ancestors.h>
+#include <ea/concepts.h>
+#include <ea/configuration.h>
 #include <ea/digital_evolution/events.h>
 #include <ea/digital_evolution/ancestors.h>
 #include <ea/digital_evolution/discrete_spatial_environment.h>
@@ -33,14 +37,8 @@
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/digital_evolution/replication.h>
 #include <ea/digital_evolution/task_library.h>
-
-#include <ea/ancestors.h>
-#include <ea/concepts.h>
-#include <ea/configuration.h>
 #include <ea/meta_data.h>
-#include <ea/mutation.h>
 #include <ea/lifecycle.h>
-
 #include <ea/ptr_population.h>
 #include <ea/recombination.h>
 #include <ea/rng.h>
@@ -75,13 +73,13 @@ namespace ealib {
      the "organisms" in AL are referred to as "individuals."
      */
     template
-    < typename Individual
+    < typename UserDefinedConfiguration=default_configuration
+    , typename Individual=organism< >
     , typename AncestorGenerator=selfrep_ancestor
 	, typename RecombinationOperator=recombination::asexual
     , typename Scheduler=weighted_round_robin
     , typename ReplacementStrategy=random_neighbor
     , typename EarlyStopCondition=dont_stop
-    , typename UserDefinedConfiguration=default_configuration
     , typename PopulationGenerator=single_ancestor
     > class digital_evolution {
     public:
@@ -202,13 +200,13 @@ namespace ealib {
             _rng.reset(s);
         }        
 
-        //! Build an individual from the given representation.
+        //! Builds an individual from the given representation.
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
         
-        //! Build an individual from the given representation.
+        //! Builds an individual from the given representation.
         individual_ptr_type copy_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
             return p;
@@ -235,8 +233,11 @@ namespace ealib {
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
         
-        //! Returns the configuration object.
+        //! Returns the configuration.
         configuration_type& config() { return _configuration; }
+        
+        //! Returns the scheduler.
+        scheduler_type& scheduler() { return _scheduler; }
         
         //! Retrieves this AL's instruction set architecture.
         isa_type& isa() { return _isa; }

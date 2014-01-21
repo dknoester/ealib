@@ -19,16 +19,13 @@
  */
 #include "test.h"
 #include <ea/digital_evolution.h>
-#include <ea/digital_evolution/spatial.h>
 
-template <typename EA>
-struct test_configuration : public abstract_configuration<EA> {
-    
-    typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
-    typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+
+struct test_configuration : default_configuration {
     
     //! Called as the final step of EA construction.
-    void configure(EA& ea) {
+    template <typename EA>
+    void after_construction(EA& ea) {
         using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
@@ -59,7 +56,11 @@ struct test_configuration : public abstract_configuration<EA> {
         append_isa<repro>(ea);
     }
     
+    template <typename EA>
     void initialize(EA& ea) {
+        typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
+        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+        
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
         resource_ptr_type resA = make_resource("resA", ea);
         task_nand->consumes(resA);
@@ -67,9 +68,8 @@ struct test_configuration : public abstract_configuration<EA> {
     
 };
 
-typedef digital_evolution<
-test_configuration,
-spatial
+typedef digital_evolution
+< test_configuration
 > al_type;
 
 /*!

@@ -36,7 +36,8 @@ namespace ealib {
     typedef std::vector<int> position_type;
 
     //! Returns a position vector constructed from x, y, and h (heading).
-    position_type make_position(int x=-1, int y=-1, int h=-1) {
+    template <typename T>
+    position_type make_position(T x=-1, T y=-1, T h=-1) {
         position_type pos(3,0);
         pos[XPOS] = x; pos[YPOS] = y; pos[HEADING]=h;
         return pos;

@@ -164,7 +164,7 @@ namespace ealib {
         template <typename Checkpoint, typename EA>
         void prepare_checkpoint(Checkpoint& cp, EA& ea) {
             load_checkpoint(cp, ea);
-            initialize(ea);
+            ea.initialize();
         }
         
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
@@ -176,7 +176,7 @@ namespace ealib {
         void prepare_checkpoint(Checkpoint& cp, EA& ea, meta_data& md) {
             load_checkpoint(cp, ea);
             ea.md() += md;
-            initialize(ea);
+            ea.initialize();
         }
         
         /*! Advance the EA by one epoch of n updates.

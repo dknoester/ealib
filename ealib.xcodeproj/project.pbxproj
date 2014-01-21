@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				42B8BAD1188EA947003307CB /* PBXTargetDependency */,
 				42C6618018614DF3004476D3 /* PBXTargetDependency */,
 				42C6618218614DF3004476D3 /* PBXTargetDependency */,
 				428B7208184F6B7600E3BB4E /* PBXTargetDependency */,
@@ -43,10 +44,6 @@
 		428B7206184F6A1F00E3BB4E /* test_deep_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428B714E184F5EC900E3BB4E /* test_deep_markov_network.cpp */; };
 		42B55B731641C2C500F240C5 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
 		42B55B751641C2C500F240C5 /* test_information.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B701641C2C500F240C5 /* test_information.cpp */; };
-		42B8BAB7188AB188003307CB /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
-		42B8BAB8188AB188003307CB /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
-		42B8BABC188AB188003307CB /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
-		42B8BAC4188AB1AA003307CB /* test_devo2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B8BAC2188AB1AA003307CB /* test_devo2.cpp */; };
 		42C661381860DC07004476D3 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		42C6613F1860DC07004476D3 /* test_metapopulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42D68D89163F891F00659AE1 /* test_metapopulation.cpp */; };
 		42C661401860DC07004476D3 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
@@ -91,6 +88,13 @@
 			remoteGlobalIDString = 428B711C18490E8F00E3BB4E;
 			remoteInfo = test_mkv;
 		};
+		42B8BAD0188EA947003307CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 423CBC72157D0D440003A644 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 42C661511860E008004476D3;
+			remoteInfo = test_digital_evolution;
+		};
 		42C6617F18614DF3004476D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 423CBC72157D0D440003A644 /* Project object */;
@@ -127,15 +131,6 @@
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 		428B7200184F664D00E3BB4E /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-		42B8BABD188AB188003307CB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -289,8 +284,6 @@
 		428B726E184F77AB00E3BB4E /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
 		428B726F184F77AB00E3BB4E /* meta_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_data.h; sourceTree = "<group>"; };
 		428B7270184F77AB00E3BB4E /* metapopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metapopulation.h; sourceTree = "<group>"; };
-		428B7272184F77AB00E3BB4E /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
-		428B7273184F77AB00E3BB4E /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
 		428B7274184F77AB00E3BB4E /* mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutation.h; sourceTree = "<group>"; };
 		428B7275184F77AB00E3BB4E /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		428B7276184F77AB00E3BB4E /* phenotype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = phenotype.h; sourceTree = "<group>"; };
@@ -310,15 +303,19 @@
 		428B7286184F77AB00E3BB4E /* truncation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = truncation.h; sourceTree = "<group>"; };
 		428B7287184F77AB00E3BB4E /* universal_sampling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = universal_sampling.h; sourceTree = "<group>"; };
 		428B7288184F77AB00E3BB4E /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
-		428B7289184F7AAE00E3BB4E /* gates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gates.h; sourceTree = "<group>"; };
-		428B728A184F7B8500E3BB4E /* translation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translation.h; sourceTree = "<group>"; };
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
 		42B55B6E1641C2C500F240C5 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		42B55B701641C2C500F240C5 /* test_information.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_information.cpp; sourceTree = "<group>"; };
 		42B55B711641C2C500F240C5 /* test_novelty_search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_novelty_search.cpp; sourceTree = "<group>"; };
-		42B8BAC1188AB188003307CB /* test_digital_evolution copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test_digital_evolution copy"; sourceTree = BUILT_PRODUCTS_DIR; };
-		42B8BAC2188AB1AA003307CB /* test_devo2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_devo2.cpp; sourceTree = "<group>"; };
 		42B8BAC5188B0D96003307CB /* position.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = position.h; sourceTree = "<group>"; };
+		42B8BAC8188E9F19003307CB /* camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
+		42B8BAC9188E9F19003307CB /* convolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convolution.h; sourceTree = "<group>"; };
+		42B8BACA188E9F19003307CB /* deep_markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = deep_markov_network.h; sourceTree = "<group>"; };
+		42B8BACB188E9F19003307CB /* gates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gates.h; sourceTree = "<group>"; };
+		42B8BACC188E9F19003307CB /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		42B8BACD188E9F19003307CB /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
+		42B8BACE188E9F19003307CB /* matrix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
+		42B8BACF188E9F19003307CB /* translation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translation.h; sourceTree = "<group>"; };
 		42C661251860A403004476D3 /* constant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constant.h; sourceTree = "<group>"; };
 		42C661321860D2FF004476D3 /* test_qhfc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_qhfc.cpp; sourceTree = "<group>"; };
 		42C661351860D6E1004476D3 /* qhfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = qhfc.h; sourceTree = "<group>"; };
@@ -364,14 +361,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				428B71FF184F664D00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		42B8BABB188AB188003307CB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				42B8BABC188AB188003307CB /* libboost_unit_test_framework.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,7 +434,6 @@
 				42C661501860DC07004476D3 /* test_mp */,
 				42C6615D1860E008004476D3 /* test_mp copy */,
 				42C661791860FBE5004476D3 /* test_ealib copy */,
-				42B8BAC1188AB188003307CB /* test_digital_evolution copy */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -486,7 +474,6 @@
 				428B714E184F5EC900E3BB4E /* test_deep_markov_network.cpp */,
 				428B714F184F5EC900E3BB4E /* test_markov_network.cpp */,
 				428B7150184F5EC900E3BB4E /* test_neural_network.cpp */,
-				42B8BAC2188AB1AA003307CB /* test_devo2.cpp */,
 				421D68B61735719700A45DD6 /* test_analysis.cpp */,
 				42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */,
 				4245004516D3BA8E007827D7 /* test_digital_evolution_types.cpp */,
@@ -685,10 +672,14 @@
 		428B7271184F77AB00E3BB4E /* mkv */ = {
 			isa = PBXGroup;
 			children = (
-				428B7272184F77AB00E3BB4E /* deep_markov_network.h */,
-				428B7289184F7AAE00E3BB4E /* gates.h */,
-				428B7273184F77AB00E3BB4E /* markov_network.h */,
-				428B728A184F7B8500E3BB4E /* translation.h */,
+				42B8BAC8188E9F19003307CB /* camera.h */,
+				42B8BAC9188E9F19003307CB /* convolution.h */,
+				42B8BACA188E9F19003307CB /* deep_markov_network.h */,
+				42B8BACB188E9F19003307CB /* gates.h */,
+				42B8BACC188E9F19003307CB /* graph.h */,
+				42B8BACD188E9F19003307CB /* markov_network.h */,
+				42B8BACE188E9F19003307CB /* matrix.h */,
+				42B8BACF188E9F19003307CB /* translation.h */,
 			);
 			path = mkv;
 			sourceTree = "<group>";
@@ -800,23 +791,6 @@
 			productReference = 428B7204184F664D00E3BB4E /* test_mkv copy */;
 			productType = "com.apple.product-type.tool";
 		};
-		42B8BAB5188AB188003307CB /* test_digital_evo2 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 42B8BABE188AB188003307CB /* Build configuration list for PBXNativeTarget "test_digital_evo2" */;
-			buildPhases = (
-				42B8BAB6188AB188003307CB /* Sources */,
-				42B8BABB188AB188003307CB /* Frameworks */,
-				42B8BABD188AB188003307CB /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = test_digital_evo2;
-			productName = libea_test;
-			productReference = 42B8BAC1188AB188003307CB /* test_digital_evolution copy */;
-			productType = "com.apple.product-type.tool";
-		};
 		42C661361860DC07004476D3 /* test_mp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 42C6614D1860DC07004476D3 /* Build configuration list for PBXNativeTarget "test_mp" */;
@@ -897,7 +871,6 @@
 				428B711C18490E8F00E3BB4E /* test_mkv */,
 				42C661361860DC07004476D3 /* test_mp */,
 				42841C8315AFB14100AB18BE /* all */,
-				42B8BAB5188AB188003307CB /* test_digital_evo2 */,
 			);
 		};
 /* End PBXProject section */
@@ -941,16 +914,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				428B7205184F666400E3BB4E /* test_neural_network.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		42B8BAB6188AB188003307CB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				42B8BAB7188AB188003307CB /* cmdline_interface.cpp in Sources */,
-				42B8BAC4188AB1AA003307CB /* test_devo2.cpp in Sources */,
-				42B8BAB8188AB188003307CB /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1008,6 +971,11 @@
 			isa = PBXTargetDependency;
 			target = 428B711C18490E8F00E3BB4E /* test_mkv */;
 			targetProxy = 428B7209184F6B7600E3BB4E /* PBXContainerItemProxy */;
+		};
+		42B8BAD1188EA947003307CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 42C661511860E008004476D3 /* test_digital_evolution */;
+			targetProxy = 42B8BAD0188EA947003307CB /* PBXContainerItemProxy */;
 		};
 		42C6618018614DF3004476D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1097,20 +1065,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "test_mkv copy";
-			};
-			name = Release;
-		};
-		42B8BABF188AB188003307CB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "test_digital_evolution copy";
-			};
-			name = Debug;
-		};
-		42B8BAC0188AB188003307CB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "test_digital_evolution copy";
 			};
 			name = Release;
 		};
@@ -1207,15 +1161,6 @@
 			buildConfigurations = (
 				428B7202184F664D00E3BB4E /* Debug */,
 				428B7203184F664D00E3BB4E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		42B8BABE188AB188003307CB /* Build configuration list for PBXNativeTarget "test_digital_evo2" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				42B8BABF188AB188003307CB /* Debug */,
-				42B8BAC0188AB188003307CB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

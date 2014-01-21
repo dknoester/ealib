@@ -160,7 +160,7 @@ namespace ealib {
          runs the gate on that input, and then sends that output to other state
          variables.
          
-         The default update function is a binary or
+         The default update function is a binary or.
          
          \param f is any type that supports operator[] (e.g., RA iterator or sequence).
          */

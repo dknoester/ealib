@@ -24,6 +24,7 @@
 #include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <ea/fitness_functions/constant.h>
 #include <ea/meta_data.h>
 #include <ea/phenotype.h>
 #include <ea/traits.h>
@@ -37,7 +38,7 @@ namespace ealib {
      */
 	template
     < typename EA
-    , typename FitnessFunction
+    , typename FitnessFunction=constant
     , typename Phenotype=EA
     , typename Encoding=directS
     , template <typename> class Traits=default_traits

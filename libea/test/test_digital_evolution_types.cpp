@@ -23,17 +23,15 @@
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/population_founder.h>
 #include <ea/line_of_descent.h>
-#include <ea/meta_population.h>
+#include <ea/metapopulation.h>
 #include "test.h"
 
 //! Configuration object; this is fairly standard across DE simulations.
-template <typename EA>
-struct digevo_configuration : public abstract_configuration<EA> {
-    typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
-    typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-    
+
+struct digevo_configuration : public default_configuration {
     //! Called as the final step of EA construction (must not depend on configuration parameters).
-    void construct(EA& ea) {
+    template <typename EA>
+    void after_construction(EA& ea) {
         using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
@@ -63,7 +61,11 @@ struct digevo_configuration : public abstract_configuration<EA> {
     }
     
     //! Initialize the EA (may use configuration parameters)
+    template <typename EA>
     void initialize(EA& ea) {
+        typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
+        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+
         // Add tasks
         task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<0> >("not", ea);
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<0> >("nand", ea);
@@ -95,23 +97,18 @@ struct digevo_configuration : public abstract_configuration<EA> {
         task_xor->consumes(resH);
         task_equals->consumes(resI);
     }
-    
-    //! Called to generate the initial EA population.
-    void initial_population(EA& ea) {
-        generate_ancestors(selfrep_ancestor(), 1, ea);
-    }
 };
 
 //! Meta-population configuration object.
-template <typename EA>
-struct mp_configuration : public abstract_configuration<EA> {
-    void initial_population(EA& ea) {
-    }
-};
+//template <typename EA>
+//struct mp_configuration : public abstract_configuration<EA> {
+//    void initial_population(EA& ea) {
+//    }
+//};
 
 //! Meta-population w/ founders configuration object.
-template <typename EA>
-struct mp_founder_configuration : public abstract_configuration<EA> {
+struct mp_founder_configuration : public default_configuration {
+    template <typename EA>
     void initial_population(EA& ea) {
         for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
             (*i).founder() = (**(*i).population().begin());
@@ -162,29 +159,29 @@ public:
 //! A variety of digital evolution / artificial life simulation definitions.
 BOOST_AUTO_TEST_CASE(test_digevo_types) {
     //! Single population:
-    typedef digital_evolution<digevo_configuration, spatial, empty_neighbor, round_robin> ea_type1;
+    typedef digital_evolution<digevo_configuration > ea_type1;
     ea_type1 ea1;
 
     //! Meta-population, no founders:
-    typedef meta_population<ea_type1> mea_type1;
+    typedef metapopulation<subpopulation<ea_type1> > mea_type1;
     mea_type1 mea1;
 
-    //! Meta-population, with founders:
-    typedef meta_population<population_founder<ea_type1> > mea_type2;
-    mea_type2 mea2;
-
-    //! Meta-population, with founders and LOD tracking:
-    typedef meta_population<
-    population_founder<ea_type1>,
-    ancestors::default_representation,
-    mutation::operators::no_mutation,
-	constant,
-    abstract_configuration,
-	recombination::no_recombination,
-    generational_models::isolated_subpopulations,
-    attr::lod_attributes
-    > mea_type3;
-    cli<mea_type3> cli3;
+//    //! Meta-population, with founders:
+//    typedef meta_population<population_founder<ea_type1> > mea_type2;
+//    mea_type2 mea2;
+//
+//    //! Meta-population, with founders and LOD tracking:
+//    typedef meta_population<
+//    population_founder<ea_type1>,
+//    ancestors::default_representation,
+//    mutation::operators::no_mutation,
+//	constant,
+//    abstract_configuration,
+//	recombination::no_recombination,
+//    generational_models::isolated_subpopulations,
+//    attr::lod_attributes
+//    > mea_type3;
+//    cli<mea_type3> cli3;
 }
 
 

@@ -50,7 +50,6 @@ namespace ealib {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<traits::fitness_trait<T> >(*this));
-            ar & boost::serialization::make_nvp("lod_trait", boost::serialization::base_object<traits::lod_trait<T> >(*this));
         }
     };
     
