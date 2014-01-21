@@ -34,23 +34,35 @@
 #include <map>
 
 #include <ea/digital_evolution/position.h>
-#include <ea/digital_evolution/avida.h>
+#include <ea/digital_evolution/hardware.h>
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/meta_data.h>
 
 namespace ealib {
 	   
-	/*! Definition of an organism.
-	 
-	 Organisms within ealib are four things:
-	 1) A container for a representation
-     2) A container for virtual hardware
-	 3) A container for a priority
-	 4) A container for meta data
+    /*! Digital evolution traits.
+     */
+    template <typename T>
+    struct default_devo_traits {
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+        }
+    };
+    
+    //! Digital evolution LoD traits.
+    template <typename T>
+    struct default_devo_lod_traits : traits::lod_trait<T> {
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+        }
+    };
+    
+	/*! Digital organism.
+
 	 */
     template
-    < typename Hardware=avida_hardware
-    , template <typename> class Traits=avida_traits
+    < typename Hardware=hardware
+    , template <typename> class Traits=default_devo_traits
     > class organism {
 	public:
         //! Individual pointer type.
@@ -63,10 +75,12 @@ namespace ealib {
         typedef Traits<organism> traits_type;
         //! Meta-data type.
         typedef meta_data md_type;
-
-        typedef int io_type; //!< Type for input and output values.
-        typedef std::deque<io_type> iobuffer_type; //!< Type for buffering inputs and outputs.
-		typedef std::map<std::string, double> phenotype_map_type; //!< Type for storing phenotype information.
+        //!< Type for input and output values.
+        typedef int io_type;
+        //!< Type for buffering inputs and outputs.
+        typedef std::deque<io_type> iobuffer_type;
+        //!< Type for storing phenotype information.
+		typedef std::map<std::string, double> phenotype_map_type;
 
 		//! Constructor.
 		organism() : _priority(1.0), _alive(true) {
@@ -79,41 +93,41 @@ namespace ealib {
         
         //! Copy constructor.
         organism(const organism& that) {
-            _alive = that._alive;
-            _priority = that._priority;
             _hw = that._hw;
-            _md = that._md;
+            _priority = that._priority;
+            _position = that._position;
+            _alive = that._alive;
             _inputs = that._inputs;
             _outputs = that._outputs;
             _phenotype = that._phenotype;
-            _position = that._position;
+            _md = that._md;
         }
         
         //! Assignment operator.
         organism& operator=(const organism& that) {
             if(this != &that) {
-                _alive = that._alive;
-                _priority = that._priority;
                 _hw = that._hw;
-                _md = that._md;
+                _priority = that._priority;
+                _position = that._position;
+                _alive = that._alive;
                 _inputs = that._inputs;
                 _outputs = that._outputs;
                 _phenotype = that._phenotype;
-                _position = that._position;
+                _md = that._md;
             }
             return *this;
         }
 
         //! Returns true if hardware(s) are equivalent.
         bool operator==(const organism& that) const {
-            return (_alive == that._alive)
+            return (_hw == that._hw)
             && (_priority == that._priority)
-            && (_hw == that._hw)
-            && (_md == that._md)
+            && (_position == that._position)
+            && (_alive == that._alive)
             && (_inputs == that._inputs)
             && (_outputs == that._outputs)
             && (_phenotype == that._phenotype)
-            && (_position == that._position);
+            && (_md == that._md);
         }
         
         //! Returns this organism's hardware.
@@ -152,12 +166,6 @@ namespace ealib {
         //! Returns this organism's phenotype.
         phenotype_map_type& phenotype() { return _phenotype; }
         
-        //! Execute an individual for n cycles.
-        template <typename EA>
-        inline void execute(std::size_t n, individual_ptr_type p, EA& ea) {
-            _hw.execute(n, p, ea);
-        }
-
         //! Returns this organism's meta data.
         meta_data& md() { return _md; }
         
@@ -170,10 +178,16 @@ namespace ealib {
         //! Returns this individual's traits (const-qualified).
         const traits_type& traits() const { return _traits; }
         
+        //! Execute this organism for n cycles.
+        template <typename EA>
+        inline void execute(std::size_t n, individual_ptr_type p, EA& ea) {
+            _hw.execute(n, p, ea);
+        }
+
 	protected:
         hardware_type _hw; //!< This organism's virtual hardware.
-		priority_type _priority; //!< This organism's priority.
-        position_type _position; //!< This organism's position.
+		priority_type _priority; //!< Used by the scheduler to prioritize this organism.
+        position_type _position; //!< This organism's position in the environment.
         bool _alive; //!< Is this organism currently alive?
         iobuffer_type _inputs; //!< This organism's inputs.
         iobuffer_type _outputs; //!< This organism's outputs.

@@ -25,13 +25,22 @@
 
 namespace ealib {
     
+    //! Dimensions of a position vector.
+    enum position_dimension { XPOS=0, YPOS=1, HEADING=2 };
+    
     /*! Type that is contained (and owned) by organisms to uniquely identify
      their location in the environment.
      
      \warning: This type must be serializable.
      */
-    typedef std::vector<std::size_t> position_type;
-//    typedef std::pair<std::size_t, std::size_t> position_type;
+    typedef std::vector<int> position_type;
+
+    //! Returns a position vector constructed from x, y, and h (heading).
+    position_type make_position(int x=-1, int y=-1, int h=-1) {
+        position_type pos(3,0);
+        pos[XPOS] = x; pos[YPOS] = y; pos[HEADING]=h;
+        return pos;
+    }
 
 } // ealib
 

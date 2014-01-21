@@ -1,4 +1,4 @@
-/* digital_evolution/digital_evolution.h 
+/* digital_evolution/schedulers.h
  * 
  * This file is part of EALib.
  * 
@@ -21,9 +21,6 @@
 #ifndef _EA_SCHEDULERS_H_
 #define _EA_SCHEDULERS_H_
 
-#include <boost/bind.hpp>
-#include <boost/signal.hpp>
-#include <limits>
 #include <list>
 #include <map>
 #include <ea/fitness_function.h>
@@ -33,23 +30,6 @@ namespace ealib {
     LIBEA_MD_DECL(SCHEDULER_TIME_SLICE, "ea.scheduler.time_slice", unsigned int);
     
     typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-
-    namespace traits {
-
-        template <typename T>
-        struct priority_trait {
-            //! Returns this individual's priority.
-            priority_type& priority() { return _v; }
-            
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
-                ar & boost::serialization::make_nvp("priority", _v);
-            }
-            
-            priority_type _v;
-        };
-        
-    } // traits
     
     namespace access {
         
@@ -57,17 +37,12 @@ namespace ealib {
         struct priority {
             template <typename EA>
             priority_type& operator()(typename EA::individual_type& ind, EA& ea) {
-                return ind.traits().priority();
+                return ind.priority();
             }
         };
         
     } // access
 
-    //! Priority attribute accessor.
-    template <typename EA>
-    priority_type& priority(typename EA::individual_type& ind, EA& ea) {
-        return ind.priority();
-    }
     
     /*! Runlevel queue scheduler.
      
@@ -77,28 +52,24 @@ namespace ealib {
      is advanced.  This avoids strange runlevel size effects (i.e., where a higher runlevel
      has twice as many individuals as a lower runlevel).
      */
-    template <typename EA>
     struct runlevel_queue {
-        typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-        typedef std::list<typename EA::individual_ptr_type> queue_type;
-        typedef std::map<int,queue_type> runlevelq_type;
-        
-        void initialize(EA& ea) {
-        }
-        
-        template <typename Population>
-        void operator()(Population& population, EA& ea) {
+        //! Schedule organisms.
+        template <typename EA>
+        void operator()(typename EA::population_type& population, EA& ea) {
+            typedef std::list<typename EA::individual_ptr_type> queue_type;
+            typedef std::map<int,queue_type> runlevelq_type;
+
             // shuffle the population to avoid effects related to ordering of individuals:
             std::random_shuffle(population.begin(), population.end(), ea.rng());
 
             // split them into runlevels:
             runlevelq_type q;
-            for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
+            for(typename EA::population_type::iterator i=population.begin(); i!=population.end(); ++i) {
                 // we have to take the ceiling of the priority here; otherwise, an organism
                 // that consumes only a small amount is effectively the same as an organism
                 // that consumes none; this creates a relavitely large subset of the population
                 // that can drift while the rest of the population competes for resources.
-                q[ceil(priority(**i,ea))].push_back(*i);
+                q[ceil((*i)->priority())].push_back(*i);
             }
             
             // have to fill in the runlevels between priorities, if any:
@@ -147,7 +118,7 @@ namespace ealib {
                 }
             }
             
-            Population next;
+            typename EA::population_type next;
             next.reserve(population.size());
             for(std::size_t i=0; i<population.size(); ++i) {
                 if(population[i]->alive()) {
@@ -165,17 +136,14 @@ namespace ealib {
      where priority is defined as the multiple of cycles above an org that has 
      priority 1.0.
      */
-    template <typename EA>
     struct priority_proportional {
-        typedef EA ea_type;
-        typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-        typedef std::vector<long> exc_list;
-        
-        void initialize(ea_type& ea) {
-        }
-        
-        template <typename Population>
-        exc_list operator()(Population& population, ea_type& ea) {
+        //! Schedule organisms.
+        template <typename EA>
+        void operator()(typename EA::population_type& population, EA& ea) {
+            typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
+            typedef std::vector<long> exc_list;
+            
+
             exc_list live, names;
             int last=population.size();
             for(std::size_t i=0; i<population.size(); ++i) {
@@ -198,7 +166,7 @@ namespace ealib {
                     ea.env().partial_update(delta_t, ea);
                 }
                 
-                typename ea_type::individual_ptr_type p=population[live[i]];
+                typename EA::individual_ptr_type p=population[live[i]];
                 i = (i+1) % live.size();
                 names.push_back(p->name());
                 
@@ -210,9 +178,9 @@ namespace ealib {
                 }
             }
             
-            Population next;
+            typename EA::population_type next;
             for(std::size_t i=0; i<population.size(); ++i) {
-                typename ea_type::individual_ptr_type p=population[i];
+                typename EA::individual_ptr_type p=population[i];
                 if(p->alive()) {
                     next.push_back(p);
                 }
@@ -228,10 +196,8 @@ namespace ealib {
      Grants organisms an amount of CPU time equal to their priority.
      */
     struct weighted_round_robin {
-        typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-
-        template <typename Population, typename EA>
-        void operator()(Population& population, EA& ea) {
+        template <typename EA>
+        void operator()(typename EA::population_type& population, EA& ea) {
             // WARNING: Population is unstable!  Must use []-indexing.
             std::random_shuffle(population.begin(), population.end(), ea.rng());
             
@@ -250,20 +216,20 @@ namespace ealib {
             std::size_t deadcount=0;
             while((budget > 0) && (deadcount<last)) {
                 if((budget % eff_population_size) == 0) {
-                    ea.env().partial_update(delta_t, ea);
+                    ea.env().update_resources(delta_t);
                 }
                 typename EA::individual_ptr_type p=population[i];
                 i = (i+1) % last;
                 
                 if(p->alive()) {
-                    p->execute(static_cast<std::size_t>(ealib::priority(*p,ea)),p,ea);
-                    budget -= static_cast<std::size_t>(ealib::priority(*p,ea));
+                    p->execute(static_cast<std::size_t>(p->priority()),p,ea);
+                    budget -= static_cast<std::size_t>(p->priority());
                 } else {
                     ++deadcount;
                 }
             }
             
-            Population next;
+            typename EA::population_type next;
             for(std::size_t i=0; i<population.size(); ++i) {
                 typename EA::individual_ptr_type p=population[i];
                 if(p->alive()) {
@@ -280,16 +246,10 @@ namespace ealib {
      Grants all organisms an equal amount of CPU time, exactly time slice cycles
      per update.
      */
-    template <typename EA>
     struct round_robin {
-        typedef EA ea_type;
-        typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-        
-        void initialize(ea_type& ea) {
-        }
-        
-        template <typename Population>
-        void operator()(Population& population, ea_type& ea) {
+        //! Schedule organisms.
+        template <typename EA>
+        void operator()(typename EA::population_type& population, EA& ea) {
             // WARNING: Population is unstable!  Must use []-indexing.
             std::random_shuffle(population.begin(), population.end(), ea.rng());
 
@@ -310,7 +270,7 @@ namespace ealib {
                 if((budget % eff_population_size) == 0) {
                     ea.env().partial_update(delta_t, ea);
                 }
-                typename ea_type::individual_ptr_type p=population[i];
+                typename EA::individual_ptr_type p=population[i];
                 i = (i+1) % last;
                 
                 if(p->alive()) {
@@ -321,9 +281,9 @@ namespace ealib {
                 }
             }
             
-            Population next;
+            typename EA::population_type next;
             for(std::size_t i=0; i<population.size(); ++i) {
-                typename ea_type::individual_ptr_type p=population[i];
+                typename EA::individual_ptr_type p=population[i];
                 if(p->alive()) {
                     next.push_back(p);
                 }
@@ -333,28 +293,5 @@ namespace ealib {
     };
     
 } // ealib
-
-//
-//    /*! Priority tree-based scheduler.
-//     */
-//    template <typename EA>
-//    struct priority_tree : generational_models::generational_model {
-//        typedef EA ea_type;
-//        typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-//
-//        void initialize(EA& ea) {
-////            _birth_conn = ea.events().birth.connect(boost::bind(&priority_tree::on_birth, this, _1, _2, _3));
-////            _death_conn = ea.events().death.connect(boost::bind(&priority_tree::on_death, this, _1, _2));
-//        }
-//
-////        void on_birth(typename EA::individual_type& offspring, typename EA::individual_type& parent, EA& ea) {
-////        }
-////
-////        void on_death(typename EA::individual_type& ind, EA& ea) {
-////        }
-//
-//
-////        boost::signals::scoped_connection _birth_conn, _death_conn;
-//    };
 
 #endif

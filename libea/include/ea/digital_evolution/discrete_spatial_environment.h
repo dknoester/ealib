@@ -24,6 +24,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <limits>
 #include <utility>
 #include <vector>
 #include <stdexcept>
@@ -40,48 +41,47 @@ namespace ealib {
     
     /*! Discrete spatial environment.
      
-     This environment is divided into discrete cells.
+     This spatial environment is divided into discrete cells.
+     
+     ON ORIENTATION:
+     This environment is oriented as the standard X-Y Cartesian coordinate
+     system.  I.e., (0,0) is in the lower left, positive is up and right, etc.
+     
+     ON POSITION:
+     Positions in this space are a triple (x, y, heading), where heading is a
+     number in the range [0,8), such that for a given position Origin (Or.),
+     headings point in the following directions:
+     
+     3  |  2  |  1
+     4  |  Or.|  0
+     5  |  6  |  7
+     
+     
      */
     template <typename EA>
     class discrete_spatial_environment {
     public:
         //! EA type using this topology.
         typedef EA ea_type;
-        
+        typedef typename ea_type::individual_type individual_type; //!< Individual type.
         typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
-        
-        typedef typename ea_type::individual_type individual_type; //!< Pointer to individual type.
-        
-        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type;
-        typedef std::vector<resource_ptr_type> resource_list_type;
-        resource_list_type _resources;
-        
-        resource_list_type& resources() { return _resources; }
-        
-        void clear_resources() {
-            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
-                (*i)->clear();
-            }
-        }
-        
+        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type; //!< Abstract resource type.
+        typedef std::vector<resource_ptr_type> resource_list_type; //!< List of resources.
+
         /*! Location type.
          
-         While locations logically "live" inside organisms, they are interpreted 
-         by the specific topology being used.  So, the topology "owns" the various
-         locations, but organisms have handles to the specific location at which
-         they reside.
-         
-         Locations also have a pointer to their organism, thus we can go betwixt
-         them with ease.
+         An individual's position in the environment can best be thought of as
+         an index into a location data structure which contains locale-specific
+         information; this is that data structure.
          */
         struct location_type {
             //! Constructor.
-            location_type() : heading(0), x(0), y(0) {
+            location_type() : x(0), y(0) {
             }
             
             //! Operator ==
             bool operator==(const location_type& that) {
-                if((p==0) == (that.p!=0)) { // pointer xor...
+                if((p==0) != (that.p==0)) { // pointer xor...
                     return false;
                 }
                 
@@ -90,8 +90,7 @@ namespace ealib {
                     r = ((*p) == (*that.p));
                 }
                 
-                return r && (heading==that.heading)
-                && (x==that.x)
+                return r && (x==that.x)
                 && (y==that.y)
                 && (_md==that._md);
             }
@@ -105,73 +104,62 @@ namespace ealib {
             //! Return the inhabitant.
             individual_ptr_type inhabitant() { return p; }
             
-            //! Set the heading of this location.
+            //! Sets the heading of this location's inhabitant.
             void set_heading(int h) {
-                heading = h % 8;
+                if(occupied()) {
+                    p->position()[HEADING] = h % 8;
+                }
             }
             
-            //! Alter the heading of this location.
+            //! Alters the heading of this location's inhabitant.
             void alter_heading(int h) {
-                heading = algorithm::roll(heading+h, 0, 7);
+                if(occupied()) {
+                    p->position()[HEADING] = algorithm::roll(p->position()[HEADING]+h, 0, 7);
+                }
             }
-            
-            position_type position() {
-                position_type pos;
-                pos.push_back(x);
-                pos.push_back(y);
-                return pos;
-            }
-            
-            individual_ptr_type p; //!< Individual (if any) at this location.
-            int heading; //!< Heading of organism, in degrees.
-            std::size_t x,y; //!< X-Y coordinates of this location.
-            meta_data _md; //!< Meta-data container.
 
+            //! Returns this location's position vector.
+            position_type position() {
+                return make_position(x,y);
+            }
+            
             //! Serialize this location.
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
-                ar & boost::serialization::make_nvp("heading", heading);
+                // we don't serialize the individual ptr - have to attach it after checkpoint load.
                 ar & boost::serialization::make_nvp("x", x);
                 ar & boost::serialization::make_nvp("y", y);
                 ar & boost::serialization::make_nvp("meta_data", _md);
             }
-        };
-        
-        typedef location_type* location_ptr_type;
 
-        typedef boost::numeric::ublas::matrix<location_type> location_matrix_type; //! Container type for locations.
+            individual_ptr_type p; //!< Individual (if any) at this location.
+            std::size_t x,y; //!< X-Y coordinates of this location.
+            meta_data _md; //!< Meta-data container.
+        };
+
+        //! Location pointer type.
+        typedef location_type* location_ptr_type;
+        //! Location matrix type.
+        typedef boost::numeric::ublas::matrix<location_type> location_matrix_type;
         
-        location_ptr_type location(const position_type& pos) {
-            return &_locs(pos[0], pos[1]);
-        }
-        
-        /*! Spatial neighborhood iterator.
-         */
+        //! Iterator for the neighborhood of a position.
         struct iterator : boost::iterator_facade<iterator, location_type, boost::single_pass_traversal_tag> {
             //! Constructor.
-            iterator(location_type& origin, int h, location_matrix_type& locs, ea_type& ea) 
-            : _origin(origin), _heading(h), _locs(locs), _ea(ea) {
+            iterator(position_type& pos, int h, location_matrix_type& locs)
+            : _origin(locs(pos[XPOS], pos[YPOS])), _heading(h), _locs(locs) {
             }
             
             //! Increment operator.
             void increment() { ++_heading; }
             
             //! Iterator equality comparison.
-            bool equal(iterator const& that) const { 
-                return (_origin.y==that._origin.y) && (_origin.x==that._origin.x) && (_heading==that._heading); 
+            bool equal(iterator const& that) const {
+                return (_origin.y==that._origin.y) && (_origin.x==that._origin.x) && (_heading==that._heading);
             }
             
             /*! Dereference this iterator.
-             
-             (x,y) == (column,row)
-             (0,0) == lower left
-             
-             Unit circle:
-             3  |  2  |  1
-             4  |  Or.|  0
-             5  |  6  |  7
              */
-            location_type& dereference() const { 
+            location_type& dereference() const {
                 int x=_origin.x;
                 int y=_origin.y;
                 
@@ -189,15 +177,14 @@ namespace ealib {
                 x = algorithm::roll(x, 0, static_cast<int>(_locs.size2()-1));
                 y = algorithm::roll(y, 0, static_cast<int>(_locs.size1()-1));
                 
-                return _locs(y,x); // correct: y==i, x==j.
+                return _locs(x,y);
             }
             
             location_type& _origin; //!< Origin of this iterator.
             int _heading; //!< Current heading for the iterator.
             location_matrix_type& _locs; //!< list of all possible locations.
-            ea_type& _ea; //!< EA (used for rngs, primarily).
-        };                
-        
+        };
+
         //! Constructor.
         discrete_spatial_environment() : _append_count(0) {
         }
@@ -220,38 +207,75 @@ namespace ealib {
             return true;
         }
         
-        //! Initialize this topology.
+        //! Initialize this environment.
         void initialize(ea_type& ea) {
-            _locs.resize(get<SPATIAL_Y>(ea), get<SPATIAL_X>(ea), true);
+            assert((get<SPATIAL_X>(ea) * get<SPATIAL_Y>(ea)) <= get<POPULATION_SIZE>(ea));
+            _locs.resize(get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea), true);
             for(std::size_t i=0; i<_locs.size1(); ++i) {
                 for(std::size_t j=0; j<_locs.size2(); ++j) {
-                    _locs(i,j).x = j;
-                    _locs(i,j).y = i;
+                    _locs(i,j).x = i;
+                    _locs(i,j).y = j;
                 }
             }
         }
         
-        //! Retrieve the neighborhood of the given individual.
-        std::pair<iterator,iterator> neighborhood(individual_ptr_type p, ea_type& ea) {
-            return std::make_pair(iterator(*location(p->position()),0,_locs,ea),
-                                  iterator(*location(p->position()),8,_locs,ea));
+        //! Returns a value "read" from this environment.
+        template <typename Organism>
+        int read(Organism& org, ea_type& ea) {
+            return ea.rng()(std::numeric_limits<int>::max());
         }
         
-        //! Retrieve the neighbor at the specified direction
-        iterator direction_neighbor(individual_type p, int dir, ea_type& ea) {
-            assert(dir < 8 && dir >= 0);
-            return (iterator(*handle2ptr(p.location()), dir, _locs, ea));
+        //! Returns the list of resources.
+        resource_list_type& resources() { return _resources; }
+        
+        //! Adds a new resource to this environment.
+        void add_resource(resource_ptr_type r) {
+            _resources.push_back(r);
         }
         
-        //! Retrieve the currently faced neighboring location of the given individual.
-        iterator neighbor(individual_ptr_type p, ea_type& ea) {
-            return iterator(*location(p->position()),location(p->position())->heading,_locs,ea);
+        //! Clears all resource levels.
+        void clear_resources() {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->clear();
+            }
         }
         
-        //! Given two orgs, rotate them to face one another.
+        //! Individual ind consumes resource r.
+        double consume_resource(resource_ptr_type r, individual_type& ind) {
+            return r->consume(ind.position());
+        }
+        
+        //! Updates resource levels based on delta t.
+        void update_resources(double delta_t) {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->update(delta_t);
+            }
+        }
+        
+        //! Reset resources -- may occur on successful group event
+        void reset_resources() {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->reset();
+            }
+        }
+
+        //! Returns the location matrix.
+//        location_matrix_type& locations() { return _locs; }
+
+        //! Returns a location pointer given a position.
+        location_ptr_type location(const position_type& pos) {
+            return &_locs(pos[XPOS], pos[YPOS]);
+        }
+
+        //! Returns a location pointer given x and y coordinates.
+        location_ptr_type location(int x, int y) {
+            return &_locs(x, y);
+        }
+
+        //! Rotates two individuals to face one another.
         void face_org(individual_type& p1, individual_type& p2) {
-            location_ptr_type l1 = handle2ptr(p1.location());
-            location_ptr_type l2 = handle2ptr(p2.location());
+            location_ptr_type l1 = location(p1.position());
+            location_ptr_type l2 = location(p2.position());
             
             // Make sure everyone has a location...
             if ((l1 == NULL) || (l2 == NULL)) {
@@ -301,6 +325,23 @@ namespace ealib {
                 l2->set_heading(2);
             }
         }
+
+        //! Returns a [begin,end) pair of iterators over an individual's neighborhood.
+        std::pair<iterator,iterator> neighborhood(individual_type& p) {
+            return std::make_pair(iterator(p.position(), 0, _locs),
+                                  iterator(p.position(), 8, _locs));
+        }
+        
+        //! Returns an iterator to the location in the specified direction from p.
+        iterator neighbor(individual_type p, int dir) {
+            assert(dir >= 0 && dir < 8);
+            return iterator(p.position(), dir, _locs);
+        }
+        
+        //! Retrieve the currently faced neighboring location of the given individual.
+        iterator neighbor(individual_ptr_type p) {
+            return iterator(p->position(), p->position()[HEADING], _locs);
+        }
         
         //! Replace the organism (if any) living in location l with p.
         void replace(iterator i, individual_ptr_type p, ea_type& ea) {
@@ -332,48 +373,6 @@ namespace ealib {
             }
         }
         
-        //! Read from the environment.
-        template <typename Organism>
-        int read(Organism& org, ea_type& ea) {
-            return ea.rng()(std::numeric_limits<int>::max());
-        }
-        
-        /*! Consume resources.
-         
-         Although conceptually simple, we pass in a few extra parameters to support
-         eventual spatial resources.
-         */
-        double reaction(resource_ptr_type r, individual_type& org, ea_type& ea) {
-            return r->consume(org.position());
-        }
-        
-        //! Add a resource to this environment.
-        void add_resource(resource_ptr_type r) {
-            _resources.push_back(r);
-        }
-        
-        //! Fractional update.
-        void partial_update(double delta_t, ea_type& ea) {
-            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
-                (*i)->update(delta_t);
-            }
-        }
-        
-        /*! Reset resources -- may occur on successful group event 
-         */
-        void reset_resources() {
-            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
-                (*i)->reset();
-            }
-        }
-        
-        location_matrix_type& locations() { return _locs; }
-        
-        location_type& location(int x, int y) {
-            // x == j, y == i
-            return _locs(y, x);
-        }
-        
         /*! This is called after deserialization (load); the idea here is that we
          need to iterate through the population, and link the locations to their
          respective organisms.
@@ -387,6 +386,7 @@ namespace ealib {
     protected:
         std::size_t _append_count; //!< Number of locations that have been appended to.
         location_matrix_type _locs; //!< Matrix of all locations in this topology.
+        resource_list_type _resources;
 
     private:
 		friend class boost::serialization::access;

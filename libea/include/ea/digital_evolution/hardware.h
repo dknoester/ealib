@@ -31,23 +31,6 @@
 
 namespace ealib {
     
-    /*! Digital evolution traits.
-     */
-    template <typename T>
-    struct avida_traits {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-        }
-    };
-    
-    //! Digital evolution LoD traits.
-    template <typename T>
-    struct avida_lod_traits : traits::lod_trait<T> {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-        }
-    };
-    
     /*! Digital evolution hardware.
      
      This class defines the representation and hardware for digital evolution, a
@@ -56,7 +39,7 @@ namespace ealib {
      \todo There are good odds that much can be gained by splitting out status information
      into its own struct, and then have instructions manipulate that directly.
      */
-    class avida_hardware {
+    class hardware {
     public:
         //! Type of representation needed for this hardware.
         typedef circular_genome<unsigned int> representation_type;
@@ -90,17 +73,17 @@ namespace ealib {
         };
         
         //! Constructor.
-        avida_hardware() {
+        hardware() {
             initialize();
         }
         
         //! Constructor.
-        avida_hardware(const representation_type& repr) : _repr(repr) {
+        hardware(const representation_type& repr) : _repr(repr) {
             initialize();
         }
 
         //! Copy constructor.
-        avida_hardware(const avida_hardware& that) {
+        hardware(const hardware& that) {
             initialize();
             _repr = that._repr;
             std::copy(that._head_position, that._head_position+NUM_HEADS, _head_position);
@@ -115,7 +98,7 @@ namespace ealib {
         }
         
         //! Assignment operator.
-        avida_hardware& operator=(const avida_hardware& that) {
+        hardware& operator=(const hardware& that) {
             if(this != &that) {
                 initialize();
                 _repr = that._repr;
@@ -134,11 +117,11 @@ namespace ealib {
 
         
         //! Destructor.
-        ~avida_hardware() {
+        ~hardware() {
         }
         
         //! Returns true if hardware(s) are equivalent.
-        bool operator==(const avida_hardware& that) const {
+        bool operator==(const hardware& that) const {
             bool r = (_repr == that._repr);
             r = r && std::equal(_head_position, _head_position+NUM_HEADS, that._head_position);
             r = r && std::equal(_regfile, _regfile+NUM_REGISTERS, that._regfile);

@@ -208,7 +208,7 @@ namespace ealib {
                         
                         if(task.reaction_occurs(org,ea)) {
                             // if the reaction occurs, consume resources:
-                            double r = ea.env().reaction(task.consumed_resource(), org, ea);
+                            double r = ea.env().consume_resource(task.consumed_resource(), org);
                             org.phenotype()[task.name()] += r;
                             ea.events().reaction(org, *i, r, ea);
                         } else {

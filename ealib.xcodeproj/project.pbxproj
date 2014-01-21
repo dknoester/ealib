@@ -176,9 +176,8 @@
 /* Begin PBXFileReference section */
 		4210C5AC188877BA00A8FAFA /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
 		4210C5AD188877BA00A8FAFA /* events.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = events.h; sourceTree = "<group>"; };
-		4210C5AE188877BA00A8FAFA /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		4210C5AF188877BA00A8FAFA /* groups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = groups.h; sourceTree = "<group>"; };
-		4210C5B0188877BA00A8FAFA /* avida.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = avida.h; sourceTree = "<group>"; };
+		4210C5B0188877BA00A8FAFA /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
 		4210C5B1188877BA00A8FAFA /* isa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isa.h; sourceTree = "<group>"; };
 		4210C5B2188877BA00A8FAFA /* organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = organism.h; sourceTree = "<group>"; };
 		4210C5B3188877BA00A8FAFA /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
@@ -186,7 +185,6 @@
 		4210C5B5188877BA00A8FAFA /* schedulers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schedulers.h; sourceTree = "<group>"; };
 		4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discrete_spatial_environment.h; sourceTree = "<group>"; };
 		4210C5B7188877BA00A8FAFA /* task_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_library.h; sourceTree = "<group>"; };
-		4210C5B8188877BA00A8FAFA /* well_mixed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = well_mixed.h; sourceTree = "<group>"; };
 		4210C5B9188877BA00A8FAFA /* digital_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_evolution.h; sourceTree = "<group>"; };
 		4210C5BA1889634C00A8FAFA /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
 		421D68B61735719700A45DD6 /* test_analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_analysis.cpp; sourceTree = "<group>"; };
@@ -408,10 +406,9 @@
 			isa = PBXGroup;
 			children = (
 				4210C5AC188877BA00A8FAFA /* ancestors.h */,
-				4210C5B0188877BA00A8FAFA /* avida.h */,
+				4210C5B0188877BA00A8FAFA /* hardware.h */,
 				4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */,
 				4210C5AD188877BA00A8FAFA /* events.h */,
-				4210C5AE188877BA00A8FAFA /* graph.h */,
 				4210C5AF188877BA00A8FAFA /* groups.h */,
 				4210C5B1188877BA00A8FAFA /* isa.h */,
 				4210C5B2188877BA00A8FAFA /* organism.h */,
@@ -421,7 +418,6 @@
 				4210C5BA1889634C00A8FAFA /* resources.h */,
 				4210C5B5188877BA00A8FAFA /* schedulers.h */,
 				4210C5B7188877BA00A8FAFA /* task_library.h */,
-				4210C5B8188877BA00A8FAFA /* well_mixed.h */,
 			);
 			path = digital_evolution;
 			sourceTree = "<group>";

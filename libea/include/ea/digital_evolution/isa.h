@@ -450,7 +450,7 @@ namespace ealib {
         
         //! Send a message to the currently-faced neighbor.
         DIGEVO_INSTRUCTION_DECL(tx_msg) {
-            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p);
             if(l.occupied()) {
                 int rbx = hw.modifyRegister();
                 int rcx = hw.nextRegister(rbx);
@@ -488,7 +488,7 @@ namespace ealib {
             int rcx = hw.nextRegister(rbx);
             
             typedef typename EA::environment_type::iterator iterator;
-            std::pair<iterator,iterator> ni=ea.env().neighborhood(p,ea);
+            std::pair<iterator,iterator> ni=ea.env().neighborhood(*p);
             for(; ni.first!=ni.second; ++ni.first) {
                 typename EA::environment_type::location_type& l=*ni.first;
                 if(l.occupied()) {
