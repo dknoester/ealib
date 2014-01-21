@@ -50,9 +50,6 @@ namespace ealib {
 			//! Apply this generational model to the EA to produce a single new generation.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
-				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-                
                 // how many survivors?
                 unsigned int n = get<POPULATION_SIZE>(ea) - get<STEADY_STATE_LAMBDA>(ea);
                 

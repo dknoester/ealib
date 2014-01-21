@@ -98,20 +98,20 @@ namespace ealib {
 	public:
         //! Representation type; the "genome."
         typedef typename X::representation_type representation_type;
-//        //! Fitness function type.
-//        typedef typename X::fitness_function_type fitness_function_type;
-//        //! Fitness value type for this individual.
-//        typedef typename X::fitness_type fitness_type;
-//        //! Phenotype for this individual.
-//        typedef typename X::phenotype_type phenotype_type;
-//        //! Encoding of this individual.
-//        typedef typename X::encoding_type encoding_type;
-//        //! Pointer to this individual.
-//        typedef typename X:: individual_ptr_type individual_ptr_type;
+        //! Fitness function type.
+        typedef typename X::fitness_function_type fitness_function_type;
+        //! Fitness value type for this individual.
+        typedef typename X::fitness_type fitness_type;
+        //! Phenotype for this individual.
+        typedef typename X::phenotype_type phenotype_type;
+        //! Encoding of this individual.
+        typedef typename X::encoding_type encoding_type;
+        //! Pointer to this individual.
+        typedef typename X:: individual_ptr_type individual_ptr_type;
         //! Traits for this individual.
         typedef typename X::traits_type traits_type;
-//        //! Phenotype pointer type.
-//        typedef typename X::phenotype_ptr_type phenotype_ptr_type;
+        //! Phenotype pointer type.
+        typedef typename X::phenotype_ptr_type phenotype_ptr_type;
         
 		BOOST_CONCEPT_USAGE(IndividualConcept) {
             BOOST_CONCEPT_ASSERT((RepresentationConcept<representation_type>));
@@ -235,6 +235,33 @@ namespace ealib {
 	private:
 		X x;
 	};
+    
+    
+    
+    
+    
+    
+    template <typename X>
+	struct DigitalOrganismConcept : boost::CopyConstructible<X> {
+	public:
+        
+    private:
+    };
+    
+    
+    template <typename X>
+	struct DigitalEvolutionConcept : boost::CopyConstructible<X> {
+	public:
+        typedef typename X::individual_type individual_type;
+        
+        BOOST_CONCEPT_USAGE(DigitalEvolutionConcept) {
+            BOOST_CONCEPT_ASSERT((DigitalOrganismConcept<individual_type>));
+		}
+        
+    private:
+    };
+    
+    
     
     
 	/*! Selection strategy concept.

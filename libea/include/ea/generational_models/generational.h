@@ -50,9 +50,6 @@ namespace ealib {
 			//! Apply this generational model to the EA to produce a single new generation.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
-				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-                
                 // build the offspring:
                 Population offspring;
                 std::size_t n = static_cast<std::size_t>(get<GENERATIONAL_REPLACEMENT_RATE_P>(ea)*population.size());

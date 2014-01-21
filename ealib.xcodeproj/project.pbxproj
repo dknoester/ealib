@@ -211,7 +211,6 @@
 		428B7150184F5EC900E3BB4E /* test_neural_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neural_network.cpp; sourceTree = "<group>"; };
 		428B7204184F664D00E3BB4E /* test_mkv copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test_mkv copy"; sourceTree = BUILT_PRODUCTS_DIR; };
 		428B720D184F77AB00E3BB4E /* algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = algorithm.h; sourceTree = "<group>"; };
-		428B720E184F77AB00E3BB4E /* alps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = alps.h; sourceTree = "<group>"; };
 		428B7210184F77AB00E3BB4E /* epistasis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = epistasis.h; sourceTree = "<group>"; };
 		428B7211184F77AB00E3BB4E /* girvan_newman_clustering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = girvan_newman_clustering.h; sourceTree = "<group>"; };
 		428B7212184F77AB00E3BB4E /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
@@ -285,7 +284,6 @@
 		428B726F184F77AB00E3BB4E /* meta_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_data.h; sourceTree = "<group>"; };
 		428B7270184F77AB00E3BB4E /* metapopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metapopulation.h; sourceTree = "<group>"; };
 		428B7274184F77AB00E3BB4E /* mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutation.h; sourceTree = "<group>"; };
-		428B7275184F77AB00E3BB4E /* novelty_search.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = novelty_search.h; sourceTree = "<group>"; };
 		428B7276184F77AB00E3BB4E /* phenotype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = phenotype.h; sourceTree = "<group>"; };
 		428B7277184F77AB00E3BB4E /* ptr_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ptr_population.h; sourceTree = "<group>"; };
 		428B7278184F77AB00E3BB4E /* recombination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recombination.h; sourceTree = "<group>"; };
@@ -514,7 +512,6 @@
 			isa = PBXGroup;
 			children = (
 				428B720D184F77AB00E3BB4E /* algorithm.h */,
-				428B720E184F77AB00E3BB4E /* alps.h */,
 				428B720F184F77AB00E3BB4E /* analysis */,
 				428B721C184F77AB00E3BB4E /* analysis.h */,
 				428B721D184F77AB00E3BB4E /* ancestors.h */,
@@ -546,7 +543,6 @@
 				428B7270184F77AB00E3BB4E /* metapopulation.h */,
 				428B7271184F77AB00E3BB4E /* mkv */,
 				428B7274184F77AB00E3BB4E /* mutation.h */,
-				428B7275184F77AB00E3BB4E /* novelty_search.h */,
 				4252D4DA18648E3F00A54FC5 /* nsga2.h */,
 				428B7276184F77AB00E3BB4E /* phenotype.h */,
 				428B7277184F77AB00E3BB4E /* ptr_population.h */,

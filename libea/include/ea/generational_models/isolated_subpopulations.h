@@ -33,8 +33,6 @@ namespace ealib {
             //! Apply this generational model to the meta_population EA.
             template <typename Population, typename EA>
             void operator()(Population& population, EA& ea) {
-                BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-                BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
                 for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
                     (*i)->repr().update();
                 }

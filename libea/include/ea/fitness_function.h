@@ -349,14 +349,12 @@ namespace ealib {
         //! Deterministic initialization (no RNG needed).
         template <typename FitnessFunction, typename EA>
         void initialize_fitness_function(FitnessFunction& ff, deterministicS, EA& ea) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
             ff.initialize(ea);
         }
         
         //! Stochastic initialization (RNG needed).
         template <typename FitnessFunction, typename EA>
         void initialize_fitness_function(FitnessFunction& ff, stochasticS, EA& ea) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
             ealib::next<FF_INITIAL_RNG_SEED>(ea);
             typename EA::rng_type rng(get<FF_INITIAL_RNG_SEED>(ea)+1); // +1 to avoid clock
             ff.initialize(rng, ea);
@@ -374,7 +372,6 @@ namespace ealib {
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
             i.traits().fitness() = ea.fitness_function()(i, ea);
             ea.events().fitness_evaluated(i,ea);
         }
@@ -382,7 +379,6 @@ namespace ealib {
         //! Stochastic: provide an RNG for use during fitness evaluation.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, stochasticS, EA& ea) {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
             int seed = ea.rng().seed();
             typename EA::rng_type rng(seed);
             put<FF_RNG_SEED>(seed, i); // save the seed that was used to evaluate this individual
@@ -408,14 +404,12 @@ namespace ealib {
     //! Calculate the fitness of an individual.
     template <typename EA>
     void calculate_fitness(typename EA::individual_type& i, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         detail::calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
     }
     
     //! Calculate fitness for the range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void calculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
 			calculate_fitness(**first,ea);
 		}
@@ -424,7 +418,6 @@ namespace ealib {
     //! Fitness trait accessor (may calculate if null).
     template <typename EA>
     typename EA::individual_type::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
         return ind.traits().fitness();
     }
@@ -432,21 +425,18 @@ namespace ealib {
     //! Returns true if the individual has a valid fitness.
     template <typename EA>
     bool has_fitness(typename EA::individual_type& i, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         return !i.traits().fitness().is_null();
     }
 
     //! Nullify the fitness of an individual.
     template <typename EA>
     void nullify_fitness(typename EA::individual_type& ind, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         ind.traits().fitness().nullify();
     }
 
     //! Nullify fitness for the population range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
             first->traits().fitness().nullify();
 		}
@@ -455,8 +445,6 @@ namespace ealib {
     //! Unconditionally recalculate fitness for the range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void recalculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		for(; first!=last; ++first) {
             nullify_fitness(**first,ea);
 			calculate_fitness(**first,ea);

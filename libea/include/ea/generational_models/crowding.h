@@ -44,9 +44,6 @@ namespace ealib {
 			//! Apply this generational model to the EA to produce a single new generation.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
-				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-                
                 assert(population.size() % 2 == 0);
                 distance_measure_type dmt;
                 

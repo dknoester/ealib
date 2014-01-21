@@ -1,4 +1,4 @@
-/* digital_evolution/digital_evolution.h 
+/* digital_evolution/organism.h 
  * 
  * This file is part of EALib.
  * 

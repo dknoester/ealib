@@ -56,8 +56,6 @@ namespace ealib {
 	 */
 	template <typename Mutator, typename EA>
 	void mutate(typename EA::individual_type& ind, Mutator& mutator, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
 		mutator(ind, ea);
 	}
 	
@@ -75,8 +73,6 @@ namespace ealib {
 	 */
 	template <typename ForwardIterator, typename Mutator, typename EA>
 	void mutate(ForwardIterator first, ForwardIterator last, Mutator& mutator, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-		BOOST_CONCEPT_ASSERT((MutationOperatorConcept<Mutator,EA>));
 		for( ; first!=last; ++first) {
 			mutate(**first, mutator, ea);
 		}
@@ -87,7 +83,6 @@ namespace ealib {
 	 */
 	template <typename ForwardIterator, typename EA>
 	void mutate(ForwardIterator first, ForwardIterator last, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
 		typename EA::mutation_operator_type mutator;
 		mutate(first, last, mutator, ea);
 	}

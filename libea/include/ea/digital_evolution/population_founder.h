@@ -1,4 +1,4 @@
-/* task_library.h
+/* digital_evolution/population_founder.h
  *
  * This file is part of EALib.
  *

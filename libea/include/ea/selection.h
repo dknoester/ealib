@@ -30,9 +30,6 @@ namespace ealib {
 	 */
 	template <typename Selector, typename Population, typename EA>
 	void select_n(Population& src, Population& dst, std::size_t n, EA& ea) {
-		BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-		BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-        
         if(src.size() <= n) {
             dst.insert(dst.end(), src.begin(), src.end());
         } else {

@@ -47,9 +47,9 @@
 
 namespace ealib {
     
-    /*! Artificial life top-level evolutionary algorithm.
+    /*! Digital evolution algorithm.
      
-     The key difference between artificial life and standard evolutionary algorithms
+     The key difference between digital evolution and standard evolutionary algorithms
      is that individuals here are scheduled for execution, as opposed to having
      their fitness evaluated.  This means that each individual is "visited" more
      than once during each generation, and in fact, the traditional (EA) fitness
@@ -57,7 +57,7 @@ namespace ealib {
      it lives.  Moreover, replication in an artificial life system is driven
      by the individual, instead of externally (e.g., by a generational model).
      
-     A final complicating factor is that individuals in artificial life interact
+     A final complicating factor is that individuals in digital evolution interact
      through an "environment."  Such environments are typically responsible for
      handling topology, resource gradients, etc.
      
@@ -69,8 +69,9 @@ namespace ealib {
      In general, the design of this class is based on concepts from the Avida
      platform for digital evolution~\cite{ofria2004}.
      
-     In order to preserve as much compatibility between EA and AL components,
-     the "organisms" in AL are referred to as "individuals."
+     In order to preserve as much compatibility between components as possible,
+     the organisms in digital evolution are alwayrs referred to as "individuals"
+     in code.
      */
     template
     < typename UserDefinedConfiguration=default_configuration
@@ -134,8 +135,7 @@ namespace ealib {
 
         //! Default constructor.
         digital_evolution() : _update(0) {
-//            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<digital_evolution>));
-//            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
+            BOOST_CONCEPT_ASSERT((DigitalEvolutionConcept<digital_evolution>));
             _configuration.after_construction(*this);
         }
         
@@ -279,33 +279,45 @@ namespace ealib {
         const_reverse_iterator rend() const { return const_reverse_iterator(_population.rend()); }
         
         //! Inserts individual x into the population before pos.
-        void insert(iterator pos, individual_ptr_type x) { _population.insert(pos.base(), x); }
+        void insert(iterator pos, individual_ptr_type x) {
+            _env.insert_at(_population.size(), x);
+            _population.insert(pos.base(), x);
+        }
         
         //! Inserts individuals [f,l) into the population before pos.
         template <typename InputIterator>
-        void insert(iterator pos, InputIterator f, InputIterator l) { _population.insert(pos.base(), f, l); }
+        void insert(iterator pos, InputIterator f, InputIterator l) {
+            _env.insert_at(_population.size(), f, l);
+            _population.insert(pos.base(), f, l);
+        }
         
         //! Erases the given individual from the population.
-        void erase(iterator i) { _population.erase(i.base()); }
+        void erase(iterator i) {
+            _population.erase(i.base());
+        }
         
         //! Erases the given range from the population.
-        void erase(iterator f, iterator l) { _population.erase(f.base(), l.base()); }
+        void erase(iterator f, iterator l) {
+            _population.erase(f.base(), l.base());
+        }
         
         //! Erases all individuals in this EA.
-        void clear() { _population.clear(); }
+        void clear() {
+            _population.clear();
+        }
 
-        //! Append individual x to the population and environment.
-        void append(individual_ptr_type p) {
-            _population.insert(_population.end(), p);
-            _env.append(p);
-        }
-        
-        //! Append the range of individuals [f,l) to the population and environment.
-        template <typename ForwardIterator>
-        void append(ForwardIterator f, ForwardIterator l) {
-            _population.insert(_population.end(), f, l);
-            _env.append(f, l);
-        }
+//        //! Append individual x to the population and environment.
+//        void append(individual_ptr_type p) {
+//            _population.insert(_population.end(), p);
+//            _env.append(p);
+//        }
+//        
+//        //! Append the range of individuals [f,l) to the population and environment.
+//        template <typename ForwardIterator>
+//        void append(ForwardIterator f, ForwardIterator l) {
+//            _population.insert(_population.end(), f, l);
+//            _env.append(f, l);
+//        }
         
         //! (Re-)Place an offspring in the population, if possible.
         void replace(individual_ptr_type parent, individual_ptr_type offspring) {

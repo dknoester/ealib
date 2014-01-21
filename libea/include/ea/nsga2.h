@@ -270,9 +270,6 @@ namespace ealib {
             //! Apply NSGA2 to produce the next generation.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
-				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-                
                 std::size_t n=get<POPULATION_SIZE>(ea)/2; // nsga2 uses a population split evenly between parents and offspring
                 
                 // select the parents via nondominated sorting:

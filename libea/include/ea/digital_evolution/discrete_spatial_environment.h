@@ -1,4 +1,4 @@
-/* digital_evolution/spatial.h 
+/* digital_evolution/discrete_spatial_environment.h 
  * 
  * This file is part of EALib.
  * 
@@ -219,6 +219,33 @@ namespace ealib {
             }
         }
         
+        //! Inserts individual p into the environment at index i.
+        void insert_at(std::size_t i, individual_ptr_type p) {
+            assert(i < (_locs.size1()*_locs.size2()));
+            _locs.data()[i].p = p;
+            p->position() = _locs.data()[i].position();
+        }
+        
+        //! Inserts the range of individuals [f,l) into the environment starting at index i.
+        template <typename ForwardIterator>
+        void insert_at(std::size_t i, ForwardIterator f, ForwardIterator l) {
+            for( ; f!=l; ++f, ++i) {
+                insert_at(i,*f);
+            }
+        }
+        
+        //! Replace the organism (if any) living in location l with p.
+        void replace(iterator i, individual_ptr_type p, ea_type& ea) {
+            location_type& l=(*i);
+            // kill the occupant of l, if any
+            if(l.p) {
+                l.p->alive() = false;
+                ea.events().death(*l.p,ea);
+            }
+            l.p = p;
+            p->position() = l.position();
+        }
+        
         //! Returns a value "read" from this environment.
         template <typename Organism>
         int read(Organism& org, ea_type& ea) {
@@ -258,9 +285,6 @@ namespace ealib {
                 (*i)->reset();
             }
         }
-
-        //! Returns the location matrix.
-//        location_matrix_type& locations() { return _locs; }
 
         //! Returns a location pointer given a position.
         location_ptr_type location(const position_type& pos) {
@@ -343,35 +367,7 @@ namespace ealib {
             return iterator(p->position(), p->position()[HEADING], _locs);
         }
         
-        //! Replace the organism (if any) living in location l with p.
-        void replace(iterator i, individual_ptr_type p, ea_type& ea) {
-            location_type& l=(*i);
-            // kill the occupant of l, if any
-            if(l.p) {
-                l.p->alive() = false;
-                ea.events().death(*l.p,ea);
-            }
-            l.p = p;
-            p->position() = l.position();
-        }
 
-        //! Append individual x to the environment.
-        void append(individual_ptr_type p) {
-            if(_append_count >= (_locs.size1()*_locs.size2())) {
-                throw std::out_of_range("spatial::append(individual_ptr_type x)");
-            }
-            _locs.data()[_append_count].p = p;
-            p->location() = _locs.data()[_append_count].handle();
-            ++_append_count;
-        }
-        
-        //! Append the range of individuals [f,l) to the environment.
-        template <typename ForwardIterator>
-        void append(ForwardIterator f, ForwardIterator l) {
-            for( ; f!=l; ++f) {
-                append(*f);
-            }
-        }
         
         /*! This is called after deserialization (load); the idea here is that we
          need to iterate through the population, and link the locations to their

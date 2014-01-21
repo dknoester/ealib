@@ -264,9 +264,6 @@ namespace ealib {
             //! Apply the QHFC generational model to the meta-population EA.
             template <typename Population, typename EA>
             void operator()(Population& population, EA& ea) {
-                BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-                BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-                
                 if(ea.current_update() == 0) {
                     initialize(ea);
                 }

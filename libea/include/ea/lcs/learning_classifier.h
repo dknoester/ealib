@@ -178,8 +178,8 @@ namespace ealib {
 
         //! Default constructor.
         learning_classifier() {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<learning_classifier>));
-            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
+//            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<learning_classifier>));
+//            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
         }
         
         //! Configure this EA.

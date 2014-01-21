@@ -48,9 +48,6 @@ namespace ealib {
 			
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
-				BOOST_CONCEPT_ASSERT((PopulationConcept<Population>));
-				BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-
                 if(population.size() > get<POPULATION_SIZE>(ea)) {
                     // select individuals for survival:
                     Population survivors;

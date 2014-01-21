@@ -39,8 +39,6 @@ namespace ealib {
      */
 	template <typename RepresentationGenerator, typename EA>
 	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
-
         // build the placeholder ancestor:
         typename EA::individual_ptr_type ap = ea.make_individual();
         put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);

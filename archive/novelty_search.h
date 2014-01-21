@@ -62,7 +62,6 @@ namespace ealib {
     //! Novelty accessor method.
     template <typename EA>
     typename EA::individual_type::attr_type::novelty_type& novelty(typename EA::individual_type& ind, EA& ea) {
-        BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<EA>));
         return ind.attr().novelty();
     }
     
@@ -142,8 +141,8 @@ namespace ealib {
         
         //! Default constructor.
         novelty_search() {
-            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<novelty_search>));
-            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
+//            BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<novelty_search>));
+//            BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
         }
         
         //! Configure this EA.
