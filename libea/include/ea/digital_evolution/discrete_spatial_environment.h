@@ -367,14 +367,13 @@ namespace ealib {
             return iterator(p->position(), p->position()[HEADING], _locs);
         }
         
-
-        
         /*! This is called after deserialization (load); the idea here is that we
          need to iterate through the population, and link the locations to their
          respective organisms.
          */
         void attach(ea_type& ea) {
             for(typename ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+                location((*i)->position())->p = *i;
 //                handle2ptr((*i)->location())->p = *i;
             }
         }

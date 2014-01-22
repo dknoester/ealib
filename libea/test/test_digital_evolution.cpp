@@ -22,7 +22,6 @@
 
 
 struct test_configuration : default_configuration {
-    
     //! Called as the final step of EA construction.
     template <typename EA>
     void after_construction(EA& ea) {
@@ -86,7 +85,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare_new(al);
+    al.initialize();
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
@@ -255,7 +254,7 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
 
-    lifecycle::prepare_new(al);
+    al.initialize();
     generate_ancestors(repro_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
@@ -307,7 +306,7 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(25,al);
     
-    lifecycle::prepare_new(al);
+    al.initialize();
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
@@ -355,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare_new(al);
+    al.initialize();
     generate_ancestors(nopx_ancestor(), 2, al);
     
     al_type::individual_ptr_type p = al.population()[0];
@@ -392,7 +391,7 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
     put<RNG_SEED>(1,al);
     put<RECORDING_PERIOD>(10,al);
     
-    lifecycle::prepare_new(al);
+    al.initialize();
     generate_ancestors(repro_ancestor(), 1, al);
     al_type::individual_ptr_type p = al.population()[0];
     p->priority() = 1.0;
@@ -404,8 +403,6 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
 
     std::istringstream in(out.str());
     lifecycle::prepare_checkpoint(in,al2);
-//    
-//    al2.initialize();
 
     BOOST_CHECK(al.population() == al2.population());
     BOOST_CHECK(al.env() == al2.env());
