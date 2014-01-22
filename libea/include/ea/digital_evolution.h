@@ -365,7 +365,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("environment", _env);
             
             // now we have to fix up the connection between the environment and organisms:
-            _env.attach(*this);
+            _env.after_load(*this);
         }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };

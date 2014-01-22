@@ -34,9 +34,6 @@
 #include <ea/digital_evolution/position.h>
 #include <ea/digital_evolution/resources.h>
 
-LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
-LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
-
 namespace ealib {
     
     /*! Discrete spatial environment.
@@ -362,19 +359,17 @@ namespace ealib {
             return iterator(p.position(), dir, _locs);
         }
         
-        //! Retrieve the currently faced neighboring location of the given individual.
+        //! Returns an iterator to the currently faced neighboring location.
         iterator neighbor(individual_ptr_type p) {
             return iterator(p->position(), p->position()[HEADING], _locs);
         }
         
-        /*! This is called after deserialization (load); the idea here is that we
-         need to iterate through the population, and link the locations to their
-         respective organisms.
+        /*! Called after load (deserialization) to attach the environment to
+         the population.  This sets the individual_ptr_type held by each location.
          */
-        void attach(ea_type& ea) {
+        void after_load(ea_type& ea) {
             for(typename ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
                 location((*i)->position())->p = *i;
-//                handle2ptr((*i)->location())->p = *i;
             }
         }
 
@@ -385,23 +380,13 @@ namespace ealib {
 
     private:
 		friend class boost::serialization::access;
-        
-        /*! Serialize this environment.
-         
-         \warning: this leaves the pointer to the individual (in each location)
-         unconnected.  this has to be fixed up after deserialization.
-         
-         \warning: This is split up to avoid a compiler bug triggered somewhere
-         in the boost serialization code.
-         */
-		template<class Archive>
+        template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
             std::size_t size1=_locs.size1();
             std::size_t size2=_locs.size2();
             ar & boost::serialization::make_nvp("append_count", _append_count);
             ar & boost::serialization::make_nvp("size1", size1);
             ar & boost::serialization::make_nvp("size2", size2);
-            
             for(std::size_t i=0; i<_locs.size1(); ++i) {
                 for(std::size_t j=0; j<_locs.size2(); ++j) {
                     ar & boost::serialization::make_nvp("location", _locs(i,j));
@@ -415,7 +400,6 @@ namespace ealib {
             ar & boost::serialization::make_nvp("append_count", _append_count);
             ar & boost::serialization::make_nvp("size1", size1);
             ar & boost::serialization::make_nvp("size2", size2);
-
             _locs.resize(size1,size2);
             for(std::size_t i=0; i<_locs.size1(); ++i) {
                 for(std::size_t j=0; j<_locs.size2(); ++j) {
@@ -425,6 +409,7 @@ namespace ealib {
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };
-} // ea
+
+} // ealib
 
 #endif

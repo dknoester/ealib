@@ -93,7 +93,6 @@ namespace ealib {
          
          This resource type is roughly akin to a chemostat.
          */
-        template <typename EA>
         struct limited : abstract_resource {
             //! Constructor.
             limited(const std::string& name, double initial, double inflow, double outflow, double consume)
@@ -138,20 +137,26 @@ namespace ealib {
          based on their location and current resource levels.  Additional resources
          flow in over time (not all at once), and they diffuse throughout the environment.
          
-         \note We assume a 2D discrete environment.
+         Diffusion is based on:
+         http://www.timteatro.net/2010/10/29/performance-python-solving-the-2d-diffusion-equation-with-numpy/
+         
+         The above reference assumes a boundary condition of zero resources at 
+         the edges of the grid.  To avoid this, we alter the size of the resource 
+         grid to add a single-cell boundary around the spatial environment.
+         
+         \note We assume a 2D discrete Cartesian environment.
          */
         struct spatial : abstract_resource {
             typedef boost::numeric::ublas::matrix<double> matrix_type; //!< Type for matrix that will store resource levels.
             
             //! Constructor.
             spatial(const std::string& name, double diffuse, double initial,
-                    double inflow, double outflow, double consume,
-                    std::size_t x, std::size_t y)
-                : abstract_resource(name)
-                , _diffuse(diffuse), _initial(initial), _level(initial)
-                , _inflow(inflow), _outflow(outflow), _consume(consume) {
-                _R.resize(y,x);
-                _T.resize(y,x);
+                    double inflow, double outflow, double consume, std::size_t x, std::size_t y)
+            : abstract_resource(name)
+            , _diffuse(diffuse), _initial(initial), _level(initial)
+            , _inflow(inflow), _outflow(outflow), _consume(consume) {
+                _R.resize(x+2,y+2); // +2 for boundaries!
+                _T.resize(x+2,y+2);
                 reset();
             }
             
@@ -160,40 +165,42 @@ namespace ealib {
 
             //! Returns the amount of consumed resource.
             virtual double consume(const position_type& pos) {
-                double level = _R(pos[0], pos[1]);
+                double& level = _R(pos[XPOS]+1, pos[YPOS]+1); // +1 for boundaries!
                 double r = std::max(0.0, level*_consume);
-                _R(pos[0], pos[1]) = std::max(0.0, level-r);
+                level = std::max(0.0, level-r);
                 return r;
             }
 
             //! Returns the current resource level.
             virtual double level(const position_type& pos) {
-                return _R(pos[0], pos[1]);
+                return _R(pos[XPOS]+1, pos[YPOS]+1);
             }
 
-            //! Updates resource levels based on elapsed time since last update (as a fraction of update length).
+            /*! Updates resource levels based on elapsed time since last update 
+             (as a fraction of update length).
+             */
             void update(double delta_t) {
                 // for stability...
                 assert(delta_t < (1.0/(2.0*_diffuse)));
                 
                 // last row and column indices...
-                std::size_t ni=_R.size1()-1;
-                std::size_t nj=_R.size2()-1;
+                std::size_t nx=_R.size1()-1;
+                std::size_t ny=_R.size2()-1;
                 
-                // inflow to the top row...
-                for(std::size_t j=0; j<nj; ++j) {
-                    _R(0,j) += _inflow;
+                // inflow to the top row:
+                for(std::size_t i=1; i<nx; ++i) {
+                    _R(i,ny-1) += _inflow;
                 }
                 
-                // outflow from the bottom row...
-                for(std::size_t j=0; j<nj; ++j) {
-                    _R(ni,j) = std::max(0.0, _R(ni,j) - _outflow);
+                // outflow from the bottom row:
+                for(std::size_t i=1; i<nx; ++i) {
+                    _R(i,1) = std::max(0.0, _R(i,0) - _outflow);
                 }
                 
-                // diffuse
-                // based on: http://www.timteatro.net/2010/10/29/performance-python-solving-the-2d-diffusion-equation-with-numpy/
-                for(std::size_t i=1; i<ni; ++i) {
-                    for(std::size_t j=1; j<nj; ++j) {
+                // two loops to evaluate the derivatives in the Laplacian,
+                // and calculating resource levels based on the previous time step:
+                for(std::size_t i=1; i<nx; ++i) {
+                    for(std::size_t j=1; j<ny; ++j) {
                         double uxx = _R(i+1,j) - 2*_R(i,j) + _R(i-1,j);
                         double uyy = _R(i,j+1) - 2*_R(i,j) + _R(i,j-1);
                         _T(i,j) = _R(i,j) + delta_t * _diffuse * (uxx+uyy);
@@ -213,7 +220,6 @@ namespace ealib {
                 _R = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), 0.0);
                 _T = boost::numeric::ublas::scalar_matrix<double>(_R.size1(), _R.size2(), 0.0);
             }
-            
             
             matrix_type _R; //!< Matrix for current resource levels at each cell.
             matrix_type _T; //!< Matrix for updating resource levels at each cell.
@@ -240,21 +246,22 @@ namespace ealib {
     template <typename EA>
     typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::limited<EA>(name, initial, inflow, outflow, consume));
+        resource_ptr_type p(new resources::limited(name, initial, inflow, outflow, consume));
         ea.env().add_resource(p);
         return p;
     }
     
-//    //! Helper method that builds a spatial resource and adds it to the environment.
-//    template <typename EA>
-//    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name,
-//                                                                   double diffuse,
-//                                                                   double initial, double inflow, double outflow, double consume, EA& ea) {
-//        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-//        resource_ptr_type p(new resources::spatial(name, diffuse, initial, inflow, outflow, consume, get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea)));
-//        ea.env().add_resource(p);
-//        return p;
-//    }
+    //! Helper method that builds a spatial resource and adds it to the environment.
+    template <typename EA>
+    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name,
+                                                                   double diffuse,
+                                                                   double initial, double inflow, double outflow, double consume, EA& ea) {
+        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+        resource_ptr_type p(new resources::spatial(name, diffuse, initial, inflow,
+                                                   outflow, consume, get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea)));
+        ea.env().add_resource(p);
+        return p;
+    }
 
 } // ealib
 

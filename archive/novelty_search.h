@@ -43,7 +43,12 @@
 #include <ea/rng.h>
 
 namespace ealib {
+    // ea.novelty_search.*
+    LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);
+    LIBEA_MD_DECL(NOVELTY_NEIGHBORHOOD_SIZE, "ea.novelty_search.neighborhood.size", int);
+    LIBEA_MD_DECL(NOVELTY_FITTEST_SIZE, "ea.novelty_search.novelty.fittest.size", int);
     
+
     //! Novelty attribute.
     template <typename EA>
     struct novelty_attribute {

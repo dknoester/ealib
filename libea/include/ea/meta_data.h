@@ -299,14 +299,9 @@ namespace ealib {
 	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
 
     
-    
-    
-    
-    // ea.novelty_search.*
-    LIBEA_MD_DECL(NOVELTY_THRESHOLD, "ea.novelty_search.threshold", double);
-    LIBEA_MD_DECL(NOVELTY_NEIGHBORHOOD_SIZE, "ea.novelty_search.neighborhood.size", int);
-    LIBEA_MD_DECL(NOVELTY_FITTEST_SIZE, "ea.novelty_search.novelty.fittest.size", int);
-    
+    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
+    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
+
     // ea.individual.*
     LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);
     
