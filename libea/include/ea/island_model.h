@@ -20,7 +20,7 @@
 #ifndef _EA_ISLAND_MODEL_H_
 #define _EA_ISLAND_MODEL_H_
 
-#include "boost/tuple/tuple.hpp"
+#include <boost/tuple/tuple.hpp>
 #include <ea/events.h>
 #include <ea/meta_data.h>
 

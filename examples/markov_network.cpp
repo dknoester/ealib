@@ -65,17 +65,6 @@ struct example_fitness : fitness_function<unary_fitness<double>, constantS, stoc
     }
 };
 
-
-template <typename T>
-struct mytraits : default_traits<T>, mkv::default_traits<T> {
-    template <class Archive>
-    void serialize(Archive& ar, const unsigned int version) {
-        ar & boost::serialization::make_nvp("default_traits", boost::serialization::base_object<default_traits<T> >(*this));
-        ar & boost::serialization::make_nvp("mkv_traits", boost::serialization::base_object<mkv::default_traits<T> >(*this));
-    }
-};
-
-
 // Evolutionary algorithm definition.
 typedef evolutionary_algorithm
 < individual<mkv::representation_type, example_fitness, markov_network< >, indirectS, mkv::default_traits>
