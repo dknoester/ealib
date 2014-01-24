@@ -37,27 +37,6 @@ namespace ealib {
     LIBEA_MD_DECL(FF_RNG_SEED, "ea.fitness_function.rng_seed", int);
     LIBEA_MD_DECL(FF_INITIAL_RNG_SEED, "ea.fitness_function.initial_rng_seed", int);
     LIBEA_MD_DECL(FF_INITIALIZATION_PERIOD, "ea.fitness_function.initialization_period", int);
-
-    namespace traits {
-        
-        //! Fitness trait for an individual.
-        template <typename T>
-        struct fitness_trait {
-            typedef typename T::fitness_type fitness_type;
-            
-            //! Retrieve fitness.
-            fitness_type& fitness() { return _v; }
-            
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
-                ar & boost::serialization::make_nvp("fitness_type", _v);
-            }
-            
-            fitness_type _v;
-        };
-        
-    } // traits
-
     
     /* The following are tags that are to be used to indicate properties of a
      given fitness function:
@@ -372,7 +351,7 @@ namespace ealib {
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
-            i.traits().fitness() = ea.fitness_function()(i, ea);
+            i.fitness() = ea.fitness_function()(i, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
@@ -382,14 +361,14 @@ namespace ealib {
             int seed = ea.rng().seed();
             typename EA::rng_type rng(seed);
             put<FF_RNG_SEED>(seed, i); // save the seed that was used to evaluate this individual
-            i.traits().fitness() = ea.fitness_function()(i, rng, ea);
+            i.fitness() = ea.fitness_function()(i, rng, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
         //! Constant: calculate fitness only if this individual has not yet been evaluated.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
-            if(i.traits().fitness().is_null()) {
+            if(i.fitness().is_null()) {
                 calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
             }
         }
@@ -419,26 +398,26 @@ namespace ealib {
     template <typename EA>
     typename EA::individual_type::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
         detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
-        return ind.traits().fitness();
+        return ind.fitness();
     }
     
     //! Returns true if the individual has a valid fitness.
     template <typename EA>
     bool has_fitness(typename EA::individual_type& i, EA& ea) {
-        return !i.traits().fitness().is_null();
+        return !i.fitness().is_null();
     }
 
     //! Nullify the fitness of an individual.
     template <typename EA>
     void nullify_fitness(typename EA::individual_type& ind, EA& ea) {
-        ind.traits().fitness().nullify();
+        ind.fitness().nullify();
     }
 
     //! Nullify fitness for the population range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
 		for(; first!=last; ++first) {
-            first->traits().fitness().nullify();
+            first->fitness().nullify();
 		}
 	}
 

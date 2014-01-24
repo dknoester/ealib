@@ -21,10 +21,8 @@
 #define _EA_INDIVIDUAL_H_
 
 #include <boost/serialization/nvp.hpp>
-#include <sstream>
 
 #include <ea/meta_data.h>
-#include <ea/phenotype.h>
 #include <ea/traits.h>
 
 namespace ealib {
@@ -83,26 +81,33 @@ namespace ealib {
             return *this;
         }
         
-		//! Retrieve this individual's representation.
+		//! Returns this individual's representation.
 		representation_type& repr() { return _repr; }
         
-		//! Retrieve this individual's representation (const-qualified).
+		//! Returns this individual's representation (const-qualified).
 		const representation_type& repr() const { return _repr; }
         
-        //! Retrieve this individual's meta data.
+        //! Returns this individual's fitness.
+        fitness_type& fitness() { return _fitness; }
+
+        //! Returns this individual's fitness (const-qualified).
+        const fitness_type& fitness() const { return _fitness; }
+
+        //! Returns this individual's meta data.
         meta_data& md() { return _md; }
         
-        //! Retrieve this individual's meta data (const-qualified).
+        //! Returns this individual's meta data (const-qualified).
         const meta_data& md() const { return _md; }
         
-        //! Retrieve this individual's attributes.
+        //! Returns this individual's traits.
         traits_type& traits() { return _traits; }
         
-        //! Retrieve this individual's attributes (const-qualified).
+        //! Returns this individual's traits (const-qualified).
         const traits_type& traits() const { return _traits; }
 
     protected:
         representation_type _repr; //!< This individual's representation.
+        fitness_type _fitness; //!< This individual's fitness.
         meta_data _md; //!< This individual's meta data.
         traits_type _traits; //!< This individual's traits.
         
@@ -113,8 +118,8 @@ namespace ealib {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("representation", _repr);
+            ar & boost::serialization::make_nvp("fitness", _fitness);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("traits", _traits);
         }
     };
     

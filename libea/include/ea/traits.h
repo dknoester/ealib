@@ -28,41 +28,27 @@
 
 namespace ealib {
     
-    /*! Default traits for individuals in an evolutionary algorithm.
+    /* Traits for individuals in an evolutionary algorithm.
      
-     The default traits include a bit more than what might be strictly
-     necessary, just to limit the number of hoops that need to be jumped
-     through when doing fairly common things.  I.e., they include fitness,
-     phenotype, and line of descent attributes.  Of these, only fitness is
-     currently serialized.  Note that this has the ramification that we do
-     NOT save LoD information across checkpoints.
+     Traits are defined as non-serializable runtime-only information that is
+     attached to individuals in an EA.  For example, pointers to a phenotype
+     or line of descent.
      */
     template <typename T>
-    struct default_traits : traits::fitness_trait<T>, traits::phenotype_trait<T> {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<traits::fitness_trait<T> >(*this));
-        }
+    struct default_traits : traits::phenotype_trait<T> {
     };
     
     template <typename T>
-    struct default_lod_traits : traits::fitness_trait<T>, traits::phenotype_trait<T>, traits::lod_trait<T> {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<traits::fitness_trait<T> >(*this));
-        }
+    struct default_lod_traits : traits::phenotype_trait<T>, traits::lod_trait<T> {
     };
     
     template <typename T>
     struct null_traits {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-        }
     };
     
     namespace access {
         
-        //! Accessor for an individual's traits.
+        //! Functor that returns an individual's traits.
         struct traits {
             template <typename EA>
             typename EA::individual_type::traits_type operator()(typename EA::individual_type& ind, EA& ea) {
@@ -70,7 +56,7 @@ namespace ealib {
             }
         };
         
-        //! Fitness accessor functor.
+        //! Functor that returns an individual's fitness.
         struct fitness {
             template <typename EA>
             typename EA::individual_type::fitness_type& operator()(typename EA::individual_type& ind, EA& ea) {
@@ -78,7 +64,7 @@ namespace ealib {
             }
         };
         
-        //! Accessor for a specific element of meta-data from an individual.
+        //! Functor that returns an element of meta-data from an individual.
         template <typename MDType>
         struct meta_data {
             template <typename EA>

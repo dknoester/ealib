@@ -31,6 +31,7 @@
 #include <ea/functional.h>
 #include <ea/representations/circular_genome.h>
 #include <ea/mutation.h>
+#include <ea/traits.h>
 #include <ea/translation.h>
 #include <ea/rng.h>
 #include <ea/mkv/gates.h>
@@ -241,17 +242,13 @@ namespace ealib {
         /*! Markov network specific traits for an individual.
          */
         template <typename T>
-        struct traits {
+        struct default_traits : ealib::default_traits<T> {
             //! Translate an individual's representation into a Markov Network.
             template <typename EA>
             typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
                 typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
                 translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
                 return p;
-            }
-            
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
             }
         };
         

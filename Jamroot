@@ -1,2 +1,44 @@
 use-project /libea : libea ;
 build-project libea ;
+
+exe all_ones :
+    examples/all_ones.cpp
+    /libea//libea_runner
+    : <link>static
+    ;
+
+exe digital_evolution :
+    examples/digital_evolution.cpp
+    /libea//libea_runner
+    : <link>static
+    ;
+
+exe lod_tracking :
+    examples/lod_tracking.cpp
+    /libea//libea_runner
+    : <link>static
+    ;
+
+exe meta_population :
+    examples/metapopulation.cpp
+    /libea//libea_runner
+    : <link>static
+    ;
+
+exe markov_network :
+    examples/markov_network.cpp
+    /libea//libea_runner
+    : <link>static
+    ;
+
+exe nsga2 :
+    examples/nsga2.cpp
+    /libea//libea_runner
+    : <link>static
+    ;
+
+exe qhfc :
+    examples/qhfc.cpp
+    /libea//libea_runner
+    : <link>static
+    ;

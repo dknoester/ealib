@@ -36,8 +36,8 @@ namespace ealib {
         /*! Datafile for mean generation, and mean & max fitness.
          */
         template <typename EA>
-        struct fitness : record_statistics_event<EA> {
-            fitness(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
+        struct fitness_dat : record_statistics_event<EA> {
+            fitness_dat(EA& ea) : record_statistics_event<EA>(ea), _df("fitness.dat") {
                 _df.add_field("update")
                 .add_field("mean_generation")
                 .add_field("min_fitness")
@@ -45,7 +45,7 @@ namespace ealib {
                 .add_field("max_fitness");
             }
             
-            virtual ~fitness() {
+            virtual ~fitness_dat() {
             }
             
             virtual void operator()(EA& ea) {
@@ -55,7 +55,7 @@ namespace ealib {
                 
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                     gen(get<IND_GENERATION>(*i));
-                    fit(static_cast<double>(ealib::fitness(*i,ea)));
+                    fit(static_cast<double>(fitness(*i,ea)));
                 }
                 
                 _df.write(ea.current_update())

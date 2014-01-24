@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "428B71FA184F664D00E3BB4E"
                BuildableName = "test_mkv copy"
-               BlueprintName = "test_ann"
+               BlueprintName = "test-ann"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,7 +34,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "428B71FA184F664D00E3BB4E"
             BuildableName = "test_mkv copy"
-            BlueprintName = "test_ann"
+            BlueprintName = "test-ann"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -53,7 +53,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "428B71FA184F664D00E3BB4E"
             BuildableName = "test_mkv copy"
-            BlueprintName = "test_ann"
+            BlueprintName = "test-ann"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -71,7 +71,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "428B71FA184F664D00E3BB4E"
             BuildableName = "test_mkv copy"
-            BlueprintName = "test_ann"
+            BlueprintName = "test-ann"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "42C661361860DC07004476D3"
-               BuildableName = "test_mp"
-               BlueprintName = "test_mp"
+               BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
+               BuildableName = "test-mkv"
+               BlueprintName = "test-mkv"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "42C661361860DC07004476D3"
-            BuildableName = "test_mp"
-            BlueprintName = "test_mp"
+            BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
+            BuildableName = "test-mkv"
+            BlueprintName = "test-mkv"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -51,9 +51,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "42C661361860DC07004476D3"
-            BuildableName = "test_mp"
-            BlueprintName = "test_mp"
+            BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
+            BuildableName = "test-mkv"
+            BlueprintName = "test-mkv"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -69,9 +69,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "42C661361860DC07004476D3"
-            BuildableName = "test_mp"
-            BlueprintName = "test_mp"
+            BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
+            BuildableName = "test-mkv"
+            BlueprintName = "test-mkv"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

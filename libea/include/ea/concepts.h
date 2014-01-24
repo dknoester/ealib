@@ -222,7 +222,8 @@ namespace ealib {
 		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
             BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
             BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
-            x.reset(1);
+            x.reset();
+            x.reset_rng(1);
             x.update();
 		}
         

@@ -81,28 +81,34 @@ namespace ealib {
         subpopulation(const ea_type& ea) : _ea(ea) {
         }
         
-        //! Retrieve this subpopulation's underlying EA.
+        //! Returns this subpopulation's underlying EA.
         ea_type& ea() { return _ea; }
         
-        //! Retrieve this subpopulation's underlying EA (const-qualified).
+        //! Returns this subpopulation's underlying EA (const-qualified).
         const ea_type& ea() const { return _ea; }
         
-        //! Retrieve this subpopulation's representation (synonym for EA).
+        //! Returns this subpopulation's representation (synonym for EA).
 		representation_type& repr() { return _ea; }
         
-		//! Retrieve this subpopulation's representation (const-qualified; synonym for EA).
+		//! Returns this subpopulation's representation (const-qualified; synonym for EA).
 		const representation_type& repr() const { return _ea; }
         
-        //! Accessor for this subpopulation's meta-data.
+        //! Returns this subpopulation's fitness.
+        fitness_type& fitness() { return _fitness; }
+        
+        //! Returns this subpopulation's fitness (const-qualified).
+        const fitness_type& fitness() const { return _fitness; }
+
+        //! Returns this subpopulation's meta-data.
         md_type& md() { return _ea.md(); }
         
-        //! Accessor for this subpopulation's meta-data (const-qualified).
+        //! Returns this subpopulation's meta-data (const-qualified).
         const md_type& md() const { return _ea.md(); }
         
-        //! Retrieve this subpopulation's traits.
+        //! Returns this subpopulation's traits.
         traits_type& traits() { return _traits; }
         
-        //! Retrieve this individual's traits (const-qualified).
+        //! Returns this individual's traits (const-qualified).
         const traits_type& traits() const { return _traits; }
         
         //! Accessor for the population model object.
@@ -156,6 +162,7 @@ namespace ealib {
 
     protected:
         ea_type _ea; //!< This subpopulation's EA.
+        fitness_type _fitness; //!< This subpopulation's fitness.
         traits_type _traits; //!< This subpopulation's traits.
         
     private:
@@ -164,7 +171,7 @@ namespace ealib {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("ea", _ea);
-            ar & boost::serialization::make_nvp("traits", _traits);
+            ar & boost::serialization::make_nvp("fitness", _fitness);
 		}
     };
 

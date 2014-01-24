@@ -187,8 +187,13 @@ namespace ealib {
             _events.end_of_epoch(*this); // checkpoint!
         }
         
+        //! Resets the population (does nothing in digital evolution).
+        void reset() {
+            nullify_fitness(begin(), end(), *this);
+        }
+        
         //! Resets this EA's RNG seed.
-        void reset(unsigned int s) {
+        void reset_rng(unsigned int s) {
             put<RNG_SEED>(s,*this); // save the seed!
             _rng.reset(s);
         }
@@ -197,7 +202,7 @@ namespace ealib {
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {
             individual_ptr_type p(new individual_type(r));
             p->ea().md() += md(); // WARNING: Meta-data comes from the meta-population.
-            p->ea().reset(_rng.seed());
+            p->ea().reset_rng(_rng.seed());
             p->ea().initialize();
             return p;
         }
@@ -206,7 +211,7 @@ namespace ealib {
         individual_ptr_type copy_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
             p->ea().md() += ind.md(); // WARNING: Meta-data comes from the individual.
-            p->ea().reset(_rng.seed());
+            p->ea().reset_rng(_rng.seed());
             p->ea().initialize();
             return p;
         }

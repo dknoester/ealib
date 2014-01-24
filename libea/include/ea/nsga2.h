@@ -25,7 +25,6 @@
 
 #include <ea/individual.h>
 #include <ea/meta_data.h>
-#include <ea/generational_model.h>
 #include <ea/comparators.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
@@ -55,13 +54,6 @@ namespace ealib {
         
         //! Constructor.
         nsga2_traits() : n(0), rank(0), distance(0.0) {
-        }
-        
-        //! Serialize some of these attributes.
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-            ar & BOOST_SERIALIZATION_NVP(rank);
-            ar & BOOST_SERIALIZATION_NVP(distance);
         }
         
         dominated_population_type S; //!< Population of individuals that are dominated by this individual.
@@ -107,8 +99,8 @@ namespace ealib {
             //! Returns true if a dominates b.
             template <typename Individual, typename EA>
             bool dominates(Individual& a, Individual& b, EA& ea) {
-                const typename Individual::traits_type::fitness_type& fa=ealib::fitness(a,ea);
-                const typename Individual::traits_type::fitness_type& fb=ealib::fitness(b,ea);
+                const typename Individual::fitness_type& fa=ealib::fitness(a,ea);
+                const typename Individual::fitness_type& fb=ealib::fitness(b,ea);
                 assert(fa.size() == fb.size());
                 
                 bool any=false, all=true;
@@ -136,7 +128,7 @@ namespace ealib {
                     (*I.rbegin())->traits().distance = std::numeric_limits<double>::max();
                     
                     for(std::size_t i=1; i<(I.size()-1); ++i) {
-                        I[i]->traits().distance += (I[i+1]->traits().fitness()[m] - I[i-1]->traits().fitness()[m]) / ea.fitness_function().range(m);
+                        I[i]->traits().distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
                     }
                 }
             }
@@ -265,7 +257,7 @@ namespace ealib {
          binary tournament selection, based on <_n
          ++generation
 		 */
-		struct nsga2 : public generational_model {
+		struct nsga2 {
             
             //! Apply NSGA2 to produce the next generation.
 			template <typename Population, typename EA>

@@ -194,11 +194,15 @@ namespace ealib {
             _events.end_of_epoch(*this);
         }
         
+        //! Resets the population (does nothing in digital evolution).
+        void reset() {
+        }
+        
         //! Resets this EA's RNG seed.
-        void reset(unsigned int s) {
+        void reset_rng(unsigned int s) {
             put<RNG_SEED>(s,*this); // save the seed!
             _rng.reset(s);
-        }        
+        }
 
         //! Builds an individual from the given representation.
         individual_ptr_type make_individual(const representation_type& r=representation_type()) {

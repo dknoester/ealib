@@ -26,7 +26,7 @@ namespace ealib {
      be converted to another form prior to fitness evaluation.  This is usually
      referred to as the "encoding type."
      
-     Here we define three different encoding types: direct, indirect, and generative:
+     Here we define two different encoding types: direct and indirect.
      */
     
     //! Indicates that the individual's genotype directly encodes the phenotype.
@@ -37,7 +37,8 @@ namespace ealib {
      */
     struct indirectS { };
     
-    /* Generative encodings are not yet defined.
+    /* Generative encodings are not yet defined, though they will likely be added
+     later.
      
      These different encoding types are used when make_phenotype() is called
      on an individual.  Note that the default is directS.
@@ -54,11 +55,9 @@ namespace ealib {
      */
     
     namespace traits {
-        
         namespace detail {
-            /* The below are used to automatically determine the correct type
-             for the phenotype pointer.
-             */
+            /* The below provide for two different pointer types, and correctly
+             initialize them. */
             template <typename T, typename Encoding>
             struct phenotype_ptr {
             };
@@ -72,34 +71,44 @@ namespace ealib {
             struct phenotype_ptr<T, indirectS> {
                 typedef boost::shared_ptr<typename T::phenotype_type> ptr_type;
             };
+            
+            template <typename T>
+            void reset(T& t, directS) {
+                t = 0;
+            }
+            
+            template <typename T>
+            void reset(T& t, indirectS) {
+            }
         }
         
         
         /*! Phenotype trait for an individual.
 
-         In the case of a direct encoding, phenotype_ptr should be a plain-old
-         pointer.  In **all** other cases, it should be an auto-deleting pointer
-         like boost::shared_ptr< >.  We use a bit of indirection & partial
-         template specialization to take care of this automatically.
+         In the case of a direct encoding, phenotype_ptr is a plain-old pointer.
+         Otherwise, it is a boost::shared_ptr< >.
          
-         Phenotypes *ARE NOT* serializable - They must be generated from their
-         representations.
+         \note Phenotypes *ARE NOT* serializable - They are generated from their
+         respective representation.
          */
         template <typename T>
         struct phenotype_trait {
-
-            /*! Type of the pointer to the phenotype.
-             
-             */
-            typedef typename detail::phenotype_ptr<T,typename T::encoding_type>::ptr_type phenotype_ptr_type;
+            //! Phenotype pointer type.
+            typedef typename detail::phenotype_ptr<T, typename T::encoding_type>::ptr_type phenotype_ptr_type;
             
             //! Constructor.
-            phenotype_trait() : _p(0) {
+            phenotype_trait() {
+                detail::reset(_p, typename T::encoding_type());
             }
             
             //! Returns true if a phenotype is present.
             bool has_phenotype() {
                 return _p != 0;
+            }
+            
+            //! Resets the phenotype pointer.
+            void reset() {
+                detail::reset(_p, typename T::encoding_type());
             }
 
             phenotype_ptr_type _p; //<! Pointer to this individual's phenotype.

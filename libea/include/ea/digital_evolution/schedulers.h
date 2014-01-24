@@ -186,7 +186,6 @@ namespace ealib {
                 }
             }
             std::swap(population, next);
-            return names;
         }
     };
 

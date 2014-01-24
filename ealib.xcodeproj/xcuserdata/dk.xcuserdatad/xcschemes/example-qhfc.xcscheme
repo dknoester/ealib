@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "423CBE56157D0FCC0003A644"
-               BuildableName = "test_ealib"
-               BlueprintName = "test_ealib"
+               BlueprintIdentifier = "4256FAB51892BBDC004AB7F9"
+               BuildableName = "example-nsga2 copy"
+               BlueprintName = "example-qhfc"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "423CBE56157D0FCC0003A644"
-            BuildableName = "test_ealib"
-            BlueprintName = "test_ealib"
+            BlueprintIdentifier = "4256FAB51892BBDC004AB7F9"
+            BuildableName = "example-nsga2 copy"
+            BlueprintName = "example-qhfc"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -51,9 +51,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "423CBE56157D0FCC0003A644"
-            BuildableName = "test_ealib"
-            BlueprintName = "test_ealib"
+            BlueprintIdentifier = "4256FAB51892BBDC004AB7F9"
+            BuildableName = "example-nsga2 copy"
+            BlueprintName = "example-qhfc"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -69,9 +69,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "423CBE56157D0FCC0003A644"
-            BuildableName = "test_ealib"
-            BlueprintName = "test_ealib"
+            BlueprintIdentifier = "4256FAB51892BBDC004AB7F9"
+            BuildableName = "example-nsga2 copy"
+            BlueprintName = "example-qhfc"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

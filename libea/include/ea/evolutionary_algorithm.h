@@ -168,8 +168,13 @@ namespace ealib {
             _events.end_of_epoch(*this);
         }
         
+        //! Resets the population.
+        void reset() {
+            nullify_fitness(begin(), end(), *this);
+        }
+
         //! Resets this EA's RNG seed.
-        void reset(unsigned int s) {
+        void reset_rng(unsigned int s) {
             put<RNG_SEED>(s,*this); // save the seed!
             _rng.reset(s);
         }

@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
-               BuildableName = "test_mkv"
-               BlueprintName = "test_mkv"
+               BlueprintIdentifier = "4256FA791892BBB2004AB7F9"
+               BuildableName = "example-all-ones copy"
+               BlueprintName = "example-devo"
                ReferencedContainer = "container:ealib.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
-            BuildableName = "test_mkv"
-            BlueprintName = "test_mkv"
+            BlueprintIdentifier = "4256FA791892BBB2004AB7F9"
+            BuildableName = "example-all-ones copy"
+            BlueprintName = "example-devo"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -51,9 +51,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
-            BuildableName = "test_mkv"
-            BlueprintName = "test_mkv"
+            BlueprintIdentifier = "4256FA791892BBB2004AB7F9"
+            BuildableName = "example-all-ones copy"
+            BlueprintName = "example-devo"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -69,9 +69,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "428B711C18490E8F00E3BB4E"
-            BuildableName = "test_mkv"
-            BlueprintName = "test_mkv"
+            BlueprintIdentifier = "4256FA791892BBB2004AB7F9"
+            BuildableName = "example-all-ones copy"
+            BlueprintName = "example-devo"
             ReferencedContainer = "container:ealib.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

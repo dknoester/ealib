@@ -22,24 +22,41 @@ lib libea_runner :
     libea
     ;
 
-run test/test_digital_evolution.cpp
-    test/test_checkpoint.cpp
-    test/test_circular.cpp
-    test/test.cpp
-    test/test_evolutionary_algorithm.cpp
-    test/test_graph.cpp
-    test/test_meta_population.cpp
-    test/test_information.cpp
+run test/test_checkpoint.cpp
     test/test_meta_data.cpp
-    test/test_neuroevolution.cpp
-    test/test_neurodevelopment.cpp
     test/test_rng.cpp
-    test/test_novelty_search.cpp
-    libea
+    test/test_circular.cpp
+    test/test_information.cpp
+    test/test_analysis.cpp
+    test/test.cpp
     src/cmdline_interface.cpp
+    libea
     /boost//unit_test_framework
     ;
-    
+
+run test/test_lod.cpp
+    test/test.cpp
+    src/cmdline_interface.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+run test/test_metapopulation.cpp
+    test/test_qhfc.cpp
+    test/test.cpp
+    src/cmdline_interface.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+run test/test_digital_evolution.cpp
+    test/test_digital_evolution_types.cpp
+    test/test.cpp
+    src/cmdline_interface.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
 run test/test_deep_markov_network.cpp
     test/test_markov_network.cpp
     libea

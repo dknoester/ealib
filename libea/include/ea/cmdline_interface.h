@@ -242,7 +242,7 @@ namespace ealib {
             
             // conditionally reset all fitnesses
             if(_vm.count("reset")) {
-                nullify_fitness(ea.begin(), ea.end(), ea);
+                ea.reset();
             }
             
             ea.initialize();
@@ -258,7 +258,7 @@ namespace ealib {
             apply(ea);
             
             if(exists<RNG_SEED>(ea)) {
-                ea.rng().reset(get<RNG_SEED>(ea));
+                ea.reset_rng(get<RNG_SEED>(ea));
             }
             
             ea.initialize();

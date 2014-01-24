@@ -13,9 +13,7 @@
 .DS_Store
 bin
 libea/bin
-libfn/bin
 tmp
 DerivedData
 build
 dist
-*.plist

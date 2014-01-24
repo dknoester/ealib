@@ -207,7 +207,6 @@ namespace ealib {
             ar & boost::serialization::make_nvp("outputs", _outputs);
             ar & boost::serialization::make_nvp("phenotype", _phenotype);
             ar & boost::serialization::make_nvp("meta_data", _md);
-            ar & boost::serialization::make_nvp("traits", _traits);
 		}
 	};
     

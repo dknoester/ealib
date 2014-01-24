@@ -231,8 +231,8 @@ namespace ealib {
          mrca happens to be the progenitor).
          */
         individual_ptr_type mrca(ea_type& ea) {
-            assert(ea.get_population().size()>0);
-            individual_ptr_type offspring=*ea.get_population().begin();
+            assert(ea.population().size()>0);
+            individual_ptr_type offspring=*ea.population().begin();
             individual_ptr_type parent;
             individual_ptr_type m=offspring;
             
