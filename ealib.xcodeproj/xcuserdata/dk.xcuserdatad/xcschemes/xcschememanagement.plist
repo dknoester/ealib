@@ -17,7 +17,7 @@
 		<key>all.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>21</integer>
+			<integer>11</integer>
 		</dict>
 		<key>ea.xcscheme</key>
 		<dict>
@@ -74,6 +74,11 @@
 			<key>orderHint</key>
 			<integer>26</integer>
 		</dict>
+		<key>test-ga.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>39</integer>
+		</dict>
 		<key>test-lod.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -123,6 +128,11 @@
 			<true/>
 		</dict>
 		<key>423CBE56157D0FCC0003A644</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4243E7721894180F00431D18</key>
 		<dict>
 			<key>primary</key>
 			<true/>

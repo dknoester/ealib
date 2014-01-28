@@ -17,12 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <ea/evolutionary_algorithm.h>
+#include <ea/mkv/markov_evolution_algorithm.h>
 #include <ea/generational_models/moran_process.h>
 #include <ea/fitness_function.h>
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/fitness.h>
-#include <ea/mkv/markov_network.h>
 using namespace ealib;
 
 
@@ -66,14 +65,10 @@ struct example_fitness : fitness_function<unary_fitness<double>, constantS, stoc
 };
 
 // Evolutionary algorithm definition.
-typedef evolutionary_algorithm
-< individual<mkv::representation_type, example_fitness, markov_network< >, indirectS, mkv::default_traits>
-, mkv::ancestor_generator
-, mkv::mutation_type
+typedef markov_evolution_algorithm
+< example_fitness
 , recombination::asexual
 , generational_models::moran_process< >
-, dont_stop
-, mkv::configuration
 > ea_type;
 
 /*! Define the EA's command-line interface.
