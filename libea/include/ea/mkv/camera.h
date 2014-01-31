@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _MKV_CAMERA_H_
-#define _MKV_CAMERA_H_
+#ifndef _EA_MKV_CAMERA_H_
+#define _EA_MKV_CAMERA_H_
 
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/storage.hpp>
@@ -26,7 +26,7 @@
 #include <iostream>
 #include <ea/algorithm.h>
 
-namespace mkv {
+namespace ealib {
     
     //! Used to select the axis being moved.
     enum axis_type { X_AXIS, Y_AXIS, Z_AXIS };
@@ -293,7 +293,7 @@ namespace mkv {
         return out;
     }
     
-    /*! 2D iterator based on the retinal ganglion.
+    /*! 2D iterator based on retinal ganglion.
      
      The idea here is that the center of the camera's field of view (FOV) is at
      a higher resolution than the edges of the camera's FOV.  In essence, we're
@@ -314,14 +314,14 @@ namespace mkv {
      i
      
      Note that cells in each subsequent ring are the same total size as the 
-     receding ring.
+     preceding ring.
      */
     template <typename Matrix>
     struct retina2_iterator {
         
         /*! Constructor.
          
-         \param s is the size of the fovea (square)
+         \param fs is the size of the fovea (square)
          \param r is the number of rings around the fovea
          */
         retina2_iterator(Matrix& M, std::size_t fs, std::size_t r) : _M(M), _fs(fs), _r(r), _i(0), _j(0) {

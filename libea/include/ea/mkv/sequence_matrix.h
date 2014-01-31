@@ -1,8 +1,8 @@
-/* matrix.h
+/* sequence_matrix.h
  *
  * This file is part of EALib.
  *
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _MKV_MATRIX_H_
-#define _MKV_MATRIX_H_
+#ifndef _EA_MKV_SEQUENCE_MATRIX_H_
+#define _EA_MKV_SEQUENCE_MATRIX_H_
 
-namespace mkv {
+namespace ealib {
     
     /*! Adaptor that converts a Sequence into a boost::Matrix
      */
@@ -31,6 +31,10 @@ namespace mkv {
         
         //! Constructor.
         sequence_matrix(Sequence& s, std::size_t s1, std::size_t s2) : _s(s), _size1(s1), _size2(s2) {
+        }
+        
+        //! Constructor.
+        sequence_matrix(Sequence& s) : _s(s), _size1(s.size1()), _size2(s.size2()) {
         }
         
         //! Retrieve element (i,j) from the matrix.
@@ -91,27 +95,27 @@ namespace mkv {
     };
         
 
-    /*! Unary matrix function that calls a Markov network on a matrix, and returns
-     the value output by the Markov network.
-     */
-    template <typename Network>
-    struct matrix_call {
-        //! Constructor.
-        matrix_call(Network& net, int n) : _net(net), _n(n) {
-        }
-        
-        /*! Call the embedded Markov network on matrix M, returning the Markov network's
-         output.
-         */
-        template <typename Matrix>
-        typename Matrix::value_type operator()(Matrix& M) {
-            mkv::update(_net, _n, random_access_matrix_iterator<Matrix>(M));
-            return ealib::algorithm::range_pair2int(_net.begin_output(), _net.end_output());
-        }
-        
-        Network& _net; //!< Network to be called on a matrix.
-        int _n; //!< Number of times to update the network.
-    };
+    //    /*! Unary matrix function that calls a Markov network on a matrix, and returns
+    //     the value output by the Markov network.
+    //     */
+    //    template <typename Network>
+    //    struct matrix_call {
+    //        //! Constructor.
+    //        matrix_call(Network& net, int n) : _net(net), _n(n) {
+    //        }
+    //
+    //        /*! Call the embedded Markov network on matrix M, returning the Markov network's
+    //         output.
+    //         */
+    //        template <typename Matrix>
+    //        typename Matrix::value_type operator()(Matrix& M) {
+    //            mkv::update(_net, _n, random_access_matrix_iterator<Matrix>(M));
+    //            return ealib::algorithm::range_pair2int(_net.begin_output(), _net.end_output());
+    //        }
+    //
+    //        Network& _net; //!< Network to be called on a matrix.
+    //        int _n; //!< Number of times to update the network.
+    //    };
 
 } // mkv
 
