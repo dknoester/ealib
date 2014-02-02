@@ -55,7 +55,7 @@ namespace ealib {
                 
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                     gen(get<IND_GENERATION>(*i));
-                    fit(static_cast<double>(fitness(*i,ea)));
+                    fit(static_cast<double>(ealib::fitness(*i,ea)));
                 }
                 
                 _df.write(ea.current_update())

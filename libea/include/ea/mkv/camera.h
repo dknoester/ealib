@@ -396,9 +396,10 @@ namespace ealib {
         }
         
         //! Move the camera by (i,j), relative to its current position.
-        void move(int i, int j) {
+        double move(int i, int j) {
             _i += i;
             _j += j;
+            return sqrt(i*i + j*j);
         }
         
         std::size_t size() { return _fs * _fs + _r * 8; }

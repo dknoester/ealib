@@ -137,6 +137,9 @@ namespace ealib {
         //! Gather the events that occur during a trial of this EA.
         virtual void gather_events(EA& ea) { }
         
+        //! Called before initialization (good place to calculate config options).
+        virtual void before_initialization(EA& ea) { }
+        
         //! Execute an EA based on the given command-line parameters.
         virtual void exec(int argc, char* argv[]) {
             gather_options();
@@ -218,6 +221,7 @@ namespace ealib {
 		void analyze(ea_type& ea) {
             load_if(ea);
             apply(ea);
+            before_initialization(ea);
             ea.initialize();
             gather_tools();
             
@@ -245,6 +249,7 @@ namespace ealib {
                 ea.reset();
             }
             
+            before_initialization(ea);
             ea.initialize();
             gather_events(ea);
             if(_vm.count("verbose")) {
@@ -261,6 +266,7 @@ namespace ealib {
                 ea.reset_rng(get<RNG_SEED>(ea));
             }
             
+            before_initialization(ea);
             ea.initialize();
             gather_events(ea);
             if(_vm.count("verbose")) {
