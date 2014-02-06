@@ -35,9 +35,24 @@ namespace ealib {
             return x | y;
         }
     };
-    
 
-    /*! Compose two adaptable unary functions f and g into a single unary function 
+    template <typename T>
+    struct non_zero : std::unary_function<T,int> {
+        typedef std::unary_function<T,T> parent;
+        typedef typename parent::argument_type argument_type;
+        typedef typename parent::result_type result_type;
+        
+        int operator()(argument_type x) {
+            if(x != 0) {
+                return 0x01;
+            } else {
+                return 0x0;
+            }
+        }
+    };
+
+
+    /*! Compose two adaptable unary functions f and g into a single unary function
      h such that h(x) = f(g(x)).
      */
     template <typename AdaptableUnaryFunction1, typename AdaptableUnaryFunction2>

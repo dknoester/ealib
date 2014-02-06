@@ -52,10 +52,11 @@ namespace ealib {
      \param UpdateFunction updates state variables
      \param RandomNumberGenerator
      */
-    template <typename StateType=int,
-    typename UpdateFunction=binary_or<StateType>,
-    typename RandomNumberGenerator=default_rng_type>
-    class markov_network {
+    template <typename StateType=int
+    , typename UpdateFunction=binary_or<StateType>
+    , typename InputFunction=non_zero<StateType>
+    , typename RandomNumberGenerator=default_rng_type
+    > class markov_network {
     public:
         typedef StateType state_type; //!< State variable type.
         typedef boost::numeric::ublas::vector<state_type> state_vector_type; //!< State vector type.
@@ -64,6 +65,7 @@ namespace ealib {
         typedef boost::shared_ptr<abstract_gate_type> abstract_gate_ptr; //!< Abstract gate pointer type.
         typedef std::vector<abstract_gate_ptr> gate_vector_type; //!< Type for a vector of abstract gates.
         typedef UpdateFunction update_function_type; //!< Binary function that updates state variables.
+        typedef InputFunction input_function_type; //!< Unary function that calculates the value of an input.
         typedef RandomNumberGenerator rng_type; //!< Random number generator type.
         
         //! Constructor.
@@ -175,9 +177,9 @@ namespace ealib {
                     for(std::size_t j=0; j<inputs.size(); ++j) {
                         std::size_t k=inputs[j];
                         if(k<_nin) {
-                            x = _uf(x, (f[k] & 0x01) << j);
+                            x = _uf(x, (_if(f[k]) << j));
                         } else {
-                            x = _uf(x, (_T(k) & 0x01) << j);
+                            x = _uf(x, (_if(_T(k)) << j));
                         }
                     }
                     
@@ -202,7 +204,8 @@ namespace ealib {
         }
         
     protected:
-        update_function_type _uf; //! Update functor.
+        update_function_type _uf; //<! Update functor.
+        input_function_type _if; //<! Input functor.
         rng_type _rng; //<! Random number generator.
         std::size_t _nin, _nout, _nhid; //!< Number of inputs, outputs, and hidden state variables.
         gate_vector_type _gates; //!< Vector of gates.

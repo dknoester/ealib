@@ -35,13 +35,17 @@ namespace ealib {
     /*! Deep Markov Network class, which provides a layered / hiererachical structure
      of Markov Networks, a la Deep Learning.
      */
-    template <typename StateType=int, typename UpdateFunction=binary_or<StateType>, typename RandomNumberGenerator=default_rng_type>
-    class deep_markov_network {
+    template <typename StateType=int
+    , typename UpdateFunction=binary_or<StateType>
+    , typename InputFunction=non_zero<StateType>
+    , typename RandomNumberGenerator=default_rng_type
+    > class deep_markov_network {
     public:
         typedef StateType state_type; //!< Type for state variables.
         typedef UpdateFunction update_function_type; //!< Binary function that updates state variables.
+        typedef InputFunction input_function_type; //!< Unary function that calculates the value of an input.
         typedef RandomNumberGenerator rng_type; //!< Random number generator type.
-        typedef markov_network<state_type,update_function_type,rng_type> markov_network_type; //!< Type for Markov network layer.
+        typedef markov_network<state_type,update_function_type,input_function_type,rng_type> markov_network_type; //!< Type for Markov network layer.
         typedef boost::shared_ptr<markov_network_type> markov_network_ptr; //!< Type for a network pointer.
         typedef std::vector<markov_network_ptr> markov_network_vector_type; //!< Type for list of network layers.
         
