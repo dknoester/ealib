@@ -337,8 +337,8 @@ namespace ealib {
         
         //! QHFC datafile.
         template <typename EA>
-        struct qhfc : record_statistics_event<EA> {
-            qhfc(EA& ea)
+        struct qhfc_dat : record_statistics_event<EA> {
+            qhfc_dat(EA& ea)
             : record_statistics_event<EA>(ea)
             , _fitness("qhfc_fitness.dat")
             , _admission("qhfc_admission.dat")
@@ -356,7 +356,7 @@ namespace ealib {
                 }
             }
             
-            virtual ~qhfc() {
+            virtual ~qhfc_dat() {
             }
             
             virtual void operator()(EA& ea) {
