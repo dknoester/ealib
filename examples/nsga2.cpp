@@ -1,4 +1,4 @@
-/* qhfc.cpp
+/* nsga2.cpp
  *
  * This file is part of EALib.
  *

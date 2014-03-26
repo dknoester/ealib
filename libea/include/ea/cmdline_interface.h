@@ -34,7 +34,7 @@
 #include <ea/events.h>
 #include <ea/meta_data.h>
 #include <ea/ptr_population.h>
-#include <ea/analysis/tool.h>
+#include <ea/analysis.h>
 #include <ea/lifecycle.h>
 #include <ea/datafiles/runtime.h>
 #include <ea/rng.h>
@@ -104,8 +104,7 @@ namespace ealib {
     }
     
     
-    /*! This selector is used with the command-line interface to automatically 
-     register the command line interface.
+    /*! This selector is used with the command-line interface to DISABLE registration.
      */
     struct do_not_registerS { };
     
@@ -115,7 +114,7 @@ namespace ealib {
     class cmdline_interface : public ea_interface {
     public:
         typedef EA ea_type; //!< Type of the EA being used.
-        typedef ealib::analysis::unary_function<ea_type> tool_type; //!< Type for analysis tools.
+        typedef ealib::analysis_tool<ea_type> tool_type; //!< Type for analysis tools.
         typedef boost::shared_ptr<tool_type> tool_ptr_type; //!< Pointer type for analysis tools.
         typedef std::map<std::string, tool_ptr_type> tool_registry; //!< Storage for analysis tools.
         
@@ -231,7 +230,6 @@ namespace ealib {
                 throw bad_argument_exception("Could not find analysis tool: " + toolname);
             }
             
-            i->second->initialize(ea);
             (*i->second)(ea);
         }
         

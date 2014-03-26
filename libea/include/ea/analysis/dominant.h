@@ -1,4 +1,4 @@
-/* individual.h 
+/* dominant.h
  * 
  * This file is part of EALib.
  * 
@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_ANALYSIS_INDIVIDUAL_H_
-#define _EA_ANALYSIS_INDIVIDUAL_H_
+#ifndef _EA_ANALYSIS_DOMINANT_H_
+#define _EA_ANALYSIS_DOMINANT_H_
 
 #include <algorithm>
 #include <ea/comparators.h>
@@ -27,15 +27,12 @@
 namespace ealib {
     namespace analysis {
 
-        /*! Returns a reference to the dominant (most fit) individual in the given
-         EA's population.
-         */
+        //! Returns an iterator to the dominant (most fit) individual in ea.
         template <typename EA>
-        typename EA::individual_type& find_dominant(EA& ea) {
-            typename EA::population_type& pop = ea.population();
-            return **std::max_element(pop.begin(), pop.end(), comparators::fitness<EA>(ea));
+        typename EA::iterator dominant(EA& ea) {
+            return std::max_element(ea.begin(), ea.end(), comparators::fitness<EA>(ea));
         }
-
+        
     } // analysis
 } // ea
 

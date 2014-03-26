@@ -28,10 +28,10 @@
 #include <ea/datafile.h>
 #include <ea/exceptions.h>
 
+#include <ea/analysis.h>
 #include <ea/analysis/graph.h>
 #include <ea/analysis/individual.h>
 #include <ea/analysis/modularity.h>
-#include <ea/analysis/tool.h>
 
 namespace ealib {
     namespace analysis {

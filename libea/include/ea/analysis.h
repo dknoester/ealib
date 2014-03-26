@@ -21,14 +21,29 @@
 #ifndef _EA_ANALYSIS_H_
 #define _EA_ANALYSIS_H_
 
-#include <ea/analysis/tool.h>
-//#include <ea/analysis/epistasis.h>
-#include <ea/analysis/information.h>
-#include <ea/analysis/statistics.h>
-//#include <ea/analysis/girvan_newman_clustering.h>
-//#include <ea/analysis/line_of_descent.h>
-#include <ea/analysis/individual.h>
-#include <ea/analysis/population.h>
-//#include <ea/analysis/landscape.h>
+//! Convenience macro for analysis tools.
+#define LIBEA_ANALYSIS_TOOL(toolname) \
+template <typename EA> \
+struct toolname : public ealib::analysis_tool<EA> { \
+static const char* name() { return #toolname; } \
+virtual ~toolname() { }; \
+void operator()(EA& ea); }; \
+template <typename EA> void toolname<EA>::operator()(EA& ea)
+
+
+namespace ealib {
+    
+    /*! Abstract base class for analysis tools.
+     */
+    template <typename EA>
+    struct analysis_tool {
+        //! Destructor.
+        virtual ~analysis_tool() { }
+        
+        //! Run this analysis tool on ea.
+        virtual void operator()(EA& ea) = 0;
+    };
+    
+} // ealib
 
 #endif

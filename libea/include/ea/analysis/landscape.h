@@ -27,7 +27,7 @@
 #include <vector>
 #include <ea/datafile.h>
 
-#include <ea/analysis/tool.h>
+#include <ea/analysis.h>
 
 
 namespace ealib {

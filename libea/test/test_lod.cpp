@@ -19,26 +19,19 @@
  */
 
 #include "test.h"
+#include <ea/analysis.h>
 #include <ea/cmdline_interface.h>
 #include <ea/line_of_descent.h>
 
-template <typename EA>
-struct test_population_lod_tool : public ealib::analysis::unary_function<EA> {
-    static const char* name() { return "test_population_lod_tool"; }
+LIBEA_ANALYSIS_TOOL(test_population_lod_tool) {
+    using namespace ealib;
     
-    virtual ~test_population_lod_tool() { }
+    line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
     
-    virtual void operator()(EA& ea) {
-        using namespace ealib;
-        using namespace ealib::analysis;
-        
-        line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-
-        for(typename line_of_descent<EA>::iterator i=lod.begin(); i!=lod.end(); ++i) {
-            std::cout << get<IND_NAME>(*i) << std::endl;
-        }
+    for(typename line_of_descent<EA>::iterator i=lod.begin(); i!=lod.end(); ++i) {
+        std::cout << get<IND_NAME>(*i) << std::endl;
     }
-};
+}
 
 template <typename EA>
 class cli : public cmdline_interface<EA> {

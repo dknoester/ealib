@@ -28,7 +28,7 @@
 #include <ea/datafile.h>
 
 #include <ea/line_of_descent.h>
-#include <ea/analysis/tool.h>
+#include <ea/analysis.h>
 #include <ea/analysis/graph.h>
 #include <ea/analysis/girvan_newman_clustering.h>
 #include <ea/analysis/modularity.h>

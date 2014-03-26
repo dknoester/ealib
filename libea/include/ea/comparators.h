@@ -41,21 +41,6 @@ namespace ealib {
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
         
-        //! Compare (pointers to) individuals based on the natural order of their fitnesses in descending order.
-        template <typename EA>
-        struct fitness_desc {
-            //! Constructor.
-            fitness_desc(EA& ea) : _ea(ea) {
-            }
-            
-            //! Returns true if fitness(x) < fitness(y), false otherwise.
-            bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
-                return ealib::fitness(*x,_ea) > ealib::fitness(*y,_ea);
-            }
-            
-            EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
-        };
-        
         //! Compare (pointers to) individuals based on the natural order of meta-data in ascending order.
         template <typename MDType, typename EA>
         struct meta_data {

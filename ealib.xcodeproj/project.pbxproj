@@ -447,6 +447,9 @@
 		4256FAC01892BBDC004AB7F9 /* example-nsga2 copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-nsga2 copy"; sourceTree = BUILT_PRODUCTS_DIR; };
 		426064EE16F0D36700C5B117 /* test_neurodevelopment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neurodevelopment.cpp; sourceTree = "<group>"; };
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
+		426F9F5A18E2098B00910682 /* archive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = archive.h; sourceTree = "<group>"; };
+		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
+		426F9F5E18E363CC00910682 /* statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = statistics.h; sourceTree = "<group>"; };
 		427F5E5918806FB3003CCA5C /* subpopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = subpopulation.h; sourceTree = "<group>"; };
 		4281FEDA16C45C840066610C /* test_graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_graph.cpp; sourceTree = "<group>"; };
 		4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neuroevolution.cpp; sourceTree = "<group>"; };
@@ -462,15 +465,11 @@
 		428B7210184F77AB00E3BB4E /* epistasis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = epistasis.h; sourceTree = "<group>"; };
 		428B7211184F77AB00E3BB4E /* girvan_newman_clustering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = girvan_newman_clustering.h; sourceTree = "<group>"; };
 		428B7212184F77AB00E3BB4E /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
-		428B7213184F77AB00E3BB4E /* individual.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = individual.h; sourceTree = "<group>"; };
-		428B7214184F77AB00E3BB4E /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
+		428B7213184F77AB00E3BB4E /* dominant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dominant.h; sourceTree = "<group>"; };
 		428B7215184F77AB00E3BB4E /* landscape.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = landscape.h; sourceTree = "<group>"; };
 		428B7216184F77AB00E3BB4E /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
-		428B7217184F77AB00E3BB4E /* meta_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_population.h; sourceTree = "<group>"; };
 		428B7218184F77AB00E3BB4E /* modularity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = modularity.h; sourceTree = "<group>"; };
-		428B7219184F77AB00E3BB4E /* population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population.h; sourceTree = "<group>"; };
-		428B721A184F77AB00E3BB4E /* statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = statistics.h; sourceTree = "<group>"; };
-		428B721B184F77AB00E3BB4E /* tool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tool.h; sourceTree = "<group>"; };
+		428B7219184F77AB00E3BB4E /* fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fitness.h; sourceTree = "<group>"; };
 		428B721C184F77AB00E3BB4E /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		428B721D184F77AB00E3BB4E /* ancestors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ancestors.h; sourceTree = "<group>"; };
 		428B721F184F77AB00E3BB4E /* filter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = filter.h; sourceTree = "<group>"; };
@@ -836,6 +835,15 @@
 			path = examples;
 			sourceTree = "<group>";
 		};
+		426F9F5C18E363CC00910682 /* math */ = {
+			isa = PBXGroup;
+			children = (
+				426F9F5D18E363CC00910682 /* information.h */,
+				426F9F5E18E363CC00910682 /* statistics.h */,
+			);
+			path = math;
+			sourceTree = "<group>";
+		};
 		428B720B184F77AB00E3BB4E /* include */ = {
 			isa = PBXGroup;
 			children = (
@@ -876,6 +884,7 @@
 				428B7263184F77AB00E3BB4E /* lcs */,
 				428B726D184F77AB00E3BB4E /* lifecycle.h */,
 				428B726E184F77AB00E3BB4E /* line_of_descent.h */,
+				426F9F5C18E363CC00910682 /* math */,
 				428B726F184F77AB00E3BB4E /* meta_data.h */,
 				428B7270184F77AB00E3BB4E /* metapopulation.h */,
 				428B7271184F77AB00E3BB4E /* mkv */,
@@ -900,18 +909,15 @@
 		428B720F184F77AB00E3BB4E /* analysis */ = {
 			isa = PBXGroup;
 			children = (
+				426F9F5A18E2098B00910682 /* archive.h */,
+				428B7213184F77AB00E3BB4E /* dominant.h */,
+				428B7219184F77AB00E3BB4E /* fitness.h */,
 				428B7210184F77AB00E3BB4E /* epistasis.h */,
 				428B7211184F77AB00E3BB4E /* girvan_newman_clustering.h */,
 				428B7212184F77AB00E3BB4E /* graph.h */,
-				428B7213184F77AB00E3BB4E /* individual.h */,
-				428B7214184F77AB00E3BB4E /* information.h */,
 				428B7215184F77AB00E3BB4E /* landscape.h */,
 				428B7216184F77AB00E3BB4E /* line_of_descent.h */,
-				428B7217184F77AB00E3BB4E /* meta_population.h */,
 				428B7218184F77AB00E3BB4E /* modularity.h */,
-				428B7219184F77AB00E3BB4E /* population.h */,
-				428B721A184F77AB00E3BB4E /* statistics.h */,
-				428B721B184F77AB00E3BB4E /* tool.h */,
 			);
 			path = analysis;
 			sourceTree = "<group>";

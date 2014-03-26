@@ -1,6 +1,6 @@
 /* all_ones.cpp
  * 
- * This file is part of EALib Examples.
+ * This file is part of EALib.
  * 
  * Copyright 2012 David B. Knoester.
  * 

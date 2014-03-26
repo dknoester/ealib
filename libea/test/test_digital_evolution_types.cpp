@@ -19,6 +19,7 @@
  */
 #include <boost/test/unit_test.hpp>
 
+#include <ea/analysis.h>
 #include <ea/cmdline_interface.h>
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/population_founder.h>
@@ -65,7 +66,7 @@ struct digevo_configuration : public default_configuration {
     void initialize(EA& ea) {
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-
+        
         // Add tasks
         task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<0> >("not", ea);
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<0> >("nand", ea);
@@ -99,12 +100,6 @@ struct digevo_configuration : public default_configuration {
     }
 };
 
-//! Meta-population configuration object.
-//template <typename EA>
-//struct mp_configuration : public abstract_configuration<EA> {
-//    void initial_population(EA& ea) {
-//    }
-//};
 
 //! Meta-population w/ founders configuration object.
 struct mp_founder_configuration : public default_configuration {
@@ -116,27 +111,20 @@ struct mp_founder_configuration : public default_configuration {
     }
 };
 
-template <typename EA>
-struct test_population_lod_tool : public ealib::analysis::unary_function<EA> {
-    static const char* name() { return "test_population_lod_tool"; }
+LIBEA_ANALYSIS_TOOL(test_population_lod_tool) {
+    using namespace ealib;
+//    using namespace ealib::analysis;
     
-    virtual ~test_population_lod_tool() { }
+    line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
+    typename line_of_descent<EA>::iterator i=lod.begin(); ++i;
     
-    virtual void operator()(EA& ea) {
-        using namespace ealib;
-        using namespace ealib::analysis;
-        
-        line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-        typename line_of_descent<EA>::iterator i=lod.begin(); ++i;
-        
-        for( ; i!=lod.end(); ++i) {
-            typename EA::individual_ptr_type control_ea = ea.make_individual();
-            typename EA::individual_type::individual_ptr_type o = i->make_individual(i->founder().repr());
-            o->hw().initialize();
-            control_ea->append(o);
-        }
+    for( ; i!=lod.end(); ++i) {
+        typename EA::individual_ptr_type control_ea = ea.make_individual();
+        typename EA::individual_type::individual_ptr_type o = i->make_individual(i->founder().repr());
+        o->hw().initialize();
+        control_ea->append(o);
     }
-};
+}
 
 
 template <typename EA>
@@ -161,27 +149,27 @@ BOOST_AUTO_TEST_CASE(test_digevo_types) {
     //! Single population:
     typedef digital_evolution<digevo_configuration > ea_type1;
     ea_type1 ea1;
-
+    
     //! Meta-population, no founders:
     typedef metapopulation<subpopulation<ea_type1> > mea_type1;
     mea_type1 mea1;
-
-//    //! Meta-population, with founders:
-//    typedef meta_population<population_founder<ea_type1> > mea_type2;
-//    mea_type2 mea2;
-//
-//    //! Meta-population, with founders and LOD tracking:
-//    typedef meta_population<
-//    population_founder<ea_type1>,
-//    ancestors::default_representation,
-//    mutation::operators::no_mutation,
-//	constant,
-//    abstract_configuration,
-//	recombination::no_recombination,
-//    generational_models::isolated_subpopulations,
-//    attr::lod_attributes
-//    > mea_type3;
-//    cli<mea_type3> cli3;
+    
+    //    //! Meta-population, with founders:
+    //    typedef meta_population<population_founder<ea_type1> > mea_type2;
+    //    mea_type2 mea2;
+    //
+    //    //! Meta-population, with founders and LOD tracking:
+    //    typedef meta_population<
+    //    population_founder<ea_type1>,
+    //    ancestors::default_representation,
+    //    mutation::operators::no_mutation,
+    //	constant,
+    //    abstract_configuration,
+    //	recombination::no_recombination,
+    //    generational_models::isolated_subpopulations,
+    //    attr::lod_attributes
+    //    > mea_type3;
+    //    cli<mea_type3> cli3;
 }
 
 
