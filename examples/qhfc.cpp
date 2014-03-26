@@ -60,7 +60,7 @@ public:
     }
     
     virtual void gather_events(EA& ea) {
-        add_event<datafiles::qhfc>(ea);
+        add_event<datafiles::qhfc_dat>(ea);
     };
 };
 LIBEA_CMDLINE_INSTANCE(ea_type, cli);
