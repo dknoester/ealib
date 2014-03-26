@@ -37,7 +37,12 @@ namespace ealib {
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
                 return ealib::fitness(*x,_ea) < ealib::fitness(*y,_ea);
             }
-            
+
+            //! Returns true if fitness(x) < fitness(y), false otherwise.
+            bool operator()(typename EA::individual_type& x, typename EA::individual_type& y) {
+                return ealib::fitness(x,_ea) < ealib::fitness(y,_ea);
+            }
+
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
         
