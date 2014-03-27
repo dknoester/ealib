@@ -1,7 +1,7 @@
 LIBEA_INCLUDE = ./libea/include
 HEADER_SEARCH_PATHS = $(LIBEA_INCLUDE) $(HOME)/include /usr/local/include
 OTHER_CPLUSPLUSFLAGS = -ftemplate-depth=255
-OTHER_LDFLAGS = -lboost_iostreams -lboost_program_options -lboost_regex -lboost_serialization -lboost_signals
+OTHER_LDFLAGS = -lboost_iostreams -lboost_program_options -lboost_regex -lboost_serialization -lboost_signals -lboost_filesystem -lboost_system
 LIBRARY_SEARCH_PATHS = $(HOME)/lib /usr/local/lib
 USE_HEADERMAP = NO
 GCC_INLINES_ARE_PRIVATE_EXTERN = NO

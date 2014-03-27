@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "test.h"
+#include <ea/archive.h>
+
 
 /*! Test of EA checkpointing.
  */
@@ -65,5 +67,28 @@ BOOST_AUTO_TEST_CASE(test_replicability) {
         BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
         BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
         BOOST_CHECK(ea1.rng() == ea2.rng());
+    }
+}
+
+/*! Test of EA archiving.
+ */
+BOOST_AUTO_TEST_CASE(test_archive) {
+    all_ones_ea ea1, ea2;
+    add_std_meta_data(ea1);
+    lifecycle::prepare_new(ea1);
+    
+    // run and archive ea1:
+    lifecycle::advance_epoch(10,ea1);
+    std::ostringstream out;
+    save_archive(out, ea1);
+    
+    // load the archive into ea2:
+    std::istringstream in(out.str());
+    load_archive(in, ea2);
+    
+    // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
+    for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
+        BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
+        BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
     }
 }

@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_ANALYSIS_ARCHIVE_H_
-#define _EA_ANALYSIS_ARCHIVE_H_
+#ifndef _EA_ARCHIVE_H_
+#define _EA_ARCHIVE_H_
 
 #include <boost/regex.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
@@ -33,18 +33,19 @@
 #include <sstream>
 
 #include <ea/analysis.h>
-#include <ea/analysis/individual.h>
+#include <ea/analysis/dominant.h>
 
 namespace ealib {
-    namespace analysis {
-        
+    
         //! Loads an archived population from input stream is into ea.
         template <typename EA>
         void load_archive(std::istream& in, EA& ea) {
             boost::archive::xml_iarchive ia(in);
-            ia >> BOOST_SERIALIZATION_NVP(ea.population());
+//            ia >> BOOST_SERIALIZATION_NVP(ea.population());
+            ia >> boost::serialization::make_nvp("population", ea.population());
+
         }
-        
+    
         //! Loads an archived population from file filename into ea.
         template <typename EA>
         void load_archive(const std::string& filename, EA& ea) {
@@ -70,9 +71,11 @@ namespace ealib {
         
         //! Save a population archive from ea to output stream os.
         template <typename EA>
-        void save_checkpoint(std::ostream& os, EA& ea) {
+        void save_archive(std::ostream& os, EA& ea) {
             boost::archive::xml_oarchive oa(os);
-            os << BOOST_SERIALIZATION_NVP(ea.population());
+            oa << boost::serialization::make_nvp("population", ea.population());
+//            typename EA::population_type& population=ea.population();
+//            oa << BOOST_SERIALIZATION_NVP(population);
         }
         
         //! Save a population archive from ea to file filename.
@@ -84,6 +87,8 @@ namespace ealib {
             }
             save_archive(ofs,ea);
         }
+        
+    namespace analysis {
         
         /*! Analysis tool to append a dominant to a population archive.
          
@@ -98,7 +103,7 @@ namespace ealib {
                 load_archive(filename, archive);
             }
             
-            archive.insert(archive.end(), *dominant(ea));
+            archive.insert(archive.end(), *analysis::dominant(ea));
             save_archive(archive);
         }
         
