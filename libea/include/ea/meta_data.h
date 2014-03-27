@@ -321,14 +321,7 @@ namespace ealib {
 
     // ea.statistics.*
     LIBEA_MD_DECL(RECORDING_PERIOD, "ea.statistics.recording.period", unsigned long);
-    
-    // ea.analysis.*
-    LIBEA_MD_DECL(ANALYSIS_ARCHIVE, "ea.analysis.archive.filename", std::string);
-    LIBEA_MD_DECL(ANALYSIS_INPUT, "ea.analysis.input.filename", std::string);
-    LIBEA_MD_DECL(ANALYSIS_OUTPUT, "ea.analysis.output.filename", std::string);
-    LIBEA_MD_DECL(ANALYSIS_ROUNDS, "ea.analysis.rounds", unsigned int);
-    LIBEA_MD_DECL(EPISTASIS_THRESHOLD, "ea.analysis.epistasis.threshold", double);
-    
+        
 } // ealib
 
 #endif

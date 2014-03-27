@@ -21,6 +21,13 @@
 #ifndef _EA_ANALYSIS_H_
 #define _EA_ANALYSIS_H_
 
+#include <ea/meta_data.h>
+
+// ea.analysis.*
+LIBEA_MD_DECL(ANALYSIS_INPUT, "ea.analysis.input.filename", std::string);
+LIBEA_MD_DECL(ANALYSIS_OUTPUT, "ea.analysis.output.filename", std::string);
+
+
 //! Convenience macro for analysis tools.
 #define LIBEA_ANALYSIS_TOOL(toolname) \
 template <typename EA> \
