@@ -23,7 +23,13 @@
 #include <ea/fitness_function.h>
 
 namespace ealib {
-
+    
+    //! Selector for random with replacement.
+    struct with_replacementS { };
+    
+    //! Selector for random without replacement.
+    struct without_replacementS { };
+    
     /*! Select at most n individuals from src into dst using the given selector type.
      This is "survivor selection" -- The near-final step of most generational models,
      immediately prior to population swaps (if any).

@@ -88,6 +88,28 @@ namespace ealib {
             resize(desc.get<mkv::IN>(), desc.get<mkv::OUT>(), desc.get<mkv::HID>());
         }
         
+        //! Copy constructor.
+        markov_network(const markov_network& that) {
+            resize(that._nin, that._nout, that._nhid);
+            _rng = that._rng;
+            for(typename gate_vector_type::const_iterator i=that._gates.begin(); i!=that._gates.end(); ++i) {
+                abstract_gate_ptr p((*i)->clone());
+                _gates.push_back(p);
+            }
+        }
+        
+        //! Assignment operator.
+        markov_network& operator=(const markov_network& that) {
+            if(this != &that) {
+                resize(that._nin, that._nout, that._nhid);
+                _rng = that._rng;
+                for(typename gate_vector_type::const_iterator i=that._gates.begin(); i!=that._gates.end(); ++i) {
+                    abstract_gate_ptr p((*i)->clone());
+                    _gates.push_back(p);
+                }
+            }
+        }
+
         //! Resize this network.
         void resize(std::size_t nin, std::size_t nout, std::size_t nhid) {
             _nin = nin;
@@ -211,13 +233,6 @@ namespace ealib {
         gate_vector_type _gates; //!< Vector of gates.
         state_vector_type _T; //!< State vector for time t.
         state_vector_type _Tplus1; //!< State vector for time t+1.
-        
-    private:
-        //! Copy constructor.
-        markov_network(const markov_network& that);
-        
-        //! Assignment operator.
-        markov_network& operator=(const markov_network& that);
     };
     
     

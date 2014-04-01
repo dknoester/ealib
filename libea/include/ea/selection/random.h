@@ -27,37 +27,34 @@ namespace ealib {
 	namespace selection {
 		
 		/*! Random selection.
-		 
-		 This selection method selects individuals randomly without replacement
-         (that is, the same individual will not be selected more than once.)
-		 
+
 		 <b>Model of:</b> SelectionStrategyConcept.
 		 */
+        template <typename ReplacementTag=without_replacementS>
 		struct random {
+            typedef ReplacementTag replacement_tag;
+            
             //! Initializing constructor.
 			template <typename Population, typename EA>
 			random(std::size_t n, Population& src, EA& ea) {
 			}
             
-            // death (by virtue of not being copied into the next generation).
-            // this can be done in a few different ways -- however, the only
-            // correct way is one that ensures that each individual is tested
-            // for death *once*, and that the selection appears to occur in
-            // parallel:
-            //                Population survivors;
-            //                for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
-            //                    if(ea.rng().p(1.0-get<REPLACEMENT_RATE_P>(ea))) {
-            //                        survivors.append(i);
-            //                    }
-            //                }
-            //                std::swap(population, survivors);
-
+            //! Select n individuals at random.
+			template <typename Population, typename EA>
+			void select(Population& src, Population& dst, std::size_t n, EA& ea, with_replacementS) {
+				ea.rng().sample_with_replacement(src.begin(), src.end(), std::inserter(dst, dst.end()), n);
+            }
             
 			//! Select n individuals at random.
 			template <typename Population, typename EA>
+			void select(Population& src, Population& dst, std::size_t n, EA& ea, without_replacementS) {
+				ea.rng().sample_without_replacement(src.begin(), src.end(), std::inserter(dst, dst.end()), n);
+            }
+                
+			//! Select n individuals at random.
+			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
-				std::insert_iterator<Population> ii(dst,dst.end());
-				ea.rng().sample_without_replacement(src.begin(), src.end(), ii, n);
+                select(src, dst, n, ea, replacement_tag());
 			}
 		};
         

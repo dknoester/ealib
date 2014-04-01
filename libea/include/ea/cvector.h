@@ -145,7 +145,7 @@ namespace ealib {
 		}
 
         //! Constructs a cvector with n elements.
-        cvector(size_type n)	: base_type(n) {
+        cvector(size_type n) : base_type(n) {
         }
 
         //! Constructs a cvector with n copies of t.
@@ -182,7 +182,27 @@ namespace ealib {
 		inline const_reference operator[](std::size_t i) const {
 			return base_type::operator[](i % base_type::size());
 		}
-        
+
+        //! Returns a reference to element i.
+		inline reference operator[](int i) {
+            if(i >= 0) {
+                return base_type::operator[](i % base_type::size());
+            } else {
+                i = (-1*i) % base_type::size();
+                return base_type::operator[](base_type::size()-i);
+            }
+		}
+		
+        //! Returns a const reference to the i'th element.
+		inline const_reference operator[](int i) const {
+            if(i >= 0) {
+                return base_type::operator[](i % base_type::size());
+            } else {
+                i = (-1*i) % base_type::size();
+                return base_type::operator[](base_type::size()-i);
+            }
+		}
+
         //! Returns an iterator to the beginning of the cvector.
         iterator begin() {
             return iterator(0, base_type::begin(), base_type::end(), base_type::begin());

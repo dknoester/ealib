@@ -23,6 +23,8 @@
 #include <ea/attributes.h>
 #include <ea/selection.h>
 
+#error this file is broken!
+
 namespace ealib {
 	namespace selection {
         

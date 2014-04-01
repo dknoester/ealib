@@ -429,6 +429,20 @@ namespace ealib {
 			calculate_fitness(**first,ea);
 		}
     }
+
+    //! Triggers reinitialization of the fitness function.
+    template <typename EA>
+    struct reinitialize_fitness_function : end_of_update_event<EA> {
+        reinitialize_fitness_function(EA& ea) : end_of_update_event<EA>(ea) {
+        }
+
+        virtual ~reinitialize_fitness_function() { }
+        
+        virtual void operator()(EA& ea) {
+            initialize_fitness_function(ea.fitness_function(), ea);
+            nullify_fitness(ea.begin(), ea.end(), ea);
+        }
+    };
     
 } // ealib
 

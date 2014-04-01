@@ -365,7 +365,7 @@ namespace ealib {
      */
     template <typename RNG>
     struct bit_generator {
-        typedef double result_type;
+        typedef int result_type;
         bit_generator(RNG& rng) : _rng(rng) { }
         result_type operator()() { return _rng.bit(); }
         RNG& _rng;

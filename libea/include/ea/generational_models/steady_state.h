@@ -39,6 +39,8 @@ namespace ealib {
 		 offspring.  Some of the resulting offspring are then mutated.  Finally,
 		 individuals from the joint population of parents and offspring are selected
 		 for inclusion in the next generation.
+         
+         \param lambda is the number of offspring during 1 update (~"generation").
 		 */
         template <
         typename ParentSelectionStrategy=selection::proportionate< >,

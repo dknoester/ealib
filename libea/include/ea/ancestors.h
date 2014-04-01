@@ -166,6 +166,24 @@ namespace ealib {
             }
         };
         
+        /*! Generates a bitstring that is flat over the number of 1s.
+         */
+        struct flat_bitstring {
+            //! Generate an individual.
+            template <typename EA>
+            typename EA::representation_type operator()(EA& ea) {
+                typename EA::representation_type r;
+                r.resize(get<REPRESENTATION_SIZE>(ea));
+                
+                std::size_t x=ea.rng()(r.size()); // how many ones?
+                for(typename EA::representation_type::iterator i=r.begin(); x>0; --x, ++i) {
+                    *i = 1;
+                }
+                std::random_shuffle(r.begin(), r.end(), ea.rng());
+                return r;
+            }
+        };
+        
         /*! Generates a representation from uniformly distributed random integers.
          */
         struct uniform_integer {            

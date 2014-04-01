@@ -51,7 +51,10 @@ namespace ealib {
             virtual ~abstract_gate() {
             }
             
-            //! Return the output of this gate based on input x.
+            //! Returns a pointer to a newly-allocated clone of this gate.
+            virtual abstract_gate* clone() = 0;
+            
+            //! Returns the output of this gate based on input x.
             virtual int operator()(int x, RandomNumberGenerator& rng) = 0;
             
             index_vector_type inputs; //!< Input indices to this node.
@@ -63,7 +66,7 @@ namespace ealib {
          */
         template <typename RandomNumberGenerator>
         struct logic_gate : abstract_gate<RandomNumberGenerator> {
-            typedef abstract_gate<RandomNumberGenerator> base_type;
+            typedef abstract_gate<RandomNumberGenerator> parent_type;
             
             //! Constructor.
             logic_gate() {
@@ -71,6 +74,12 @@ namespace ealib {
             
             //! Destructor.
             virtual ~logic_gate() {
+            }
+            
+            //! Returns a pointer to a newly-allocated clone of this gate.
+            virtual parent_type* clone() {
+                logic_gate* p = new logic_gate(*this);
+                return p;
             }
             
             //! Return the output of this gate based on input x.
@@ -86,7 +95,7 @@ namespace ealib {
          */
         template <typename RandomNumberGenerator>
         struct probabilistic_gate : abstract_gate<RandomNumberGenerator> {
-            typedef abstract_gate<RandomNumberGenerator> base_type;
+            typedef abstract_gate<RandomNumberGenerator> parent_type;
             
             //! Constructor.
             probabilistic_gate() {
@@ -94,6 +103,12 @@ namespace ealib {
             
             //! Destructor.
             virtual ~probabilistic_gate() {
+            }
+            
+            //! Returns a pointer to a newly-allocated clone of this gate.
+            virtual parent_type* clone() {
+                probabilistic_gate* p = new probabilistic_gate(*this);
+                return p;
             }
             
             //! Update t+1 with input from t.
@@ -129,7 +144,7 @@ namespace ealib {
          */
         template <typename RandomNumberGenerator>
         struct adaptive_gate : abstract_gate<RandomNumberGenerator> {
-            typedef abstract_gate<RandomNumberGenerator> base_type;
+            typedef abstract_gate<RandomNumberGenerator> parent_type;
             typedef std::deque<std::pair<std::size_t, std::size_t> > history_type;//!< Type for tracking history of decisions.
             
             //! Constructor.
@@ -138,6 +153,12 @@ namespace ealib {
             
             //! Destructor.
             virtual ~adaptive_gate() {
+            }
+            
+            //! Returns a pointer to a newly-allocated clone of this gate.
+            virtual parent_type* clone() {
+                adaptive_gate* p = new adaptive_gate(*this);
+                return p;
             }
             
             //! Update t+1 with input from t.

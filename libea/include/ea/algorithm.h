@@ -34,6 +34,17 @@
 namespace ealib {
 	namespace algorithm {
         
+        //! Returns true if g(*x) evaluates to true for all x \in [f, l), false otherwise.
+        template <typename InputIterator, typename BinaryOperation>
+        bool all(InputIterator f, InputIterator l, BinaryOperation g) {
+            for( ; f!=l; ++f) {
+                if(!g(*f)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         //! Ternary {0,1,#} equals binary predicate (# == don't care, which is valued at -1).
         struct tdc_binary_predicate : std::binary_function<int,int,bool> {
             bool operator()(int x, int y) {
