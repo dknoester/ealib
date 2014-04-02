@@ -40,7 +40,7 @@ namespace ealib {
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
                 std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
-                std::copy_n(src.rbegin(), std::min(src.size(),n), std::inserter(dst,dst.end()));
+                algorithm::copy_n(src.rbegin(), std::min(src.size(),n), std::inserter(dst,dst.end()));
             }
         };
 

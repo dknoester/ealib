@@ -61,7 +61,7 @@ namespace ealib {
                 // now, append the e most-fit individuals:
                 if(e > 0) {
                     std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
-                    std::copy_n(src.rbegin(), e, std::inserter(dst,dst.end()));
+                    algorithm::copy_n(src.rbegin(), e, std::inserter(dst,dst.end()));
                 }
             };
 

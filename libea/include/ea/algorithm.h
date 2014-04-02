@@ -34,6 +34,15 @@
 namespace ealib {
 	namespace algorithm {
         
+        //! Copy n elements from f to r.
+        template <class InputIterator, class OutputIterator>
+        OutputIterator copy_n(InputIterator first, std::size_t n, OutputIterator result) {
+            for(std::size_t i=0; i<n; ++i) {
+                *result++ = *first++;
+            }
+            return result;
+        }
+        
         //! Returns true if g(*x) evaluates to true for all x \in [f, l), false otherwise.
         template <typename InputIterator, typename BinaryOperation>
         bool all(InputIterator f, InputIterator l, BinaryOperation g) {
@@ -60,13 +69,6 @@ namespace ealib {
             }
         }
         
-        template <class RandomAccessIterator, class OutputIterator>
-        OutputIterator copy_n(RandomAccessIterator first, std::size_t n, OutputIterator result) {
-            for(std::size_t i=0; i<n; ++i) {
-                *(result+i) = first[i];
-            }
-            return result+n;
-        }
         
         /*! Calculates the cumulative product of the range [f,l).
          */
