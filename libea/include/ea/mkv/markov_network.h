@@ -48,6 +48,8 @@ namespace ealib {
     
     /*! Markov Network.
      
+     The default update function is a binary or.
+     
      \param StateType state variable type
      \param UpdateFunction updates state variables
      \param RandomNumberGenerator
@@ -184,9 +186,7 @@ namespace ealib {
          This function calculates the input to each gate from its state variables,
          runs the gate on that input, and then sends that output to other state
          variables.
-         
-         The default update function is a binary or.
-         
+
          \param f is any type that supports operator[] (e.g., RA iterator or sequence).
          */
         template <typename RandomAccess>

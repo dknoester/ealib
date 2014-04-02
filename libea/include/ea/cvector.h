@@ -272,6 +272,21 @@ namespace ealib {
             return iterator(0, base_type::begin(), base_type::end(), i);
         }
 	};
+    
+    template <typename CVector>
+    struct cvector_offset {
+        typedef CVector cvector_type;
+        
+        cvector_offset(cvector_type& cv, int offset) : _cv(cv), _offset(offset) {
+        }
+        
+        inline typename cvector_type::reference operator[](int i) {
+            return _cv[i+_offset];
+        }
+        
+        cvector_type _cv; //!< Underlying cvector.
+        int _offset; //!< Offset to apply to all indexing operations.
+    };
 	
 } // ea
 
