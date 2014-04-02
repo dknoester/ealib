@@ -430,10 +430,10 @@ namespace ealib {
 		}
     }
 
-    //! Triggers reinitialization of the fitness function.
+    //! Periodically reinitializes the fitness function.
     template <typename EA>
-    struct reinitialize_fitness_function : end_of_update_event<EA> {
-        reinitialize_fitness_function(EA& ea) : end_of_update_event<EA>(ea) {
+    struct reinitialize_fitness_function : periodic_event<FF_INITIALIZATION_PERIOD, EA> {
+        reinitialize_fitness_function(EA& ea) : periodic_event<FF_INITIALIZATION_PERIOD, EA>(ea) {
         }
 
         virtual ~reinitialize_fitness_function() { }

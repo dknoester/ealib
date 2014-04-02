@@ -28,12 +28,9 @@ namespace ealib {
     
 	namespace selection {
 		
-		/*! Selects individuals based on their rank.
+		/*! Selects individuals based on the rank of their fitness.
 		 */
-        template <typename AttributeAccessor=access::fitness>
 		struct rank {
-            typedef AttributeAccessor acc_type; //!< Accessor for proportionate selection.
-            
 			//! Constructor.
 			template <typename Population, typename EA>
 			rank(std::size_t n, Population& src, EA& ea) {
@@ -42,8 +39,8 @@ namespace ealib {
 			//! Select n individuals via rank selection.
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
-                std::sort(src.begin(), src.end(), comparators::attribute<acc_type,EA>(ea));
-                std::copy(src.begin(), src.begin()+n, std::inserter(dst,dst.end()));
+                std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
+                std::copy_n(src.rbegin(), std::min(src.size(),n), std::inserter(dst,dst.end()));
             }
         };
 
