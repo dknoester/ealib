@@ -284,6 +284,7 @@ namespace ealib {
             add_option<MKV_OUTPUT_N>(ci);
             add_option<MKV_HIDDEN_N>(ci);
             add_option<MKV_INITIAL_GATES>(ci);
+            add_option<MKV_GATE_TYPES>(ci);
             
             // ea options
             add_option<REPRESENTATION_INITIAL_SIZE>(ci);

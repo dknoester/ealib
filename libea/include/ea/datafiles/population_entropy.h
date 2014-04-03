@@ -26,7 +26,7 @@
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
 #include <boost/accumulators/statistics/min.hpp>
-#include <ea/analysis.h>
+#include <ea/math/information.h>
 #include <ea/datafile.h>
 
 
@@ -52,7 +52,7 @@ namespace ealib {
                     genotypes.push_back(algorithm::vcat(i->repr().begin(), i->repr().end()));
                 }
                 _df.write(ea.current_update())
-                .write(analysis::entropy(genotypes.begin(), genotypes.end()))
+                .write(math::entropy(genotypes.begin(), genotypes.end()))
                 .endl();
             }
             
@@ -81,7 +81,7 @@ namespace ealib {
                 }
                 
                 _df.write(ea.current_update())
-                .write(analysis::entropy(genotypes.begin(), genotypes.end()))
+                .write(math::entropy(genotypes.begin(), genotypes.end()))
                 .endl();
             }
             

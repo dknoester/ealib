@@ -218,7 +218,7 @@ namespace ealib {
 
                 // export the exports to i+1 subpopulation
                 typename EA::subpopulation_type next;
-                selection::elitism<selection::random> sel(t->size()-exports.size(), t->population(), t->ea());
+                selection::elitism<selection::random< > > sel(t->size()-exports.size(), t->population(), t->ea());
                 sel(t->population(), next, t->size()-exports.size(), t->ea());
                 next.insert(next.end(), exports.begin(), exports.end());
                 std::swap(t->population(), next);
@@ -253,7 +253,7 @@ namespace ealib {
                                                                                     static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(ea)*top.size()),
                                                                                     ea);
                         typename EA::subpopulation_type next;
-                        selection::elitism<selection::random> sel(top.size()-imports.size(), top.population(), top);
+                        selection::elitism<selection::random< > > sel(top.size()-imports.size(), top.population(), top);
                         sel(top.population(), next, top.size()-imports.size(), top);
                         next.insert(next.end(), imports.begin(), imports.end());
                         std::swap(top.population(), next);

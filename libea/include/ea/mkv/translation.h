@@ -21,6 +21,7 @@
 #define _EA_MKV_TRANSLATE_H_
 
 #include <set>
+#include <string>
 
 #include <ea/mkv/gates.h>
 
@@ -31,6 +32,7 @@ namespace ealib {
         LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", std::size_t);
         LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", std::size_t);
         LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", std::size_t);
+        LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
 
         //! Start codon detector.
         struct start_codon {
