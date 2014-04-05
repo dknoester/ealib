@@ -18,8 +18,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
+#include <ea/algorithm.h>
 #include <ea/cvector.h>
+#include <ea/torus.h>
 #include "test.h"
+
+BOOST_AUTO_TEST_CASE(test_torus) {
+	using namespace ealib;
+    torus<int> T(3,3);
+    algorithm::iota(T.begin(), T.end());
+    // 0 1 2
+    // 3 4 5
+    // 6 7 8
+    
+    BOOST_CHECK(T.size()==9);
+    BOOST_CHECK(T(0,0)==0);
+    BOOST_CHECK(T(2,2)==8);
+    BOOST_CHECK(T(-1,0)==6);
+    BOOST_CHECK(T(4,4)==4);
+    
+    torus_offset<torus<int> > O(T,-1,-1);
+    BOOST_CHECK(O(0,0)==8);
+    BOOST_CHECK(O(0,-1)==7);
+    
+    adaptor_2d<torus_offset<torus<int> > > A(O, 2, 2);
+    BOOST_CHECK(A[0]==8);
+    BOOST_CHECK(A[1]==6);
+    BOOST_CHECK(A[2]==2);
+    BOOST_CHECK(A[3]==0);
+}
 
 BOOST_AUTO_TEST_CASE(test_circular_vector) {
 	using namespace ealib;

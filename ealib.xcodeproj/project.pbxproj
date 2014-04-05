@@ -413,6 +413,7 @@
 		4210C5B9188877BA00A8FAFA /* digital_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_evolution.h; sourceTree = "<group>"; };
 		4210C5BA1889634C00A8FAFA /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
 		421D68B61735719700A45DD6 /* test_analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_analysis.cpp; sourceTree = "<group>"; };
+		423243D618F01AE30047D8ED /* torus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = torus.h; sourceTree = "<group>"; };
 		4234C3FE178B1ACE0078BD85 /* test_lcs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_lcs.cpp; sourceTree = "<group>"; };
 		423CBC85157D0D910003A644 /* ealib.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ealib.xcconfig; sourceTree = "<group>"; };
 		423CBC86157D0D910003A644 /* Jamroot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Jamroot; sourceTree = "<group>"; };
@@ -867,6 +868,7 @@
 				42E1922E18783995009EF3A7 /* configuration.h */,
 				428B7231184F77AB00E3BB4E /* concepts.h */,
 				428B7233184F77AB00E3BB4E /* cvector.h */,
+				423243D618F01AE30047D8ED /* torus.h */,
 				428B7234184F77AB00E3BB4E /* datafile.h */,
 				428B7235184F77AB00E3BB4E /* datafiles */,
 				4210C5B9188877BA00A8FAFA /* digital_evolution.h */,
