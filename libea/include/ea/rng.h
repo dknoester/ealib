@@ -175,6 +175,11 @@ namespace ealib {
 		double normal_real(double mean, double variance) {
 			return normal_real_rng_type(_eng, normal_real_dist(mean, variance))();
 		}
+        
+		//! Returns a generator of random real values drawn from a normal distribution with the given mean and variance.
+		normal_real_rng_type normal_real_rng(double mean, double variance) {
+			return normal_real_rng_type(_eng, normal_real_dist(mean, variance));
+		}
 		
 		/*! Returns an integer value in the range [min, max).
 		 
