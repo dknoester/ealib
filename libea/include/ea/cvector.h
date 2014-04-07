@@ -284,7 +284,7 @@ namespace ealib {
             return _cv[i+_offset];
         }
         
-        cvector_type _cv; //!< Underlying cvector.
+        cvector_type& _cv; //!< Underlying cvector.
         int _offset; //!< Offset to apply to all indexing operations.
     };
 	

@@ -23,9 +23,52 @@
 #include <ea/torus.h>
 #include "test.h"
 
-BOOST_AUTO_TEST_CASE(test_torus) {
+BOOST_AUTO_TEST_CASE(test_torus3) {
 	using namespace ealib;
-    torus<int> T(3,3);
+    torus3<int> T(3,3,3);
+    algorithm::iota(T.begin(), T.end());
+    
+    // page 0:
+    // 0 1 2
+    // 3 4 5
+    // 6 7 8
+    //
+    // page 1:
+    // 9 10 11
+    // 12 13 14
+    // 15 16 17
+    //
+    // page 2:
+    // 18 19 20
+    // 21 22 23
+    // 24 25 26
+    
+    BOOST_CHECK(T.size()==27);
+    BOOST_CHECK(T(0,0,0)==0);
+    BOOST_CHECK(T(2,2,2)==26);
+    BOOST_CHECK(T(-1,0,0)==6);
+    BOOST_CHECK(T(0,-1,0)==2);
+    BOOST_CHECK(T(0,0,-1)==18);
+    
+    offset_torus3<torus3<int> > O(T,-1,-1,-1);
+    BOOST_CHECK(O(0,0,0)==26);
+    BOOST_CHECK(O(1,1,1)==0);
+    
+    adaptor_torus3<offset_torus3<torus3<int> > > A(O, 2, 2, 2);
+    BOOST_CHECK(A[0]==26);
+    BOOST_CHECK(A[1]==24);
+    BOOST_CHECK(A[2]==20);
+    BOOST_CHECK(A[3]==18);
+    BOOST_CHECK(A[4]==8);
+    BOOST_CHECK(A[5]==6);
+    BOOST_CHECK(A[6]==2);
+    BOOST_CHECK(A[7]==0);
+}
+
+
+BOOST_AUTO_TEST_CASE(test_torus2) {
+	using namespace ealib;
+    torus2<int> T(3,3);
     algorithm::iota(T.begin(), T.end());
     // 0 1 2
     // 3 4 5
@@ -37,11 +80,11 @@ BOOST_AUTO_TEST_CASE(test_torus) {
     BOOST_CHECK(T(-1,0)==6);
     BOOST_CHECK(T(4,4)==4);
     
-    torus_offset<torus<int> > O(T,-1,-1);
+    torus2_offset<torus2<int> > O(T,-1,-1);
     BOOST_CHECK(O(0,0)==8);
     BOOST_CHECK(O(0,-1)==7);
     
-    adaptor_2d<torus_offset<torus<int> > > A(O, 2, 2);
+    adaptor_torus2<torus2_offset<torus2<int> > > A(O, 2, 2);
     BOOST_CHECK(A[0]==8);
     BOOST_CHECK(A[1]==6);
     BOOST_CHECK(A[2]==2);

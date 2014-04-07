@@ -868,7 +868,6 @@
 				42E1922E18783995009EF3A7 /* configuration.h */,
 				428B7231184F77AB00E3BB4E /* concepts.h */,
 				428B7233184F77AB00E3BB4E /* cvector.h */,
-				423243D618F01AE30047D8ED /* torus.h */,
 				428B7234184F77AB00E3BB4E /* datafile.h */,
 				428B7235184F77AB00E3BB4E /* datafiles */,
 				4210C5B9188877BA00A8FAFA /* digital_evolution.h */,
@@ -904,6 +903,7 @@
 				428B7280184F77AB00E3BB4E /* selection */,
 				427F5E5918806FB3003CCA5C /* subpopulation.h */,
 				42E1920E1872705C009EF3A7 /* stop.h */,
+				423243D618F01AE30047D8ED /* torus.h */,
 				428B722E184F77AB00E3BB4E /* traits.h */,
 				428B725F184F77AB00E3BB4E /* translation.h */,
 			);
