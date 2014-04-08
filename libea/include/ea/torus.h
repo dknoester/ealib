@@ -212,12 +212,6 @@ namespace ealib {
         T& _t;
         std::size_t _m, _n, _p;
     };
-
-    
-    
-    
-    
-    
     
 } // ea
 
