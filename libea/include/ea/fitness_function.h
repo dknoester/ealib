@@ -382,15 +382,15 @@ namespace ealib {
     
     //! Calculate the fitness of an individual.
     template <typename EA>
-    void calculate_fitness(typename EA::individual_type& i, EA& ea) {
-        detail::calculate_fitness(i, typename EA::fitness_function_type::constant_tag(), ea);
+    void calculate_fitness(typename EA::individual_type& ind, EA& ea) {
+        detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
     }
     
     //! Calculate fitness for the range [f,l).
 	template <typename ForwardIterator, typename EA>
-	void calculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-		for(; first!=last; ++first) {
-			calculate_fitness(**first,ea);
+	void calculate_fitness(ForwardIterator f, ForwardIterator l, EA& ea) {
+		for(; f!=l; ++f) {
+			calculate_fitness(*f,ea);
 		}
 	}
 
@@ -403,8 +403,8 @@ namespace ealib {
     
     //! Returns true if the individual has a valid fitness.
     template <typename EA>
-    bool has_fitness(typename EA::individual_type& i, EA& ea) {
-        return !i.fitness().is_null();
+    bool has_fitness(typename EA::individual_type& ind, EA& ea) {
+        return !ind.fitness().is_null();
     }
 
     //! Nullify the fitness of an individual.
@@ -415,18 +415,24 @@ namespace ealib {
 
     //! Nullify fitness for the population range [f,l).
 	template <typename ForwardIterator, typename EA>
-	void nullify_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-		for(; first!=last; ++first) {
-            first->fitness().nullify();
+	void nullify_fitness(ForwardIterator f, ForwardIterator l, EA& ea) {
+		for(; f!=l; ++f) {
+            f->fitness().nullify();
 		}
 	}
 
+    //! Unconditionally recalculate the fitness of an individual.
+    template <typename EA>
+    void recalculate_fitness(typename EA::individual_type& ind, EA& ea) {
+        nullify_fitness(ind,ea);
+        calculate_fitness(ind,ea);
+    }
+
     //! Unconditionally recalculate fitness for the range [f,l).
 	template <typename ForwardIterator, typename EA>
-	void recalculate_fitness(ForwardIterator first, ForwardIterator last, EA& ea) {
-		for(; first!=last; ++first) {
-            nullify_fitness(**first,ea);
-			calculate_fitness(**first,ea);
+	void recalculate_fitness(ForwardIterator f, ForwardIterator l, EA& ea) {
+		for(; f!=l; ++f) {
+            recalculate_fitness(*f, ea);
 		}
     }
 

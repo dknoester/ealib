@@ -47,8 +47,8 @@ namespace ealib {
             const std::string& output = get<ANALYSIS_OUTPUT>(ea);
             
             EA archive;
-            if(boost::filesystem::exists(filename)) {
-                load_archive(filename, archive);
+            if(boost::filesystem::exists(input)) {
+                load_archive(input, archive);
             }
             
             archive.insert(archive.end(), *dominant(ea));

@@ -84,10 +84,10 @@ namespace ealib {
     
     
     template <typename T>
-    struct torus2_offset {
+    struct offset_torus2 {
         typedef typename T::reference reference;
         
-        torus2_offset(T& t, int i, int j) : _t(t), _i(i), _j(j) {
+        offset_torus2(T& t, int i, int j) : _t(t), _i(i), _j(j) {
         }
         
         reference operator()(int i, int j) {
