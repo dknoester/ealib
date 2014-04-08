@@ -12,6 +12,7 @@ alias libea :
     /boost//signals
     /boost//iostreams
     /boost//regex
+    /boost//system
     /site-config//z
     : : : <include>./include
     ;
