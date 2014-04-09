@@ -34,6 +34,18 @@
 namespace ealib {
 	namespace algorithm {
         
+        template <typename Container, typename ForwardIterator, typename OutputIterator>
+        OutputIterator circ_copy_n(Container& c, ForwardIterator f, std::size_t n, OutputIterator oi) {
+            while(n > 0) {
+                if(f == c.end()) {
+                    f = c.begin();
+                }
+                *oi++ = *f;
+                --n;
+            }
+            return oi;
+        }
+        
         //! Copy n elements from f to r.
         template <class InputIterator, class OutputIterator>
         OutputIterator copy_n(InputIterator first, std::size_t n, OutputIterator result) {
