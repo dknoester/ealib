@@ -80,11 +80,11 @@ BOOST_AUTO_TEST_CASE(test_torus2) {
     BOOST_CHECK(T(-1,0)==6);
     BOOST_CHECK(T(4,4)==4);
     
-    torus2_offset<torus2<int> > O(T,-1,-1);
+    offset_torus2<torus2<int> > O(T,-1,-1);
     BOOST_CHECK(O(0,0)==8);
     BOOST_CHECK(O(0,-1)==7);
     
-    adaptor_torus2<torus2_offset<torus2<int> > > A(O, 2, 2);
+    adaptor_torus2<offset_torus2<torus2<int> > > A(O, 2, 2);
     BOOST_CHECK(A[0]==8);
     BOOST_CHECK(A[1]==6);
     BOOST_CHECK(A[2]==2);

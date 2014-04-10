@@ -28,6 +28,8 @@
 #include <boost/accumulators/statistics/min.hpp>
 #include <ea/datafile.h>
 #include <ea/traits.h>
+#include <ea/metapopulation.h>
+
 
 
 namespace ealib {
@@ -72,11 +74,11 @@ namespace ealib {
         /*! Datafile for mean generation, and mean & max fitness.
          */
         template <typename EA>
-        struct meta_population_fitness : record_statistics_event<EA> {
-            meta_population_fitness(EA& ea)
+        struct metapopulation_fitness_dat : record_statistics_event<EA> {
+            metapopulation_fitness_dat(EA& ea)
             : record_statistics_event<EA>(ea)
-            , _df("sub_population_fitness.dat")
-            , _mp("meta_population_fitness.dat") {
+            , _df("subpopulation_fitness.dat")
+            , _mp("metapopulation_fitness.dat") {
                 _df.add_field("update");
                 for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
                     _df.add_field("mean_generation_sp" + boost::lexical_cast<std::string>(i))
@@ -93,7 +95,7 @@ namespace ealib {
                 .add_field("max_fitness");
             }
             
-            virtual ~meta_population_fitness() {
+            virtual ~metapopulation_fitness_dat() {
             }
             
             virtual void operator()(EA& ea) {

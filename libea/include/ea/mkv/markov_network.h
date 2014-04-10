@@ -269,6 +269,19 @@ namespace ealib {
                 return p;
             }
         };
+
+        /*! Markov network specific traits for an individual.
+         */
+        template <typename T>
+        struct lod_default_traits : ealib::default_lod_traits<T> {
+            //! Translate an individual's representation into a Markov Network.
+            template <typename EA>
+            typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
+                typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
+                translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
+                return p;
+            }
+        };
         
         typedef circular_genome<int> representation_type;
         typedef mutation::operators::indel<mutation::operators::per_site<mutation::site::uniform_integer> > mutation_type;

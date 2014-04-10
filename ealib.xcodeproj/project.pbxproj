@@ -575,7 +575,6 @@
 		42D68D89163F891F00659AE1 /* test_metapopulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_metapopulation.cpp; sourceTree = "<group>"; };
 		42E1920E1872705C009EF3A7 /* stop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stop.h; sourceTree = "<group>"; };
 		42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
-		42E1922D1877487A009EF3A7 /* metapopulation_fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metapopulation_fitness.h; sourceTree = "<group>"; };
 		42E1922E18783995009EF3A7 /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -959,7 +958,6 @@
 			children = (
 				428B7236184F77AB00E3BB4E /* evaluations.h */,
 				428B7237184F77AB00E3BB4E /* fitness.h */,
-				42E1922D1877487A009EF3A7 /* metapopulation_fitness.h */,
 				428B7238184F77AB00E3BB4E /* population_entropy.h */,
 				428B7239184F77AB00E3BB4E /* priority.h */,
 				428B723A184F77AB00E3BB4E /* reactions.h */,

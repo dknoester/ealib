@@ -22,7 +22,7 @@
 #include <ea/fitness_functions/all_ones.h>
 #include <ea/cmdline_interface.h>
 #include <ea/generational_models/steady_state.h>
-#include <ea/datafiles/metapopulation_fitness.h>
+#include <ea/datafiles/fitness.h>
 #include <ea/metapopulation.h>
 #include <ea/island_model.h>
 using namespace ealib;
@@ -74,7 +74,7 @@ public:
     
     virtual void gather_events(EA& ea) {
         add_event<island_model>(ea);
-        add_event<datafiles::meta_population_fitness>(ea);
+        add_event<datafiles::metapopulation_fitness_dat>(ea);
     };
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, cli);

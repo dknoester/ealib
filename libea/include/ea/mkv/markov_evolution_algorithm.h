@@ -52,6 +52,32 @@ namespace ealib {
     , PopulationGenerator
     > {
     };
+
+    /*! Markov network evolutionary algorithm.
+     
+     This class specializes evolutionary_algorithm to provide an algorithm specific
+     to evolving Markov networks.  If more advanced control over the features of
+     the GA are needed, the reader is referred to evolutionary_algorithm.h.
+	 */
+	template
+    < typename FitnessFunction
+	, typename RecombinationOperator
+	, typename GenerationalModel
+    , typename EarlyStopCondition=dont_stop
+    , typename UserDefinedConfiguration=mkv::configuration
+    , typename PopulationGenerator=fill_population
+    > class markov_evolution_lod_algorithm
+    : public evolutionary_algorithm
+    < individual<mkv::representation_type, FitnessFunction, markov_network< >, indirectS, mkv::lod_default_traits>
+    , mkv::ancestor_generator
+    , mkv::mutation_type
+    , RecombinationOperator
+    , GenerationalModel
+    , EarlyStopCondition
+    , UserDefinedConfiguration
+    , PopulationGenerator
+    > {
+    };
     
 } // ealib
 
