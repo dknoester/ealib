@@ -435,7 +435,7 @@ namespace ealib {
             recalculate_fitness(*f, ea);
 		}
     }
-
+    
     //! Periodically reinitializes the fitness function.
     template <typename EA>
     struct reinitialize_fitness_function : periodic_event<FF_INITIALIZATION_PERIOD, EA> {
@@ -446,10 +446,23 @@ namespace ealib {
         
         virtual void operator()(EA& ea) {
             initialize_fitness_function(ea.fitness_function(), ea);
+        }
+    };
+
+    //! Periodically reinitializes the fitness function.
+    template <typename EA>
+    struct nullifying_reinitialize_fitness_function : periodic_event<FF_INITIALIZATION_PERIOD, EA> {
+        nullifying_reinitialize_fitness_function(EA& ea) : periodic_event<FF_INITIALIZATION_PERIOD, EA>(ea) {
+        }
+        
+        virtual ~nullifying_reinitialize_fitness_function() { }
+        
+        virtual void operator()(EA& ea) {
+            initialize_fitness_function(ea.fitness_function(), ea);
             nullify_fitness(ea.begin(), ea.end(), ea);
         }
     };
-    
+
 } // ealib
 
 #endif
