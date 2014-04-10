@@ -17,3 +17,9 @@ tmp
 DerivedData
 build
 dist
+*.xcscheme
+
+*.xcuserstate
+
+*.plist
+
