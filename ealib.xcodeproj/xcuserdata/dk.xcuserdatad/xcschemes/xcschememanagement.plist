@@ -94,6 +94,11 @@
 			<key>orderHint</key>
 			<integer>30</integer>
 		</dict>
+		<key>test-torus.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>50</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -273,6 +278,11 @@
 			<true/>
 		</dict>
 		<key>428B71FA184F664D00E3BB4E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>428CB51518F81F0500E6093D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

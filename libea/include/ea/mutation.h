@@ -24,6 +24,7 @@
 #include <ea/concepts.h>
 #include <ea/meta_data.h>
 #include <ea/ptr_population.h>
+#include <ea/torus.h>
 
 
 namespace ealib {
@@ -252,8 +253,6 @@ namespace ealib {
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
                     typename EA::representation_type& repr=ind.repr();
-                    
-                    
                     // insertion:
                     if((repr.size() < static_cast<std::size_t>(get<REPRESENTATION_MAX_SIZE>(ea))) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
                         std::size_t csize = ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea));
@@ -271,25 +270,27 @@ namespace ealib {
                                                                                        repr.begin() + (repr.size()-csize));
                         repr.erase(src, src+csize);
                     }
-//
-//                    
 //                    // insertion:
 //                    if(((repr.size()+get<MUTATION_INDEL_MIN_SIZE>(ea)) < static_cast<std::size_t>(get<REPRESENTATION_MAX_SIZE>(ea)))
 //                       && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
-//                        std::size_t csize = static_cast<std::size_t>(ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea)));
-//                        std::size_t begin = static_cast<std::size_t>(ea.rng()(repr.size()));
+//                        torus1_proxy<typename EA::representation_type> t(repr);
+//                        torus1_proxy<typename EA::representation_type>::iterator src=ea.rng().choice(t.begin(), t.end());
 //                        
-//                        
-//                        typename EA::representation_type chunk(repr.begin()+src, repr.begin()+std::min(src+csize, repr.size()));
+//                        std::size_t chunk_size = std::min(get<REPRESENTATION_MAX_SIZE>(ea) - repr.size(),
+//                                                          ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea)));
+//                        typename EA::representation_type chunk(src, src+chunk_size);
 //                        repr.insert(ea.rng().choice(repr.begin(),repr.end()), chunk.begin(), chunk.end());
 //                    }
 //                    
 //                    // deletion:
 //                    if(((repr.size()-get<MUTATION_INDEL_MIN_SIZE>(ea)) > static_cast<std::size_t>(get<REPRESENTATION_MIN_SIZE>(ea)))
 //                       && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
-//                        std::size_t csize = static_cast<std::size_t>(ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea)));
-//                        std::size_t src = static_cast<std::size_t>(ea.rng()(repr.size()));
-//                        repr.erase(repr.begin()+src, repr.begin()+std::min(src+csize, repr.size()));
+//                        torus1_proxy<typename EA::representation_type> t(repr);
+//                        torus1_proxy<typename EA::representation_type>::iterator src=ea.rng().choice(t.begin(), t.end());
+//
+//                        std::size_t chunk_size = std::min(repr.size() - get<REPRESENTATION_MIN_SIZE>(ea),
+//                                                          ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea)));
+//                        t.erase(src, src+chunk_size);
 //                    }
                     
                     // then carry on with normal mutations:

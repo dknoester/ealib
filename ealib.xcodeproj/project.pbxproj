@@ -30,6 +30,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				428CB52718F81F6400E6093D /* PBXTargetDependency */,
 				4243E788189429D200431D18 /* PBXTargetDependency */,
 				4256FAE31892BC93004AB7F9 /* PBXTargetDependency */,
 				4256FAE51892BC93004AB7F9 /* PBXTargetDependency */,
@@ -82,12 +83,13 @@
 		4256FAC71892BC2D004AB7F9 /* digital_evolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4256FA621892BA14004AB7F9 /* digital_evolution.cpp */; };
 		426A04A617B1205B000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		426A04A917B123F9000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
-		42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_circular.cpp */; };
 		428B712218490E8F00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		428B7152184F5EC900E3BB4E /* test_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428B714F184F5EC900E3BB4E /* test_markov_network.cpp */; };
 		428B71FF184F664D00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		428B7205184F666400E3BB4E /* test_neural_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428B7150184F5EC900E3BB4E /* test_neural_network.cpp */; };
 		428B7206184F6A1F00E3BB4E /* test_deep_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428B714E184F5EC900E3BB4E /* test_deep_markov_network.cpp */; };
+		428CB51A18F81F0500E6093D /* test_torus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_torus.cpp */; };
+		428CB52018F81F0500E6093D /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42B55B731641C2C500F240C5 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
 		42B55B751641C2C500F240C5 /* test_information.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B701641C2C500F240C5 /* test_information.cpp */; };
 		42C661381860DC07004476D3 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
@@ -267,6 +269,13 @@
 			remoteGlobalIDString = 4256FADE1892BC7F004AB7F9;
 			remoteInfo = "all-tests";
 		};
+		428CB52618F81F6400E6093D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 423CBC72157D0D440003A644 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 428CB51518F81F0500E6093D;
+			remoteInfo = "test-torus";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -369,6 +378,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		428CB52118F81F0500E6093D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		42C6614C1860DC07004476D3 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -453,7 +471,7 @@
 		427F5E5918806FB3003CCA5C /* subpopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = subpopulation.h; sourceTree = "<group>"; };
 		4281FEDA16C45C840066610C /* test_graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_graph.cpp; sourceTree = "<group>"; };
 		4281FEEC16C4644F0066610C /* test_neuroevolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neuroevolution.cpp; sourceTree = "<group>"; };
-		42841C2915A5F4D800AB18BE /* test_circular.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_circular.cpp; sourceTree = "<group>"; };
+		42841C2915A5F4D800AB18BE /* test_torus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_torus.cpp; sourceTree = "<group>"; };
 		42841C7E15ADACF000AB18BE /* CONTRIBUTORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = CONTRIBUTORS; sourceTree = "<group>"; };
 		42841C7F15ADACF100AB18BE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		428B712718490E8F00E3BB4E /* test-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-mkv"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -548,6 +566,7 @@
 		428B7286184F77AB00E3BB4E /* truncation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = truncation.h; sourceTree = "<group>"; };
 		428B7287184F77AB00E3BB4E /* universal_sampling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = universal_sampling.h; sourceTree = "<group>"; };
 		428B7288184F77AB00E3BB4E /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
+		428CB52518F81F0500E6093D /* test-torus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-torus"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42A170E218E9C41D00C3A248 /* rank.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rank.h; sourceTree = "<group>"; };
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
 		42B55B6E1641C2C500F240C5 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
@@ -674,6 +693,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		428CB51F18F81F0500E6093D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				428CB52018F81F0500E6093D /* libboost_unit_test_framework.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		42C6614A1860DC07004476D3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -753,6 +780,7 @@
 				4256FAB41892BBD5004AB7F9 /* example-mp copy */,
 				4256FAC01892BBDC004AB7F9 /* example-nsga2 copy */,
 				4243E7821894180F00431D18 /* test-ealib copy */,
+				428CB52518F81F0500E6093D /* test-torus */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -798,7 +826,7 @@
 				4245004516D3BA8E007827D7 /* test_digital_evolution_types.cpp */,
 				423CBDF6157D0E450003A644 /* test_serialization.cpp */,
 				4243E7831894184F00431D18 /* test_genetic_algorithm.cpp */,
-				42841C2915A5F4D800AB18BE /* test_circular.cpp */,
+				42841C2915A5F4D800AB18BE /* test_torus.cpp */,
 				4281FEDA16C45C840066610C /* test_graph.cpp */,
 				42B55B701641C2C500F240C5 /* test_information.cpp */,
 				42D68D89163F891F00659AE1 /* test_metapopulation.cpp */,
@@ -1276,6 +1304,23 @@
 			productReference = 428B7204184F664D00E3BB4E /* test_mkv copy */;
 			productType = "com.apple.product-type.tool";
 		};
+		428CB51518F81F0500E6093D /* test-torus */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 428CB52218F81F0500E6093D /* Build configuration list for PBXNativeTarget "test-torus" */;
+			buildPhases = (
+				428CB51618F81F0500E6093D /* Sources */,
+				428CB51F18F81F0500E6093D /* Frameworks */,
+				428CB52118F81F0500E6093D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "test-torus";
+			productName = libea_test;
+			productReference = 428CB52518F81F0500E6093D /* test-torus */;
+			productType = "com.apple.product-type.tool";
+		};
 		42C661361860DC07004476D3 /* test-mp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 42C6614D1860DC07004476D3 /* Build configuration list for PBXNativeTarget "test-mp" */;
@@ -1359,6 +1404,7 @@
 				42C661631860FBE5004476D3 /* test-lod */,
 				428B711C18490E8F00E3BB4E /* test-mkv */,
 				42C661361860DC07004476D3 /* test-mp */,
+				428CB51518F81F0500E6093D /* test-torus */,
 				4256FA6B1892BB01004AB7F9 /* example-all-ones */,
 				4256FA791892BBB2004AB7F9 /* example-devo */,
 				4256FA851892BBBE004AB7F9 /* example-lod */,
@@ -1387,7 +1433,6 @@
 				423CBE63157D0FF50003A644 /* test_serialization.cpp in Sources */,
 				423CBE66157D0FF50003A644 /* test_meta_data.cpp in Sources */,
 				423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */,
-				42841C2A15A5F4D900AB18BE /* test_circular.cpp in Sources */,
 				42B55B751641C2C500F240C5 /* test_information.cpp in Sources */,
 				421D68B81735719700A45DD6 /* test_analysis.cpp in Sources */,
 				42B55B731641C2C500F240C5 /* test.cpp in Sources */,
@@ -1474,6 +1519,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				428B7205184F666400E3BB4E /* test_neural_network.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		428CB51618F81F0500E6093D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				428CB51A18F81F0500E6093D /* test_torus.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1626,6 +1679,11 @@
 			isa = PBXTargetDependency;
 			target = 4256FADE1892BC7F004AB7F9 /* all-tests */;
 			targetProxy = 4256FAF01892BDC6004AB7F9 /* PBXContainerItemProxy */;
+		};
+		428CB52718F81F6400E6093D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 428CB51518F81F0500E6093D /* test-torus */;
+			targetProxy = 428CB52618F81F6400E6093D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1846,6 +1904,18 @@
 			};
 			name = Release;
 		};
+		428CB52318F81F0500E6093D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		428CB52418F81F0500E6093D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		42C6614E1860DC07004476D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2029,6 +2099,15 @@
 			buildConfigurations = (
 				428B7202184F664D00E3BB4E /* Debug */,
 				428B7203184F664D00E3BB4E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		428CB52218F81F0500E6093D /* Build configuration list for PBXNativeTarget "test-torus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				428CB52318F81F0500E6093D /* Debug */,
+				428CB52418F81F0500E6093D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

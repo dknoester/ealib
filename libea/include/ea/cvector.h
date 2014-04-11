@@ -25,35 +25,35 @@
 
 namespace ealib {
 
-    /*! Iterator class for cvector.
+    /*! Circular iterator class.
      
      The trick with circular iterators is that you never actually reach the end -
      you always loop around to the beginning.  So, in order to check i!=end(),
      we use a loop counter.
      */
-	template <typename ForwardIterator>
-    class citerator 
-    : public 
-    boost::iterator_adaptor<
-    citerator<ForwardIterator>, // derived
-    ForwardIterator, // base
-    boost::use_default,
-    boost::forward_traversal_tag> {
+	template <typename Container, typename ForwardIterator>
+    class circular_iterator 
+    : public boost::iterator_adaptor
+    < circular_iterator<Container,ForwardIterator> // derived
+    , ForwardIterator // base
+    , boost::use_default
+    , boost::forward_traversal_tag
+    > {
     public:
-        typedef citerator<ForwardIterator> this_type;
+        typedef Container container_type; // Type of container that we are circularly-iterating over.
         
-        //! Constructs a citerator from a loop counter and set of begin, end, and current iterators.
-        citerator(unsigned int lc, ForwardIterator f, ForwardIterator l, ForwardIterator c) : _loop_count(lc), _begin(f), _end(l), _cur(c) {
+        //! Constructs a circular_iterator from a loop counter and set of begin, end, and current iterators.
+        circular_iterator(unsigned int lc, ForwardIterator f, ForwardIterator l, ForwardIterator c) : _loop_count(lc), _begin(f), _end(l), _cur(c) {
         }
         
-        //! Constructs a citerator from another citerator with a different current position.
-        citerator(const citerator& that, ForwardIterator c) {
+        //! Constructs a circular_iterator from another circular_iterator with a different current position.
+        circular_iterator(const circular_iterator& that, ForwardIterator c) {
             *this = that;
             _cur = c;
         }
         
         //! Assignment operator.
-        citerator& operator=(const citerator& that) {
+        circular_iterator& operator=(const circular_iterator& that) {
             if(this != &that) {
                 _loop_count = that._loop_count;
                 _begin = that._begin;
@@ -62,9 +62,10 @@ namespace ealib {
             }
             return *this;
         }
+        
+        ForwardIterator current() { return _cur; }
 
     protected:
-        template <typename> friend class cvector;
         unsigned int _loop_count; //!< Loop counter.
         ForwardIterator _begin, _end, _cur; //!< Range and current iterators.
 
@@ -80,7 +81,7 @@ namespace ealib {
         }
 
         //! Compare iterators for equality.
-        bool equal(const this_type& that) const {
+        bool equal(const circular_iterator& that) const {
             // if this iterator points to an empty sequence, ignore the loop count:
             if(std::distance(_begin,_end) == 0) {
                 return (_begin == that._begin)
@@ -94,14 +95,14 @@ namespace ealib {
         }
 
         //! Dereference this iterator.
-        typename this_type::iterator_adaptor_::reference dereference() const {
+        typename circular_iterator::iterator_adaptor_::reference dereference() const {
             return *_cur;
         }
         
         //! Advance this iterator by n.
-        void advance(typename this_type::iterator_adaptor_::difference_type n) {
+        void advance(typename circular_iterator::iterator_adaptor_::difference_type n) {
             // count complete loops:
-            typename this_type::iterator_adaptor_::difference_type d=std::distance(_begin,_end);
+            typename circular_iterator::iterator_adaptor_::difference_type d=std::distance(_begin,_end);
             _loop_count += n / d;
             n %= d;
             
@@ -135,10 +136,10 @@ namespace ealib {
 		typedef typename base_type::const_reference const_reference;
         typedef typename base_type::size_type size_type;
         typedef typename base_type::difference_type difference_type;
-        typedef citerator<typename base_type::iterator> iterator;
-        typedef citerator<typename base_type::const_iterator> const_iterator;
-        typedef citerator<typename base_type::reverse_iterator> reverse_iterator;
-        typedef citerator<typename base_type::const_reverse_iterator> const_reverse_iterator;
+        typedef circular_iterator<cvector,typename base_type::iterator> iterator;
+        typedef circular_iterator<cvector,typename base_type::const_iterator> const_iterator;
+        typedef circular_iterator<cvector,typename base_type::reverse_iterator> reverse_iterator;
+        typedef circular_iterator<cvector,typename base_type::const_reverse_iterator> const_reverse_iterator;
 
 		//! Constructs an empty cvector.
 		cvector() : base_type() {
@@ -252,7 +253,7 @@ namespace ealib {
         //! Inserts the range [first, last) before pos.
         template <class InputIterator>
         void insert(iterator pos, InputIterator f, InputIterator l) {
-            base_type::insert(pos._cur, f, l);
+            base_type::insert(pos.current(), f, l);
         }
 
         //! Inserts n copies of x before pos.
@@ -268,7 +269,7 @@ namespace ealib {
         
         //! Erases the range [first, last).
         iterator erase(iterator f, iterator l) {
-            typename base_type::iterator i=base_type::erase(f._cur,l._cur);
+            typename base_type::iterator i=base_type::erase(f.current(),l.current());
             return iterator(0, base_type::begin(), base_type::end(), i);
         }
 	};
