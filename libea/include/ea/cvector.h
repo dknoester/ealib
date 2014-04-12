@@ -277,6 +277,7 @@ namespace ealib {
     template <typename CVector>
     struct cvector_offset {
         typedef CVector cvector_type;
+        typedef typename CVector::value_type value_type;
         
         cvector_offset(cvector_type& cv, int offset) : _cv(cv), _offset(offset) {
         }

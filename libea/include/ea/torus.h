@@ -209,6 +209,7 @@ namespace ealib {
     template <typename T>
     struct offset_torus2 {
         typedef typename T::reference reference;
+        typedef typename T::value_type value_type;
         
         offset_torus2(T& t, int i, int j) : _t(t), _i(i), _j(j) {
         }
@@ -224,10 +225,13 @@ namespace ealib {
     
     template <typename T>
     struct adaptor_torus2 {
+        typedef typename T::reference reference;
+        typedef typename T::value_type value_type;
+
         adaptor_torus2(T& t, std::size_t m, size_t n) : _t(t), _m(m), _n(n) {
         }
         
-        typename T::reference operator[](std::size_t i) {
+        reference operator[](std::size_t i) {
             return _t(i/_n, i%_n);
         }
         
@@ -306,7 +310,8 @@ namespace ealib {
     template <typename T>
     struct offset_torus3 {
         typedef typename T::reference reference;
-        
+        typedef typename T::value_type value_type;
+
         offset_torus3(T& t, int i, int j, int k) : _t(t), _i(i), _j(j), _k(k) {
         }
         
@@ -321,10 +326,13 @@ namespace ealib {
     
     template <typename T>
     struct adaptor_torus3 {
+        typedef typename T::reference reference;
+        typedef typename T::value_type value_type;
+
         adaptor_torus3(T& t, std::size_t m, size_t n, std::size_t p) : _t(t), _m(m), _n(n), _p(p) {
         }
         
-        typename T::reference operator[](std::size_t i) {
+        reference operator[](std::size_t i) {
             int p = i / (_m*_n);
             int r = i % (_m*_n);
             int m = r / _n;
