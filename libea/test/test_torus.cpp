@@ -125,6 +125,19 @@ BOOST_AUTO_TEST_CASE(test_torus3) {
     BOOST_CHECK(A[5]==6);
     BOOST_CHECK(A[6]==2);
     BOOST_CHECK(A[7]==0);
+    
+    adaptor_torus3<offset_torus3<torus3<int> > > B(O, 3, 3, 3);
+    BOOST_CHECK(B[0]==26);
+    BOOST_CHECK(B[1]==24);
+    BOOST_CHECK(B[2]==25);
+    BOOST_CHECK(B[3]==20);
+    BOOST_CHECK(B[4]==18);
+    BOOST_CHECK(B[5]==19);
+    BOOST_CHECK(B[6]==23);
+    BOOST_CHECK(B[7]==21);
+    BOOST_CHECK(B[8]==22);
+
+    
 }
 
 
