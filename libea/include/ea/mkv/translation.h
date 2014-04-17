@@ -175,7 +175,7 @@ namespace ealib {
                     row_type row(g.M, i);
                     f = algorithm::normalize(f, f+g.M.size2(), row.begin(), 1.0);
                 }
-                
+                g.Q = g.M;
                 N.gates().push_back(p);
             }
             

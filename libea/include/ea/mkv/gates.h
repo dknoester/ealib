@@ -51,6 +51,10 @@ namespace ealib {
             virtual ~abstract_gate() {
             }
             
+            //! Clears any internal state held in this gate.
+            virtual void clear() {
+            }
+            
             //! Returns a pointer to a newly-allocated clone of this gate.
             virtual abstract_gate* clone() = 0;
             
@@ -155,6 +159,12 @@ namespace ealib {
             virtual ~adaptive_gate() {
             }
             
+            //! Clears any internal state held in this gate.
+            virtual void clear() {
+                H.clear();
+                M = Q;
+            }
+
             //! Returns a pointer to a newly-allocated clone of this gate.
             virtual parent_type* clone() {
                 adaptive_gate* p = new adaptive_gate(*this);
@@ -230,7 +240,8 @@ namespace ealib {
             history_type H; //!< History of decisions made by this node.
             weight_vector_type P; //!< Positive feedback weight vector.
             weight_vector_type N; //!< Negative feedback weight vector.
-            matrix_type M; //!< Probability table.
+            matrix_type M; //!< "Working" probability table.
+            matrix_type Q; //!< "Pristine" probability table.
         };
         
     } // mkv

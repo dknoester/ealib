@@ -126,6 +126,9 @@ namespace ealib {
         void clear() {
             std::fill(_T.begin(), _T.end(), 0);
             std::fill(_Tplus1.begin(), _Tplus1.end(), 0);
+            for(typename gate_vector_type::iterator i=_gates.begin(); i!=_gates.end(); ++i) {
+                (*i)->clear();
+            }
         }
         
         //! Reset this network's rng.
