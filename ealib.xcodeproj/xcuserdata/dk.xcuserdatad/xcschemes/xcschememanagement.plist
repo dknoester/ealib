@@ -97,7 +97,7 @@
 		<key>test-torus.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>50</integer>
+			<integer>49</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>

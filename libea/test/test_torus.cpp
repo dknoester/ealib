@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(test_torus3) {
     BOOST_CHECK(T(0,-1,0)==2);
     BOOST_CHECK(T(0,0,-1)==18);
     
-    offset_torus3<torus3<int> > O(T,-1,-1,-1);
+    offset_torus3<torus3<int> > O(&T,-1,-1,-1);
     BOOST_CHECK(O(0,0,0)==26);
     BOOST_CHECK(O(1,1,1)==0);
     
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(test_torus2) {
     BOOST_CHECK(T(-1,0)==6);
     BOOST_CHECK(T(4,4)==4);
     
-    offset_torus2<torus2<int> > O(T,-1,-1);
+    offset_torus2<torus2<int> > O(&T,-1,-1);
     BOOST_CHECK(O(0,0)==8);
     BOOST_CHECK(O(0,-1)==7);
     

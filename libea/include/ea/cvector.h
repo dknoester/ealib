@@ -279,14 +279,22 @@ namespace ealib {
         typedef CVector cvector_type;
         typedef typename CVector::value_type value_type;
         
-        cvector_offset(cvector_type& cv, int offset) : _cv(cv), _offset(offset) {
+        cvector_offset(cvector_type* cv=0, int offset=0) : _cv(cv), _offset(offset) {
+        }
+        
+        inline void reset(int offset) {
+            _offset = offset;
+        }
+        
+        inline void reset(cvector_type* cv) {
+            _cv = cv;
         }
         
         inline typename cvector_type::reference operator[](int i) {
-            return _cv[i+_offset];
+            return (*_cv)[i+_offset];
         }
         
-        cvector_type& _cv; //!< Underlying cvector.
+        cvector_type* _cv; //!< Underlying cvector.
         int _offset; //!< Offset to apply to all indexing operations.
     };
 	

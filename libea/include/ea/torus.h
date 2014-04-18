@@ -211,14 +211,22 @@ namespace ealib {
         typedef typename T::reference reference;
         typedef typename T::value_type value_type;
         
-        offset_torus2(T& t, int i, int j) : _t(t), _i(i), _j(j) {
+        offset_torus2(T* t=0, int i=0, int j=0) : _t(t), _i(i), _j(j) {
+        }
+        
+        inline void reset(int i, int j) {
+            _i = i; _j = j;
+        }
+        
+        inline void reset(T* t) {
+            _t = t;
         }
         
         reference operator()(int i, int j) {
-            return _t(i+_i, j+_j);
+            return (*_t)(i+_i, j+_j);
         }
         
-        T& _t;
+        T* _t;
         int _i, _j;
     };
     
@@ -312,14 +320,22 @@ namespace ealib {
         typedef typename T::reference reference;
         typedef typename T::value_type value_type;
 
-        offset_torus3(T& t, int i, int j, int k) : _t(t), _i(i), _j(j), _k(k) {
+        offset_torus3(T* t=0, int i=0, int j=0, int k=0) : _t(t), _i(i), _j(j), _k(k) {
+        }
+        
+        inline void reset(int i, int j, int k) {
+            _i = i; _j = j; _k = k;
+        }
+        
+        inline void reset(T* t) {
+            _t = t;
         }
         
         reference operator()(int i, int j, int k) {
-            return _t(i+_i, j+_j, k+_k);
+            return (*_t)(i+_i, j+_j, k+_k);
         }
         
-        T& _t;
+        T* _t;
         int _i, _j, _k;
     };
     
