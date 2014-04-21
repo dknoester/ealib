@@ -55,6 +55,10 @@ namespace ealib {
             virtual void clear() {
             }
             
+            //! Disables adaptation of gate logic.
+            virtual void disable_adaptation() {
+            }
+            
             //! Returns a pointer to a newly-allocated clone of this gate.
             virtual abstract_gate* clone() = 0;
             
@@ -152,7 +156,7 @@ namespace ealib {
             typedef std::deque<std::pair<std::size_t, std::size_t> > history_type;//!< Type for tracking history of decisions.
             
             //! Constructor.
-            adaptive_gate() {
+            adaptive_gate() : _disabled(false) {
             }
             
             //! Destructor.
@@ -163,6 +167,11 @@ namespace ealib {
             virtual void clear() {
                 H.clear();
                 M = Q;
+            }
+            
+            //! Disables adaptation of gate logic.
+            virtual void disable_adaptation() {
+                _disabled = true;
             }
 
             //! Returns a pointer to a newly-allocated clone of this gate.
@@ -181,11 +190,13 @@ namespace ealib {
                     H.pop_front();
                 }
                 
-                if(x & 0x01) { // reinforce
-                    reinforce();
-                }
-                if((x>>1) & 0x01) { // inhibit
-                    inhibit();
+                if(!_disabled) {
+                    if(x & 0x01) { // reinforce
+                        reinforce();
+                    }
+                    if((x>>1) & 0x01) { // inhibit
+                        inhibit();
+                    }
                 }
                 x = x >> 2; // lop off the two feedback bits
                 
@@ -236,6 +247,7 @@ namespace ealib {
                 }
             }
             
+            bool _disabled; //!< Adaptation disabled if true.
             std::size_t h; //!< Size of history to keep.
             history_type H; //!< History of decisions made by this node.
             weight_vector_type P; //!< Positive feedback weight vector.

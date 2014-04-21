@@ -131,6 +131,13 @@ namespace ealib {
             }
         }
         
+        //! Disables adaptation of gate logic.
+        void disable_adaptation() {
+            for(typename gate_vector_type::iterator i=_gates.begin(); i!=_gates.end(); ++i) {
+                (*i)->disable_adaptation();
+            }
+        }
+
         //! Reset this network's rng.
         void reset(unsigned int seed) {
             _rng.reset(seed);
