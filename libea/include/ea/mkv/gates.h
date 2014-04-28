@@ -1,8 +1,8 @@
-/* gates.h
+/* mkv/gates.h
  *
  * This file is part of EALib.
  *
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <deque>
 
 #include <ea/algorithm.h>
+#include <ea/mkv/graph.h>
 
 namespace ealib {
     namespace mkv {
@@ -38,6 +39,31 @@ namespace ealib {
         typedef bnu::matrix<double> matrix_type; //!< Probability table type.
         typedef bnu::matrix_column<matrix_type> column_type; //!< Column type.
         typedef bnu::matrix_row<matrix_type> row_type; //!< Row type.
+        
+        
+        
+        
+        
+        
+//        
+//
+//
+//        //! Parse a Markov gate.
+//        void operator()(markov_gate& g) const {
+//            G[v].gt = vertex_properties::MARKOV;
+//            add_edges(g.inputs, g.outputs);
+//        }
+//        
+//        //! Parse an Adaptive Markov gate.
+//        void operator()(adaptive_gate& g) const {
+//            G[v].gt = vertex_properties::ADAPTIVE;
+//            add_edges(g.inputs, g.outputs);
+//            boost::add_edge(boost::vertex(g.p,G), v, edge_properties(edge_properties::REINFORCE), G);
+//            boost::add_edge(boost::vertex(g.n,G), v, edge_properties(edge_properties::INHIBIT), G);
+//        }
+
+        
+        
         
         /*! Abstract gate.
          */
@@ -59,6 +85,22 @@ namespace ealib {
             virtual void disable_adaptation() {
             }
             
+            //! Add edges from this gate to a markov graph.
+            virtual void add_edges(const index_vector_type& inputs, const index_vector_type& outputs,
+                                   markov_graph::vertex_descriptor v, markov_graph& G) const {
+                for(std::size_t i=0; i<inputs.size(); ++i) {
+                    boost::add_edge(boost::vertex(inputs[i],G), v, G);
+                }
+                for(std::size_t i=0; i<outputs.size(); ++i) {
+                    boost::add_edge(v, boost::vertex(outputs[i],G), G);
+                }
+            }
+            
+            //! Write this gate to a Markov graph.
+            virtual void as_graph(markov_graph::vertex_descriptor v, markov_graph& G) {
+                add_edges(inputs, outputs, v, G);
+            }
+
             //! Returns a pointer to a newly-allocated clone of this gate.
             virtual abstract_gate* clone() = 0;
             
@@ -84,6 +126,12 @@ namespace ealib {
             virtual ~logic_gate() {
             }
             
+            //! Write this gate to a Markov graph.
+            virtual void as_graph(markov_graph::vertex_descriptor v, markov_graph& G) {
+                parent_type::as_graph(v, G);
+                G[v].gt = vertex_properties::LOGIC;
+            }
+
             //! Returns a pointer to a newly-allocated clone of this gate.
             virtual parent_type* clone() {
                 logic_gate* p = new logic_gate(*this);
@@ -113,6 +161,12 @@ namespace ealib {
             virtual ~probabilistic_gate() {
             }
             
+            //! Write this gate to a Markov graph.
+            virtual void as_graph(markov_graph::vertex_descriptor v, markov_graph& G) {
+                parent_type::as_graph(v, G);
+                G[v].gt = vertex_properties::MARKOV;
+            }
+
             //! Returns a pointer to a newly-allocated clone of this gate.
             virtual parent_type* clone() {
                 probabilistic_gate* p = new probabilistic_gate(*this);
@@ -172,6 +226,14 @@ namespace ealib {
             //! Disables adaptation of gate logic.
             virtual void disable_adaptation() {
                 _disabled = true;
+            }
+
+            //! Write this gate to a Markov graph.
+            virtual void as_graph(markov_graph::vertex_descriptor v, markov_graph& G) {
+                parent_type::as_graph(v, G);
+                G[v].gt = vertex_properties::ADAPTIVE;
+                boost::add_edge(boost::vertex(parent_type::inputs[0],G), v, edge_properties(edge_properties::REINFORCE), G);
+                boost::add_edge(boost::vertex(parent_type::inputs[1],G), v, edge_properties(edge_properties::INHIBIT), G);
             }
 
             //! Returns a pointer to a newly-allocated clone of this gate.

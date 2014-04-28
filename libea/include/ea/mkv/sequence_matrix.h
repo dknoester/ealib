@@ -1,4 +1,4 @@
-/* sequence_matrix.h
+/* mkv/sequence_matrix.h
  *
  * This file is part of EALib.
  *

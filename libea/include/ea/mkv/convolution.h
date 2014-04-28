@@ -1,4 +1,4 @@
-/* convolve_data.h
+/* mkv/convolution.h
  *
  * This file is part of EALib.
  *
