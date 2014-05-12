@@ -231,6 +231,18 @@ namespace ealib {
             }
         }
         
+        //! Move an individual from position i to position j.
+        void move_ind(std::size_t i, std::size_t j) {
+            assert(i < (_locs.size1()*_locs.size2()));
+            assert(j < (_locs.size1()*_locs.size2()));
+            assert(_locs.data()[i].occupied());
+            
+            _locs.data()[j].p = _locs.data()[i].p;
+            _locs.data()[i].p.reset();
+
+
+        }
+        
         //! Replace the organism (if any) living in location l with p.
         void replace(iterator i, individual_ptr_type p, ea_type& ea) {
             location_type& l=(*i);
@@ -292,7 +304,7 @@ namespace ealib {
         location_ptr_type location(int x, int y) {
             return &_locs(x, y);
         }
-
+        
         //! Rotates two individuals to face one another.
         void face_org(individual_type& p1, individual_type& p2) {
             location_ptr_type l1 = location(p1.position());

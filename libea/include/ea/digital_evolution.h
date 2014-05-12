@@ -32,7 +32,7 @@
 #include <ea/digital_evolution/events.h>
 #include <ea/digital_evolution/ancestors.h>
 #include <ea/digital_evolution/discrete_spatial_environment.h>
-#include <ea/digital_evolution/isa.h>
+#include <ea/digital_evolution/instruction_set.h>
 #include <ea/digital_evolution/organism.h>
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/digital_evolution/replication.h>
@@ -119,7 +119,7 @@ namespace ealib {
         //! Environment type.
         typedef discrete_spatial_environment<digital_evolution> environment_type;
         //! ISA type.
-        typedef isa<digital_evolution> isa_type;
+        typedef instruction_set<digital_evolution> isa_type;
         //! Task library type.
         typedef task_library<digital_evolution> task_library_type;
         //! Population type.

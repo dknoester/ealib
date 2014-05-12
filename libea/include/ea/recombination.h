@@ -123,6 +123,7 @@ namespace ealib {
                                                     parents[0]->population().end(),
                                                     std::back_inserter(propagule),
                                                     prop_size);
+                int count = 0;
                 for(typename propagule_type::iterator i=propagule.begin(); i!=propagule.end(); ++i) {
                     // grab the original part of the propagule's genome; note that it could have been
                     // changed (implicit-like mutations):
@@ -138,7 +139,9 @@ namespace ealib {
 
                     
                     p->insert(p->end(),q);
+                    p->ea().env().move_ind(count, pos);
 //                    p->insert(p->begin()+pos, q);
+                    ++count;
                 }
                 
                 offspring.insert(offspring.end(),p);
