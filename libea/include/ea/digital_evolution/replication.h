@@ -59,7 +59,7 @@ namespace ealib {
         std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
             
             typedef typename EA::environment_type::iterator location_iterator;
-            location_iterator l = ea.env().neighbor(parent, ea);
+            location_iterator l = ea.env().neighbor(parent);
             if (l->occupied()) {
                 return std::make_pair(l, false);
 

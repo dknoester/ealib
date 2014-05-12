@@ -70,7 +70,7 @@ namespace ealib {
     
     /*! Meta-data that governs how subpopulation recombination works.
      */
-    LIBEA_MD_DECL(PROPAGULE_SIZE, "ea.recombination.propagule_size", std::size_t);
+    LIBEA_MD_DECL(NUM_PROPAGULE_GERM, "ea.recombination.num_propagule_germ", std::size_t);
     
     namespace recombination {
         
@@ -105,7 +105,9 @@ namespace ealib {
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
                 
-                std::size_t prop_size = get<PROPAGULE_SIZE>(ea,1);
+                // the number of parents selected is the propagule size or 1, if
+                // the propagule's composition is clonal.
+                std::size_t prop_size = get<NUM_PROPAGULE_GERM>(ea,1);
                 assert(prop_size > 0);
                 if (prop_size > parents[0]->size()) {
                     prop_size = parents[0]->size();
@@ -115,7 +117,7 @@ namespace ealib {
                 typename EA::individual_ptr_type p = ea.make_individual();
                 
                 // and fill up the subpopulation
-                typedef typename Population::value_type::element_type::population_type propagule_type;
+                typedef typename EA::subpopulation_type propagule_type;
                 propagule_type propagule;
                 ea.rng().sample_without_replacement(parents[0]->population().begin(),
                                                     parents[0]->population().end(),
@@ -124,11 +126,19 @@ namespace ealib {
                 for(typename propagule_type::iterator i=propagule.begin(); i!=propagule.end(); ++i) {
                     // grab the original part of the propagule's genome; note that it could have been
                     // changed (implicit-like mutations):
-                    typename EA::individual_type::representation_type r((*i)->repr().begin(),
-                                                                        (*i)->repr().begin()+(*i)->hw().original_size());
-                    typename EA::individual_type::individual_ptr_type q = p->make_individual(r);
+                    typename EA::individual_type::ea_type::representation_type r((*i)->repr().begin(),
+                                                                                 (*i)->repr().begin()+(*i)->hw().original_size());
+                    typename EA::individual_type::ea_type::individual_ptr_type q = p->ea().make_individual(r);
+            
+                    inherits_from(**i, *q, p->ea());
+                    // insert into random location....
+                    int s = get<POPULATION_SIZE>(p->ea());
+//                    int r = p->ea()->rng(0,s);
+                    std::size_t pos = p->ea().rng()(s);
+
                     
-                    p->append(q);
+                    p->insert(p->end(),q);
+//                    p->insert(p->begin()+pos, q);
                 }
                 
                 offspring.insert(offspring.end(),p);

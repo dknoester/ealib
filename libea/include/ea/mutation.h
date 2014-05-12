@@ -201,6 +201,25 @@ namespace ealib {
                 }
             };
 
+            template <typename MutationType>
+            struct subpopulation_mutator {
+                typedef MutationType mutation_type;
+
+                //! Mutate every single individual within a subpop.
+                template <typename EA>
+                void operator()(typename EA::individual_type& ind, EA& ea) {
+                    //configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(ea));
+
+                    // ind in this case is a subpop.
+                    for (typename EA::individual_type::iterator i=ind.begin(); i!=ind.end(); ++i) {
+                        _mt((*i),ind.ea());
+                    }
+                }
+                
+                mutation_type _mt;
+                
+            };
+            
             /*! Single-point mutation.
              */
             template <typename MutationType>

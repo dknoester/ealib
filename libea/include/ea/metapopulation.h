@@ -34,7 +34,7 @@
 #include <ea/generational_models/isolated_subpopulations.h>
 #include <ea/mutation.h>
 #include <ea/recombination.h>
-#include <ea/stop.h>
+#include <ea/stop.h> 
 #include <ea/traits.h>
 #include <ea/subpopulation.h>
 

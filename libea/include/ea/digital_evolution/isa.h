@@ -402,7 +402,7 @@ namespace ealib {
         
         //! Get whether a neighboring organism exists.
         DIGEVO_INSTRUCTION_DECL(is_neighbor) {
-            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p);
             if(l.occupied()) {
                 hw.setRegValue(hw.modifyRegister(), 1);
             } else {
@@ -460,7 +460,7 @@ namespace ealib {
         
         //! Send a message to the currently-faced neighbor.
         DIGEVO_INSTRUCTION_DECL(tx_msg_check_task) {
-            typename EA::environment_type::location_type& l=*ea.env().neighbor(p,ea);            
+            typename EA::environment_type::location_type& l=*ea.env().neighbor(p);            
             if(l.occupied()) {
                 int rbx = hw.modifyRegister();
                 int rcx = hw.nextRegister(rbx);
@@ -547,14 +547,14 @@ namespace ealib {
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx); 
                         
-            hw.setRegValue(rbx,ea.env().handle2ptr(p->location())->x);
-            hw.setRegValue(rcx,ea.env().handle2ptr(p->location())->y);
+            hw.setRegValue(rbx,ea.env().location(p->position())->x);
+            hw.setRegValue(rcx,ea.env().location(p->position())->y);
         }
         
         //! Get whether a neighboring organism exists.
         DIGEVO_INSTRUCTION_DECL(is_origin) {
-            if ((ea.env().handle2ptr(p->location())->x == 0) &&
-                (ea.env().handle2ptr(p->location())->y == 0)) {
+            if ((ea.env().location(p->position())->x == 0) &&
+                (ea.env().location(p->position())->y == 0)) {
                 hw.setRegValue(hw.modifyRegister(), 1);
             } else {
                 hw.setRegValue(hw.modifyRegister(), 0);
