@@ -573,6 +573,11 @@ namespace ealib {
             int jumpAmt = hw.getRegValue(rbx);
             hw.advanceHead(Hardware::IP, jumpAmt);
         }
+        
+        DIGEVO_INSTRUCTION_DECL(die) {
+            p->alive() = false;
+            ea.events().death(*p,ea);
+        }
 
     } // instructions
 
