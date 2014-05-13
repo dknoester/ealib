@@ -173,11 +173,23 @@ namespace ealib {
         //! Retrieve state variable i (const-qualified).
         const int& operator()(std::size_t i) const { return _T(i); }
         
+        //! Retrieve input state variable i.
+        int& input(std::size_t i) { return _T[i]; }
+        
+        //! Retrieve output state variable i (const-qualified).
+        const int& input(std::size_t i) const { return _T[i]; }
+        
         //! Retrieve output state variable i.
         int& output(std::size_t i) { return _T[_nin+i]; }
         
         //! Retrieve output state variable i (const-qualified).
         const int& output(std::size_t i) const { return _T[_nin+i]; }
+        
+        //! Retrieve hidden state variable i.
+        int& hidden(std::size_t i) { return _T[_nin+_nout+i]; }
+        
+        //! Retrieve hidden state variable i (const-qualified).
+        const int& hidden(std::size_t i) const { return _T[_nin+_nout+i]; }
         
         //! Retrieve an iterator to the beginning of the inputs.
         iterator begin_input() { return &_T[0]; }
@@ -190,7 +202,13 @@ namespace ealib {
         
         //! Retrieve an iterator to the end of the outputs.
         iterator end_output() { return &_T[0] + _nin + _nout; }
+
+        //! Retrieve an iterator to the beginning of the hidden states.
+        iterator begin_hidden() { return &_T[0] + _nin + _nout; }
         
+        //! Retrieve an iterator to the end of the hidden states.
+        iterator end_hidden() { return &_T[0] + _nin + _nout + _nhid; }
+
         /*! Zero-copy update.
          
          This function calculates the input to each gate from its state variables,
