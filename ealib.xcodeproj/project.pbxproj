@@ -1694,8 +1694,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 423CBC85157D0D910003A644 /* ealib.xcconfig */;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
@@ -1703,7 +1701,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 423CBC85157D0D910003A644 /* ealib.xcconfig */;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
 			};
 			name = Release;
 		};

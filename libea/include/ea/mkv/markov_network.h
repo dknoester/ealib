@@ -124,8 +124,8 @@ namespace ealib {
         
         //! Clears this network (resets all state variables).
         void clear() {
-            std::fill(_T.begin(), _T.end(), 0);
-            std::fill(_Tplus1.begin(), _Tplus1.end(), 0);
+            std::fill(_T.begin(), _T.end(), state_type());
+            std::fill(_Tplus1.begin(), _Tplus1.end(), state_type());
             for(typename gate_vector_type::iterator i=_gates.begin(); i!=_gates.end(); ++i) {
                 (*i)->clear();
             }
@@ -245,7 +245,7 @@ namespace ealib {
                 }
             }
             std::swap(_T,_Tplus1);
-            std::fill(_Tplus1.begin()+_nin, _Tplus1.end(), state_type()); // don't reset internal inputs
+            std::fill(_Tplus1.begin(), _Tplus1.end(), state_type());
         }
         
         //! Update this Markov network n times, assuming all inputs have been set.
