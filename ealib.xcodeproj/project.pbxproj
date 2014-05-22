@@ -105,6 +105,15 @@
 		42C6616C1860FBE5004476D3 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
 		42C661741860FBE5004476D3 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42C6617C1860FC0B004476D3 /* test_lod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42C6617A1860FC0B004476D3 /* test_lod.cpp */; };
+		48A352DD192D90CE002CB031 /* multi_birth_selfrep_nand_not_ancestor.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352D7192D90CE002CB031 /* multi_birth_selfrep_nand_not_ancestor.h */; };
+		48A352DE192D90CE002CB031 /* multi_birth_selfrep_not_ancestor.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352D8192D90CE002CB031 /* multi_birth_selfrep_not_ancestor.h */; };
+		48A352DF192D90CE002CB031 /* multi_birth_selfrep_not_nand_ancestor.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352D9192D90CE002CB031 /* multi_birth_selfrep_not_nand_ancestor.h */; };
+		48A352E0192D90CE002CB031 /* multi_birth_selfrep_not_nand_ornot_ancestor.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352DA192D90CE002CB031 /* multi_birth_selfrep_not_nand_ornot_ancestor.h */; };
+		48A352E1192D90CE002CB031 /* repro_not_ancestor.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352DB192D90CE002CB031 /* repro_not_ancestor.h */; };
+		48A352E2192D90CE002CB031 /* selfrep_not_ancestor.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352DC192D90CE002CB031 /* selfrep_not_ancestor.h */; };
+		48A352E5192D9247002CB031 /* resource_consumption.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352E4192D9247002CB031 /* resource_consumption.h */; };
+		48A352E7192D9262002CB031 /* configurable_mutation.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352E6192D9262002CB031 /* configurable_mutation.h */; };
+		48A352E9192D93ED002CB031 /* task_switching.h in Headers */ = {isa = PBXBuildFile; fileRef = 48A352E8192D93ED002CB031 /* task_switching.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -596,6 +605,16 @@
 		42E1920E1872705C009EF3A7 /* stop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stop.h; sourceTree = "<group>"; };
 		42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
 		42E1922E18783995009EF3A7 /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
+		48A352D7192D90CE002CB031 /* multi_birth_selfrep_nand_not_ancestor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_birth_selfrep_nand_not_ancestor.h; path = ancestors/multi_birth_selfrep_nand_not_ancestor.h; sourceTree = "<group>"; };
+		48A352D8192D90CE002CB031 /* multi_birth_selfrep_not_ancestor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_birth_selfrep_not_ancestor.h; path = ancestors/multi_birth_selfrep_not_ancestor.h; sourceTree = "<group>"; };
+		48A352D9192D90CE002CB031 /* multi_birth_selfrep_not_nand_ancestor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_birth_selfrep_not_nand_ancestor.h; path = ancestors/multi_birth_selfrep_not_nand_ancestor.h; sourceTree = "<group>"; };
+		48A352DA192D90CE002CB031 /* multi_birth_selfrep_not_nand_ornot_ancestor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_birth_selfrep_not_nand_ornot_ancestor.h; path = ancestors/multi_birth_selfrep_not_nand_ornot_ancestor.h; sourceTree = "<group>"; };
+		48A352DB192D90CE002CB031 /* repro_not_ancestor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = repro_not_ancestor.h; path = ancestors/repro_not_ancestor.h; sourceTree = "<group>"; };
+		48A352DC192D90CE002CB031 /* selfrep_not_ancestor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = selfrep_not_ancestor.h; path = ancestors/selfrep_not_ancestor.h; sourceTree = "<group>"; };
+		48A352E4192D9247002CB031 /* resource_consumption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = resource_consumption.h; path = utils/resource_consumption.h; sourceTree = "<group>"; };
+		48A352E6192D9262002CB031 /* configurable_mutation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = configurable_mutation.h; path = utils/configurable_mutation.h; sourceTree = "<group>"; };
+		48A352E8192D93ED002CB031 /* task_switching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = task_switching.h; path = utils/task_switching.h; sourceTree = "<group>"; };
+		48A352EC192E6E09002CB031 /* cell_death.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = cell_death.h; path = extra_instruction_sets/cell_death.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -733,11 +752,14 @@
 			isa = PBXGroup;
 			children = (
 				4210C5AC188877BA00A8FAFA /* ancestors.h */,
+				48A352E3192D921E002CB031 /* utils */,
+				48A352CA192D8E5B002CB031 /* ancestors */,
 				4210C5B0188877BA00A8FAFA /* hardware.h */,
 				4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */,
 				4210C5AD188877BA00A8FAFA /* events.h */,
 				4210C5AF188877BA00A8FAFA /* groups.h */,
 				4210C5B1188877BA00A8FAFA /* instruction_set.h */,
+				48A352EB192E6DDD002CB031 /* extra_instruction_sets */,
 				4210C5B2188877BA00A8FAFA /* organism.h */,
 				4210C5B3188877BA00A8FAFA /* population_founder.h */,
 				42B8BAC5188B0D96003307CB /* position.h */,
@@ -1082,6 +1104,37 @@
 			path = selection;
 			sourceTree = "<group>";
 		};
+		48A352CA192D8E5B002CB031 /* ancestors */ = {
+			isa = PBXGroup;
+			children = (
+				48A352DB192D90CE002CB031 /* repro_not_ancestor.h */,
+				48A352DC192D90CE002CB031 /* selfrep_not_ancestor.h */,
+				48A352D7192D90CE002CB031 /* multi_birth_selfrep_nand_not_ancestor.h */,
+				48A352D8192D90CE002CB031 /* multi_birth_selfrep_not_ancestor.h */,
+				48A352D9192D90CE002CB031 /* multi_birth_selfrep_not_nand_ancestor.h */,
+				48A352DA192D90CE002CB031 /* multi_birth_selfrep_not_nand_ornot_ancestor.h */,
+			);
+			name = ancestors;
+			sourceTree = "<group>";
+		};
+		48A352E3192D921E002CB031 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				48A352E6192D9262002CB031 /* configurable_mutation.h */,
+				48A352E4192D9247002CB031 /* resource_consumption.h */,
+				48A352E8192D93ED002CB031 /* task_switching.h */,
+			);
+			name = utils;
+			sourceTree = "<group>";
+		};
+		48A352EB192E6DDD002CB031 /* extra_instruction_sets */ = {
+			isa = PBXGroup;
+			children = (
+				48A352EC192E6E09002CB031 /* cell_death.h */,
+			);
+			name = extra_instruction_sets;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1089,6 +1142,15 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48A352E5192D9247002CB031 /* resource_consumption.h in Headers */,
+				48A352DD192D90CE002CB031 /* multi_birth_selfrep_nand_not_ancestor.h in Headers */,
+				48A352E0192D90CE002CB031 /* multi_birth_selfrep_not_nand_ornot_ancestor.h in Headers */,
+				48A352E1192D90CE002CB031 /* repro_not_ancestor.h in Headers */,
+				48A352E2192D90CE002CB031 /* selfrep_not_ancestor.h in Headers */,
+				48A352DF192D90CE002CB031 /* multi_birth_selfrep_not_nand_ancestor.h in Headers */,
+				48A352E7192D9262002CB031 /* configurable_mutation.h in Headers */,
+				48A352DE192D90CE002CB031 /* multi_birth_selfrep_not_ancestor.h in Headers */,
+				48A352E9192D93ED002CB031 /* task_switching.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
