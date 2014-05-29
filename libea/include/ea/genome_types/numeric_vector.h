@@ -1,8 +1,8 @@
-/* circular_genome.h
+/* numeric_vector.h
  * 
  * This file is part of EALib.
  * 
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_REPRESENTATIONS_CIRCULAR_GENOME_H_
-#define _EA_REPRESENTATIONS_CIRCULAR_GENOME_H_
+#ifndef _EA_GENOME_TYPES_NUMERIC_VECTOR_H_
+#define _EA_GENOME_TYPES_NUMERIC_VECTOR_H_
 
+#include <boost/serialization/base_object.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/vector.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <sstream>
+
+#include <vector>
 #include <ea/meta_data.h>
-#include <ea/cvector.h>
 
 
 namespace ealib {
@@ -32,36 +35,38 @@ namespace ealib {
 	/*! Canonical numeric representation for genetic algorithms.
 	 */
 	template <typename T>
-	struct circular_genome : public cvector<T> {
+	struct numeric_vector : public std::vector<T> {
 		//! Type of this representation.
-		typedef circular_genome<T> representation_type;
-		//! Type of codon in this genome.
-		typedef T codon_type;
+		typedef numeric_vector<T> representation_type;
 		//! Base type of this representation.
-		typedef cvector<T> base_type;
+		typedef std::vector<T> base_type;
+        //! Type of codon used in this genome.
+        typedef T codon_type;
 		
 		//! Constructor.
-		circular_genome() : base_type() {
-		}
+		numeric_vector() : base_type() { }
+
+		//! Copy constructor.
+        numeric_vector(const numeric_vector& that) : base_type(that) {
+        }
         
-        //! Another constructor.
+		//! Constructor that initializes to the given size.
+		numeric_vector(const std::size_t n) : base_type(n) { }
+
+        //! Constructor that initializes with the range [f,l).
         template <typename InputIterator>
-		circular_genome(InputIterator f, InputIterator l) : base_type(f, l) {
+		numeric_vector(InputIterator f, InputIterator l) : base_type(f, l) {
 		}
-        
+
         //! Assignment operator.
-        representation_type& operator=(const representation_type& that) {
+        numeric_vector& operator=(const numeric_vector& that) {
             if(this != &that) {
-                base_type::operator=(that);
+                static_cast<base_type*>(this)->operator=(that);
             }
             return *this;
         }
-		
-		//! Constructor that initializes to the given size.
-		circular_genome(const std::size_t n) : base_type(n) {
-		}
 
-		// These enable a more compact serialization of the genome.
+        // These enable a more compact serialization of the genome.
 		template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
 			std::ostringstream out;

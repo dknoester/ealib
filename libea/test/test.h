@@ -2,7 +2,7 @@
  * 
  * This file is part of EALib.
  * 
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <sstream>
 
 #include <ea/evolutionary_algorithm.h>
-#include <ea/representations/bitstring.h>
+#include <ea/genome_types/bitstring.h>
 #include <ea/fitness_functions/all_ones.h>
 #include <ea/generational_models/steady_state.h>
 

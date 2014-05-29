@@ -29,7 +29,7 @@
 #include <ea/configuration.h>
 #include <ea/cmdline_interface.h>
 #include <ea/functional.h>
-#include <ea/representations/circular_genome.h>
+#include <ea/genome_types/circular_genome.h>
 #include <ea/mutation.h>
 #include <ea/traits.h>
 #include <ea/translation.h>

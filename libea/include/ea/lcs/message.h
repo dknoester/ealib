@@ -2,7 +2,7 @@
  *
  * This file is part of EALib.
  *
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 #ifndef _EA_LEARNING_CLASSIFIER_MESSAGE_H_
 #define _EA_LEARNING_CLASSIFIER_MESSAGE_H_
 
-#include <ea/representations/bitstring.h>
+#include <ea/genome_types/bitstring.h>
 namespace ealib {
     
     //! Message class; transmitted between environment, internal message board, and rules.

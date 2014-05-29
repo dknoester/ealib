@@ -430,6 +430,11 @@
 		4210C5B7188877BA00A8FAFA /* task_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_library.h; sourceTree = "<group>"; };
 		4210C5B9188877BA00A8FAFA /* digital_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_evolution.h; sourceTree = "<group>"; };
 		4210C5BA1889634C00A8FAFA /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
+		4212C0C419375DAB001D435A /* bitstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bitstring.h; sourceTree = "<group>"; };
+		4212C0C519375DAB001D435A /* circular_genome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = circular_genome.h; sourceTree = "<group>"; };
+		4212C0C619375DAB001D435A /* intstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = intstring.h; sourceTree = "<group>"; };
+		4212C0C719375DAB001D435A /* numeric_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = numeric_vector.h; sourceTree = "<group>"; };
+		4212C0C819375DAB001D435A /* realstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = realstring.h; sourceTree = "<group>"; };
 		421D68B61735719700A45DD6 /* test_analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_analysis.cpp; sourceTree = "<group>"; };
 		423243D618F01AE30047D8ED /* torus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = torus.h; sourceTree = "<group>"; };
 		4234C3FE178B1ACE0078BD85 /* test_lcs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_lcs.cpp; sourceTree = "<group>"; };
@@ -551,11 +556,6 @@
 		428B7274184F77AB00E3BB4E /* mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutation.h; sourceTree = "<group>"; };
 		428B7277184F77AB00E3BB4E /* population_structure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_structure.h; sourceTree = "<group>"; };
 		428B7278184F77AB00E3BB4E /* recombination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recombination.h; sourceTree = "<group>"; };
-		428B727A184F77AB00E3BB4E /* bitstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bitstring.h; sourceTree = "<group>"; };
-		428B727B184F77AB00E3BB4E /* circular_genome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = circular_genome.h; sourceTree = "<group>"; };
-		428B727C184F77AB00E3BB4E /* intstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = intstring.h; sourceTree = "<group>"; };
-		428B727D184F77AB00E3BB4E /* numeric_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = numeric_vector.h; sourceTree = "<group>"; };
-		428B727E184F77AB00E3BB4E /* realstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = realstring.h; sourceTree = "<group>"; };
 		428B727F184F77AB00E3BB4E /* rng.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rng.h; sourceTree = "<group>"; };
 		428B7281184F77AB00E3BB4E /* elitism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = elitism.h; sourceTree = "<group>"; };
 		428B7282184F77AB00E3BB4E /* proportionate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = proportionate.h; sourceTree = "<group>"; };
@@ -748,6 +748,18 @@
 			path = digital_evolution;
 			sourceTree = "<group>";
 		};
+		4212C0C319375DAB001D435A /* genome_types */ = {
+			isa = PBXGroup;
+			children = (
+				4212C0C419375DAB001D435A /* bitstring.h */,
+				4212C0C519375DAB001D435A /* circular_genome.h */,
+				4212C0C619375DAB001D435A /* intstring.h */,
+				4212C0C719375DAB001D435A /* numeric_vector.h */,
+				4212C0C819375DAB001D435A /* realstring.h */,
+			);
+			path = genome_types;
+			sourceTree = "<group>";
+		};
 		423CBC70157D0D440003A644 = {
 			isa = PBXGroup;
 			children = (
@@ -907,6 +919,7 @@
 				4243E771189417F900431D18 /* genetic_algorithm.h */,
 				428B7257184F77AB00E3BB4E /* generational_models */,
 				428B725E184F77AB00E3BB4E /* generators.h */,
+				4212C0C319375DAB001D435A /* genome_types */,
 				428B7260184F77AB00E3BB4E /* graph.h */,
 				428B7261184F77AB00E3BB4E /* individual.h */,
 				428B7262184F77AB00E3BB4E /* island_model.h */,
@@ -923,7 +936,6 @@
 				42C661351860D6E1004476D3 /* qhfc.h */,
 				428B7278184F77AB00E3BB4E /* recombination.h */,
 				42EF7D7C19363266001A647B /* representation.h */,
-				428B7279184F77AB00E3BB4E /* representations */,
 				428B727F184F77AB00E3BB4E /* rng.h */,
 				428B7288184F77AB00E3BB4E /* selection.h */,
 				428B7280184F77AB00E3BB4E /* selection */,
@@ -1051,18 +1063,6 @@
 				42B8BACF188E9F19003307CB /* translation.h */,
 			);
 			path = mkv;
-			sourceTree = "<group>";
-		};
-		428B7279184F77AB00E3BB4E /* representations */ = {
-			isa = PBXGroup;
-			children = (
-				428B727A184F77AB00E3BB4E /* bitstring.h */,
-				428B727B184F77AB00E3BB4E /* circular_genome.h */,
-				428B727C184F77AB00E3BB4E /* intstring.h */,
-				428B727D184F77AB00E3BB4E /* numeric_vector.h */,
-				428B727E184F77AB00E3BB4E /* realstring.h */,
-			);
-			path = representations;
 			sourceTree = "<group>";
 		};
 		428B7280184F77AB00E3BB4E /* selection */ = {

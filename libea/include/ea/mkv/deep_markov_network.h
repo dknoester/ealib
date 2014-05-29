@@ -25,7 +25,7 @@
 
 #include <ea/configuration.h>
 #include <ea/cmdline_interface.h>
-#include <ea/representations/circular_genome.h>
+#include <ea/genome_types/circular_genome.h>
 #include <ea/mutation.h>
 #include <ea/rng.h>
 #include <ea/mkv/markov_network.h>

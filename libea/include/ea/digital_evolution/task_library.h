@@ -2,7 +2,7 @@
  * 
  * This file is part of EALib.
  * 
- * Copyright 2012 David B. Knoester, Heather J. Goldsby.
+ * Copyright 2014 David B. Knoester, Heather J. Goldsby.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -2,7 +2,7 @@
  *
  * This file is part of EALib.
  *
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@
 #include <ea/recombination.h>
 #include <ea/events.h>
 #include <ea/rng.h>
-#include <ea/representations/intstring.h>
-#include <ea/representations/bitstring.h>
+#include <ea/genome_types/intstring.h>
+#include <ea/genome_types/bitstring.h>
 #include <ea/lcs/action.h>
 #include <ea/lcs/cover.h>
 #include <ea/lcs/environment.h>

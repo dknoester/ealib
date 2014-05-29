@@ -2,7 +2,7 @@
  *
  * This file is part of EALib.
  *
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_REPRESENTATIONS_REALSTRING_H_
-#define _EA_REPRESENTATIONS_REALSTRING_H_
+#ifndef _EA_GENOME_TYPES_REALSTRING_H_
+#define _EA_GENOME_TYPES_REALSTRING_H_
 
-#include <ea/representations/numeric_vector.h>
+#include <ea/genome_types/numeric_vector.h>
 
 namespace ealib {
     
