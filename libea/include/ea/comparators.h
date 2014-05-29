@@ -48,12 +48,12 @@ namespace ealib {
         
         //! Compare (pointers to) individuals based on the natural order of meta-data in ascending order.
         template <typename MDType, typename EA>
-        struct meta_data {
+        struct metadata {
             //! Constructor.
-            meta_data() {
+            metadata() {
             }
             
-            //! Returns true if meta_data(x) < meta_data(y), false otherwise.
+            //! Returns true if metadata(x) < metadata(y), false otherwise.
             bool operator()(typename EA::individual_ptr_type x, typename EA::individual_ptr_type y) {
                 return get<MDType>(*x) < get<MDType>(*y);
             }

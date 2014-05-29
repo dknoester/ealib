@@ -20,7 +20,7 @@
 #ifndef _EA_LEARNING_CLASSIFIER_ACTION_H_
 #define _EA_LEARNING_CLASSIFIER_ACTION_H_
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
     

@@ -25,7 +25,7 @@
  */
 BOOST_AUTO_TEST_CASE(test_checkpoint) {
     all_ones_ea ea1, ea2;
-    add_std_meta_data(ea1);
+    add_std_metadata(ea1);
     ea1.lifecycle().prepare_new(ea1);
     
     // run and checkpoint ea1:
@@ -51,8 +51,8 @@ BOOST_AUTO_TEST_CASE(test_checkpoint) {
 
 BOOST_AUTO_TEST_CASE(test_replicability) {
     all_ones_ea ea1, ea2;
-    add_std_meta_data(ea1);
-    add_std_meta_data(ea2);
+    add_std_metadata(ea1);
+    add_std_metadata(ea2);
     ea1.rng().reset(42);
     ea2.rng().reset(42);
     
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_replicability) {
  */
 BOOST_AUTO_TEST_CASE(test_archive) {
     all_ones_ea ea1, ea2;
-    add_std_meta_data(ea1);
+    add_std_metadata(ea1);
     ea1.lifecycle().prepare_new(ea1);
     
     // run and archive ea1:

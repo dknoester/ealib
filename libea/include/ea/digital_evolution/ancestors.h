@@ -22,7 +22,7 @@
 #define _EA_DIGITAL_EVOLUTION_ANCESTORS_H_
 
 #include <algorithm>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 
 namespace ealib {

@@ -31,7 +31,7 @@
 #include <sstream>
 
 #include <ea/algorithm.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 
 namespace ealib {
@@ -169,7 +169,7 @@ namespace ealib {
          state, given meta-data.
          */
         template <typename EA>
-        void prepare_new(EA& ea, meta_data& md) {
+        void prepare_new(EA& ea, metadata& md) {
             ea.md() += md;
             prepare_new(ea);
         }
@@ -189,7 +189,7 @@ namespace ealib {
          Meta-data is assigned after checkpoint load to provide for overriding.
          */
         template <typename Checkpoint, typename EA>
-        void prepare_checkpoint(Checkpoint& cp, EA& ea, meta_data& md) {
+        void prepare_checkpoint(Checkpoint& cp, EA& ea, metadata& md) {
             load_checkpoint(cp, ea);
             ea.md() += md;
             ea.initialize();

@@ -32,7 +32,7 @@
 #include <ea/algorithm.h>
 #include <ea/concepts.h>
 #include <ea/events.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/population_structure.h>
 #include <ea/analysis.h>
 #include <ea/lifecycle.h>

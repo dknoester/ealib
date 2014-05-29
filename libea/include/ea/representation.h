@@ -144,7 +144,7 @@ namespace ealib {
         phenotype_type& phenotype(EA& ea) {
             if(_phenotype != 0) {
                 translator_type t(ea);
-                _phenotype.reset(t(_genome,ea));
+                _phenotype.reset(new phenotype_type(t(_genome,ea)));
             }
             return *_phenotype;
         }
@@ -159,6 +159,12 @@ namespace ealib {
         phenotype_ptr_type _phenotype; //!< Phenotype for this representation.
     };
 
+    //! Convenience method that returns a reference to an individual's phenotype.
+    template <typename EA>
+    typename EA::phenotype_type& phenotype(typename EA::individual_type& ind, EA& ea) {
+        return ind.repr().phenotype(ea);
+    }
+    
 } // ea
 
 #endif

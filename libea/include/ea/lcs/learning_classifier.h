@@ -33,7 +33,7 @@
 #include <ea/phenotype.h>
 #include <ea/fitness_function.h>
 #include <ea/ancestors.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/mutation.h>
 #include <ea/selection.h>
 #include <ea/population.h>
@@ -117,7 +117,7 @@ namespace ealib {
     template <typename> class Individual=individual,
 	template <typename,typename> class Population=ealib::population,
 	template <typename> class EventHandler=event_handler,
-	typename MetaData=meta_data,
+	typename MetaData=metadata,
 	typename RandomNumberGenerator=ealib::default_rng_type>
 	class learning_classifier {
     public:
@@ -400,7 +400,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("fitness_function", _fitness_function);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("generational_model", _generational_model);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("metadata", _md);
             ar & boost::serialization::make_nvp("environment", _env);
 //            ar & boost::serialization::make_nvp("reward", _reward);
 //            ar & boost::serialization::make_nvp("match_set", _match_set);

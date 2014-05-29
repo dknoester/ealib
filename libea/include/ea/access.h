@@ -20,7 +20,7 @@
 #ifndef _EA_ACCESS_H_
 #define _EA_ACCESS_H_
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/fitness_function.h>
 #include <ea/traits.h>
 
@@ -51,7 +51,7 @@ namespace ealib {
         
         //! Functor that returns an element of meta-data from an individual.
         template <typename MDType>
-        struct meta_data {
+        struct metadata {
             template <typename EA>
             typename MDType::value_type operator()(typename EA::individual_type& ind, EA& ea) {
                 return ealib::get<MDType>(ind);

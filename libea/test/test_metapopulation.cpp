@@ -23,7 +23,7 @@
 BOOST_AUTO_TEST_CASE(test_meta_population) {
     typedef metapopulation<subpopulation<all_ones_ea,constant> > ea_type;
     ea_type M;
-    add_std_meta_data(M);
+    add_std_metadata(M);
     put<META_POPULATION_SIZE>(5,M);
     
     lifecycle::prepare_new(M);

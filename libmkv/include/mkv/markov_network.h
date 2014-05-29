@@ -17,10 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_MKV_MARKOV_NETWORK_H_
-#define _EA_MKV_MARKOV_NETWORK_H_
+#ifndef _MKV_MARKOV_NETWORK_H_
+#define _MKV_MARKOV_NETWORK_H_
 
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/shared_ptr.hpp>
 #include <functional>
 #include <ea/rng.h>

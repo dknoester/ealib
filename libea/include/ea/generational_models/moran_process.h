@@ -20,7 +20,7 @@
 #ifndef _EA_GENERATIONAL_MODELS_MORAN_PROCESS_H_
 #define _EA_GENERATIONAL_MODELS_MORAN_PROCESS_H_
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/random.h>
 

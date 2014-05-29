@@ -20,7 +20,7 @@
 #ifndef _EA_NEURAL_NETWORK_H_
 #define _EA_NEURAL_NETWORK_H_
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/graph.h>
 #include <ann/graph/neural_network.h>
 #include <ann/graph/layout.h>

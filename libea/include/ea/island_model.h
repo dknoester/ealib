@@ -22,7 +22,7 @@
 
 #include <boost/tuple/tuple.hpp>
 #include <ea/events.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
     LIBEA_MD_DECL(ISLAND_MIGRATION_PERIOD, "ea.island_model.migration_period", int);

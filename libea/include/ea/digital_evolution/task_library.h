@@ -23,7 +23,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/digital_evolution/events.h>
 
 namespace ealib {
@@ -57,7 +57,7 @@ namespace ealib {
         virtual double catalyze(double r, double p) = 0;
         
         //! Retrieve the meta-data associated with this task.
-        virtual meta_data& md() = 0;
+        virtual metadata& md() = 0;
         
         //! Returns true if this task is limited.
         virtual bool is_limited() { return _limit > 0.0; }
@@ -141,13 +141,13 @@ namespace ealib {
         }
         
         //! Retrieve the meta-data associated with this task.
-        meta_data& md() { return _md; }
+        metadata& md() { return _md; }
         
         const std::string _name; //!< Name of this task.
         predicate_type _pred; //!< Predicate that calculates if a task has been performed.
         catalyst_type _cat; //!< Catalyst that converts consumed resources to fitness.
         resource_ptr_type _consumed; //!< Resource consumed when this task is performed.
-        meta_data _md; //!< Meta data associated with this task, if any.
+        metadata _md; //!< Meta data associated with this task, if any.
     };
 
     

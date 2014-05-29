@@ -21,7 +21,7 @@
 #define _EA_INITIALIZATION_H_
 
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/mutation.h>
 #include <ea/generators.h>
 #include <ea/individual.h>

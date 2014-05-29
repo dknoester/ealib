@@ -23,7 +23,7 @@
 #include <algorithm>
 #include <utility>
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
     
@@ -91,7 +91,7 @@ namespace ealib {
             //! Asexual reproduction (copies a single parent's representation).
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
-                offspring.insert(offspring.end(), ea.make_individual(parents.front()->repr()));
+                offspring.insert(offspring.end(), ea.make_individual(parents.front()->genome()));
             }
         };
         

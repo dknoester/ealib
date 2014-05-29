@@ -23,7 +23,7 @@
 
 #include <algorithm>
 #include <ea/mutation.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/selection/random.h>
 #include <ea/selection/proportionate.h>
 #include <ea/datafile.h>

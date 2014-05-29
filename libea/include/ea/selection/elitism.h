@@ -24,7 +24,7 @@
 #include <iterator>
 #include <ea/algorithm.h>
 #include <ea/comparators.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
 

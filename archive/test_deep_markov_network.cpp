@@ -21,13 +21,14 @@
 
 #include <mkv/deep_markov_network.h>
 #include <ea/data_structures/circular_vector.h>
+#include <ea/mkv/translation.h>
 #include <ea/translation.h>
 
 /*! Test for deep Markov Networks.
  */
 BOOST_AUTO_TEST_CASE(test_deep_markov_network) {
     using namespace ealib;
-    using namespace ealib::mkv;
+    using namespace mkv;
     
     //	 | 0  | 1  | 2  | 3  | 4  |
     //	 | 0i | 1i | 0o | 1o | 0h |

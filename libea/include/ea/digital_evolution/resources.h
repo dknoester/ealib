@@ -30,7 +30,7 @@
 
 #include <ea/algorithm.h>
 #include <ea/digital_evolution/position.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 
 namespace ealib {

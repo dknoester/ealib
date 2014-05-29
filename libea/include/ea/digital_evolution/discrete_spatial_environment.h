@@ -30,7 +30,7 @@
 #include <stdexcept>
 
 #include <ea/algorithm.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/digital_evolution/position.h>
 #include <ea/digital_evolution/resources.h>
 
@@ -93,7 +93,7 @@ namespace ealib {
             }
             
             //! Location meta-data.
-            meta_data& md() { return _md; }
+            metadata& md() { return _md; }
             
             //! Is this location occupied?
             bool occupied() { return ((p != 0) && (p->alive())); }
@@ -126,12 +126,12 @@ namespace ealib {
                 // we don't serialize the individual ptr - have to attach it after checkpoint load.
                 ar & boost::serialization::make_nvp("x", x);
                 ar & boost::serialization::make_nvp("y", y);
-                ar & boost::serialization::make_nvp("meta_data", _md);
+                ar & boost::serialization::make_nvp("metadata", _md);
             }
 
             individual_ptr_type p; //!< Individual (if any) at this location.
             std::size_t x,y; //!< X-Y coordinates of this location.
-            meta_data _md; //!< Meta-data container.
+            metadata _md; //!< Meta-data container.
         };
 
         //! Location pointer type.

@@ -42,7 +42,7 @@ public:
     
     virtual void gather_events(EA& ea) {
         add_event<lod_event>(ea);
-    };
+    }
 };
 
 BOOST_AUTO_TEST_CASE(test_lod) {

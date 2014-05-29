@@ -30,7 +30,7 @@
 #include <ea/events.h>
 #include <ea/individual.h>
 #include <ea/lifecycle.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/mutation.h>
 #include <ea/population_structure.h>
 #include <ea/selection.h>
@@ -79,7 +79,7 @@ namespace ealib {
         typedef Traits<evolutionary_algorithm> traits_type;
         typedef individual<representation_type, traits_type> individual_type;
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
-        typedef meta_data md_type;
+        typedef metadata md_type;
         typedef default_rng_type rng_type;
         typedef event_handler<evolutionary_algorithm> event_handler_type;
         typedef shared_ptr_vector<individual_ptr_type> population_type;
@@ -267,7 +267,7 @@ namespace ealib {
         void serialize(Archive & ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("metadata", _md);
             ar & boost::serialization::make_nvp("population", _population);
         }
     };

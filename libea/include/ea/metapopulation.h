@@ -28,7 +28,7 @@
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
 #include <ea/population_structure.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/events.h>
 #include <ea/rng.h>
 #include <ea/generational_models/isolated_subpopulations.h>
@@ -93,7 +93,7 @@ namespace ealib {
         //! Population generator type.
         typedef PopulationGenerator population_generator_type;
         //! Meta-data type.
-        typedef meta_data md_type;
+        typedef metadata md_type;
         //! Random number generator type.
         typedef default_rng_type rng_type;
         //! Event handler.
@@ -306,7 +306,7 @@ namespace ealib {
         void serialize(Archive & ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("metadata", _md);
             ar & boost::serialization::make_nvp("population", _population);
         }
     };

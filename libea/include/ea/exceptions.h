@@ -52,8 +52,8 @@ namespace ealib {
 	};
 
 	//! Thrown when meta data is retrieved prior to being initialized.
-	struct uninitialized_meta_data_exception : ealib_exception {
-		uninitialized_meta_data_exception(const std::string& m) : ealib_exception("uninitialized meta data: " + m) {
+	struct uninitialized_metadata_exception : ealib_exception {
+		uninitialized_metadata_exception(const std::string& m) : ealib_exception("uninitialized meta data: " + m) {
 		}
 	};
 	

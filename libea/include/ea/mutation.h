@@ -22,7 +22,7 @@
 
 #include <ea/algorithm.h>
 #include <ea/concepts.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
     
@@ -268,21 +268,21 @@ namespace ealib {
                 //! Probabilistically perform indel mutations.
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
-                    typename EA::representation_type& repr=ind.repr();
+                    typename EA::genome_type& repr=ind.genome();
                     // insertion:
                     if((repr.size() < static_cast<std::size_t>(get<REPRESENTATION_MAX_SIZE>(ea))) && ea.rng().p(get<MUTATION_INSERTION_P>(ea))) {
                         std::size_t csize = ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea));
-                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(),
+                        typename EA::genome_type::iterator src=ea.rng().choice(repr.begin(),
                                                                                        repr.begin() + (repr.size()-csize));
                         // copy to avoid undefined behavior
-                        typename EA::representation_type chunk(src, src+csize);
+                        typename EA::genome_type chunk(src, src+csize);
                         repr.insert(ea.rng().choice(repr.begin(),repr.end()), chunk.begin(), chunk.end());
                     }
                     
                     // deletion:
                     if((repr.size() > static_cast<std::size_t>(get<REPRESENTATION_MIN_SIZE>(ea))) && ea.rng().p(get<MUTATION_DELETION_P>(ea))) {
                         std::size_t csize = ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea), get<MUTATION_INDEL_MAX_SIZE>(ea));
-                        typename EA::representation_type::iterator src=ea.rng().choice(repr.begin(),
+                        typename EA::genome_type::iterator src=ea.rng().choice(repr.begin(),
                                                                                        repr.begin() + (repr.size()-csize));
                         repr.erase(src, src+csize);
                     }

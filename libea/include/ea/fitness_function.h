@@ -29,7 +29,7 @@
 #include <vector>
 #include <ea/algorithm.h>
 #include <ea/concepts.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/events.h>
 
 namespace ealib {

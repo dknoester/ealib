@@ -33,7 +33,7 @@ namespace ealib {
      
      <b>Refinement of:</b>
 	 
-	 <b>Models:</b> ealib::meta_data.
+	 <b>Models:</b> ealib::metadata.
      */
     template <typename X>
 	struct MetaDataConcept : boost::Assignable<X>, boost::CopyConstructible<X> {

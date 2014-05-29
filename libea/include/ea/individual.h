@@ -22,7 +22,7 @@
 
 #include <boost/serialization/nvp.hpp>
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/traits.h>
 
 namespace ealib {
@@ -39,7 +39,7 @@ namespace ealib {
         typedef typename representation_type::phenotype_type phenotype_type;
         typedef typename representation_type::encoding_type encoding_type;
         typedef Traits traits_type;
-        typedef meta_data md_type;
+        typedef metadata md_type;
         
         //! Constructor.
 		individual() {
@@ -89,15 +89,15 @@ namespace ealib {
         const traits_type& traits() const { return _traits; }
 
         //! Returns this individual's meta data.
-        meta_data& md() { return _md; }
+        metadata& md() { return _md; }
         
         //! Returns this individual's meta data (const-qualified).
-        const meta_data& md() const { return _md; }
+        const metadata& md() const { return _md; }
 
     protected:
         representation_type _repr; //!< This individual's representation.
         traits_type _traits; //!< This individual's traits.
-        meta_data _md; //!< This individual's meta data.
+        metadata _md; //!< This individual's meta data.
         
     private:
         friend class boost::serialization::access;
@@ -107,7 +107,7 @@ namespace ealib {
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("representation", _repr);
             ar & boost::serialization::make_nvp("traits", _traits);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("metadata", _md);
         }
     };
     

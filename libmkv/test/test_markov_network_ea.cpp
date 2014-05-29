@@ -1,22 +1,24 @@
-/* markov_network.cpp
- * 
+/* test_markov_network_ea.cpp
+ *
  * This file is part of EALib.
  *
  * Copyright 2014 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <boost/test/unit_test.hpp>
+
 #include <mkv/markov_network_evolution.h>
 #include <ea/generational_models/moran_process.h>
 #include <ea/fitness_function.h>
@@ -39,10 +41,10 @@ struct example_fitness : fitness_function<unary_fitness<double>, constantS, stoc
 	double operator()(Individual& ind, RNG& rng, EA& ea) {
         // get the phenotype (markov network):
         typename EA::phenotype_type &N = ealib::phenotype(ind, ea);
-
+        
         // probably want to reset the RNG for the markov network:
         N.reset(rng.seed());
-
+        
         // now, set the values of the bits in the input vector:
         double f=0.0;
         for(std::size_t i=0; i<128; ++i) {
@@ -59,7 +61,7 @@ struct example_fitness : fitness_function<unary_fitness<double>, constantS, stoc
                 ++f;
             }
         }
-
+        
         // and return some measure of fitness:
         return f;
     }
@@ -91,12 +93,16 @@ public:
     
     
     virtual void gather_tools() {
-        //        add_tool<mkv::genetic_graph>(this);
-        //        add_tool<mkv::reduced_graph>(this);
+        add_tool<mkv::dominant_genetic_graph>(this);
+        add_tool<mkv::dominant_reduced_graph>(this);
+        add_tool<mkv::dominant_causal_graph>(this);
     }
     
     virtual void gather_events(EA& ea) {
         add_event<datafiles::fitness_dat>(ea);
-    };
+    }
 };
-LIBEA_CMDLINE_INSTANCE(ea_type, cli);
+
+BOOST_AUTO_TEST_CASE(test_mkv_ea) {
+    cli<ea_type> cmdline;
+}

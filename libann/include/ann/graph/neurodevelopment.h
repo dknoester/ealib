@@ -24,7 +24,7 @@
 #include <ann/graph/abstract_neuron.h>
 #include <ea/algorithm.h>
 #include <ea/graph.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ann/graph/neuroevolution.h>
 
 LIBEA_MD_DECL(DEV_VERTICES_N, "development.vertices.n", int);

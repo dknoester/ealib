@@ -21,7 +21,7 @@
 #define _EA_GENERATORS_H_
 
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 
 namespace ealib {

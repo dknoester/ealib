@@ -27,7 +27,7 @@
 #include <boost/signal.hpp>
 #include <vector>
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
     

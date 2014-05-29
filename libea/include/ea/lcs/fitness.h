@@ -21,7 +21,7 @@
 #define _EA_LEARNING_CLASSIFIER_FITNESS_H_
 
 #include <ea/fitness_function.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
 

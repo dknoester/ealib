@@ -23,7 +23,7 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <sstream>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/data_structures/circular_vector.h>
 
 

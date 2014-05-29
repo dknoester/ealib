@@ -22,7 +22,7 @@
 
 #include <algorithm>
 #include <ea/algorithm.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 

@@ -59,7 +59,7 @@ typedef evolutionary_algorithm
 > all_ones_lod_ea;
 
 template <typename EA>
-void add_std_meta_data(EA& ea) {
+void add_std_metadata(EA& ea) {
 	put<POPULATION_SIZE>(1024,ea);
 	put<STEADY_STATE_LAMBDA>(2,ea);
 	put<REPRESENTATION_SIZE>(10,ea);

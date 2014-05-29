@@ -1,4 +1,4 @@
-/* test_meta_data.cpp
+/* test_metadata.cpp
  * 
  * This file is part of EALib.
  * 

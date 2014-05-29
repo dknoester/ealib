@@ -27,7 +27,7 @@
 #include <vector>
 #include <sstream>
 #include <ea/algorithm.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/mutation.h>
 #include <ea/rng.h>
 

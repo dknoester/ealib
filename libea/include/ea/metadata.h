@@ -1,4 +1,4 @@
-/* meta_data.h
+/* metadata.h
  * 
  * This file is part of EALib.
  * 
@@ -92,26 +92,26 @@ namespace ealib {
 	 Meta-data is used with the free functions get, put, exists, and next (which
      is a convenient test-and-inc).
      */
-	class meta_data {
+	class metadata {
 	public:
 		typedef std::map<std::string,std::string> md_string_type; //!< Container for the string versions of attributes
         typedef boost::shared_ptr<abstract_attribute> attr_ptr_type; //!< Type for pointer to attributes.
 		typedef std::map<std::string,attr_ptr_type> md_value_type; //!< Container for the native versions of attributes.
 		
 		//! Constructor.
-		meta_data() { }
+		metadata() { }
 		
 		//! Destructor.
-		virtual ~meta_data() { }
+		virtual ~metadata() { }
 		
 		//! Copy-constructor.
-		meta_data(const meta_data& that) {
+		metadata(const metadata& that) {
 			_strings = that._strings;
             _values = that._values;
 		}
 		
 		//! Assignment operator.
-		meta_data& operator=(const meta_data& that) {
+		metadata& operator=(const metadata& that) {
 			if(this != &that) {
 				_strings = that._strings;
                 _values = that._values;
@@ -120,10 +120,10 @@ namespace ealib {
 		}
 		
         //! Copy meta-data from that to this (may overwrite this).
-        meta_data& operator+=(const meta_data& that) {
+        metadata& operator+=(const metadata& that) {
             if(this != &that) {
                 flush();
-                const_cast<meta_data*>(&that)->flush();
+                const_cast<metadata*>(&that)->flush();
                 _values.clear();
                 for(md_string_type::const_iterator i=that._strings.begin(); i!=that._strings.end(); ++i) {
                     _strings.insert(*i);
@@ -133,12 +133,12 @@ namespace ealib {
         }
         
         //! Operator==
-        bool operator==(const meta_data& that) const {
+        bool operator==(const metadata& that) const {
             return std::equal(_strings.begin(), _strings.end(), that._strings.begin());
         }
         
         //! Returns a reference to this meta-data object (for compatibiliy with the get & set methods below).
-        meta_data& md() { return *this; }
+        metadata& md() { return *this; }
         
 		//! Returns a reference to an attribute's value.
         template <typename Attribute>
@@ -148,7 +148,7 @@ namespace ealib {
 				// cache miss:
 				md_string_type::iterator j=_strings.find(k);
 				if(j == _strings.end()) {
-					throw uninitialized_meta_data_exception(k);
+					throw uninitialized_metadata_exception(k);
 				}
                 // convert the attr:
                 attr_ptr_type p(new Attribute());
@@ -234,7 +234,7 @@ namespace ealib {
 		template <class Archive>
 		void serialize(Archive& ar, const unsigned int version) {
             flush();
-			ar & boost::serialization::make_nvp("meta_data", _strings);
+			ar & boost::serialization::make_nvp("metadata", _strings);
 		}		
 	};
     

@@ -37,7 +37,7 @@
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/digital_evolution/replication.h>
 #include <ea/digital_evolution/task_library.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/lifecycle.h>
 #include <ea/population_structure.h>
 #include <ea/data_structures/shared_ptr_vector.h>
@@ -112,7 +112,7 @@ namespace ealib {
         //! Population generator type.
         typedef PopulationGenerator population_generator_type;
         //! Meta-data type.
-        typedef meta_data md_type;
+        typedef metadata md_type;
         //! Random number generator type.
         typedef default_rng_type rng_type;
         //! Event handler.
@@ -356,7 +356,7 @@ namespace ealib {
 		void save(Archive & ar, const unsigned int version) const {
             ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("metadata", _md);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("environment", _env);
 		}
@@ -365,7 +365,7 @@ namespace ealib {
 		void load(Archive & ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("update", _update);
             ar & boost::serialization::make_nvp("rng", _rng);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("metadata", _md);
             ar & boost::serialization::make_nvp("population", _population);
             ar & boost::serialization::make_nvp("environment", _env);
             

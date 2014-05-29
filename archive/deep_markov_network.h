@@ -30,15 +30,15 @@
 #include <ea/rng.h>
 #include <mkv/markov_network.h>
 
-namespace ealib {
+namespace mkv {
     
     /*! Deep Markov Network class, which provides a layered / hiererachical structure
      of Markov Networks, a la Deep Learning.
      */
     template <typename StateType=int
-    , typename UpdateFunction=binary_or<StateType>
-    , typename InputFunction=non_zero<StateType>
-    , typename RandomNumberGenerator=default_rng_type
+    , typename UpdateFunction=ealib::binary_or<StateType>
+    , typename InputFunction=ealib::non_zero<StateType>
+    , typename RandomNumberGenerator=ealib::default_rng_type
     > class deep_markov_network {
     public:
         typedef StateType state_type; //!< Type for state variables.
@@ -162,49 +162,6 @@ namespace ealib {
         rng_type _rng; //<! Random number generator.
     };
     
-
-    namespace mkv {
-        
-        /*! Configuration object for EAs that use Markov Networks.
-         */
-        struct deep_configuration : ealib::default_configuration {
-            typedef std::vector<desc_type> desc_vector_type;
-
-            //! Called after EA initialization.
-            template <typename EA>
-            void initialize(EA& ea) {
-                for(std::size_t i=0; i<get<MKV_LAYERS_N>(ea); ++i) {
-                    desc.push_back(desc_type(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea)));
-                }
-            }
-            
-            //! Disable a gate type.
-            void disable(gate_type g) {
-                translator.disable(g);
-            }
-            
-            desc_vector_type desc; //!< Description for Markov network (# in, out, & hidden).
-            start_codon start; //!< Start codon detector.
-            deep_genome_translator translator; //!< Genome translator.
-        };
-        
-        
-        template <typename T>
-        struct deep_traits {
-            //! Translate an individual's representation into a Markov Network.
-            template <typename EA>
-            typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
-                typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
-                translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
-                return p;
-            }
-            
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
-            }
-        };
-        
-    } // mkv
-} // ealib
+} // mkv
 
 #endif

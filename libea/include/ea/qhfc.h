@@ -28,7 +28,7 @@
 #include <algorithm>
 
 #include <ea/datafile.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/individual.h>
 #include <ea/selection/elitism.h>
 #include <ea/selection/random.h>

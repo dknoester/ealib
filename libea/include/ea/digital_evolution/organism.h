@@ -36,7 +36,7 @@
 #include <ea/digital_evolution/position.h>
 #include <ea/digital_evolution/hardware.h>
 #include <ea/digital_evolution/schedulers.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 namespace ealib {
 	   
@@ -74,7 +74,7 @@ namespace ealib {
         //! Traits for this individual.
         typedef Traits<organism> traits_type;
         //! Meta-data type.
-        typedef meta_data md_type;
+        typedef metadata md_type;
         //!< Type for input and output values.
         typedef int io_type;
         //!< Type for buffering inputs and outputs.
@@ -167,10 +167,10 @@ namespace ealib {
         phenotype_map_type& phenotype() { return _phenotype; }
         
         //! Returns this organism's meta data.
-        meta_data& md() { return _md; }
+        metadata& md() { return _md; }
         
         //! Returns this organism's meta data (const-qualified).
-        const meta_data& md() const { return _md; }
+        const metadata& md() const { return _md; }
         
         //! Returns this individual's traits.
         traits_type& traits() { return _traits; }
@@ -192,7 +192,7 @@ namespace ealib {
         iobuffer_type _inputs; //!< This organism's inputs.
         iobuffer_type _outputs; //!< This organism's outputs.
         phenotype_map_type _phenotype; //!< This organism's phenotype.
-        meta_data _md; //!< This organism's meta data.
+        metadata _md; //!< This organism's meta data.
         traits_type _traits; //!< This organism's traits.
 
 	private:
@@ -206,7 +206,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("inputs", _inputs);
             ar & boost::serialization::make_nvp("outputs", _outputs);
             ar & boost::serialization::make_nvp("phenotype", _phenotype);
-            ar & boost::serialization::make_nvp("meta_data", _md);
+            ar & boost::serialization::make_nvp("metadata", _md);
 		}
 	};
     

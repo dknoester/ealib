@@ -21,7 +21,7 @@
 #ifndef _EA_ANALYSIS_H_
 #define _EA_ANALYSIS_H_
 
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 // ea.analysis.*
 LIBEA_MD_DECL(ANALYSIS_INPUT, "ea.analysis.input.filename", std::string);

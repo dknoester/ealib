@@ -25,7 +25,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <ea/fitness_functions/constant.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 #include <ea/phenotype.h>
 #include <ea/traits.h>
 
