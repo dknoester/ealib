@@ -351,7 +351,7 @@ namespace ealib {
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
-            i.fitness() = ea.fitness_function()(i, ea);
+            i.traits().fitness() = ea.fitness_function()(i, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
@@ -361,14 +361,14 @@ namespace ealib {
             int seed = ea.rng().seed();
             typename EA::rng_type rng(seed);
             put<FF_RNG_SEED>(seed, i); // save the seed that was used to evaluate this individual
-            i.fitness() = ea.fitness_function()(i, rng, ea);
+            i.traits().fitness() = ea.fitness_function()(i, rng, ea);
             ea.events().fitness_evaluated(i,ea);
         }
         
         //! Constant: calculate fitness only if this individual has not yet been evaluated.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, constantS, EA& ea) {
-            if(i.fitness().is_null()) {
+            if(i.traits().fitness().is_null()) {
                 calculate_fitness(i, typename EA::fitness_function_type::stability_tag(), ea);
             }
         }
@@ -396,28 +396,28 @@ namespace ealib {
 
     //! Fitness trait accessor (may calculate if null).
     template <typename EA>
-    typename EA::individual_type::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
+    typename EA::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
         detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
-        return ind.fitness();
+        return ind.traits().fitness();
     }
     
     //! Returns true if the individual has a valid fitness.
     template <typename EA>
     bool has_fitness(typename EA::individual_type& ind, EA& ea) {
-        return !ind.fitness().is_null();
+        return !ind.traits().fitness().is_null();
     }
 
     //! Nullify the fitness of an individual.
     template <typename EA>
     void nullify_fitness(typename EA::individual_type& ind, EA& ea) {
-        ind.fitness().nullify();
+        ind.traits().fitness().nullify();
     }
 
     //! Nullify fitness for the population range [f,l).
 	template <typename ForwardIterator, typename EA>
 	void nullify_fitness(ForwardIterator f, ForwardIterator l, EA& ea) {
 		for(; f!=l; ++f) {
-            f->fitness().nullify();
+            nullify_fitness(*f,ea);
 		}
 	}
 

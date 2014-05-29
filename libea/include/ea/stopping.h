@@ -1,8 +1,8 @@
-/* evolutionary_algorithm.h
+/* stopping.h
  *
  * This file is part of EALib.
  *
- * Copyright 2012 David B. Knoester.
+ * Copyright 2014 David B. Knoester.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_STOP_H_
-#define _EA_STOP_H_
+#ifndef _EA_STOPPING_H_
+#define _EA_STOPPING_H_
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
@@ -34,7 +34,6 @@ namespace ealib {
      Normally, an EA is run for a specified number of updates.  These functors
      provide a means to stop such an EA early, e.g., if stagnation is detected.
      */
-    
 
     //! Don't stop early; default behavior.
     struct dont_stop {

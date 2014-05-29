@@ -98,42 +98,36 @@ namespace ealib {
 	public:
         //! Representation type; the "genome."
         typedef typename X::representation_type representation_type;
-        //! Fitness function type.
-        typedef typename X::fitness_function_type fitness_function_type;
-        //! Fitness value type for this individual.
-        typedef typename X::fitness_type fitness_type;
+        //! Genome type for this individual.
+        typedef typename X::genome_type genome_type;
         //! Phenotype for this individual.
         typedef typename X::phenotype_type phenotype_type;
         //! Encoding of this individual.
         typedef typename X::encoding_type encoding_type;
-        //! Pointer to this individual.
-        typedef typename X:: individual_ptr_type individual_ptr_type;
         //! Traits for this individual.
         typedef typename X::traits_type traits_type;
-        //! Phenotype pointer type.
-        typedef typename X::phenotype_ptr_type phenotype_ptr_type;
         
 		BOOST_CONCEPT_USAGE(IndividualConcept) {
             BOOST_CONCEPT_ASSERT((RepresentationConcept<representation_type>));
             BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
 
-            detail::same_type(representation_type(), x.repr());
-            x.repr() = representation_type();
+//            detail::same_type(representation_type(), x.repr());
+//            x.repr() = representation_type();
 		}
 
-		//! Retrieve this individual's representation.
-		representation_type& repr();
+//		//! Retrieve this individual's representation.
+//		representation_type& repr();
+//        
+//		//! Retrieve this individual's representation (const-qualified).
+//		const representation_type& repr() const;
+//        
         
-		//! Retrieve this individual's representation (const-qualified).
-		const representation_type& repr() const;
-        
-        
-        //! Retrieve this individual's attributes.
-        traits_type& traits();
-        
-        //! Retrieve this individual's attributes (const-qualified).
-        const traits_type& traits() const;
-
+//        //! Retrieve this individual's attributes.
+//        traits_type& traits();
+//        
+//        //! Retrieve this individual's attributes (const-qualified).
+//        const traits_type& traits() const;
+//
 	private:
 		X x; //!< Default constructible.
 	};
@@ -151,15 +145,15 @@ namespace ealib {
 	template <typename X>
 	struct PopulationConcept : boost::CopyConstructible<X>, boost::RandomAccessContainer<X>, boost::BackInsertionSequence<X> {
 	public:
-        typedef typename X::individual_type individual_type; //!< Type of individual pointed to by the population.
-        typedef typename X::individual_ptr_type individual_ptr_type; //!< Type of the individual pointer.
+//        typedef typename X::individual_type individual_type; //!< Type of individual pointed to by the population.
+//        typedef typename X::individual_ptr_type individual_ptr_type; //!< Type of the individual pointer.
         
 		BOOST_CONCEPT_USAGE(PopulationConcept) {
-            detail::same_type(i, *p);
+//            detail::same_type(i, *p);
 		}
 	private:
-        individual_type i;
-        individual_ptr_type p;
+//        individual_type i;
+//        individual_ptr_type p;
 	};
     
     

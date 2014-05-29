@@ -38,44 +38,50 @@
 #include <ea/individual.h>
 
 namespace ealib {
-    namespace traits {
+    
+    /*! Line of descent (LoD) trait.
+     
+     LoDs *ARE NOT* serializable.
+     */
+    template <typename T>
+    struct lod_trait {
+        typedef typename T::individual_ptr_type individual_ptr_type;
+        typedef std::vector<individual_ptr_type> parent_vector_type;
         
-        /*! Line of descent (LoD) trait.
-         
-         LoDs *ARE NOT* serializable.
-         */
-        template <typename T>
-        struct lod_trait {
-            typedef typename T::individual_ptr_type individual_ptr_type;
-            typedef std::vector<individual_ptr_type> parent_vector_type;
-            
-            //! Constructor.
-            lod_trait() {
-            }
-            
-            //! Clear this individual's parents.
-            void lod_clear() {
-                _lod_parents.clear();
-            }
-
-            //! Retrieve all of this individual's parents.
-            parent_vector_type& lod_parents() { return _lod_parents; }
-            
-            //! Shorthand for asexual populations.
-            individual_ptr_type lod_parent() {
-                assert(!_lod_parents.empty());
-                return _lod_parents.front();
-            }
-            
-            //! Returns true if this individual has parents.
-            bool has_parents() {
-                return !_lod_parents.empty();
-            }
-
-            parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.
-        };
+        //! Constructor.
+        lod_trait() {
+        }
         
-    } // traits
+        //! Clear this individual's parents.
+        void lod_clear() {
+            _lod_parents.clear();
+        }
+        
+        //! Retrieve all of this individual's parents.
+        parent_vector_type& lod_parents() { return _lod_parents; }
+        
+        //! Shorthand for asexual populations.
+        individual_ptr_type lod_parent() {
+            assert(!_lod_parents.empty());
+            return _lod_parents.front();
+        }
+        
+        //! Returns true if this individual has parents.
+        bool has_parents() {
+            return !_lod_parents.empty();
+        }
+        
+        parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.
+    };
+    
+    
+    //    /*! Line of descent traits for individuals in an evolutionary algorithm.
+    //
+    //     This trait tracks the line of descent for an individual.
+    //     */
+    //    template <typename T>
+    //    struct default_lod_traits : traits::phenotype_trait<T>, traits::lod_trait<T> {
+    //    };
     
     
     /*! Contains line of descent information.
@@ -323,13 +329,13 @@ namespace ealib {
         //! Destructor.
         virtual ~meta_population_lod_event() {
         }
-
+        
         event_list_type _events;
     };
     
     
     namespace datafiles {
-    
+        
         //! Line-of-descent from the default ancestor to the current MRCA.
         template <typename EA>
         struct mrca_lineage : end_of_epoch_event<EA> {
@@ -384,7 +390,7 @@ namespace ealib {
     } // datafiles
     
     LIBEA_MD_DECL(FIXATION_TIME, "individual.fixation_time", long);
-
+    
     /*! Tracks the update at which individuals along the line of descent have fixed
      in the population.
      

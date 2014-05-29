@@ -29,28 +29,39 @@
 #include <ea/representations/bitstring.h>
 #include <ea/fitness_functions/all_ones.h>
 #include <ea/generational_models/steady_state.h>
-#include <ea/cmdline_interface.h>
-#include <ea/datafiles/fitness.h>
 
+//#include <ea/cmdline_interface.h>
+//#include <ea/datafiles/fitness.h>
+//
 using namespace ealib;
 
 typedef evolutionary_algorithm
-< individual<bitstring, all_ones>
-, ancestors::random_bitstring
-, mutation::operators::per_site<mutation::site::bit>
+< direct<bitstring>
+, all_ones
+, mutation::operators::per_site<mutation::site::bitflip>
 , recombination::two_point_crossover
 , generational_models::steady_state< >
+, ancestors::random_bitstring
 > all_ones_ea;
 
-typedef evolutionary_algorithm
-< individual<bitstring, all_ones, bitstring, directS, default_lod_traits>
-, ancestors::random_bitstring
-, mutation::operators::per_site<mutation::site::bit>
-, recombination::two_point_crossover
-, generational_models::steady_state< >
-> all_ones_lod_ea;
-
-
+//
+//typedef evolutionary_algorithm
+//< individual<bitstring, all_ones>
+//, ancestors::random_bitstring
+//, mutation::operators::per_site<mutation::site::bit>
+//, recombination::two_point_crossover
+//, generational_models::steady_state< >
+//> all_ones_ea;
+//
+//typedef evolutionary_algorithm
+//< individual<bitstring, all_ones, bitstring, directS, default_lod_traits>
+//, ancestors::random_bitstring
+//, mutation::operators::per_site<mutation::site::bit>
+//, recombination::two_point_crossover
+//, generational_models::steady_state< >
+//> all_ones_lod_ea;
+//
+//
 template <typename EA>
 void add_std_meta_data(EA& ea) {
 	put<POPULATION_SIZE>(1024,ea);

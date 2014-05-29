@@ -31,36 +31,25 @@ namespace ealib {
 	 */
 	template
     < typename Representation
-    , typename FitnessFunction
-    , typename Phenotype=Representation
-    , typename Encoding=directS
-    , template <typename> class Traits=default_traits
+    , typename Traits
     > class individual {
 	public:
-        //! Representation type; the "genome."
 		typedef Representation representation_type;
-        //! Fitness function type.
-        typedef FitnessFunction fitness_function_type;
-        //! Fitness value type for this individual.
-        typedef typename FitnessFunction::fitness_type fitness_type;
-        //! Phenotype for this individual.
-        typedef Phenotype phenotype_type;
-        //! Encoding of this individual.
-        typedef Encoding encoding_type;
-        //! Pointer to this individual.
-        typedef boost::shared_ptr<individual> individual_ptr_type;
-        //! Traits for this individual.
-        typedef Traits<individual> traits_type;
-        //! Phenotype pointer type.
-        typedef typename traits_type::phenotype_ptr_type phenotype_ptr_type;
-        //! Meta-data type.
+        typedef typename representation_type::genome_type genome_type;
+        typedef typename representation_type::phenotype_type phenotype_type;
+        typedef typename representation_type::encoding_type encoding_type;
+        typedef Traits traits_type;
         typedef meta_data md_type;
         
         //! Constructor.
 		individual() {
 		}
         
-		//! Constructor that builds an individual from a representation.
+		//! Constructor that builds an individual from a genome.
+		individual(const genome_type& g) : _repr(g) {
+		}
+        
+        //! Constructor that builds an individual from a representation.
 		individual(const representation_type& r) : _repr(r) {
 		}
         
@@ -87,17 +76,11 @@ namespace ealib {
 		//! Returns this individual's representation (const-qualified).
 		const representation_type& repr() const { return _repr; }
         
-        //! Returns this individual's fitness.
-        fitness_type& fitness() { return _fitness; }
-
-        //! Returns this individual's fitness (const-qualified).
-        const fitness_type& fitness() const { return _fitness; }
-
-        //! Returns this individual's meta data.
-        meta_data& md() { return _md; }
+		//! Returns this individual's genome.
+		genome_type& genome() { return _repr.genome(); }
         
-        //! Returns this individual's meta data (const-qualified).
-        const meta_data& md() const { return _md; }
+		//! Returns this individual's genome (const-qualified).
+		const genome_type& genome() const { return _repr.genome(); }
         
         //! Returns this individual's traits.
         traits_type& traits() { return _traits; }
@@ -105,11 +88,16 @@ namespace ealib {
         //! Returns this individual's traits (const-qualified).
         const traits_type& traits() const { return _traits; }
 
+        //! Returns this individual's meta data.
+        meta_data& md() { return _md; }
+        
+        //! Returns this individual's meta data (const-qualified).
+        const meta_data& md() const { return _md; }
+
     protected:
         representation_type _repr; //!< This individual's representation.
-        fitness_type _fitness; //!< This individual's fitness.
-        meta_data _md; //!< This individual's meta data.
         traits_type _traits; //!< This individual's traits.
+        meta_data _md; //!< This individual's meta data.
         
     private:
         friend class boost::serialization::access;
@@ -118,7 +106,7 @@ namespace ealib {
         template <class Archive>
         void serialize(Archive& ar, const unsigned int version) {
             ar & boost::serialization::make_nvp("representation", _repr);
-            ar & boost::serialization::make_nvp("fitness", _fitness);
+            ar & boost::serialization::make_nvp("traits", _traits);
             ar & boost::serialization::make_nvp("meta_data", _md);
         }
     };

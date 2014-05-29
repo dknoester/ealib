@@ -34,28 +34,28 @@ namespace ealib {
      can be easily swapped out.  If more advanced control over the features of 
      the GA are needed, the reader is referred to evolutionary_algorithm.h.
 	 */
-	template
-    < typename Representation
-    , typename FitnessFunction
-    , typename AncestorGenerator
-	, typename MutationOperator
-	, typename RecombinationOperator
-	, typename GenerationalModel
-    , typename EarlyStopCondition=dont_stop
-    , typename UserDefinedConfiguration=default_configuration
-    , typename PopulationGenerator=fill_population
-    > class genetic_algorithm
-    : public evolutionary_algorithm
-    < individual<Representation, FitnessFunction>
-    , AncestorGenerator
-    , MutationOperator
-    , RecombinationOperator
-    , GenerationalModel
-    , EarlyStopCondition
-    , UserDefinedConfiguration
-    , PopulationGenerator
-    > {
-    };
+//	template
+//    < typename Representation
+//    , typename FitnessFunction
+//    , typename AncestorGenerator
+//	, typename MutationOperator
+//	, typename RecombinationOperator
+//	, typename GenerationalModel
+//    , typename EarlyStopCondition=dont_stop
+//    , typename UserDefinedConfiguration=default_configuration
+//    , typename PopulationGenerator=fill_population
+//    > class genetic_algorithm
+//    : public evolutionary_algorithm
+//    < individual<Representation, FitnessFunction>
+//    , AncestorGenerator
+//    , MutationOperator
+//    , RecombinationOperator
+//    , GenerationalModel
+//    , EarlyStopCondition
+//    , UserDefinedConfiguration
+//    , PopulationGenerator
+//    > {
+//    };
     
 } // ealib
 

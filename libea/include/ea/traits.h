@@ -23,28 +23,36 @@
 #include <boost/serialization/nvp.hpp>
 #include <ea/meta_data.h>
 #include <ea/fitness_function.h>
-#include <ea/phenotype.h>
 #include <ea/line_of_descent.h>
 
 namespace ealib {
     
-    /* Traits for individuals in an evolutionary algorithm.
+    /*! Default traits for individuals in an evolutionary algorithm.
      
-     Traits are defined as non-serializable runtime-only information that is
-     attached to individuals in an EA.  For example, pointers to a phenotype
-     or line of descent.
+     Traits are defined as runtime information that is attached to individuals
+     in an EA.  For example, pointers to a phenotype or a line of descent.  Traits
+     may be serializable.
+     
+     The default traits type simply provides a field for fitness.
      */
     template <typename T>
-    struct default_traits : traits::phenotype_trait<T> {
+    struct default_ea_traits {
+        typedef typename T::fitness_type fitness_type;
+        
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness", _fitness);
+        }
+        
+        //! Returns the current fitness value.
+        fitness_type& fitness() { return _fitness; }
+
+        //! Returns the current fitness value (const-qualified).
+        const fitness_type& fitness() const { return _fitness; }
+        
+        fitness_type _fitness;
     };
     
-    template <typename T>
-    struct default_lod_traits : traits::phenotype_trait<T>, traits::lod_trait<T> {
-    };
-    
-    template <typename T>
-    struct null_traits {
-    };
     
     namespace access {
         
@@ -59,7 +67,7 @@ namespace ealib {
         //! Functor that returns an individual's fitness.
         struct fitness {
             template <typename EA>
-            typename EA::individual_type::fitness_type& operator()(typename EA::individual_type& ind, EA& ea) {
+            typename EA::fitness_type& operator()(typename EA::individual_type& ind, EA& ea) {
                 return ealib::fitness(ind,ea);
             }
         };

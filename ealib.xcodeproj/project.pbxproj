@@ -549,8 +549,7 @@
 		428B726F184F77AB00E3BB4E /* meta_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = meta_data.h; sourceTree = "<group>"; };
 		428B7270184F77AB00E3BB4E /* metapopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metapopulation.h; sourceTree = "<group>"; };
 		428B7274184F77AB00E3BB4E /* mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutation.h; sourceTree = "<group>"; };
-		428B7276184F77AB00E3BB4E /* phenotype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = phenotype.h; sourceTree = "<group>"; };
-		428B7277184F77AB00E3BB4E /* ptr_population.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ptr_population.h; sourceTree = "<group>"; };
+		428B7277184F77AB00E3BB4E /* population_structure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_structure.h; sourceTree = "<group>"; };
 		428B7278184F77AB00E3BB4E /* recombination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recombination.h; sourceTree = "<group>"; };
 		428B727A184F77AB00E3BB4E /* bitstring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bitstring.h; sourceTree = "<group>"; };
 		428B727B184F77AB00E3BB4E /* circular_genome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = circular_genome.h; sourceTree = "<group>"; };
@@ -593,9 +592,9 @@
 		42C6618418628626004476D3 /* isolated_subpopulations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = isolated_subpopulations.h; sourceTree = "<group>"; };
 		42C9451E18E44FC200F05BE3 /* archive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = archive.h; sourceTree = "<group>"; };
 		42D68D89163F891F00659AE1 /* test_metapopulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_metapopulation.cpp; sourceTree = "<group>"; };
-		42E1920E1872705C009EF3A7 /* stop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stop.h; sourceTree = "<group>"; };
+		42E1920E1872705C009EF3A7 /* stopping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stopping.h; sourceTree = "<group>"; };
 		42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
-		42E1922E18783995009EF3A7 /* configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configuration.h; sourceTree = "<group>"; };
+		42EF7D7C19363266001A647B /* representation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = representation.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -893,7 +892,6 @@
 				42C9451E18E44FC200F05BE3 /* archive.h */,
 				428B722F184F77AB00E3BB4E /* cmdline_interface.h */,
 				428B7230184F77AB00E3BB4E /* comparators.h */,
-				42E1922E18783995009EF3A7 /* configuration.h */,
 				428B7231184F77AB00E3BB4E /* concepts.h */,
 				428B7233184F77AB00E3BB4E /* cvector.h */,
 				428B7234184F77AB00E3BB4E /* datafile.h */,
@@ -921,16 +919,16 @@
 				428B7271184F77AB00E3BB4E /* mkv */,
 				428B7274184F77AB00E3BB4E /* mutation.h */,
 				4252D4DA18648E3F00A54FC5 /* nsga2.h */,
-				428B7276184F77AB00E3BB4E /* phenotype.h */,
-				428B7277184F77AB00E3BB4E /* ptr_population.h */,
+				428B7277184F77AB00E3BB4E /* population_structure.h */,
 				42C661351860D6E1004476D3 /* qhfc.h */,
 				428B7278184F77AB00E3BB4E /* recombination.h */,
+				42EF7D7C19363266001A647B /* representation.h */,
 				428B7279184F77AB00E3BB4E /* representations */,
 				428B727F184F77AB00E3BB4E /* rng.h */,
 				428B7288184F77AB00E3BB4E /* selection.h */,
 				428B7280184F77AB00E3BB4E /* selection */,
 				427F5E5918806FB3003CCA5C /* subpopulation.h */,
-				42E1920E1872705C009EF3A7 /* stop.h */,
+				42E1920E1872705C009EF3A7 /* stopping.h */,
 				423243D618F01AE30047D8ED /* torus.h */,
 				428B722E184F77AB00E3BB4E /* traits.h */,
 				428B725F184F77AB00E3BB4E /* translation.h */,

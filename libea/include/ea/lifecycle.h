@@ -35,13 +35,13 @@
 
 
 namespace ealib {
-
+    
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
     LIBEA_MD_DECL(CHECKPOINT_OFF, "ea.run.checkpoint_off", int);
 	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
-
-    /*! At the conceptual level, here are the states and actions associated with 
+    
+    /*! At the conceptual level, this class defines the states and actions of
      an EA's lifecycle.  Where appropriate, these states correspond to methods
      defined below.
      
@@ -75,15 +75,31 @@ namespace ealib {
      begin epoch
      |
      v
-     update <-
-     |  \___ /
-     |
-     end epoch
-     |
-     v
-     save
+     update <-N-- stop? --Y-> end epoch ---> save
+          \___ /
+     
      */
-    namespace lifecycle {
+    struct default_lifecycle {
+        
+        //! Called after construction of the EA (no meta-data available).
+        template <typename EA>
+        void after_construction(EA& ea) {
+        }
+        
+        //! Called after EA initialization (meta-data available).
+        template <typename EA>
+        void initialize(EA& ea) {
+        }
+        
+        //! Called after the initial population has been generated.
+        template <typename EA>
+        void initial_population(EA& ea) {
+        }
+        
+        //! Called to reset the state of this population.
+        template <typename EA>
+        void reset(EA& ea) {
+        }
         
         //! Load an EA from the given input stream.
         template <typename EA>
@@ -121,7 +137,7 @@ namespace ealib {
             boost::archive::xml_oarchive oa(out);
             oa << BOOST_SERIALIZATION_NVP(ea);
         }
-
+        
         //! Save an EA to the given checkpoint file.
         template <typename EA>
         void save_checkpoint(const std::string& filename, EA& ea) {
@@ -197,15 +213,16 @@ namespace ealib {
         template <typename EA>
         void advance_all(EA& ea) {
 			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
-                lifecycle::advance_epoch(get<RUN_UPDATES>(ea), ea);
+                advance_epoch(get<RUN_UPDATES>(ea), ea);
                 if(!get<CHECKPOINT_OFF>(ea,0)) {
                     std::ostringstream filename;
                     filename << get<CHECKPOINT_PREFIX>(ea) << "-" << ea.current_update() << ".xml";
-                    lifecycle::save_checkpoint(filename.str(), ea);
+                    save_checkpoint(filename.str(), ea);
                 }
 			}
 		}
-    } // lifecycle
+    };
+    
 } // ealib
 
 #endif

@@ -32,7 +32,7 @@ namespace ealib {
 	struct all_ones : public fitness_function<unary_fitness<double> > {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-			return static_cast<double>(std::count(ind.repr().begin(), ind.repr().end(), 1u));
+			return static_cast<double>(std::count(ind.genome().begin(), ind.genome().end(), 1u));
 		}
 	};
 

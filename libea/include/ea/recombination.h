@@ -188,8 +188,8 @@ namespace ealib {
             void operator()(Population& parents, Population& offspring, EA& ea) {
                 // build the offspring:
                 assert(parents.size() == capacity());
-                typename EA::representation_type o1=parents[0]->repr();
-                typename EA::representation_type o2=parents[1]->repr();
+                typename EA::genome_type o1=parents[0]->genome();
+                typename EA::genome_type o2=parents[1]->genome();
                 
                 // they need to be the same size...
                 assert(o1.size() == o2.size());

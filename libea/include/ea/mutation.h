@@ -23,7 +23,7 @@
 #include <ea/algorithm.h>
 #include <ea/concepts.h>
 #include <ea/meta_data.h>
-#include <ea/ptr_population.h>
+//#include <ea/ptr_population.h>
 #include <ea/torus.h>
 
 
@@ -246,9 +246,9 @@ namespace ealib {
                 //! Iterate through all elements in the given representation, possibly mutating them.
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
-                    typename EA::representation_type& repr=ind.repr();
+                    typename EA::genome_type& g=ind.genome();
                     const double per_site_p=get<MUTATION_PER_SITE_P>(ea);
-                    for(typename EA::representation_type::iterator i=repr.begin(); i!=repr.end(); ++i){
+                    for(typename EA::genome_type::iterator i=g.begin(); i!=g.end(); ++i){
                         if(ea.rng().p(per_site_p)) {
                             _mt(i, ea);
                         }

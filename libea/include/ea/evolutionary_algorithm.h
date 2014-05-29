@@ -23,94 +23,80 @@
 #include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
+#include <vector>
 
 #include <ea/ancestors.h>
 #include <ea/concepts.h>
-#include <ea/configuration.h>
-#include <ea/fitness_function.h>
 #include <ea/events.h>
+#include <ea/individual.h>
+#include <ea/lifecycle.h>
 #include <ea/meta_data.h>
 #include <ea/mutation.h>
-#include <ea/ptr_population.h>
+#include <ea/population_structure.h>
 #include <ea/selection.h>
-#include <ea/stop.h>
 #include <ea/recombination.h>
+#include <ea/representation.h>
 #include <ea/rng.h>
+#include <ea/stopping.h>
+#include <ea/traits.h>
 
 namespace ealib {
     
-	/*! Generic evolutionary algorithm class.
+    /*! Generic evolutionary algorithm class.
 	 
-	 This class is designed to be generic, such that all the main features of evolutionary
-	 algorithms can be easily incorporated.  The focus of this class is on the
-	 common features of most EAs, while leaving the problem-specific components
-	 easily customizable.
+	 This class is designed to be generic, such that all the main features of 
+     evolutionary algorithms can be incorporated.  The focus of this class is on 
+     the common features of most EAs, while leaving the problem-specific 
+     components easily customizable.
 	 */
-	template
-    < typename Individual
-    , typename AncestorGenerator
+    template
+    < typename Representation
+    , typename FitnessFunction
 	, typename MutationOperator
 	, typename RecombinationOperator
 	, typename GenerationalModel
-    , typename EarlyStopCondition=dont_stop
-    , typename UserDefinedConfiguration=default_configuration
+    , typename AncestorGenerator
+    , typename StopCondition=dont_stop
     , typename PopulationGenerator=fill_population
+    , typename Lifecycle=default_lifecycle
+    , template <typename> class Traits=default_ea_traits
     > class evolutionary_algorithm {
     public:
-        //! Tag indicating the structure of this population.
         typedef singlePopulationS population_structure_tag;
-        //! Individual type.
-        typedef Individual individual_type;
-        //! Individual pointer type.
-        typedef typename individual_type::individual_ptr_type individual_ptr_type;
-        //! Representation type.
-        typedef typename individual_type::representation_type representation_type;
-        //! Encoding type.
-        typedef typename individual_type::encoding_type encoding_type;
-        //! Phenotype type.
-        typedef typename individual_type::phenotype_type phenotype_type;
-        //! Phenotype pointer type.
-        typedef typename individual_type::phenotype_ptr_type phenotype_ptr_type;
-        //! Fitness function type.
-        typedef typename individual_type::fitness_function_type fitness_function_type;
-        //! Ancestor generator type.
-        typedef AncestorGenerator ancestor_generator_type;
-        //! Mutation operator type.
+        typedef Representation representation_type;
+        typedef typename representation_type::genome_type genome_type;
+        typedef typename representation_type::phenotype_type phenotype_type;
+        typedef typename representation_type::encoding_type encoding_type;
+        typedef FitnessFunction fitness_function_type;
+        typedef typename fitness_function_type::fitness_type fitness_type;
         typedef MutationOperator mutation_operator_type;
-        //! Recombination operator type.
         typedef RecombinationOperator recombination_operator_type;
-        //! Generational model type.
         typedef GenerationalModel generational_model_type;
-        //! Function that checks for an early stopping condition.
-        typedef EarlyStopCondition stop_condition_type;
-        //! User-defined configuration methods type.
-        typedef UserDefinedConfiguration configuration_type;
-        //! Population generator type.
+        typedef AncestorGenerator ancestor_generator_type;
+        typedef StopCondition stop_condition_type;
         typedef PopulationGenerator population_generator_type;
-        //! Meta-data type.
+        typedef Lifecycle lifecycle_type;
+        typedef Traits<evolutionary_algorithm> traits_type;
+        typedef individual<representation_type, traits_type> individual_type;
+        typedef boost::shared_ptr<individual_type> individual_ptr_type;
+        
         typedef meta_data md_type;
-        //! Random number generator type.
         typedef default_rng_type rng_type;
-        //! Event handler.
         typedef event_handler<evolutionary_algorithm> event_handler_type;
-        //! Population type.
-        typedef ptr_population<individual_type,individual_ptr_type> population_type;
-        //! Iterator over this EA's population.
+        typedef std::vector<individual_ptr_type> population_type;
+
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
-        //! Const iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
-        //! Reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
-        //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
         
         //! Default constructor.
         evolutionary_algorithm() : _update(0) {
             BOOST_CONCEPT_ASSERT((EvolutionaryAlgorithmConcept<evolutionary_algorithm>));
             BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
-            _configuration.after_construction(*this);
+            _lifecycle.after_construction(*this);
         }
-        
+
         //! Copy constructor (note that this is *not* a complete copy).
         evolutionary_algorithm(const evolutionary_algorithm& that) {
             _update = that._update;
@@ -120,11 +106,11 @@ namespace ealib {
                 individual_ptr_type q = copy_individual(*i);
                 insert(end(),q);
             }
-            _configuration.after_construction(*this);
+            _lifecycle.after_construction(*this);
         }
-        
+
         /*! Assignment operator (note that this is *not* a complete copy).
-         
+
          \warning Not exception safe.
          */
         evolutionary_algorithm& operator=(const evolutionary_algorithm& that) {
@@ -137,22 +123,22 @@ namespace ealib {
                     individual_ptr_type q = copy_individual(*i);
                     insert(end(),q);
                 }
-                _configuration.after_construction(*this);
+                _lifecycle.after_construction(*this);
             }
             return *this;
         }
-        
+
         //! Initializes this EA.
         void initialize() {
             initialize_fitness_function(_fitness_function, *this);
-            _configuration.initialize(*this);
+            _lifecycle.initialize(*this);
         }
-        
+
         //! Marks the beginning of a new epoch.
         void begin_epoch() {
             _events.record_statistics(*this);
         }
-        
+
         //! Advances this EA by one update.
         void update() {
             if(!_population.empty()) {
@@ -162,12 +148,12 @@ namespace ealib {
             ++_update;
             _events.record_statistics(*this);
         }
-        
+
         //! Marks the end of an epoch.
         void end_epoch() {
             _events.end_of_epoch(*this);
         }
-        
+
         //! Resets the population.
         void reset() {
             nullify_fitness(begin(), end(), *this);
@@ -178,10 +164,15 @@ namespace ealib {
             put<RNG_SEED>(s,*this); // save the seed!
             _rng.reset(s);
         }
+
+        //! Returns true if this EA should stop.
+        bool stop() {
+            return _stop(*this);
+        }
         
-        //! Returns a new individual built from the given representation.
-        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
-            individual_ptr_type p(new individual_type(r));
+        //! Returns a new individual built from the given genome.
+        individual_ptr_type make_individual(const genome_type& g=genome_type()) {
+            individual_ptr_type p(new individual_type(g));
             return p;
         }
         
@@ -193,55 +184,52 @@ namespace ealib {
         
         //! Returns the current update of this EA.
         unsigned long current_update() { return _update; }
-        
+
         //! Returns the random number generator.
         rng_type& rng() { return _rng; }
-        
+
         //! Returns this EA's meta-data.
         md_type& md() { return _md; }
-        
+
         //! Returns this EA's meta-data (const-qualified).
         const md_type& md() const { return _md; }
-        
+
         //! Returns the fitness function object.
         fitness_function_type& fitness_function() { return _fitness_function; }
-        
-        //! Returns true if this EA should be stopped.
-        bool stop() { return _stop(*this); }
-        
+
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
-        
-        //! Returns the configuration object.
-        configuration_type& config() { return _configuration; }
-        
+
+        //! Returns the lifecycle object.
+        lifecycle_type& lifecycle() { return _lifecycle; }
+
         //! Returns this EA's population.
         population_type& population() { return _population; }
-        
+
         //! Returns the size of this EA's population.
         std::size_t size() const { return _population.size(); }
-        
+
         //! Returns the n'th individual in the population.
         individual_type& operator[](std::size_t n) { return *_population[n]; }
-        
+
         //! Returns a begin iterator to the population.
         iterator begin() { return iterator(_population.begin()); }
-        
+
         //! Returns an end iterator to the population.
         iterator end() { return iterator(_population.end()); }
-        
+
         //! Returns a begin iterator to the population (const-qualified).
         const_iterator begin() const { return const_iterator(_population.begin()); }
-        
+
         //! Returns an end iterator to the population (const-qualified).
         const_iterator end() const { return const_iterator(_population.end()); }
-        
+
         //! Returns a reverse begin iterator to the population.
         reverse_iterator rbegin() { return reverse_iterator(_population.rbegin()); }
-        
+
         //! Returns a reverse end iterator to the population.
         reverse_iterator rend() { return reverse_iterator(_population.rend()); }
-        
+
         //! Returns a reverse begin iterator to the population (const-qualified).
         const_reverse_iterator rbegin() const { return const_reverse_iterator(_population.rbegin()); }
         
@@ -270,11 +258,11 @@ namespace ealib {
         md_type _md; //!< Meta-data for this evolutionary algorithm instance.
         population_type _population; //!< Population instance.
         fitness_function_type _fitness_function; //!< Fitness function object.
-        stop_condition_type _stop; //!< Checks for an early stopping condition.
         generational_model_type _generational_model; //!< Generational model instance.
+        stop_condition_type _stop; //!< Stop condition.
         event_handler_type _events; //!< Event handler.
-        configuration_type _configuration; //!< User-defined configuration methods.
-        
+        lifecycle_type _lifecycle; //!< Lifecycle methods.
+
     private:
         friend class boost::serialization::access;
         template<class Archive>

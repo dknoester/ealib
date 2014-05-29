@@ -81,7 +81,7 @@ namespace ealib {
     template <typename EA>
     void generate_initial_population(EA& ea) {
         generate_population(ea);
-        ea.config().initial_population(ea);
+        ea.lifecycle().initial_population(ea);
     }
     
     /*! Fills the entire population with ancestors.
@@ -129,8 +129,8 @@ namespace ealib {
         //! Generates a default-constructed representation.
         struct default_representation {
             template <typename EA>
-            typename EA::representation_type operator()(EA& ea) {
-                return typename EA::representation_type();
+            typename EA::genome_type operator()(EA& ea) {
+                return typename EA::genome_type();
             }
         };
         
@@ -139,11 +139,11 @@ namespace ealib {
         struct zero_bitstring {
             //! Generate an individual.
             template <typename EA>
-            typename EA::representation_type operator()(EA& ea) {
-                typename EA::representation_type r;
+            typename EA::genome_type operator()(EA& ea) {
+                typename EA::genome_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                for(typename EA::genome_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = 0;
                 }
                 return r;
@@ -155,11 +155,11 @@ namespace ealib {
         struct random_bitstring {            
             //! Generate an individual.
             template <typename EA>
-            typename EA::representation_type operator()(EA& ea) {
-                typename EA::representation_type r;
+            typename EA::genome_type operator()(EA& ea) {
+                typename EA::genome_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                for(typename EA::genome_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().bit();
                 }
                 return r;
@@ -171,12 +171,12 @@ namespace ealib {
         struct flat_bitstring {
             //! Generate an individual.
             template <typename EA>
-            typename EA::representation_type operator()(EA& ea) {
-                typename EA::representation_type r;
+            typename EA::genome_type operator()(EA& ea) {
+                typename EA::genome_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
                 std::size_t x=ea.rng()(r.size()); // how many ones?
-                for(typename EA::representation_type::iterator i=r.begin(); x>0; --x, ++i) {
+                for(typename EA::genome_type::iterator i=r.begin(); x>0; --x, ++i) {
                     *i = 1;
                 }
                 std::random_shuffle(r.begin(), r.end(), ea.rng());
@@ -189,11 +189,11 @@ namespace ealib {
         struct uniform_integer {            
             //! Generate an individual.
             template <typename EA>
-            typename EA::representation_type operator()(EA& ea) {
-                typename EA::representation_type r;
+            typename EA::genome_type operator()(EA& ea) {
+                typename EA::genome_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                for(typename EA::genome_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().uniform_integer(get<MUTATION_UNIFORM_INT_MIN>(ea), get<MUTATION_UNIFORM_INT_MAX>(ea));
                 }
                 return r;
@@ -204,11 +204,11 @@ namespace ealib {
          */
         struct uniform_real {
             template <typename EA>
-            typename EA::representation_type operator()(EA& ea) {
-                typename EA::representation_type r;
+            typename EA::genome_type operator()(EA& ea) {
+                typename EA::genome_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
-                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                for(typename EA::genome_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().uniform_real(get<MUTATION_UNIFORM_REAL_MIN>(ea), get<MUTATION_UNIFORM_REAL_MAX>(ea));
                 }
                 return r;
@@ -219,12 +219,12 @@ namespace ealib {
          */
         struct random_individual {
             template <typename EA>
-            typename EA::representation_type operator()(EA& ea) {
-                typename EA::representation_type r;
+            typename EA::genome_type operator()(EA& ea) {
+                typename EA::genome_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
                 
                 typename EA::mutation_operator_type::mutation_type mt;
-                for(typename EA::representation_type::iterator i=r.begin(); i!=r.end(); ++i) {
+                for(typename EA::genome_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     mt(r, i, ea);
                 }
                 return r;
@@ -271,7 +271,7 @@ namespace ealib {
             
             template <typename EA>
             typename EA::population_entry_type operator()(EA& ea) {
-                typedef typename EA::representation_type representation_type;
+                typedef typename EA::genome_type genome_type;
                 typename EA::individual_type ind;
                 ind.name() = next<INDIVIDUAL_COUNT>(ea);
                 ind.repr() = _i.repr();                
