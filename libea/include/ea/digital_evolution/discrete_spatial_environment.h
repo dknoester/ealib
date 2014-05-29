@@ -220,7 +220,9 @@ namespace ealib {
         void insert_at(std::size_t i, individual_ptr_type p) {
             assert(i < (_locs.size1()*_locs.size2()));
             _locs.data()[i].p = p;
-            p->position() = _locs.data()[i].position();
+            if(p->position().empty()) {
+                p->position() = _locs.data()[i].position();
+            }
         }
         
         //! Inserts the range of individuals [f,l) into the environment starting at index i.

@@ -132,15 +132,11 @@ namespace ealib {
                     typename EA::individual_type::ea_type::individual_ptr_type q = p->ea().make_individual(r);
             
                     inherits_from(**i, *q, p->ea());
-                    // insert into random location....
                     int s = get<POPULATION_SIZE>(p->ea());
-//                    int r = p->ea()->rng(0,s);
                     std::size_t pos = p->ea().rng()(s);
-
                     
                     p->insert(p->end(),q);
                     p->ea().env().move_ind(count, pos);
-//                    p->insert(p->begin()+pos, q);
                     ++count;
                 }
                 
