@@ -36,20 +36,22 @@
 #include <ea/events.h>
 #include <ea/lifecycle.h>
 #include <ea/individual.h>
+#include <ea/traits.h>
 
 namespace ealib {
     
     /*! Line of descent (LoD) trait.
      
-     LoDs *ARE NOT* serializable.
+     \warning LoDs are not currently serializable.
      */
     template <typename T>
-    struct lod_trait {
+    struct default_lod_ea_traits : public default_ea_traits<T> {
+        typedef default_ea_traits<T> parent;
         typedef typename T::individual_ptr_type individual_ptr_type;
         typedef std::vector<individual_ptr_type> parent_vector_type;
         
         //! Constructor.
-        lod_trait() {
+        default_lod_ea_traits() {
         }
         
         //! Clear this individual's parents.
@@ -71,17 +73,14 @@ namespace ealib {
             return !_lod_parents.empty();
         }
         
+        //! Serialize this trait (LoDs are not serializable).
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("default_traits", boost::serialization::base_object<parent>(*this));
+        }
+        
         parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.
     };
-    
-    
-    //    /*! Line of descent traits for individuals in an evolutionary algorithm.
-    //
-    //     This trait tracks the line of descent for an individual.
-    //     */
-    //    template <typename T>
-    //    struct default_lod_traits : traits::phenotype_trait<T>, traits::lod_trait<T> {
-    //    };
     
     
     /*! Contains line of descent information.

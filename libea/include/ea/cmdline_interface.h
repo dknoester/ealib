@@ -33,7 +33,7 @@
 #include <ea/concepts.h>
 #include <ea/events.h>
 #include <ea/meta_data.h>
-#include <ea/ptr_population.h>
+#include <ea/population_structure.h>
 #include <ea/analysis.h>
 #include <ea/lifecycle.h>
 #include <ea/datafiles/runtime.h>
@@ -253,7 +253,7 @@ namespace ealib {
             if(_vm.count("verbose")) {
                 add_event<datafiles::runtime>(ea);
             }
-            lifecycle::advance_all(ea);
+            ea.lifecycle().advance_all(ea);
         }
         
         //! Initialize an EA.
@@ -275,7 +275,7 @@ namespace ealib {
 
         //! Continue an already initialized EA for another epoch.
         void continue_ea(ea_type& ea) {
-            lifecycle::advance_all(ea);
+            ea.lifecycle().advance_all(ea);
         }
 
 		//! Run the EA.
@@ -343,7 +343,7 @@ namespace ealib {
                 throw fatal_error_exception("required checkpoint file not found.");
             }
             std::string cpfile(_vm["checkpoint"].template as<std::string>());
-            lifecycle::load_checkpoint(cpfile, ea);
+            ea.lifecycle().load_checkpoint(cpfile, ea);
         }
         
         // This grants the following templated functions access to the internals

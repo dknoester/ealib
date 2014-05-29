@@ -27,7 +27,7 @@
 
 #include <ea/traits.h>
 #include <ea/concepts.h>
-#include <ea/configuration.h>
+#include <ea/lifecycle.h>
 #include <ea/generational_models/moran_process.h>
 #include <ea/individual.h>
 #include <ea/phenotype.h>

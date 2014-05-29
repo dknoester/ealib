@@ -22,6 +22,7 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <ea/analysis.h>
 #include <ea/datafile.h>
 #include <ea/individual.h>
 

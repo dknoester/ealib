@@ -23,9 +23,6 @@
 #include <ea/algorithm.h>
 #include <ea/concepts.h>
 #include <ea/meta_data.h>
-//#include <ea/ptr_population.h>
-#include <ea/torus.h>
-
 
 namespace ealib {
     

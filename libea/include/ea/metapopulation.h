@@ -24,17 +24,17 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <ea/configuration.h>
+#include <ea/lifecycle.h>
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
-#include <ea/ptr_population.h>
+#include <ea/population_structure.h>
 #include <ea/meta_data.h>
 #include <ea/events.h>
 #include <ea/rng.h>
 #include <ea/generational_models/isolated_subpopulations.h>
 #include <ea/mutation.h>
 #include <ea/recombination.h>
-#include <ea/stop.h> 
+#include <ea/stopping.h> 
 #include <ea/traits.h>
 #include <ea/subpopulation.h>
 

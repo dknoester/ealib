@@ -26,21 +26,21 @@
 BOOST_AUTO_TEST_CASE(test_checkpoint) {
     all_ones_ea ea1, ea2;
     add_std_meta_data(ea1);
-    lifecycle::prepare_new(ea1);
+    ea1.lifecycle().prepare_new(ea1);
     
     // run and checkpoint ea1:
-    lifecycle::advance_epoch(10,ea1);
+    ea1.lifecycle().advance_epoch(10,ea1);
     std::ostringstream out;
-    lifecycle::save_checkpoint(out, ea1);
+    ea1.lifecycle().save_checkpoint(out, ea1);
     
     // load the saved state into ea2:
     std::istringstream in(out.str());
-    lifecycle::load_checkpoint(in, ea2);
+    ea2.lifecycle().load_checkpoint(in, ea2);
     
     // run each a little longer:
-    lifecycle::advance_epoch(10,ea1);
+    ea1.lifecycle().advance_epoch(10,ea1);
     //	BOOST_CHECK_NE(ea1, ea2);
-    lifecycle::advance_epoch(10,ea2);
+    ea2.lifecycle().advance_epoch(10,ea2);
     
     // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
@@ -56,11 +56,11 @@ BOOST_AUTO_TEST_CASE(test_replicability) {
     ea1.rng().reset(42);
     ea2.rng().reset(42);
     
-    lifecycle::prepare_new(ea1);
-    lifecycle::prepare_new(ea2);
+    ea1.lifecycle().prepare_new(ea1);
+    ea2.lifecycle().prepare_new(ea2);
     
-    lifecycle::advance_epoch(100,ea1);
-    lifecycle::advance_epoch(100,ea2);
+    ea1.lifecycle().advance_epoch(100,ea1);
+    ea2.lifecycle().advance_epoch(100,ea2);
     
     // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
@@ -75,10 +75,10 @@ BOOST_AUTO_TEST_CASE(test_replicability) {
 BOOST_AUTO_TEST_CASE(test_archive) {
     all_ones_ea ea1, ea2;
     add_std_meta_data(ea1);
-    lifecycle::prepare_new(ea1);
+    ea1.lifecycle().prepare_new(ea1);
     
     // run and archive ea1:
-    lifecycle::advance_epoch(10,ea1);
+    ea1.lifecycle().advance_epoch(10,ea1);
     std::ostringstream out;
     save_archive(out, ea1);
     

@@ -21,17 +21,15 @@
 #define _EA_TRAITS_H_
 
 #include <boost/serialization/nvp.hpp>
-#include <ea/meta_data.h>
 #include <ea/fitness_function.h>
-#include <ea/line_of_descent.h>
 
 namespace ealib {
     
     /*! Default traits for individuals in an evolutionary algorithm.
      
      Traits are defined as runtime information that is attached to individuals
-     in an EA.  For example, pointers to a phenotype or a line of descent.  Traits
-     may be serializable.
+     in an EA.  For example, pointers to a phenotype or a line of descent.  
+     Traits may support serialization.
      
      The default traits type simply provides a field for fitness.
      */
@@ -39,49 +37,21 @@ namespace ealib {
     struct default_ea_traits {
         typedef typename T::fitness_type fitness_type;
         
-        template<class Archive>
-        void serialize(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness", _fitness);
-        }
-        
         //! Returns the current fitness value.
         fitness_type& fitness() { return _fitness; }
 
         //! Returns the current fitness value (const-qualified).
         const fitness_type& fitness() const { return _fitness; }
-        
-        fitness_type _fitness;
+
+        //! Serialize this trait.
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness", _fitness);
+        }
+
+        fitness_type _fitness; //!< Fitness for the individual that holds this trait.
     };
-    
-    
-    namespace access {
-        
-        //! Functor that returns an individual's traits.
-        struct traits {
-            template <typename EA>
-            typename EA::individual_type::traits_type operator()(typename EA::individual_type& ind, EA& ea) {
-                return ind.traits();
-            }
-        };
-        
-        //! Functor that returns an individual's fitness.
-        struct fitness {
-            template <typename EA>
-            typename EA::fitness_type& operator()(typename EA::individual_type& ind, EA& ea) {
-                return ealib::fitness(ind,ea);
-            }
-        };
-        
-        //! Functor that returns an element of meta-data from an individual.
-        template <typename MDType>
-        struct meta_data {
-            template <typename EA>
-            typename MDType::value_type operator()(typename EA::individual_type& ind, EA& ea) {
-                return ealib::get<MDType>(ind);
-            }
-        };
-        
-    } // access
+
 } // ea
 
 #endif

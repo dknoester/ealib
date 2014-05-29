@@ -28,7 +28,7 @@
 
 #include <ea/ancestors.h>
 #include <ea/concepts.h>
-#include <ea/configuration.h>
+#include <ea/lifecycle.h>
 #include <ea/digital_evolution/events.h>
 #include <ea/digital_evolution/ancestors.h>
 #include <ea/digital_evolution/discrete_spatial_environment.h>
@@ -39,10 +39,11 @@
 #include <ea/digital_evolution/task_library.h>
 #include <ea/meta_data.h>
 #include <ea/lifecycle.h>
-#include <ea/ptr_population.h>
+#include <ea/population_structure.h>
+#include <ea/data_structures/shared_ptr_vector.h>
 #include <ea/recombination.h>
 #include <ea/rng.h>
-#include <ea/stop.h>
+#include <ea/stopping.h>
 
 
 namespace ealib {
@@ -123,7 +124,7 @@ namespace ealib {
         //! Task library type.
         typedef task_library<digital_evolution> task_library_type;
         //! Population type.
-        typedef ptr_population<individual_type,individual_ptr_type> population_type;
+        typedef shared_ptr_vector<individual_ptr_type> population_type;
         //! Iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         //! Const iterator over this EA's population.

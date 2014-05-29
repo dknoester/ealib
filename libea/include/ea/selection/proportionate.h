@@ -20,7 +20,7 @@
 #ifndef _EA_SELECTION_PROPORTIONATE_H_
 #define _EA_SELECTION_PROPORTIONATE_H_
 
-#include <ea/traits.h>
+#include <ea/access.h>
 #include <ea/selection.h>
 
 namespace ealib {

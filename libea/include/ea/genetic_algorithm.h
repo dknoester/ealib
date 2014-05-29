@@ -21,8 +21,8 @@
 #define _EA_GENETIC_ALGORITHM_H_
 
 #include <ea/evolutionary_algorithm.h>
-#include <ea/stop.h>
-#include <ea/configuration.h>
+#include <ea/stopping.h>
+#include <ea/lifecycle.h>
 #include <ea/ancestors.h>
 
 namespace ealib {

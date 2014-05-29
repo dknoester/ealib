@@ -23,10 +23,10 @@
 #include <boost/iterator/indirect_iterator.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/shared_ptr.hpp>
-#include <vector>
 
 #include <ea/ancestors.h>
 #include <ea/concepts.h>
+#include <ea/data_structures/shared_ptr_vector.h>
 #include <ea/events.h>
 #include <ea/individual.h>
 #include <ea/lifecycle.h>
@@ -79,12 +79,10 @@ namespace ealib {
         typedef Traits<evolutionary_algorithm> traits_type;
         typedef individual<representation_type, traits_type> individual_type;
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
-        
         typedef meta_data md_type;
         typedef default_rng_type rng_type;
         typedef event_handler<evolutionary_algorithm> event_handler_type;
-        typedef std::vector<individual_ptr_type> population_type;
-
+        typedef shared_ptr_vector<individual_ptr_type> population_type;
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;

@@ -24,7 +24,7 @@
 #include <boost/serialization/split_member.hpp>
 #include <sstream>
 #include <ea/meta_data.h>
-#include <ea/cvector.h>
+#include <ea/data_structures/circular_vector.h>
 
 
 namespace ealib {

@@ -24,8 +24,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include <ea/algorithm.h>
-#include <ea/cvector.h>
-#include <ea/torus.h>
+#include <ea/data_structures/circular_vector.h>
+#include <ea/data_structures/torus.h>
 
 BOOST_AUTO_TEST_CASE(test_torus1) {
 	using namespace ealib;
