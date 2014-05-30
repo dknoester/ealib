@@ -118,13 +118,21 @@ namespace ealib {
             
             // now build the initial populations for each subpopulation:
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                generate_initial_population(i->ea());
+                generate_initial_population(*i);
             }
         }
     };
     
     
     namespace ancestors {
+        
+        //! Generates a default-constructed subpopulation.
+        struct default_subpopulation {
+            template <typename EA>
+            typename EA::individual_type operator()(EA& ea) {
+                return typename EA::individual_type();
+            }
+        };
         
         //! Generates a default-constructed representation.
         struct default_representation {

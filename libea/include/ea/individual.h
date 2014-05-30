@@ -21,9 +21,7 @@
 #define _EA_INDIVIDUAL_H_
 
 #include <boost/serialization/nvp.hpp>
-
 #include <ea/metadata.h>
-#include <ea/traits.h>
 
 namespace ealib {
     

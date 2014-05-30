@@ -25,7 +25,7 @@
 
 namespace ealib {
     
-    /*! Default traits for individuals in an evolutionary algorithm.
+    /*! Fitness trait for individuals in an evolutionary algorithm.
      
      Traits are defined as runtime information that is attached to individuals
      in an EA.  For example, pointers to a phenotype or a line of descent.  
@@ -34,7 +34,7 @@ namespace ealib {
      The default traits type simply provides a field for fitness.
      */
     template <typename T>
-    struct default_ea_traits {
+    struct fitness_trait {
         typedef typename T::fitness_type fitness_type;
         
         //! Returns the current fitness value.
@@ -50,6 +50,15 @@ namespace ealib {
         }
 
         fitness_type _fitness; //!< Fitness for the individual that holds this trait.
+    };
+
+    //! Empty traits type.
+    template <typename T>
+    struct empty_traits {
+        //! Serialize this trait.
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+        }
     };
 
 } // ea

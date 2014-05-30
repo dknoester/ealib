@@ -45,13 +45,17 @@ namespace ealib {
      \warning LoDs are not currently serializable.
      */
     template <typename T>
-    struct default_lod_ea_traits : public default_ea_traits<T> {
-        typedef default_ea_traits<T> parent;
+    struct lod_trait : public fitness_trait<T> {
+        typedef fitness_trait<T> parent;
         typedef typename T::individual_ptr_type individual_ptr_type;
         typedef std::vector<individual_ptr_type> parent_vector_type;
         
         //! Constructor.
-        default_lod_ea_traits() {
+        lod_trait() {
+        }
+        
+        //! Destructor.
+        virtual ~lod_trait() {
         }
         
         //! Clear this individual's parents.
@@ -76,7 +80,7 @@ namespace ealib {
         //! Serialize this trait (LoDs are not serializable).
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("default_traits", boost::serialization::base_object<parent>(*this));
+            ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<parent>(*this));
         }
         
         parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.

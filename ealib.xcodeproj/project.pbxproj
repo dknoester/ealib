@@ -57,7 +57,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		4210C5AA18885DB700A8FAFA /* test_qhfc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42C661321860D2FF004476D3 /* test_qhfc.cpp */; };
 		421D68B81735719700A45DD6 /* test_analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 421D68B61735719700A45DD6 /* test_analysis.cpp */; };
 		423CBE41157D0ECF0003A644 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF0157D0E450003A644 /* main.cpp */; };
 		423CBE63157D0FF50003A644 /* test_serialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF6157D0E450003A644 /* test_serialization.cpp */; };
@@ -82,6 +81,7 @@
 		4256FAC61892BC25004AB7F9 /* lod_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4256FA631892BA14004AB7F9 /* lod_tracking.cpp */; };
 		4256FAC71892BC2D004AB7F9 /* digital_evolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4256FA621892BA14004AB7F9 /* digital_evolution.cpp */; };
 		426A04A617B1205B000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
+		4286962B1938B55F00E717EF /* test_qhfc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42C661321860D2FF004476D3 /* test_qhfc.cpp */; };
 		428B712218490E8F00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		428B71FF184F664D00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		428CB51A18F81F0500E6093D /* test_torus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42841C2915A5F4D800AB18BE /* test_torus.cpp */; };
@@ -1621,7 +1621,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				42C6613F1860DC07004476D3 /* test_metapopulation.cpp in Sources */,
-				4210C5AA18885DB700A8FAFA /* test_qhfc.cpp in Sources */,
+				4286962B1938B55F00E717EF /* test_qhfc.cpp in Sources */,
 				42C661401860DC07004476D3 /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

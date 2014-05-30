@@ -24,10 +24,11 @@
 
 BOOST_AUTO_TEST_CASE(test_qhfc) {
     typedef qhfc
-    < individual<bitstring,all_ones>
-    , ancestors::random_bitstring
+    < direct<bitstring>
+    , all_ones
     , mutation::operators::per_site<mutation::site::bit>
     , recombination::two_point_crossover
+    , ancestors::random_bitstring
     > ea_type;
     
     ea_type M;
@@ -45,5 +46,5 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     
     M.initialize();
     generate_initial_population(M);
-    lifecycle::advance_epoch(10,M);
+    M.lifecycle().advance_epoch(10,M);
 }

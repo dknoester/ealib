@@ -24,17 +24,18 @@ namespace ealib {
 	namespace generational_models {
         
         /*! Default generational model for a metapopulation EA, where all
-         subpopulations are updated in lock-step, and do not themselves engage in
+         EAs are updated in lock-step, and do not themselves engage in
          a subpopulation-level evolutionary process.
          
-         This generational model can be used to support an island model GA.
+         Coupled with a migration event, this generational model provides an
+         island model.
          */
         struct isolated_subpopulations {
-            //! Apply this generational model to the meta_population EA.
+            //! Apply this generational model to the metapopulation.
             template <typename Population, typename EA>
             void operator()(Population& population, EA& ea) {
                 for(typename Population::iterator i=population.begin(); i!=population.end(); ++i) {
-                    (*i)->repr().update();
+                    (*i)->update();
                 }
             }
         };

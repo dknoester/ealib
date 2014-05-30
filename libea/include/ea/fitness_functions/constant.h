@@ -20,6 +20,7 @@
 #ifndef _EA_FITNESS_FUNCTIONS_CONSTANT_H_
 #define _EA_FITNESS_FUNCTIONS_CONSTANT_H_
 
+#include <limits>
 #include <ea/fitness_function.h>
 
 namespace ealib {
@@ -34,6 +35,15 @@ namespace ealib {
             return 1.0;
 		}
 	};
+    
+    //! Fitness function that assigns NaN to all individuals.
+	struct quiet_nan : public fitness_function<unary_fitness<double> > {
+		template <typename Individual, typename EA>
+		double operator()(Individual& ind, EA& ea) {
+            std::numeric_limits<double>::quiet_NaN();
+		}
+	};
+    
 }
 
 #endif

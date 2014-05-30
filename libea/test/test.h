@@ -30,10 +30,6 @@
 #include <ea/fitness_functions/all_ones.h>
 #include <ea/generational_models/steady_state.h>
 #include <ea/line_of_descent.h>
-
-//#include <ea/cmdline_interface.h>
-//#include <ea/datafiles/fitness.h>
-//
 using namespace ealib;
 
 typedef evolutionary_algorithm
@@ -55,7 +51,7 @@ typedef evolutionary_algorithm
 , dont_stop
 , fill_population
 , default_lifecycle
-, default_lod_ea_traits
+, lod_trait
 > all_ones_lod_ea;
 
 template <typename EA>

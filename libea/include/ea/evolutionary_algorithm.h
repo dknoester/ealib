@@ -59,7 +59,7 @@ namespace ealib {
     , typename StopCondition=dont_stop
     , typename PopulationGenerator=fill_population
     , typename Lifecycle=default_lifecycle
-    , template <typename> class Traits=default_ea_traits
+    , template <typename> class IndividualTraits=fitness_trait
     > class evolutionary_algorithm {
     public:
         typedef singlePopulationS population_structure_tag;
@@ -76,8 +76,8 @@ namespace ealib {
         typedef StopCondition stop_condition_type;
         typedef PopulationGenerator population_generator_type;
         typedef Lifecycle lifecycle_type;
-        typedef Traits<evolutionary_algorithm> traits_type;
-        typedef individual<representation_type, traits_type> individual_type;
+        typedef IndividualTraits<evolutionary_algorithm> individual_traits_type;
+        typedef individual<representation_type, individual_traits_type> individual_type;
         typedef boost::shared_ptr<individual_type> individual_ptr_type;
         typedef metadata md_type;
         typedef default_rng_type rng_type;

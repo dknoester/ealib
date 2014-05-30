@@ -99,31 +99,31 @@ namespace ealib {
                 accumulator_set<double, stats<tag::mean> > mpfit;
                 
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                    for(typename EA::subea_type::iterator j=i->begin(); j!=i->end(); ++j) {
-                        mpfit(static_cast<double>(ealib::fitness(*j,i->ea())));
+                    for(typename EA::subpopulation_type::iterator j=i->begin(); j!=i->end(); ++j) {
+                        mpfit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
                 }
                 double mean_fitness = mean(mpfit);
                 
                 // remove individuals w/ fitness < F
-                typename EA::subpopulation_type all;
-                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) { // subpop
-                    for(typename EA::subpopulation_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
-                        if(ealib::fitness(**j,i->ea()) >= mean_fitness) {
+                typename EA::subpopulation_type::population_type all;
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    for(typename EA::subpopulation_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
+                        if(ealib::fitness(**j,*i) >= mean_fitness) {
                             all.push_back(*j);
                         }
                     }
-                    i->repr().clear();
+                    i->clear();
                 }
                 
                 // spread individuals across subpops by fitness
-                std::sort(all.begin(), all.end(), comparators::fitness<typename EA::subea_type>(ea[0].ea()));
+                std::sort(all.begin(), all.end(), comparators::fitness<typename EA::subpopulation_type>(ea[0]));
                 std::size_t spsize=all.size() / get<META_POPULATION_SIZE>(ea);
                 for(typename EA::reverse_iterator i=ea.rbegin(); i!=ea.rend(); ++i) { // subpop
-                    generate_population(i->ea());
+                    generate_population(i);
                     for(std::size_t j=0; j<spsize; ++j) {
                         (*i)[j] = *all.back(); // overwrite
-                        put<QHFC_ADMISSION_LEVEL>(static_cast<double>(ealib::fitness((*i)[j],i->ea())), *i);
+                        put<QHFC_ADMISSION_LEVEL>(static_cast<double>(ealib::fitness((*i)[j],i)), *i);
                         all.pop_back();
                     }
                 }
@@ -144,8 +144,8 @@ namespace ealib {
                 using namespace boost::accumulators;
                 accumulator_set<double, stats<tag::mean,tag::max> > topfit;
                 
-                for(typename EA::subea_type::iterator j=ea.rbegin()->begin(); j!=ea.rbegin()->end(); ++j) { // individual
-                    topfit(static_cast<double>(ealib::fitness(*j,ea.rbegin()->ea())));
+                for(typename EA::subpopulation_type::iterator j=ea.rbegin()->begin(); j!=ea.rbegin()->end(); ++j) { // individual
+                    topfit(static_cast<double>(ealib::fitness(*j,ea.rbegin())));
                 }
                 
                 if(mean(topfit) > (2*get<QHFC_ADMISSION_LEVEL>(*ea.rbegin()) - get<QHFC_ADMISSION_LEVEL>(*(ea.rbegin()+1)))) {
@@ -166,11 +166,11 @@ namespace ealib {
 			typename EA::subpopulation_type import_from_below(ForwardIterator f, ForwardIterator l, std::size_t n, EA& ea) {
                 // select n random individuals to export, remove them from this population:
                 typename EA::subpopulation_type exports;
-                algorithm::random_split(f->ea().population(), exports, n, ea.rng());
+                algorithm::random_split(f->population(), exports, n, ea.rng());
                 
                 if((f+1) == l) {
                     // bottom population; need to fill up f's population:
-                    generate_population(f->ea());
+                    generate_population(f);
                 } else {
                     // not at the bottom, need to import
                     typename EA::subpopulation_type imports = import_from_below(f+1, l, n, ea);
@@ -195,12 +195,12 @@ namespace ealib {
                     typename EA::subpopulation_type pop;
                     algorithm::random_split(f->population(), pop, 2, ea.rng());
                     generational_models::deterministic_crowding< > dc;
-                    dc(pop, f->ea());
+                    dc(pop, f);
                     
                     // now, see if any individuals in pop have fitness > than the
                     // admission level of the next higest subpop:
                     for(typename EA::subpopulation_type::iterator j=pop.begin(); j!=pop.end(); ++j) {
-                        if((ealib::fitness(**j,f->ea()) > get<QHFC_ADMISSION_LEVEL>(*t))
+                        if((ealib::fitness(**j,f) > get<QHFC_ADMISSION_LEVEL>(*t))
                            && (exports.size() < get<QHFC_DETECT_EXPORT_NUM>(ea))) {
                             // promote
                             exports.push_back(*j);
@@ -218,8 +218,8 @@ namespace ealib {
 
                 // export the exports to i+1 subpopulation
                 typename EA::subpopulation_type next;
-                selection::elitism<selection::random< > > sel(t->size()-exports.size(), t->population(), t->ea());
-                sel(t->population(), next, t->size()-exports.size(), t->ea());
+                selection::elitism<selection::random< > > sel(t->size()-exports.size(), t->population(), t);
+                sel(t->population(), next, t->size()-exports.size(), t);
                 next.insert(next.end(), exports.begin(), exports.end());
                 std::swap(t->population(), next);
 
@@ -235,12 +235,12 @@ namespace ealib {
             template <typename EA>
             void breed_top(EA& ea) {
                 using namespace boost::accumulators;
-                typename EA::subea_type& top=ea.rbegin()->ea();
+                typename EA::subpopulation_type& top=ea.rbegin();
                 
                 for(std::size_t i=0; i<get<QHFC_BREED_TOP_FREQ>(ea); ++i) {
                     top.update();
                     accumulator_set<double, stats<tag::max> > spfit;
-                    for(typename EA::subea_type::iterator j=top.begin(); j!=top.end(); ++j) { // individual
+                    for(typename EA::subpopulation_type::iterator j=top.begin(); j!=top.end(); ++j) { // individual
                         spfit(static_cast<double>(ealib::fitness(*j,top)));
                     }
                     if(max(spfit) > get<QHFC_LAST_PROGRESS_MAX>(ea)) {
@@ -276,12 +276,12 @@ namespace ealib {
                     if(!potency_testing(t, i, ea.rend(), ea)) {
                         typename EA::subpopulation_type imports = import_from_below(i+1,
                                                                                     ea.rend(),
-                                                                                    static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(*i)*i->ea().size()),
+                                                                                    static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(*i)*i->size()),
                                                                                     ea);
-                        std::random_shuffle(i->ea().begin(), i->ea().end(), ea.rng());
-                        i->ea().population().resize(get<POPULATION_SIZE>(*i)-imports.size());
-                        i->ea().insert(i->ea().end(), imports.begin(), imports.end());
-                        i->ea().update();
+                        std::random_shuffle(i->begin(), i->end(), ea.rng());
+                        i->population().resize(get<POPULATION_SIZE>(*i)-imports.size());
+                        i->insert(i->end(), imports.begin(), imports.end());
+                        i->update();
                     }
                 }
             }
@@ -289,8 +289,8 @@ namespace ealib {
         
     } // generational_models
 
-    //! Configuration object for QHFC.
-    struct qhfc_configuration : default_configuration {
+    //! Lifecycle object for QHFC.
+    struct qhfc_lifecycle : default_lifecycle {
         //! Called as the final step of EA initialization.
         template <typename EA>
         void initialize(EA& ea) {
@@ -302,33 +302,38 @@ namespace ealib {
             }
         }
     };
-    
-    
-    /*! QHFC evolutionary algorithm definition.
 
-     
-     */
+    
+    //! QHFC evolutionary algorithm definition.
     template
-    < typename Individual
-    , typename AncestorGenerator
+    < typename Representation
+    , typename FitnessFunction
 	, typename MutationOperator
 	, typename RecombinationOperator
-    , typename EarlyStopCondition=dont_stop
-    , typename Configuration=default_configuration
+    , typename AncestorGenerator
+    , typename StopCondition=dont_stop
+    , typename Lifecycle=default_lifecycle
     > class qhfc
     : public metapopulation
-    < subpopulation < evolutionary_algorithm // Subpopulation defn
-    < Individual
-    , AncestorGenerator
+    < evolutionary_algorithm // begin subpopulation
+    < Representation
+    , FitnessFunction
     , MutationOperator
     , RecombinationOperator
-    , generational_models::deterministic_crowding< > >, constant> // end of Subpopulation defn
-    , ancestors::default_representation
+    , generational_models::deterministic_crowding< >
+    , AncestorGenerator
+    , dont_stop
+    , fill_population
+    , Lifecycle
+    > // end subpopulation
+    , quiet_nan
     , mutation::operators::no_mutation
     , recombination::no_recombination
     , generational_models::qhfc
-    , EarlyStopCondition
-    , qhfc_configuration
+    , ancestors::default_subpopulation
+    , StopCondition
+    , fill_metapopulation
+    , qhfc_lifecycle
     > {
     };
     
@@ -369,8 +374,8 @@ namespace ealib {
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                     accumulator_set<double, stats<tag::mean, tag::min, tag::max> > fit;
                     
-                    for(typename EA::subea_type::iterator j=i->begin(); j!=i->end(); ++j) {
-                        fit(static_cast<double>(ealib::fitness(*j,i->ea())));
+                    for(typename EA::subpopulation_type::iterator j=i->begin(); j!=i->end(); ++j) {
+                        fit(static_cast<double>(ealib::fitness(*j,i)));
                     }
                     
                     _fitness.write(max(fit)).write(mean(fit)).write(min(fit));
