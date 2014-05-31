@@ -173,7 +173,7 @@ namespace ealib {
         struct hamming_distance_functor {
             template <typename Individual, typename EA>
             unsigned int operator()(Individual& i1, Individual& i2, EA& ea) {
-                return hamming_distance(i1.repr().begin(), i1.repr().end(), i2.repr().begin());
+                return hamming_distance(i1.genome().begin(), i1.genome().end(), i2.genome().begin());
             }
         };
         
