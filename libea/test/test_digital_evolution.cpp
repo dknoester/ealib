@@ -21,7 +21,7 @@
 #include <ea/digital_evolution.h>
 
 
-struct test_configuration : default_configuration {
+struct test_lifecycle : default_lifecycle {
     //! Called as the final step of EA construction.
     template <typename EA>
     void after_construction(EA& ea) {
@@ -68,7 +68,7 @@ struct test_configuration : default_configuration {
 };
 
 typedef digital_evolution
-< test_configuration
+< test_lifecycle
 > al_type;
 
 BOOST_AUTO_TEST_CASE(test_resources) {
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare_new(al);
+    al.lifecycle().prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     put<MUTATION_UNIFORM_INT_MIN>(0,al);
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
-    lifecycle::prepare_new(al);
+    al.lifecycle().prepare_new(al);
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
@@ -310,11 +310,11 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     
     // now let's check serialization...
     std::ostringstream out;
-    lifecycle::save_checkpoint(out, al);
+    al.lifecycle().save_checkpoint(out, al);
     
     al_type al2;
     std::istringstream in(out.str());
-    lifecycle::load_checkpoint(in,al2);
+    al.lifecycle().load_checkpoint(in,al2);
     
     al_type::individual_type& i1=*al.population()[0];
     al_type::individual_type& i2=*al2.population()[0];
@@ -429,21 +429,21 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
     generate_ancestors(repro_ancestor(), 1, al);
     al_type::individual_ptr_type p = al.population()[0];
     p->priority() = 1.0;
-    lifecycle::advance_epoch(400,al);
+    al.lifecycle().advance_epoch(400,al);
     BOOST_CHECK(al.population().size()>1);
     
     std::ostringstream out;
-    lifecycle::save_checkpoint(out, al);
+    al.lifecycle().save_checkpoint(out, al);
     
     std::istringstream in(out.str());
-    lifecycle::prepare_checkpoint(in,al2);
+    al.lifecycle().prepare_checkpoint(in,al2);
     
     BOOST_CHECK(al.population() == al2.population());
     BOOST_CHECK(al.env() == al2.env());
     BOOST_CHECK(al.rng() == al2.rng());
     
-    lifecycle::advance_epoch(10,al);
-    lifecycle::advance_epoch(10,al2);
+    al.lifecycle().advance_epoch(10,al);
+    al.lifecycle().advance_epoch(10,al2);
     
     BOOST_CHECK(al.population() == al2.population());
     BOOST_CHECK(al.env() == al2.env());

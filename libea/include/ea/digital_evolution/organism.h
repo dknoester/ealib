@@ -48,15 +48,7 @@ namespace ealib {
         void serialize(Archive& ar, const unsigned int version) {
         }
     };
-    
-    //! Digital evolution LoD traits.
-    template <typename T>
-    struct default_devo_lod_traits : traits::lod_trait<T> {
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
-        }
-    };
-    
+        
 	/*! Digital organism.
 
 	 */
@@ -71,6 +63,7 @@ namespace ealib {
         typedef Hardware hardware_type;
         //! Type of representation used by the hardware.
         typedef typename hardware_type::representation_type representation_type;
+        typedef representation_type genome_type;
         //! Traits for this individual.
         typedef Traits<organism> traits_type;
         //! Meta-data type.
@@ -141,6 +134,9 @@ namespace ealib {
         
 		//! Returns this organism's representation (const-qualified).
 		const representation_type& repr() const { return _hw.repr(); }
+
+        //! Returns this organism's genome.
+        genome_type& genome() { return _hw.repr(); }
         
         //! Returns this organism's priority.
 		priority_type& priority() { return _priority; }

@@ -33,9 +33,7 @@
 
 namespace mkv {
     using namespace ealib;
-    
-    typedef mutation::operators::indel<mutation::operators::per_site<mutation::site::uniform_integer> > markov_network_mutation_type;
-    
+
     //! Generates random Markov network-based individuals.
     struct markov_network_ancestor {
         template <typename EA>
@@ -59,8 +57,7 @@ namespace mkv {
         }
     };
     
-    /*! Configuration object for EAs that use Markov Networks.
-     */
+    //! Configuration object for EAs that use Markov Networks.
     struct markov_network_lifecycle : ealib::default_lifecycle {
         //! Called after EA initialization.
         template <typename EA>
@@ -96,87 +93,7 @@ namespace mkv {
         }
     };
     
-	/*! Markov network evolutionary algorithm.
-     
-     This class specializes evolutionary_algorithm to provide an algorithm specific
-     to evolving Markov networks.  If more advanced control over the features of
-     the GA are needed, the reader is referred to evolutionary_algorithm.h.
-	 */
-	template
-    < typename FitnessFunction
-	, typename RecombinationOperator
-	, typename GenerationalModel
-    , typename StopCondition=dont_stop
-    , typename PopulationGenerator=fill_population
-    , typename Lifecycle=markov_network_lifecycle
-    , template <typename> class Traits=default_ea_traits
-    > class markov_network_evolution
-    : public evolutionary_algorithm
-    < indirect<circular_genome<int>, markov_network< >, call_markov_network_translator>
-    , FitnessFunction
-    , markov_network_mutation_type
-    , RecombinationOperator
-    , GenerationalModel
-    , markov_network_ancestor
-    , StopCondition
-    , PopulationGenerator
-    , Lifecycle
-    , Traits
-    > {
-    };
-    
-   
-    
-    //    namespace mkv {
-    //
-    //        /*! Configuration object for EAs that use Markov Networks.
-    //         */
-    //        struct configuration : ealib::default_configuration {
-    //            //! Called after EA initialization.
-    //            template <typename EA>
-    //            void initialize(EA& ea) {
-    //                desc = desc_type(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea));
-    //            }
-    //
-    //            //! Disable a gate type.
-    //            void disable(gate_type g) {
-    //                translator.disable(g);
-    //            }
-    //
-    //            desc_type desc; //!< Description for Markov network (# in, out, & hidden).
-    //            start_codon start; //!< Start codon detector.
-    //            genome_translator translator; //!< Genome translator.
-    //        };
-    //
-    //        /*! Markov network specific traits for an individual.
-    //         */
-    //        template <typename T>
-    //        struct default_traits : ealib::default_traits<T> {
-    //            //! Translate an individual's representation into a Markov Network.
-    //            template <typename EA>
-    //            typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
-    //                typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
-    //                translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
-    //                return p;
-    //            }
-    //        };
-    //
-    //        /*! Markov network specific traits for an individual.
-    //         */
-    //        template <typename T>
-    //        struct lod_default_traits : ealib::default_lod_traits<T> {
-    //            //! Translate an individual's representation into a Markov Network.
-    //            template <typename EA>
-    //            typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
-    //                typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
-    //                translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
-    //                return p;
-    //            }
-    //        };
-    
-    
-    /*! Add the common Markov Network configuration options to the command line interface.
-     */
+    //! Add the common Markov Network configuration options to the command line interface.
     template <typename EA>
     void add_options(cmdline_interface<EA>* ci) {
         using namespace ealib;
@@ -200,53 +117,36 @@ namespace mkv {
         add_option<MUTATION_INDEL_MIN_SIZE>(ci);
         add_option<MUTATION_INDEL_MAX_SIZE>(ci);
     }
-    
+
+	/*! Markov network evolutionary algorithm.
+     
+     This class specializes evolutionary_algorithm to provide an algorithm specific
+     to evolving Markov networks.  If more advanced control over the features of
+     the GA are needed, the reader is referred to evolutionary_algorithm.h.
+	 */
+	template
+    < typename FitnessFunction
+	, typename RecombinationOperator
+	, typename GenerationalModel
+    , typename StopCondition=dont_stop
+    , typename PopulationGenerator=fill_population
+    , typename Lifecycle=markov_network_lifecycle
+    , template <typename> class Traits=fitness_trait
+    > class markov_network_evolution
+    : public evolutionary_algorithm
+    < indirect<circular_genome<int>, markov_network< >, call_markov_network_translator>
+    , FitnessFunction
+    , mutation::operators::indel<mutation::operators::per_site<mutation::site::uniform_integer> >
+    , RecombinationOperator
+    , GenerationalModel
+    , markov_network_ancestor
+    , StopCondition
+    , PopulationGenerator
+    , Lifecycle
+    , Traits
+    > {
+    };
+
 } // mkv
-
-//
-//    namespace mkv {
-//
-//        /*! Configuration object for EAs that use Markov Networks.
-//         */
-//        struct deep_configuration : ealib::default_configuration {
-//            typedef std::vector<desc_type> desc_vector_type;
-//
-//            //! Called after EA initialization.
-//            template <typename EA>
-//            void initialize(EA& ea) {
-//                for(std::size_t i=0; i<get<MKV_LAYERS_N>(ea); ++i) {
-//                    desc.push_back(desc_type(get<MKV_INPUT_N>(ea), get<MKV_OUTPUT_N>(ea), get<MKV_HIDDEN_N>(ea)));
-//                }
-//            }
-//
-//            //! Disable a gate type.
-//            void disable(gate_type g) {
-//                translator.disable(g);
-//            }
-//
-//            desc_vector_type desc; //!< Description for Markov network (# in, out, & hidden).
-//            start_codon start; //!< Start codon detector.
-//            deep_genome_translator translator; //!< Genome translator.
-//        };
-//
-//
-//        template <typename T>
-//        struct deep_traits {
-//            //! Translate an individual's representation into a Markov Network.
-//            template <typename EA>
-//            typename EA::phenotype_ptr_type make_phenotype(typename EA::individual_type& ind, EA& ea) {
-//                typename EA::phenotype_ptr_type p(new typename EA::phenotype_type(ea.config().desc));
-//                translate_genome(ind.repr(), ea.config().start, ea.config().translator, *p);
-//                return p;
-//            }
-//
-//            template <class Archive>
-//            void serialize(Archive& ar, const unsigned int version) {
-//            }
-//        };
-//
-//    } // mkv
-
-//} // mkv
 
 #endif

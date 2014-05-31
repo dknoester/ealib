@@ -100,10 +100,10 @@ namespace ealib {
         typedef typename X::representation_type representation_type;
         //! Genome type for this individual.
         typedef typename X::genome_type genome_type;
-        //! Phenotype for this individual.
-        typedef typename X::phenotype_type phenotype_type;
-        //! Encoding of this individual.
-        typedef typename X::encoding_type encoding_type;
+//        //! Phenotype for this individual.
+//        typedef typename X::phenotype_type phenotype_type;
+//        //! Encoding of this individual.
+//        typedef typename X::encoding_type encoding_type;
         //! Traits for this individual.
         typedef typename X::traits_type traits_type;
         

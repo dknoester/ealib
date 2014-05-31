@@ -29,7 +29,7 @@
 
 //! Configuration object; this is fairly standard across DE simulations.
 
-struct digevo_configuration : public default_configuration {
+struct digevo_lifecycle : public default_lifecycle {
     //! Called as the final step of EA construction (must not depend on configuration parameters).
     template <typename EA>
     void after_construction(EA& ea) {
@@ -102,7 +102,7 @@ struct digevo_configuration : public default_configuration {
 
 
 //! Meta-population w/ founders configuration object.
-struct mp_founder_configuration : public default_configuration {
+struct mp_founder_lifecycle : public default_lifecycle {
     template <typename EA>
     void initial_population(EA& ea) {
         for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
@@ -147,11 +147,11 @@ public:
 //! A variety of digital evolution / artificial life simulation definitions.
 BOOST_AUTO_TEST_CASE(test_digevo_types) {
     //! Single population:
-    typedef digital_evolution<digevo_configuration > ea_type1;
+    typedef digital_evolution<digevo_lifecycle > ea_type1;
     ea_type1 ea1;
     
     //! Meta-population, no founders:
-    typedef metapopulation<subpopulation<ea_type1> > mea_type1;
+    typedef metapopulation<ea_type1> mea_type1;
     mea_type1 mea1;
     
     //    //! Meta-population, with founders:

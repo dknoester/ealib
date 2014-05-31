@@ -75,7 +75,7 @@ namespace ealib {
      in code.
      */
     template
-    < typename UserDefinedConfiguration=default_configuration
+    < typename Lifecycle=default_lifecycle
     , typename Individual=organism< >
     , typename AncestorGenerator=selfrep_ancestor
 	, typename RecombinationOperator=recombination::asexual
@@ -95,6 +95,7 @@ namespace ealib {
         typedef typename individual_type::hardware_type hardware_type;
         //! Representation type.
         typedef typename hardware_type::representation_type representation_type;
+        typedef typename hardware_type::representation_type genome_type;
         //! Mutation operator type.
         typedef typename hardware_type::mutation_operator_type mutation_operator_type;
         //! Ancestor generator type.
@@ -107,8 +108,8 @@ namespace ealib {
         typedef ReplacementStrategy replacement_type;
         //! Function that checks for an early stopping condition.
         typedef EarlyStopCondition stop_condition_type;
-        //! User-defined configuration methods type.
-        typedef UserDefinedConfiguration configuration_type;
+        //! Lifecycle type.
+        typedef Lifecycle lifecycle_type;
         //! Population generator type.
         typedef PopulationGenerator population_generator_type;
         //! Meta-data type.
@@ -137,7 +138,7 @@ namespace ealib {
         //! Default constructor.
         digital_evolution() : _update(0) {
             BOOST_CONCEPT_ASSERT((DigitalEvolutionConcept<digital_evolution>));
-            _configuration.after_construction(*this);
+            _lifecycle.after_construction(*this);
         }
         
         //! Copy constructor (note that this is *not* a complete copy).
@@ -149,7 +150,7 @@ namespace ealib {
                 individual_ptr_type q = copy_individual(*i);
                 insert(end(),q);
             }
-            _configuration.after_construction(*this);
+            _lifecycle.after_construction(*this);
         }
         
         /*! Assignment operator (note that this is *not* a complete copy).
@@ -166,7 +167,7 @@ namespace ealib {
                     individual_ptr_type q = copy_individual(*i);
                     insert(end(),q);
                 }
-                _configuration.after_construction(*this);
+                _lifecycle.after_construction(*this);
             }
             return *this;
         }
@@ -175,7 +176,7 @@ namespace ealib {
         void initialize() {
             _env.initialize(*this);
             _isa.initialize(*this);
-            _configuration.initialize(*this);
+            _lifecycle.initialize(*this);
         }
 
         //! Marks the beginning of a new epoch.
@@ -238,8 +239,8 @@ namespace ealib {
         //! Returns the event handler.
         event_handler_type& events() { return _events; }
         
-        //! Returns the configuration.
-        configuration_type& config() { return _configuration; }
+        //! Returns the lifecycle.
+        lifecycle_type& lifecycle() { return _lifecycle; }
         
         //! Returns the scheduler.
         scheduler_type& scheduler() { return _scheduler; }
@@ -345,7 +346,7 @@ namespace ealib {
         environment_type _env; //!< Environment object.
         stop_condition_type _stop; //!< Checks for an early stopping condition.
         event_handler_type _events; //!< Event handler.
-        configuration_type _configuration; //!< User-defined configuration methods.
+        lifecycle_type _lifecycle; //!< Lifecycle methods.
         scheduler_type _scheduler; //!< Scheduler instance.
         isa_type _isa; //!< Instruction set architecture.
         task_library_type _tasklib; //!< Task library.
