@@ -30,8 +30,8 @@ namespace ealib {
     //! Generates a representation for a repro ancestor.
     struct repro_ancestor {
         template <typename EA>
-        typename EA::representation_type operator()(EA& ea) {
-            typename EA::representation_type repr;
+        typename EA::genome_type operator()(EA& ea) {
+            typename EA::genome_type repr;
             repr.resize(get<REPRESENTATION_SIZE>(ea));
             std::fill(repr.begin(), repr.end(), ea.isa()["nop_x"]);
             *repr.rbegin() = ea.isa()["repro"];
@@ -42,8 +42,8 @@ namespace ealib {
     //! Generates a representation for a nop-x ancestor.
     struct nopx_ancestor {
         template <typename EA>
-        typename EA::representation_type operator()(EA& ea) {
-            typename EA::representation_type repr;
+        typename EA::genome_type operator()(EA& ea) {
+            typename EA::genome_type repr;
             repr.resize(get<REPRESENTATION_SIZE>(ea));
             std::fill(repr.begin(), repr.end(), ea.isa()["nop_x"]);
             return repr;
@@ -53,15 +53,15 @@ namespace ealib {
     //! Generates a representation for a self-replicating ancestor.
     struct selfrep_ancestor {
         template <typename EA>
-        typename EA::representation_type operator()(EA& ea) {
-            typename EA::representation_type repr;
+        typename EA::genome_type operator()(EA& ea) {
+            typename EA::genome_type repr;
             repr.resize(get<REPRESENTATION_SIZE>(ea));
             
             // fill the genome with nop-x:
             std::fill(repr.begin(), repr.end(), ea.isa()["nop_x"]);
             
             // 6 instructions go at the front of the genome:
-            typename EA::representation_type::iterator f=repr.begin();
+            typename EA::genome_type::iterator f=repr.begin();
             *f++ =  ea.isa()["h_alloc"];
             *f++ =  ea.isa()["nop_c"];
             *f++ =  ea.isa()["nop_a"];

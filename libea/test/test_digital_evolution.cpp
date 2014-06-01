@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
-    al_type::representation_type& r = p->repr();
+    al_type::genome_type& r = p->repr();
     al_type::hardware_type& hw = p->hw();
     
     r[8] = isa["nop_a"];
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
-    al_type::representation_type& r = p->repr();
+    al_type::genome_type& r = p->repr();
     al_type::hardware_type& hw = p->hw();
     
     r[4] = isa["nop_a"];
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
-    al_type::representation_type& r = p->repr();
+    al_type::genome_type& r = p->repr();
     
     // check that h_alloc increases the size of the organism's memory:
     isa(isa["h_alloc"], p->hw(), p, al);
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
     generate_ancestors(repro_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
-    al_type::representation_type& r = p->repr();
+    al_type::genome_type& r = p->repr();
     
     r[94] = al.isa()["nop_c"];
     r[95] = al.isa()["input"];
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     generate_ancestors(nopx_ancestor(), 1, al);
     
     al_type::individual_ptr_type p = al.population()[0];
-    al_type::representation_type& r = p->repr();
+    al_type::genome_type& r = p->repr();
     
     r[0] = al.isa()["h_alloc"];
     r[1] = al.isa()["nop_c"];
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(test_al_messaging) {
     generate_ancestors(nopx_ancestor(), 2, al);
     
     al_type::individual_ptr_type p = al.population()[0];
-    al_type::representation_type& r = p->repr();
+    al_type::genome_type& r = p->repr();
     
     r[4] = al.isa()["nop_c"];
     r[5] = al.isa()["input"];

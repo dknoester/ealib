@@ -420,7 +420,7 @@
 		4210C5AF188877BA00A8FAFA /* groups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = groups.h; sourceTree = "<group>"; };
 		4210C5B0188877BA00A8FAFA /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
 		4210C5B1188877BA00A8FAFA /* instruction_set.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = instruction_set.h; sourceTree = "<group>"; };
-		4210C5B2188877BA00A8FAFA /* organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = organism.h; sourceTree = "<group>"; };
+		4210C5B2188877BA00A8FAFA /* digital_organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_organism.h; sourceTree = "<group>"; };
 		4210C5B3188877BA00A8FAFA /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
 		4210C5B4188877BA00A8FAFA /* replication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = replication.h; sourceTree = "<group>"; };
 		4210C5B5188877BA00A8FAFA /* schedulers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schedulers.h; sourceTree = "<group>"; };
@@ -735,7 +735,7 @@
 				4210C5AD188877BA00A8FAFA /* events.h */,
 				4210C5AF188877BA00A8FAFA /* groups.h */,
 				4210C5B1188877BA00A8FAFA /* instruction_set.h */,
-				4210C5B2188877BA00A8FAFA /* organism.h */,
+				4210C5B2188877BA00A8FAFA /* digital_organism.h */,
 				4210C5B3188877BA00A8FAFA /* population_founder.h */,
 				42B8BAC5188B0D96003307CB /* position.h */,
 				4210C5B4188877BA00A8FAFA /* replication.h */,

@@ -41,9 +41,7 @@ namespace ealib {
      */
     class hardware {
     public:
-        //! Type of representation needed for this hardware.
-        typedef circular_genome<unsigned int> representation_type;
-        //! Type of mutation needed by this representation.
+        typedef circular_genome<unsigned int> genome_type;
         typedef mutation::operators::per_site<mutation::site::uniform_integer> mutation_operator_type;
         
         const static int NOP_A = 0;
@@ -78,7 +76,7 @@ namespace ealib {
         }
         
         //! Constructor.
-        hardware(const representation_type& repr) : _repr(repr) {
+        hardware(const genome_type& repr) : _repr(repr) {
             initialize();
         }
 
@@ -382,10 +380,10 @@ namespace ealib {
         }
         
         //! Retrieve this hardware's representation.
-        representation_type& repr() { return _repr; }
+        genome_type& repr() { return _repr; }
 
         //! Retrieve this hardware's representation (const-qualified).
-        const representation_type& repr() const { return _repr; }
+        const genome_type& repr() const { return _repr; }
 
         void push_stack(int x) { _stack.push_front(x); while(_stack.size() > 10) { _stack.pop_back(); } }
         bool empty_stack() { return _stack.empty(); }
@@ -416,7 +414,7 @@ namespace ealib {
     protected:
 //        typename hardware_type::abstract_hardware_trace* _tracecb; //!< Trace handler, if so configured.
 
-        representation_type _repr; //!< This hardware's "program".
+        genome_type _repr; //!< This hardware's "program".
         int _head_position[NUM_HEADS]; //!< Positions of the various heads.
         int _regfile[NUM_REGISTERS]; //!< ...
         

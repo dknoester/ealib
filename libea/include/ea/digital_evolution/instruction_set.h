@@ -101,7 +101,7 @@ namespace ealib {
          each advanced one instruction.
          */
         DIGEVO_INSTRUCTION_DECL(h_copy) {
-            typename Hardware::representation_type& r = hw.repr();
+            typename Hardware::genome_type& r = hw.repr();
             r[hw.getHeadLocation(Hardware::WH)] = r[hw.getHeadLocation(Hardware::RH)];
             hw.advanceHead(Hardware::WH);
             hw.advanceHead(Hardware::RH);
@@ -177,7 +177,7 @@ namespace ealib {
          */
         DIGEVO_INSTRUCTION_DECL(h_divide) {
             if(hw.age() >= (0.8 * hw.original_size())) {            
-                typename Hardware::representation_type& r=hw.repr();
+                typename Hardware::genome_type& r=hw.repr();
                 
                 // Check to see if the offspring would be a good length. 
                 int divide_pos = hw.getHeadLocation(Hardware::RH);  
@@ -197,10 +197,10 @@ namespace ealib {
                 }
                 
                 
-                typename Hardware::representation_type::iterator f=r.begin(),l=r.begin();
+                typename Hardware::genome_type::iterator f=r.begin(),l=r.begin();
                 std::advance(f, hw.getHeadLocation(Hardware::RH));
                 std::advance(l, hw.getHeadLocation(Hardware::WH));                             
-                typename Hardware::representation_type offr(f, l);
+                typename Hardware::genome_type offr(f, l);
                 
                 
                 r.resize(parent_size);
@@ -214,7 +214,7 @@ namespace ealib {
          */
         DIGEVO_INSTRUCTION_DECL(h_divide_reset_only) {
             if(hw.age() >= (0.8 * hw.original_size())) {
-                typename Hardware::representation_type& r=hw.repr();
+                typename Hardware::genome_type& r=hw.repr();
                 
                 // Check to see if the offspring would be a good length.
                 int divide_pos = hw.getHeadLocation(Hardware::RH);
@@ -249,7 +249,7 @@ namespace ealib {
          */
         DIGEVO_INSTRUCTION_DECL(h_divide_soft_parent_reset) {
             if(hw.age() >= (0.8 * hw.original_size())) {
-                typename Hardware::representation_type& r=hw.repr();
+                typename Hardware::genome_type& r=hw.repr();
                 
                 // Check to see if the offspring would be a good length.
                 int divide_pos = hw.getHeadLocation(Hardware::RH);
@@ -268,10 +268,10 @@ namespace ealib {
                 }
                 
                 
-                typename Hardware::representation_type::iterator f=r.begin(),l=r.begin();
+                typename Hardware::genome_type::iterator f=r.begin(),l=r.begin();
                 std::advance(f, hw.getHeadLocation(Hardware::RH));
                 std::advance(l, hw.getHeadLocation(Hardware::WH));
-                typename Hardware::representation_type offr(f, l);
+                typename Hardware::genome_type offr(f, l);
                 
                 
                 r.resize(parent_size);

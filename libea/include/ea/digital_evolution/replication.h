@@ -96,7 +96,7 @@ namespace ealib {
     /*! Replicates a parent p to produce an offspring with representation r.
      */
     template <typename EA>
-    void replicate(typename EA::individual_ptr_type p, typename EA::representation_type& r, EA& ea) {
+    void replicate(typename EA::individual_ptr_type p, typename EA::genome_type& r, EA& ea) {
         typename EA::population_type parents, offspring;
         parents.push_back(p);
         offspring.push_back(ea.make_individual(r));

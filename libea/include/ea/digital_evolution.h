@@ -33,7 +33,7 @@
 #include <ea/digital_evolution/ancestors.h>
 #include <ea/digital_evolution/discrete_spatial_environment.h>
 #include <ea/digital_evolution/instruction_set.h>
-#include <ea/digital_evolution/organism.h>
+#include <ea/digital_evolution/digital_organism.h>
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/digital_evolution/replication.h>
 #include <ea/digital_evolution/task_library.h>
@@ -76,65 +76,42 @@ namespace ealib {
      */
     template
     < typename Lifecycle=default_lifecycle
-    , typename Individual=organism< >
-    , typename AncestorGenerator=selfrep_ancestor
-	, typename RecombinationOperator=recombination::asexual
+    , typename RecombinationOperator=recombination::asexual
     , typename Scheduler=weighted_round_robin
+    , typename AncestorGenerator=selfrep_ancestor
     , typename ReplacementStrategy=random_neighbor
-    , typename EarlyStopCondition=dont_stop
+    , typename StopCondition=dont_stop
     , typename PopulationGenerator=single_ancestor
+    , template <typename> class IndividualTraits=default_devo_traits
     > class digital_evolution {
     public:
-        //! Tag indicating the structure of this population.
         typedef singlePopulationS population_structure_tag;
-        //! Individual type.
-        typedef Individual individual_type;
-        //! Individual pointer type.
-        typedef typename individual_type::individual_ptr_type individual_ptr_type;
-        //! Hardware type.
-        typedef typename individual_type::hardware_type hardware_type;
-        //! Representation type.
-        typedef typename hardware_type::representation_type representation_type;
-        typedef typename hardware_type::representation_type genome_type;
-        //! Mutation operator type.
-        typedef typename hardware_type::mutation_operator_type mutation_operator_type;
-        //! Ancestor generator type.
-        typedef AncestorGenerator ancestor_generator_type;
-        //! Recombination operator type.
         typedef RecombinationOperator recombination_operator_type;
-        //! Scheduler type.
         typedef Scheduler scheduler_type;
-        //! Replacment strategy type.
+        typedef AncestorGenerator ancestor_generator_type;
         typedef ReplacementStrategy replacement_type;
-        //! Function that checks for an early stopping condition.
-        typedef EarlyStopCondition stop_condition_type;
-        //! Lifecycle type.
-        typedef Lifecycle lifecycle_type;
-        //! Population generator type.
+        typedef StopCondition stop_condition_type;
         typedef PopulationGenerator population_generator_type;
-        //! Meta-data type.
+        typedef Lifecycle lifecycle_type;
+        typedef IndividualTraits<digital_evolution> individual_traits_type;
+        typedef digital_organism<individual_traits_type> individual_type;
+        typedef typename individual_type::genome_type genome_type;
+        typedef typename individual_type::phenotype_type phenotype_type;
+        typedef typename individual_type::hardware_type hardware_type;
+        typedef typename individual_type::mutation_operator_type mutation_operator_type;
+        typedef boost::shared_ptr<individual_type> individual_ptr_type;
         typedef metadata md_type;
-        //! Random number generator type.
         typedef default_rng_type rng_type;
-        //! Event handler.
         typedef digital_evolution_event_handler<digital_evolution> event_handler_type;
-        //! Environment type.
         typedef discrete_spatial_environment<digital_evolution> environment_type;
-        //! ISA type.
         typedef instruction_set<digital_evolution> isa_type;
-        //! Task library type.
         typedef task_library<digital_evolution> task_library_type;
-        //! Population type.
         typedef shared_ptr_vector<individual_ptr_type> population_type;
-        //! Iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
-        //! Const iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
-        //! Reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
-        //! Const reverse iterator over this EA's population.
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
-
+        
         //! Default constructor.
         digital_evolution() : _update(0) {
             BOOST_CONCEPT_ASSERT((DigitalEvolutionConcept<digital_evolution>));
@@ -207,7 +184,7 @@ namespace ealib {
         }
 
         //! Builds an individual from the given representation.
-        individual_ptr_type make_individual(const representation_type& r=representation_type()) {
+        individual_ptr_type make_individual(const genome_type& r=genome_type()) {
             individual_ptr_type p(new individual_type(r));
             return p;
         }
@@ -312,19 +289,6 @@ namespace ealib {
             _population.clear();
         }
 
-//        //! Append individual x to the population and environment.
-//        void append(individual_ptr_type p) {
-//            _population.insert(_population.end(), p);
-//            _env.append(p);
-//        }
-//        
-//        //! Append the range of individuals [f,l) to the population and environment.
-//        template <typename ForwardIterator>
-//        void append(ForwardIterator f, ForwardIterator l) {
-//            _population.insert(_population.end(), f, l);
-//            _env.append(f, l);
-//        }
-        
         //! (Re-)Place an offspring in the population, if possible.
         void replace(individual_ptr_type parent, individual_ptr_type offspring) {
             replacement_type r;

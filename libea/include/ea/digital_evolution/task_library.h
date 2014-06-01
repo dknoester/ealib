@@ -81,7 +81,7 @@ namespace ealib {
             
             // check to see if this task is exclusive:
             if(r && is_exclusive()) {
-                for(typename EA::individual_type::phenotype_map_type::iterator i=ind.phenotype().begin(); i!=ind.phenotype().end(); ++i) {
+                for(typename EA::individual_type::phenotype_type::iterator i=ind.phenotype().begin(); i!=ind.phenotype().end(); ++i) {
                     if((i->first != name()) && (i->second > 0.0)) {
                         r = false;
                     }

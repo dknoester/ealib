@@ -97,7 +97,7 @@ namespace ealib {
 	struct IndividualConcept : boost::CopyConstructible<X> {
 	public:
         //! Representation type; the "genome."
-        typedef typename X::representation_type representation_type;
+//        typedef typename X::representation_type representation_type;
         //! Genome type for this individual.
         typedef typename X::genome_type genome_type;
 //        //! Phenotype for this individual.
@@ -108,7 +108,7 @@ namespace ealib {
         typedef typename X::traits_type traits_type;
         
 		BOOST_CONCEPT_USAGE(IndividualConcept) {
-            BOOST_CONCEPT_ASSERT((RepresentationConcept<representation_type>));
+//            BOOST_CONCEPT_ASSERT((RepresentationConcept<representation_type>));
             BOOST_CONCEPT_ASSERT((SupportsMetaDataConcept<X>));
 
 //            detail::same_type(representation_type(), x.repr());
