@@ -730,12 +730,12 @@
 			isa = PBXGroup;
 			children = (
 				4210C5AC188877BA00A8FAFA /* ancestors.h */,
-				4210C5B0188877BA00A8FAFA /* hardware.h */,
+				4210C5B2188877BA00A8FAFA /* digital_organism.h */,
 				4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */,
 				4210C5AD188877BA00A8FAFA /* events.h */,
 				4210C5AF188877BA00A8FAFA /* groups.h */,
+				4210C5B0188877BA00A8FAFA /* hardware.h */,
 				4210C5B1188877BA00A8FAFA /* instruction_set.h */,
-				4210C5B2188877BA00A8FAFA /* digital_organism.h */,
 				4210C5B3188877BA00A8FAFA /* population_founder.h */,
 				42B8BAC5188B0D96003307CB /* position.h */,
 				4210C5B4188877BA00A8FAFA /* replication.h */,

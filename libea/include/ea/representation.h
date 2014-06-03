@@ -142,7 +142,7 @@ namespace ealib {
         //! Returns a reference to the phenotype (==genome).
         template <typename EA>
         phenotype_type& phenotype(EA& ea) {
-            if(_phenotype != 0) {
+            if(_phenotype == 0) {
                 translator_type t(ea);
                 _phenotype.reset(new phenotype_type(t(_genome,ea)));
             }
