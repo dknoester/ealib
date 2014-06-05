@@ -36,14 +36,6 @@ namespace ealib {
 		}
 	};
     
-    //! Fitness function that assigns NaN to all individuals.
-	struct quiet_nan : public fitness_function<unary_fitness<double> > {
-		template <typename Individual, typename EA>
-		double operator()(Individual& ind, EA& ea) {
-            std::numeric_limits<double>::quiet_NaN();
-		}
-	};
-    
-}
+} // ealib
 
 #endif

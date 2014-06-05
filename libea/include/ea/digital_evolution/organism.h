@@ -1,4 +1,4 @@
-/* digital_evolution/digital_organism.h 
+/* digital_evolution/organism.h 
  * 
  * This file is part of EALib.
  * 
@@ -49,12 +49,12 @@ namespace ealib {
         }
     };
         
-	/*! Digital digital_organism.
+	/*! Digital organism.
 
 	 */
     template
     < typename Traits
-    > class digital_organism {
+    > class organism {
 	public:
         typedef hardware hardware_type;
         typedef hardware_type::genome_type genome_type;
@@ -66,16 +66,16 @@ namespace ealib {
         typedef std::deque<io_type> iobuffer_type;
         
 		//! Constructor.
-		digital_organism() : _priority(1.0), _alive(true) {
+		organism() : _priority(1.0), _alive(true) {
 		}
         
-		//! Constructor that builds an digital_organism from a representation.
-		digital_organism(const genome_type& r) 
+		//! Constructor that builds an organism from a representation.
+		organism(const genome_type& r) 
         : _hw(r), _priority(1.0), _alive(true) {
 		}
         
         //! Copy constructor.
-        digital_organism(const digital_organism& that) {
+        organism(const organism& that) {
             _hw = that._hw;
             _priority = that._priority;
             _position = that._position;
@@ -87,7 +87,7 @@ namespace ealib {
         }
         
         //! Assignment operator.
-        digital_organism& operator=(const digital_organism& that) {
+        organism& operator=(const organism& that) {
             if(this != &that) {
                 _hw = that._hw;
                 _priority = that._priority;
@@ -102,7 +102,7 @@ namespace ealib {
         }
 
         //! Returns true if hardware(s) are equivalent.
-        bool operator==(const digital_organism& that) const {
+        bool operator==(const organism& that) const {
             return (_hw == that._hw)
             && (_priority == that._priority)
             && (_position == that._position)
@@ -113,49 +113,49 @@ namespace ealib {
             && (_md == that._md);
         }
         
-        //! Returns this digital_organism's hardware.
+        //! Returns this organism's hardware.
         hardware_type& hw() { return _hw; }
         
-        //! Returns this digital_organism's hardware (const-qualified).
+        //! Returns this organism's hardware (const-qualified).
         const hardware_type& hw() const { return _hw; }
 
-		//! Returns this digital_organism's representation.
+		//! Returns this organism's representation.
 		genome_type& repr() { return _hw.repr(); }
         
-		//! Returns this digital_organism's representation (const-qualified).
+		//! Returns this organism's representation (const-qualified).
 		const genome_type& repr() const { return _hw.repr(); }
 
-        //! Returns this digital_organism's genome.
+        //! Returns this organism's genome.
         genome_type& genome() { return _hw.repr(); }
         
-        //! Returns this digital_organism's priority.
+        //! Returns this organism's priority.
 		priority_type& priority() { return _priority; }
 		
-		//! Returns this digital_organism's priority (const-qualified).
+		//! Returns this organism's priority (const-qualified).
 		const priority_type& priority() const { return _priority; }
 
-        //! Returns this digital_organism's position.
+        //! Returns this organism's position.
         position_type& position() { return _position; }
 
-        //! Returns this digital_organism's position (const-qualified).
+        //! Returns this organism's position (const-qualified).
         const position_type& position() const { return _position; }
         
-        //! Returns true if this digital_organism is alive, false otherwise.
+        //! Returns true if this organism is alive, false otherwise.
         bool& alive() { return _alive; }
         
-        //! Returns this digital_organism's inputs.
+        //! Returns this organism's inputs.
         iobuffer_type& inputs() { return _inputs; }
 
-        //! Returns this digital_organism's outputs.
+        //! Returns this organism's outputs.
         iobuffer_type& outputs() { return _outputs; }
 
-        //! Returns this digital_organism's phenotype.
+        //! Returns this organism's phenotype.
         phenotype_type& phenotype() { return _phenotype; }
         
-        //! Returns this digital_organism's meta data.
+        //! Returns this organism's meta data.
         metadata& md() { return _md; }
         
-        //! Returns this digital_organism's meta data (const-qualified).
+        //! Returns this organism's meta data (const-qualified).
         const metadata& md() const { return _md; }
         
         //! Returns this individual's traits.
@@ -164,22 +164,22 @@ namespace ealib {
         //! Returns this individual's traits (const-qualified).
         const traits_type& traits() const { return _traits; }
         
-        //! Execute this digital_organism for n cycles.
+        //! Execute this organism for n cycles.
         template <typename EA>
         inline void execute(std::size_t n, typename EA::individual_ptr_type p, EA& ea) {
             _hw.execute(n, p, ea);
         }
 
 	protected:
-        hardware_type _hw; //!< This digital_organism's virtual hardware.
-		priority_type _priority; //!< Used by the scheduler to prioritize this digital_organism.
-        position_type _position; //!< This digital_organism's position in the environment.
-        bool _alive; //!< Is this digital_organism currently alive?
-        iobuffer_type _inputs; //!< This digital_organism's inputs.
-        iobuffer_type _outputs; //!< This digital_organism's outputs.
-        phenotype_type _phenotype; //!< This digital_organism's phenotype.
-        metadata _md; //!< This digital_organism's meta data.
-        traits_type _traits; //!< This digital_organism's traits.
+        hardware_type _hw; //!< This organism's virtual hardware.
+		priority_type _priority; //!< Used by the scheduler to prioritize this organism.
+        position_type _position; //!< This organism's position in the environment.
+        bool _alive; //!< Is this organism currently alive?
+        iobuffer_type _inputs; //!< This organism's inputs.
+        iobuffer_type _outputs; //!< This organism's outputs.
+        phenotype_type _phenotype; //!< This organism's phenotype.
+        metadata _md; //!< This organism's meta data.
+        traits_type _traits; //!< This organism's traits.
 
 	private:
 		friend class boost::serialization::access;

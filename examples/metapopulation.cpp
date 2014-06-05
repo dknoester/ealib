@@ -22,7 +22,7 @@
 #include <ea/fitness_functions/all_ones.h>
 #include <ea/cmdline_interface.h>
 #include <ea/generational_models/steady_state.h>
-#include <ea/datafiles/fitness.h>
+#include <ea/datafiles/metapopulation_fitness.h>
 #include <ea/metapopulation.h>
 #include <ea/island_model.h>
 using namespace ealib;
@@ -36,16 +36,17 @@ using namespace ealib;
 
 // Subpopulation definition:
 typedef evolutionary_algorithm
-< individual<bitstring, all_ones>
-, ancestors::random_bitstring
+< direct<bitstring>
+, all_ones
 , mutation::operators::per_site<mutation::site::bit>
 , recombination::asexual
 , generational_models::steady_state< >
-> ea_type;
+, ancestors::random_bitstring
+> sea_type;
 
 //! Metapopulation definition:
 typedef metapopulation
-< subpopulation<ea_type>
+< sea_type
 > mea_type;
 
 

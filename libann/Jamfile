@@ -23,10 +23,10 @@ lib libea_runner :
     libea
     ;
 
-run test/test_serialization.cpp
+run test/test_checkpoint.cpp
     test/test_metadata.cpp
     test/test_rng.cpp
-    test/test_torus.cpp
+    test/test_circular.cpp
     test/test_information.cpp
     test/test_analysis.cpp
     test/test.cpp
@@ -54,6 +54,17 @@ run test/test_digital_evolution.cpp
     test/test_digital_evolution_types.cpp
     test/test.cpp
     src/cmdline_interface.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+run test/test_deep_markov_network.cpp
+    test/test_markov_network.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+run test/test_neural_network.cpp
     libea
     /boost//unit_test_framework
     ;

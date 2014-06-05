@@ -26,24 +26,29 @@
 using namespace ealib;
 
 
-
-template <typename T>
-struct mytraits : default_traits<T>, nsga2_traits<T> {
-    template <class Archive>
-    void serialize(Archive& ar, const unsigned int version) {
-        ar & boost::serialization::make_nvp("default_traits", boost::serialization::base_object<default_traits<T> >(*this));
-        ar & boost::serialization::make_nvp("nsga2_traits", boost::serialization::base_object<nsga2_traits<T> >(*this));
-    }
-};
+//
+//template <typename T>
+//struct mytraits : default_traits<T>, nsga2_traits<T> {
+//    template <class Archive>
+//    void serialize(Archive& ar, const unsigned int version) {
+//        ar & boost::serialization::make_nvp("default_traits", boost::serialization::base_object<default_traits<T> >(*this));
+//        ar & boost::serialization::make_nvp("nsga2_traits", boost::serialization::base_object<nsga2_traits<T> >(*this));
+//    }
+//};
 
 typedef evolutionary_algorithm
-< individual<bitstring, multi_all_ones, bitstring, directS, mytraits>
-, ancestors::random_bitstring
+< direct<bitstring>
+, multi_all_ones
 , mutation::operators::per_site<mutation::site::bitflip>
 , recombination::two_point_crossover
 , generational_models::nsga2
+, ancestors::random_bitstring
+, dont_stop
+, fill_population
+, default_lifecycle
+, nsga2_traits
 > ea_type;
-
+    
 
 /*! Define the EA's command-line interface.
  */

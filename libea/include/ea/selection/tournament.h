@@ -54,7 +54,6 @@ namespace ealib {
 				while(n > 0) {
 					Population tourney;
 					ea.rng().sample_without_replacement(src.begin(), src.end(), std::back_inserter(tourney), N);
-					
                     std::sort(tourney.begin(), tourney.end(), Comparator<AttributeAccessor,EA>(ea));
                     typename Population::reverse_iterator rl=tourney.rbegin();
                     std::size_t copy_size = std::min(n,K);

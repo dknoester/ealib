@@ -27,6 +27,7 @@
 #include <ea/lifecycle.h>
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
+#include <ea/data_structures/shared_ptr_vector.h>
 #include <ea/population_structure.h>
 #include <ea/metadata.h>
 #include <ea/events.h>
@@ -37,7 +38,7 @@
 #include <ea/stopping.h> 
 #include <ea/traits.h>
 #include <ea/subpopulation.h>
-#include <ea/fitness_functions/constant.h>
+#include <ea/fitness_functions/quiet_nan.h>
 
 namespace ealib {
   

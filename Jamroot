@@ -1,43 +1,45 @@
 use-project /libea : libea ;
+use-project /libmkv : libmkv ;
 build-project libea ;
 
-exe all_ones :
+exe example-all-ones :
     examples/all_ones.cpp
     /libea//libea_runner
     : <link>static
     ;
 
-exe digital_evolution :
+exe example-devo :
     examples/digital_evolution.cpp
     /libea//libea_runner
     : <link>static
     ;
 
-exe lod_tracking :
-    examples/lod_tracking.cpp
+exe example-lod :
+    examples/lod.cpp
     /libea//libea_runner
     : <link>static
     ;
 
-exe meta_population :
+exe example-mp :
     examples/metapopulation.cpp
     /libea//libea_runner
     : <link>static
     ;
 
-exe markov_network :
+exe example-mkv :
     examples/markov_network.cpp
     /libea//libea_runner
+    /libmkv//libmkv
     : <link>static
     ;
 
-exe nsga2 :
+exe example-nsga2 :
     examples/nsga2.cpp
     /libea//libea_runner
     : <link>static
     ;
 
-exe qhfc :
+exe example-qhfc :
     examples/qhfc.cpp
     /libea//libea_runner
     : <link>static

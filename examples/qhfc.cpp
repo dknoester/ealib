@@ -28,10 +28,11 @@ using namespace ealib;
 
 //! QHFC evolutionary algorithm type:
 typedef qhfc
-< individual<bitstring,all_ones>
-, ancestors::random_bitstring
+< direct<bitstring>
+, all_ones
 , mutation::operators::per_site<mutation::site::bitflip>
 , recombination::two_point_crossover
+, ancestors::random_bitstring
 > ea_type;
 
 

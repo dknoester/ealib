@@ -31,10 +31,10 @@ namespace ealib {
     /*! Island models provide for migration among different populations in a
      meta-population EA.
      */
-    template <typename EA>
-    struct island_model : periodic_event<ISLAND_MIGRATION_PERIOD,EA> {
+    template <typename MEA>
+    struct island_model : periodic_event<ISLAND_MIGRATION_PERIOD,MEA> {
         //! Constructor.
-        island_model(EA& ea) : periodic_event<ISLAND_MIGRATION_PERIOD,EA>(ea) {
+        island_model(MEA& ea) : periodic_event<ISLAND_MIGRATION_PERIOD,MEA>(ea) {
         }
         
         //! Destructor.
@@ -42,7 +42,7 @@ namespace ealib {
         }
         
         //! Perform migration of individuals among populations.
-        virtual void operator()(EA& ea) {
+        virtual void operator()(MEA& ea) {
             int migrations = static_cast<int>(get<ISLAND_MIGRATION_RATE>(ea)*get<POPULATION_SIZE>(ea)*get<META_POPULATION_SIZE>(ea));
             
             // technically, this should probably issue a warning?
@@ -51,10 +51,10 @@ namespace ealib {
             }
             
             for( ; migrations>0; --migrations) {
-                typename EA::iterator s,t; // source and target populations
+                typename MEA::iterator s,t; // source and target populations
                 boost::tie(s,t) = ea.rng().choose_two_range(ea.begin(), ea.end());
-                typename EA::individual_type::iterator migrant=ea.rng().choice(s->begin(), s->end()); // migrating individual
-                t->insert(t->end(),t->ea().copy_individual(*migrant)); // copy the migrant to the target population
+                typename MEA::individual_type::iterator migrant=ea.rng().choice(s->begin(), s->end()); // migrating individual
+                t->insert(t->end(),t->copy_individual(*migrant)); // copy the migrant to the target population
                 s->erase(migrant); // remove the migrant from the source population
             }
         }

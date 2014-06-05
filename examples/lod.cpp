@@ -35,11 +35,16 @@ using namespace ealib;
  which are used by lod_event to track the individual's parent(s).
  */
 typedef evolutionary_algorithm
-< individual<bitstring, all_ones, bitstring, directS, default_lod_traits>
-, ancestors::random_bitstring
+< direct<bitstring>
+, all_ones
 , mutation::operators::per_site<mutation::site::bit>
 , recombination::asexual
 , generational_models::steady_state< >
+, ancestors::random_bitstring
+, dont_stop
+, fill_population
+, default_lifecycle
+, lod_trait
 > ea_type;
 
 

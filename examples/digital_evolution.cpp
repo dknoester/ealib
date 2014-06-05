@@ -27,11 +27,11 @@ using namespace ealib;
  This configuration is for a fairly typical Avida-like system for the evolution
  of the EQU logic task (bitwise equals).
  */
-struct configuration : public default_configuration {
+struct lifecycle : public default_lifecycle {
     
     //! Called as the final step of EA construction (must not depend on configuration parameters)
     template <typename EA>
-    void configure(EA& ea) {
+    void after_construction(EA& ea) {
         using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
@@ -110,10 +110,10 @@ struct configuration : public default_configuration {
 /*! Artificial life simulation definition.
  */
 typedef digital_evolution<
-configuration
+lifecycle
 > ea_type;
-
-
+    
+    
 /*!
  */
 template <typename EA>

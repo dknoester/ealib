@@ -30,11 +30,12 @@ using namespace ealib;
  parameters.
  */
 typedef evolutionary_algorithm
-< individual<bitstring, all_ones>
-, ancestors::random_bitstring
+< direct<bitstring>
+, all_ones
 , mutation::operators::per_site<mutation::site::bit>
 , recombination::asexual
 , generational_models::steady_state< >
+, ancestors::random_bitstring
 > ea_type;
 
 

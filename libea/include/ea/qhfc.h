@@ -375,7 +375,7 @@ namespace ealib {
                     accumulator_set<double, stats<tag::mean, tag::min, tag::max> > fit;
                     
                     for(typename EA::subpopulation_type::iterator j=i->begin(); j!=i->end(); ++j) {
-                        fit(static_cast<double>(ealib::fitness(*j,i)));
+                        fit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
                     
                     _fitness.write(max(fit)).write(mean(fit)).write(min(fit));

@@ -36,7 +36,7 @@ namespace ealib {
         //! Functor that returns an individual's traits object.
         struct traits {
             template <typename EA>
-            typename EA::traits_type operator()(typename EA::individual_type& ind, EA& ea) {
+            typename EA::individual_traits_type operator()(typename EA::individual_type& ind, EA& ea) {
                 return ind.traits();
             }
         };

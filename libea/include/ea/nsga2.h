@@ -26,6 +26,7 @@
 #include <ea/individual.h>
 #include <ea/metadata.h>
 #include <ea/comparators.h>
+#include <ea/access.h>
 #include <ea/selection/proportionate.h>
 #include <ea/selection/tournament.h>
 #include <ea/traits.h>
@@ -49,11 +50,18 @@ namespace ealib {
     
     //! Attributes that must be added to individuals to support NSGA2.
     template <typename T>
-    struct nsga2_traits {
+    struct nsga2_traits : fitness_trait<T> {
+        typedef fitness_trait<T> parent;
         typedef std::vector<typename T::individual_ptr_type> dominated_population_type;
         
         //! Constructor.
         nsga2_traits() : n(0), rank(0), distance(0.0) {
+        }
+
+        //! Serialization.
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<parent>(*this));
         }
         
         dominated_population_type S; //!< Population of individuals that are dominated by this individual.
@@ -99,8 +107,8 @@ namespace ealib {
             //! Returns true if a dominates b.
             template <typename Individual, typename EA>
             bool dominates(Individual& a, Individual& b, EA& ea) {
-                const typename Individual::fitness_type& fa=ealib::fitness(a,ea);
-                const typename Individual::fitness_type& fb=ealib::fitness(b,ea);
+                const typename EA::fitness_type& fa=ealib::fitness(a,ea);
+                const typename EA::fitness_type& fb=ealib::fitness(b,ea);
                 assert(fa.size() == fb.size());
                 
                 bool any=false, all=true;
@@ -128,7 +136,9 @@ namespace ealib {
                     (*I.rbegin())->traits().distance = std::numeric_limits<double>::max();
                     
                     for(std::size_t i=1; i<(I.size()-1); ++i) {
-                        I[i]->traits().distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
+                        I[i]->traits().distance += (ealib::fitness(*I[i+1],ea)[m] - ealib::fitness(*I[i-1],ea)[m]) / ea.fitness_function().range(m);
+                        
+//                        I[i]->traits().distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
                     }
                 }
             }

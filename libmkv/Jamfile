@@ -1,0 +1,27 @@
+import testing ;
+import os ;
+local PREFIX = [ os.environ PREFIX ] ;
+
+if $(PREFIX) = "" {
+    PREFIX = "/usr/local" ;
+}
+
+alias libmkv :
+    /boost//regex
+    : : : <include>./include
+    ;
+
+run test/test_markov_network.cpp
+    test/test_markov_network_ea.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+alias install : install-headers ;
+
+install install-headers :
+    [ glob-tree *.h : test ]
+    : <location>$(PREFIX)/include <install-source-root>include
+    ;
+
+explicit install install-headers ;

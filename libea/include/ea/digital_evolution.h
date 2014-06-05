@@ -33,7 +33,7 @@
 #include <ea/digital_evolution/ancestors.h>
 #include <ea/digital_evolution/discrete_spatial_environment.h>
 #include <ea/digital_evolution/instruction_set.h>
-#include <ea/digital_evolution/digital_organism.h>
+#include <ea/digital_evolution/organism.h>
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/digital_evolution/replication.h>
 #include <ea/digital_evolution/task_library.h>
@@ -71,7 +71,7 @@ namespace ealib {
      platform for digital evolution~\cite{ofria2004}.
      
      In order to preserve as much compatibility between components as possible,
-     the organisms in digital evolution are alwayrs referred to as "individuals"
+     the organisms in digital evolution are always referred to as "individuals"
      in code.
      */
     template
@@ -94,7 +94,7 @@ namespace ealib {
         typedef PopulationGenerator population_generator_type;
         typedef Lifecycle lifecycle_type;
         typedef IndividualTraits<digital_evolution> individual_traits_type;
-        typedef digital_organism<individual_traits_type> individual_type;
+        typedef organism<individual_traits_type> individual_type;
         typedef typename individual_type::genome_type genome_type;
         typedef typename individual_type::phenotype_type phenotype_type;
         typedef typename individual_type::hardware_type hardware_type;

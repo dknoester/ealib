@@ -55,7 +55,7 @@ namespace ealib {
      object construction
      |
      v
-     configuration (cannot depend on meta-data)
+     after_construction (cannot depend on meta-data)
      |     \
      |      v
      |      meta-data assignment
@@ -67,7 +67,7 @@ namespace ealib {
      meta-data? |
      |          |
      v          v
-     initialization (final resource preparation, event attachment, etc.)
+     initialize (final resource preparation, event attachment, etc.)
      |          |
      |    initial_population
      |        |
