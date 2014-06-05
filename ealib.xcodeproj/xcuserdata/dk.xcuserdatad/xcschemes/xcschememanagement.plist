@@ -52,12 +52,12 @@
 		<key>example-nsga2.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>49</integer>
+			<integer>50</integer>
 		</dict>
 		<key>example-qhfc.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>50</integer>
+			<integer>49</integer>
 		</dict>
 		<key>test-ann.xcscheme</key>
 		<dict>
