@@ -317,14 +317,14 @@ namespace ealib {
      */
     template <typename EA>
     struct meta_population_lod_event : event {
-        typedef lod_event<typename EA::individual_type> event_type;
+        typedef lod_event<typename EA::individual_type::ea_type> event_type;
         typedef boost::shared_ptr<event_type> ptr_type;
         typedef std::vector<ptr_type> event_list_type;
         
         //! Constructor.
         meta_population_lod_event(EA& ea) {
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                ptr_type p(new event_type(*i));
+                ptr_type p(new event_type(i->ea()));
                 _events.push_back(p);
             }
         }

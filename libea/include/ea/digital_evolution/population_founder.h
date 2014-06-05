@@ -87,7 +87,9 @@ namespace ealib {
         virtual void operator()(typename EA::population_type& parents,
                                 typename EA::individual_type& offspring,
                                 EA& ea) {
-            offspring.founder() = *offspring.population().front();
+            if(!offspring.population().empty()) {
+                offspring.ea().founder() = *offspring.population().front();
+            }
         }
     };
 }
