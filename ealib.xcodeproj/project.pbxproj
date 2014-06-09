@@ -103,6 +103,7 @@
 		42D178861937705E0063A55B /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		42D178B4193771020063A55B /* test_neural_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42D1789D193770940063A55B /* test_neural_network.cpp */; };
 		42D178D0193777260063A55B /* test_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42D178CF1937771B0063A55B /* test_markov_network.cpp */; };
+		42DF06871945311200C9A364 /* emscript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42DF06851945311200C9A364 /* emscript.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -412,6 +413,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		42DF0680194530D100C9A364 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -421,7 +431,6 @@
 		4210C5B0188877BA00A8FAFA /* hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hardware.h; sourceTree = "<group>"; };
 		4210C5B1188877BA00A8FAFA /* instruction_set.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = instruction_set.h; sourceTree = "<group>"; };
 		4210C5B2188877BA00A8FAFA /* organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = organism.h; sourceTree = "<group>"; };
-		4210C5B3188877BA00A8FAFA /* population_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_founder.h; sourceTree = "<group>"; };
 		4210C5B4188877BA00A8FAFA /* replication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = replication.h; sourceTree = "<group>"; };
 		4210C5B5188877BA00A8FAFA /* schedulers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schedulers.h; sourceTree = "<group>"; };
 		4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discrete_spatial_environment.h; sourceTree = "<group>"; };
@@ -599,6 +608,21 @@
 		42DC57071940BE5B005044F1 /* metapopulation.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = metapopulation.cfg; sourceTree = "<group>"; };
 		42DC57081940BE5B005044F1 /* nsga2.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = nsga2.cfg; sourceTree = "<group>"; };
 		42DC57091940BE5B005044F1 /* qhfc.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = qhfc.cfg; sourceTree = "<group>"; };
+		42DC570D1940E372005044F1 /* subpopulation_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = subpopulation_founder.h; sourceTree = "<group>"; };
+		42DC570F1941F0C1005044F1 /* configurable_mutation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = configurable_mutation.h; sourceTree = "<group>"; };
+		42DC57101941F0C1005044F1 /* resource_consumption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource_consumption.h; sourceTree = "<group>"; };
+		42DC57111941F0C1005044F1 /* task_switching.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_switching.h; sourceTree = "<group>"; };
+		42DC57131941F0CF005044F1 /* multi_birth_selfrep_nand_not_ancestor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multi_birth_selfrep_nand_not_ancestor.h; sourceTree = "<group>"; };
+		42DC57141941F0CF005044F1 /* multi_birth_selfrep_not_ancestor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multi_birth_selfrep_not_ancestor.h; sourceTree = "<group>"; };
+		42DC57151941F0CF005044F1 /* multi_birth_selfrep_not_nand_ancestor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multi_birth_selfrep_not_nand_ancestor.h; sourceTree = "<group>"; };
+		42DC57161941F0CF005044F1 /* multi_birth_selfrep_not_nand_ornot_ancestor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multi_birth_selfrep_not_nand_ornot_ancestor.h; sourceTree = "<group>"; };
+		42DC57171941F0CF005044F1 /* repro_not_ancestor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = repro_not_ancestor.h; sourceTree = "<group>"; };
+		42DC57181941F0CF005044F1 /* selfrep_not_ancestor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selfrep_not_ancestor.h; sourceTree = "<group>"; };
+		42DC571A1941F0D5005044F1 /* cell_death.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cell_death.h; sourceTree = "<group>"; };
+		42DC571B19448FD2005044F1 /* periodic_competition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = periodic_competition.h; sourceTree = "<group>"; };
+		42DF0684194530D100C9A364 /* example-emscript */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-emscript"; sourceTree = BUILT_PRODUCTS_DIR; };
+		42DF06851945311200C9A364 /* emscript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = emscript.cpp; sourceTree = "<group>"; };
+		42DF06881945353800C9A364 /* emscript.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = emscript.cfg; sourceTree = "<group>"; };
 		42E1920E1872705C009EF3A7 /* stopping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stopping.h; sourceTree = "<group>"; };
 		42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
 		42EF7D7C19363266001A647B /* representation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = representation.h; sourceTree = "<group>"; };
@@ -733,25 +757,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		42DF067E194530D100C9A364 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		4210C5AB188877BA00A8FAFA /* digital_evolution */ = {
 			isa = PBXGroup;
 			children = (
+				42DC57121941F0CF005044F1 /* ancestors */,
 				4210C5AC188877BA00A8FAFA /* ancestors.h */,
 				4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */,
 				4210C5AD188877BA00A8FAFA /* events.h */,
 				4210C5AF188877BA00A8FAFA /* groups.h */,
 				4210C5B0188877BA00A8FAFA /* hardware.h */,
+				42DC57191941F0D5005044F1 /* extra_instruction_sets */,
 				4210C5B1188877BA00A8FAFA /* instruction_set.h */,
 				4210C5B2188877BA00A8FAFA /* organism.h */,
-				4210C5B3188877BA00A8FAFA /* population_founder.h */,
 				42B8BAC5188B0D96003307CB /* position.h */,
 				4210C5B4188877BA00A8FAFA /* replication.h */,
 				4210C5BA1889634C00A8FAFA /* resources.h */,
 				4210C5B5188877BA00A8FAFA /* schedulers.h */,
 				4210C5B7188877BA00A8FAFA /* task_library.h */,
+				42DC570E1941F0C1005044F1 /* utils */,
 			);
 			path = digital_evolution;
 			sourceTree = "<group>";
@@ -814,6 +847,7 @@
 				4256FAC01892BBDC004AB7F9 /* example-qhfc */,
 				4243E7821894180F00431D18 /* test-ealib copy */,
 				428CB52518F81F0500E6093D /* test-torus */,
+				42DF0684194530D100C9A364 /* example-emscript */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -823,6 +857,7 @@
 			children = (
 				42DC57041940BE5B005044F1 /* all_ones.cfg */,
 				42DC57051940BE5B005044F1 /* digital_evolution.cfg */,
+				42DF06881945353800C9A364 /* emscript.cfg */,
 				42DC57061940BE5B005044F1 /* markov_network.cfg */,
 				42DC57071940BE5B005044F1 /* metapopulation.cfg */,
 				42DC57081940BE5B005044F1 /* nsga2.cfg */,
@@ -889,6 +924,7 @@
 			children = (
 				4256FA611892BA14004AB7F9 /* all_ones.cpp */,
 				4256FA621892BA14004AB7F9 /* digital_evolution.cpp */,
+				42DF06851945311200C9A364 /* emscript.cpp */,
 				4256FA631892BA14004AB7F9 /* lod.cpp */,
 				4256FA641892BA14004AB7F9 /* markov_network.cpp */,
 				4256FA651892BA14004AB7F9 /* metapopulation.cpp */,
@@ -963,6 +999,7 @@
 				428B7288184F77AB00E3BB4E /* selection.h */,
 				428B7280184F77AB00E3BB4E /* selection */,
 				427F5E5918806FB3003CCA5C /* subpopulation.h */,
+				42DC570D1940E372005044F1 /* subpopulation_founder.h */,
 				42E1920E1872705C009EF3A7 /* stopping.h */,
 				428B722E184F77AB00E3BB4E /* traits.h */,
 			);
@@ -1020,6 +1057,7 @@
 				428B7259184F77AB00E3BB4E /* generational.h */,
 				42C661831862805D004476D3 /* in_place.h */,
 				42C6618418628626004476D3 /* isolated_subpopulations.h */,
+				42DC571B19448FD2005044F1 /* periodic_competition.h */,
 				428B725A184F77AB00E3BB4E /* moran_process.h */,
 				428B725D184F77AB00E3BB4E /* steady_state.h */,
 			);
@@ -1184,6 +1222,37 @@
 				42B89EBF19377C1200435794 /* test_markov_network_ea.cpp */,
 			);
 			path = test;
+			sourceTree = "<group>";
+		};
+		42DC570E1941F0C1005044F1 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				42DC570F1941F0C1005044F1 /* configurable_mutation.h */,
+				42DC57101941F0C1005044F1 /* resource_consumption.h */,
+				42DC57111941F0C1005044F1 /* task_switching.h */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		42DC57121941F0CF005044F1 /* ancestors */ = {
+			isa = PBXGroup;
+			children = (
+				42DC57131941F0CF005044F1 /* multi_birth_selfrep_nand_not_ancestor.h */,
+				42DC57141941F0CF005044F1 /* multi_birth_selfrep_not_ancestor.h */,
+				42DC57151941F0CF005044F1 /* multi_birth_selfrep_not_nand_ancestor.h */,
+				42DC57161941F0CF005044F1 /* multi_birth_selfrep_not_nand_ornot_ancestor.h */,
+				42DC57171941F0CF005044F1 /* repro_not_ancestor.h */,
+				42DC57181941F0CF005044F1 /* selfrep_not_ancestor.h */,
+			);
+			path = ancestors;
+			sourceTree = "<group>";
+		};
+		42DC57191941F0D5005044F1 /* extra_instruction_sets */ = {
+			isa = PBXGroup;
+			children = (
+				42DC571A1941F0D5005044F1 /* cell_death.h */,
+			);
+			path = extra_instruction_sets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1478,6 +1547,23 @@
 			productReference = 42C661791860FBE5004476D3 /* test_ealib copy */;
 			productType = "com.apple.product-type.tool";
 		};
+		42DF0679194530D100C9A364 /* example-emscript */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 42DF0681194530D100C9A364 /* Build configuration list for PBXNativeTarget "example-emscript" */;
+			buildPhases = (
+				42DF067C194530D100C9A364 /* Sources */,
+				42DF067E194530D100C9A364 /* Frameworks */,
+				42DF0680194530D100C9A364 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "example-emscript";
+			productName = "example-all-ones";
+			productReference = 42DF0684194530D100C9A364 /* example-emscript */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1518,6 +1604,7 @@
 				4256FA9D1892BBCD004AB7F9 /* example-mp */,
 				4256FAA91892BBD5004AB7F9 /* example-nsga2 */,
 				4256FAB51892BBDC004AB7F9 /* example-qhfc */,
+				42DF0679194530D100C9A364 /* example-emscript */,
 			);
 		};
 /* End PBXProject section */
@@ -1663,6 +1750,14 @@
 				42C6617C1860FC0B004476D3 /* test_lod.cpp in Sources */,
 				42C6616C1860FBE5004476D3 /* test.cpp in Sources */,
 				42D178861937705E0063A55B /* cmdline_interface.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42DF067C194530D100C9A364 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42DF06871945311200C9A364 /* emscript.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2048,6 +2143,18 @@
 			};
 			name = Release;
 		};
+		42DF0682194530D100C9A364 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		42DF0683194530D100C9A364 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2227,6 +2334,15 @@
 			buildConfigurations = (
 				42C661771860FBE5004476D3 /* Debug */,
 				42C661781860FBE5004476D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		42DF0681194530D100C9A364 /* Build configuration list for PBXNativeTarget "example-emscript" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42DF0682194530D100C9A364 /* Debug */,
+				42DF0683194530D100C9A364 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

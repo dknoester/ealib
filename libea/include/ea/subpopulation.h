@@ -28,7 +28,8 @@ namespace ealib {
     /*! Subpopulation class for metapopulation EAs.
      
      Subpopulation simply extends an EA template parameter to provide a traits
-     object.  This traits object can be used, e.g., to store a founder individual.
+     object.  This traits object can be used, e.g., to store a fitness value or
+     founder individual.
      */
 	template
     < typename EA

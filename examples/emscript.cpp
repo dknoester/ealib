@@ -1,4 +1,4 @@
-/* test_types.cpp
+/* emscript.cpp
  *
  * This file is part of EALib.
  *
@@ -17,20 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <boost/test/unit_test.hpp>
+#include <boost/algorithm/string/trim_all.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <string>
 
-#include <ea/analysis.h>
-#include <ea/cmdline_interface.h>
 #include <ea/digital_evolution.h>
-#include <ea/subpopulation_founder.h>
-#include <ea/line_of_descent.h>
-#include <ea/metapopulation.h>
-#include "test.h"
+#include <ea/datafiles/runtime.h>
+using namespace ealib;
 
-//! Configuration object; this is fairly standard across DE simulations.
-
-struct digevo_lifecycle : public default_lifecycle {
-    //! Called as the final step of EA construction (must not depend on configuration parameters).
+/*! Configures an instance of a digital evolution algorithm in a manner similar
+ to Avida's classic logic9 environment.
+ */
+struct lifecycle : public default_lifecycle {
+    //! Called as the final step of EA construction (must not depend on configuration parameters)
     template <typename EA>
     void after_construction(EA& ea) {
         using namespace ealib::instructions;
@@ -66,8 +68,7 @@ struct digevo_lifecycle : public default_lifecycle {
     void initialize(EA& ea) {
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        
-        // Add tasks
+
         task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<0> >("not", ea);
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<0> >("nand", ea);
         task_ptr_type task_and = make_task<tasks::task_and,catalysts::additive<0> >("and", ea);
@@ -78,7 +79,7 @@ struct digevo_lifecycle : public default_lifecycle {
         task_ptr_type task_xor = make_task<tasks::task_xor,catalysts::additive<0> >("xor", ea);
         task_ptr_type task_equals = make_task<tasks::task_equals,catalysts::additive<0> >("equals", ea);
         
-        resource_ptr_type resA = make_resource("resA", 100.0, 1.0, 0.01, 0.05, ea);
+        resource_ptr_type resA = make_resource("resA", 0.1, 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resB = make_resource("resB", 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resC = make_resource("resC", 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resD = make_resource("resD", 100.0, 1.0, 0.01, 0.05, ea);
@@ -100,76 +101,52 @@ struct digevo_lifecycle : public default_lifecycle {
     }
 };
 
+//! Convenience typedef for the EA:
+typedef digital_evolution<lifecycle> ea_type;
 
-//! Meta-population w/ founders configuration object.
-struct mp_founder_lifecycle : public default_lifecycle {
-    template <typename EA>
-    void initial_population(EA& ea) {
-        for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-            (*i).founder() = (**(*i).population().begin());
+#define LIBEA_CHECKPOINT_OFF 1
+
+/*! In emscripten world, it's a bit of a pain to use third-party libraries.
+ (At least, until there's a bjam toolchaing for it.)  So, we're going to eliminate
+ the dependencies on the Boost libraries.
+ */
+int main(int argc, char* argv[]) {
+    using namespace std;
+    using namespace boost;
+    cerr << "constructing..." << endl;
+//    ea_type ea;
+    cerr << "loading config..." << endl;
+    ifstream infile("emscript.cfg");//argv[1]);
+    if(!infile.is_open()) {
+        ostringstream msg;
+        msg << "emscript.cpp::main: could not open config file " << argv[1];
+        throw file_io_exception(msg.str());
+    }
+
+    string line;
+    while(getline(infile, line)) {
+        // remove leading & trailing whitespace:
+        trim_all(line);
+        // only consider lines with length > 0:
+        if(line.empty()) {
+            continue;
         }
+        // split all remaining lines into fields, add them to the string matrix:
+        vector<string> fields;
+        split(fields, line, is_any_of("="));
+        cout << fields[0] << "=" << fields[1] << endl;
+        // set the meta data:
+//        ealib::put(fields[0], fields[1], ea.md());
     }
-};
 
-LIBEA_ANALYSIS_TOOL(test_population_lod_tool) {
-    using namespace ealib;
-//    using namespace ealib::analysis;
-    
-    line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-    typename line_of_descent<EA>::iterator i=lod.begin(); ++i;
-    
-    for( ; i!=lod.end(); ++i) {
-        typename EA::individual_ptr_type control_ea = ea.make_individual();
-        typename EA::individual_type::individual_ptr_type o = i->make_individual(i->founder().repr());
-        o->hw().initialize();
-        control_ea->append(o);
-    }
+//    cerr << "initializing..." << endl;
+//    ea.initialize();
+//    cerr << "adding events..." << endl;
+//    ealib::add_event<ealib::datafiles::runtime>(ea);
+//    cerr << "generating initial population..." << endl;
+//    ealib::generate_initial_population(ea);
+//    cerr << "advancing epoch..." << endl;
+//    ea.lifecycle().advance_all(ea);
+
+    return 0;
 }
-
-
-template <typename EA>
-class cli : public cmdline_interface<EA> {
-public:
-    virtual void gather_options() {
-    }
-    
-    virtual void gather_tools() {
-        add_tool<test_population_lod_tool>(this);
-    }
-    
-    virtual void gather_events(EA& ea) {
-        add_event<datafiles::mrca_lineage>(this,ea);
-        add_event<subpopulation_founder_event>(this,ea);
-    };
-};
-
-
-//! A variety of digital evolution / artificial life simulation definitions.
-BOOST_AUTO_TEST_CASE(test_digevo_types) {
-    //! Single population:
-    typedef digital_evolution<digevo_lifecycle > ea_type1;
-    ea_type1 ea1;
-    
-    //! Meta-population, no founders:
-    typedef metapopulation<ea_type1> mea_type1;
-    mea_type1 mea1;
-    
-    //    //! Meta-population, with founders:
-    //    typedef meta_population<population_founder<ea_type1> > mea_type2;
-    //    mea_type2 mea2;
-    //
-    //    //! Meta-population, with founders and LOD tracking:
-    //    typedef meta_population<
-    //    population_founder<ea_type1>,
-    //    ancestors::default_representation,
-    //    mutation::operators::no_mutation,
-    //	constant,
-    //    abstract_configuration,
-    //	recombination::no_recombination,
-    //    generational_models::isolated_subpopulations,
-    //    attr::lod_attributes
-    //    > mea_type3;
-    //    cli<mea_type3> cli3;
-}
-
-

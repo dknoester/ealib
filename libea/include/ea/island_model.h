@@ -43,10 +43,10 @@ namespace ealib {
         
         //! Perform migration of individuals among populations.
         virtual void operator()(MEA& ea) {
-            int migrations = static_cast<int>(get<ISLAND_MIGRATION_RATE>(ea)*get<POPULATION_SIZE>(ea)*get<META_POPULATION_SIZE>(ea));
+            int migrations = static_cast<int>(get<ISLAND_MIGRATION_RATE>(ea)*get<POPULATION_SIZE>(ea)*get<METAPOPULATION_SIZE>(ea));
             
             // technically, this should probably issue a warning?
-            if((migrations == 0) || (get<META_POPULATION_SIZE>(ea) == 1)) {
+            if((migrations == 0) || (get<METAPOPULATION_SIZE>(ea) == 1)) {
                 return;
             }
             

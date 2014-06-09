@@ -68,7 +68,7 @@ public:
         add_option<RNG_SEED>(this);
         add_option<RECORDING_PERIOD>(this);
 
-        add_option<META_POPULATION_SIZE>(this);
+        add_option<METAPOPULATION_SIZE>(this);
         add_option<ISLAND_MIGRATION_PERIOD>(this);
         add_option<ISLAND_MIGRATION_RATE>(this);
     }

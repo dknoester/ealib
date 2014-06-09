@@ -118,7 +118,7 @@ namespace ealib {
                 
                 // spread individuals across subpops by fitness
                 std::sort(all.begin(), all.end(), comparators::fitness<typename EA::subpopulation_type>(ea[0]));
-                std::size_t spsize=all.size() / get<META_POPULATION_SIZE>(ea);
+                std::size_t spsize=all.size() / get<METAPOPULATION_SIZE>(ea);
                 for(typename EA::reverse_iterator i=ea.rbegin(); i!=ea.rend(); ++i) { // subpop
                     generate_population(*i);
                     for(std::size_t j=0; j<spsize; ++j) {
@@ -352,7 +352,7 @@ namespace ealib {
                 _admission.add_field("update");
                 _pop_size.add_field("update");
                 
-                for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                for(std::size_t i=0; i<get<METAPOPULATION_SIZE>(ea); ++i) {
                     _fitness.add_field("max_fitness_sp" + boost::lexical_cast<std::string>(i));
                     _fitness.add_field("mean_fitness_sp" + boost::lexical_cast<std::string>(i));
                     _fitness.add_field("min_fitness_sp" + boost::lexical_cast<std::string>(i));

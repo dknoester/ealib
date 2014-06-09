@@ -198,24 +198,20 @@ namespace ealib {
                 }
             };
 
-            template <typename MutationType>
+
+            /*! This mutator is metapopulation-specific; it applies the
+             subpopulation's mutation operator to all individuals in each
+             subpopulation.
+             */
             struct subpopulation_mutator {
-                typedef MutationType mutation_type;
-
-                //! Mutate every single individual within a subpop.
-                template <typename EA>
-                void operator()(typename EA::individual_type& ind, EA& ea) {
-                    //configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(ea));
-
-                    // ind in this case is a subpop.
-                    for (typename EA::individual_type::iterator i=ind.begin(); i!=ind.end(); ++i) {
-                        _mt((*i),ind.ea());
+                template <typename MEA>
+                void operator()(typename MEA::subpopulation_type& sea, MEA& mea) {
+                    for(typename MEA::subpopulation_type::iterator i=sea.begin(); i!=sea.end(); ++i) {
+                        mutate(*i, sea);
                     }
                 }
-                
-                mutation_type _mt;
-                
             };
+            
             
             /*! Single-point mutation.
              */

@@ -43,7 +43,7 @@ namespace ealib {
             , _df("subpopulation_fitness.dat")
             , _mp("metapopulation_fitness.dat") {
                 _df.add_field("update");
-                for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                for(std::size_t i=0; i<get<METAPOPULATION_SIZE>(ea); ++i) {
                     _df.add_field("mean_generation_sp" + boost::lexical_cast<std::string>(i))
                     .add_field("min_fitness_sp" + boost::lexical_cast<std::string>(i))
                     .add_field("mean_fitness_sp" + boost::lexical_cast<std::string>(i))

@@ -204,7 +204,7 @@ struct ts_replication : end_of_update_event<EA> {
         
         // select surviving parent groups
         if (offspring.size() > 0) {
-            int n = get<META_POPULATION_SIZE>(ea) - offspring.size(); 
+            int n = get<METAPOPULATION_SIZE>(ea) - offspring.size(); 
             
             typename EA::population_type survivors;
             select_n<selection::random>(ea.population(), survivors, n, ea);

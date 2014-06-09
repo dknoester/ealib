@@ -34,6 +34,11 @@
 			<key>orderHint</key>
 			<integer>46</integer>
 		</dict>
+		<key>example-emscript.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>56</integer>
+		</dict>
 		<key>example-lod.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -303,6 +308,11 @@
 			<true/>
 		</dict>
 		<key>42C661631860FBE5004476D3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>42DF0679194530D100C9A364</key>
 		<dict>
 			<key>primary</key>
 			<true/>

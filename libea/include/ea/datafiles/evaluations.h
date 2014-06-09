@@ -86,9 +86,9 @@ namespace ealib {
         struct meta_population_fitness_evaluations : event {
             
             meta_population_fitness_evaluations(EA& ea) : _ea(ea), _df("fitness_evaluations.dat"), _evals(0) {
-                _connections.resize(get<META_POPULATION_SIZE>(ea));
+                _connections.resize(get<METAPOPULATION_SIZE>(ea));
                 
-                for(std::size_t i=0; i<get<META_POPULATION_SIZE>(ea); ++i) {
+                for(std::size_t i=0; i<get<METAPOPULATION_SIZE>(ea); ++i) {
                     _connections[i] = ea[i].events().fitness_evaluated.connect(boost::bind(&meta_population_fitness_evaluations::operator(), this, _1, _2));
                 }
                 

@@ -20,12 +20,14 @@
 #ifndef _EA_LIFECYCLE_H_
 #define _EA_LIFECYCLE_H_
 
+#ifndef LIBEA_CHECKPOINT_OFF
 #include <boost/regex.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
+#endif
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -104,13 +106,16 @@ namespace ealib {
         //! Load an EA from the given input stream.
         template <typename EA>
         void load_checkpoint(std::istream& in, EA& ea) {
+#ifndef LIBEA_CHECKPOINT_OFF
             boost::archive::xml_iarchive ia(in);
             ia >> BOOST_SERIALIZATION_NVP(ea);
+#endif
         }
         
         //! Load an EA from the given checkpoint file.
         template <typename EA>
         void load_checkpoint(const std::string& filename, EA& ea) {
+#ifndef LIBEA_CHECKPOINT_OFF
             std::ifstream ifs(filename.c_str());
             if(!ifs.good()) {
                 throw file_io_exception("could not open " + filename + " for reading.");
@@ -129,13 +134,16 @@ namespace ealib {
                 load_checkpoint(ifs,ea);
             }
             std::cerr << "done." << std::endl;
+#endif
         }
         
         //! Save an EA to the given output stream.
         template <typename EA>
         void save_checkpoint(std::ostream& out, EA& ea) {
+#ifndef LIBEA_CHECKPOINT_OFF
             boost::archive::xml_oarchive oa(out);
             oa << BOOST_SERIALIZATION_NVP(ea);
+#endif
         }
         
         //! Save an EA to the given checkpoint file.

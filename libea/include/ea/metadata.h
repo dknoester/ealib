@@ -276,6 +276,12 @@ namespace ealib {
         return v;
     }
     
+    //! Convenience method to test a periodic condition against metadata.
+    template <typename Attribute, typename HasMetaData>
+    bool periodic(const typename Attribute::value_type v, HasMetaData& hmd) {
+        return (v!=0) && ((v % get<Attribute>(hmd)) == 0);
+    }
+
 } // ea
 
 /* This macro defines a new attribute. */
@@ -291,14 +297,13 @@ namespace ealib {
     LIBEA_MD_DECL(IND_BIRTH_UPDATE, "individual.birth_update", long);
     
     LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
-    LIBEA_MD_DECL(META_POPULATION_SIZE, "ea.metapopulation.size", unsigned int);
+    LIBEA_MD_DECL(METAPOPULATION_SIZE, "ea.metapopulation.size", unsigned int);
 
     LIBEA_MD_DECL(REPRESENTATION_SIZE, "ea.representation.size", int);
     LIBEA_MD_DECL(REPRESENTATION_INITIAL_SIZE, "ea.representation.initial_size", int);
 	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
 	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
 
-    
     LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
     LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
 
@@ -316,9 +321,6 @@ namespace ealib {
     // ea.environment.*
     LIBEA_MD_DECL(LOCATION_DATA, "ea.environment.location.color", int);
     
-    LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.metapopulation.competition_period", unsigned int);
-    
-
     // ea.statistics.*
     LIBEA_MD_DECL(RECORDING_PERIOD, "ea.statistics.recording.period", unsigned long);
         

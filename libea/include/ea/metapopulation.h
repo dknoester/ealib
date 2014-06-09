@@ -41,7 +41,8 @@
 #include <ea/fitness_functions/quiet_nan.h>
 
 namespace ealib {
-  
+
+    
     /*! Metapopulation evolutionary algorithm, where individuals in the population
      are themselves evolutionary algorithms.
      

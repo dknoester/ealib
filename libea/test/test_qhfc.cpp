@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     
     ea_type M;
     put<POPULATION_SIZE>(50,M);
-    put<META_POPULATION_SIZE>(5,M);
+    put<METAPOPULATION_SIZE>(5,M);
 	put<REPRESENTATION_SIZE>(100,M);
 	put<MUTATION_PER_SITE_P>(0.0005,M);
 	put<ELITISM_N>(1,M);

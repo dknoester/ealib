@@ -98,12 +98,6 @@ struct lifecycle : public default_lifecycle {
         task_xor->consumes(resH);
         task_equals->consumes(resI);
     }
-    
-    //! Called to generate the initial EA population.
-    template <typename EA>
-    void initial_population(EA& ea) {
-        generate_ancestors(selfrep_ancestor(), 1, ea);
-    }
 };
 
 

@@ -44,7 +44,7 @@ public:
     virtual void gather_options() {
         add_option<POPULATION_SIZE>(this);
         add_option<REPRESENTATION_SIZE>(this);
-        add_option<META_POPULATION_SIZE>(this);
+        add_option<METAPOPULATION_SIZE>(this);
         add_option<MUTATION_PER_SITE_P>(this);
         add_option<ELITISM_N>(this);
         add_option<QHFC_BREED_TOP_FREQ>(this);

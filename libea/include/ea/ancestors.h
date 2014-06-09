@@ -95,7 +95,7 @@ namespace ealib {
     
     /*! Inserts a single ancestor into the population.
      */
-    struct single_ancestor {
+    struct generate_single_ancestor {
         template <typename EA>
         void operator()(EA& ea) {
             generate_ancestors(1, ea);
@@ -114,7 +114,7 @@ namespace ealib {
         template <typename EA>
         void operator()(EA& ea) {
             // construct the ancestral subpopulations:
-            generate_ancestors(get<META_POPULATION_SIZE>(ea)-ea.size(), ea);
+            generate_ancestors(get<METAPOPULATION_SIZE>(ea)-ea.size(), ea);
             
             // now build the initial populations for each subpopulation:
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
@@ -338,7 +338,7 @@ namespace ealib {
                 }
             }
         };
-        
+                
         /*! Initializes all subpopulations that are part of a meta-population EA.
          */
         struct all_subpopulations {

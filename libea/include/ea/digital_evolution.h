@@ -81,7 +81,7 @@ namespace ealib {
     , typename AncestorGenerator=selfrep_ancestor
     , typename ReplacementStrategy=random_neighbor
     , typename StopCondition=dont_stop
-    , typename PopulationGenerator=single_ancestor
+    , typename PopulationGenerator=generate_single_ancestor
     , template <typename> class IndividualTraits=default_devo_traits
     > class digital_evolution {
     public:

@@ -65,14 +65,14 @@ namespace ealib {
             _df.write(ea.current_update()).write(mean(fit)).write(max(fit)).endl();
             
             // how many survivors?
-            std::size_t n = static_cast<std::size_t>((1.0 - get<REPLACEMENT_RATE_P>(ea)) * get<META_POPULATION_SIZE>(ea));
+            std::size_t n = static_cast<std::size_t>((1.0 - get<REPLACEMENT_RATE_P>(ea)) * get<METAPOPULATION_SIZE>(ea));
             
             // select individuals for survival:
             typename EA::population_type survivors;
             select_n<selection::random>(ea.population(), survivors, n, ea);
             
             // how many offspring?
-            n = get<META_POPULATION_SIZE>(ea) - survivors.size();
+            n = get<METAPOPULATION_SIZE>(ea) - survivors.size();
             
             // select the parents:
             typename EA::population_type parents;
