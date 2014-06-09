@@ -570,6 +570,7 @@
 		42B89ED119377EDC00435794 /* translator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translator.h; sourceTree = "<group>"; };
 		42B8BAC5188B0D96003307CB /* position.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = position.h; sourceTree = "<group>"; };
 		42C26B3F1945E62400F0E6B9 /* emscript.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = emscript.cfg; sourceTree = "<group>"; };
+		42C26B401945FA7900F0E6B9 /* torus2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = torus2.h; sourceTree = "<group>"; };
 		42C661251860A403004476D3 /* constant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constant.h; sourceTree = "<group>"; };
 		42C661321860D2FF004476D3 /* test_qhfc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_qhfc.cpp; sourceTree = "<group>"; };
 		42C661351860D6E1004476D3 /* qhfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = qhfc.h; sourceTree = "<group>"; };
@@ -808,6 +809,7 @@
 				42B89ECA19377D8F00435794 /* sequence_matrix.h */,
 				4212C0CC19376016001D435A /* shared_ptr_vector.h */,
 				4212C0CD19376016001D435A /* torus.h */,
+				42C26B401945FA7900F0E6B9 /* torus2.h */,
 			);
 			path = data_structures;
 			sourceTree = "<group>";
