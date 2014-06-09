@@ -569,6 +569,7 @@
 		42B89ED019377EDC00435794 /* markov_network_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network_evolution.h; sourceTree = "<group>"; };
 		42B89ED119377EDC00435794 /* translator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translator.h; sourceTree = "<group>"; };
 		42B8BAC5188B0D96003307CB /* position.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = position.h; sourceTree = "<group>"; };
+		42C26B3F1945E62400F0E6B9 /* emscript.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = emscript.cfg; sourceTree = "<group>"; };
 		42C661251860A403004476D3 /* constant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constant.h; sourceTree = "<group>"; };
 		42C661321860D2FF004476D3 /* test_qhfc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_qhfc.cpp; sourceTree = "<group>"; };
 		42C661351860D6E1004476D3 /* qhfc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = qhfc.h; sourceTree = "<group>"; };
@@ -622,7 +623,6 @@
 		42DC571B19448FD2005044F1 /* periodic_competition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = periodic_competition.h; sourceTree = "<group>"; };
 		42DF0684194530D100C9A364 /* example-emscript */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-emscript"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42DF06851945311200C9A364 /* emscript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = emscript.cpp; sourceTree = "<group>"; };
-		42DF06881945353800C9A364 /* emscript.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = emscript.cfg; sourceTree = "<group>"; };
 		42E1920E1872705C009EF3A7 /* stopping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stopping.h; sourceTree = "<group>"; };
 		42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
 		42EF7D7C19363266001A647B /* representation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = representation.h; sourceTree = "<group>"; };
@@ -857,7 +857,7 @@
 			children = (
 				42DC57041940BE5B005044F1 /* all_ones.cfg */,
 				42DC57051940BE5B005044F1 /* digital_evolution.cfg */,
-				42DF06881945353800C9A364 /* emscript.cfg */,
+				42C26B3F1945E62400F0E6B9 /* emscript.cfg */,
 				42DC57061940BE5B005044F1 /* markov_network.cfg */,
 				42DC57071940BE5B005044F1 /* metapopulation.cfg */,
 				42DC57081940BE5B005044F1 /* nsga2.cfg */,

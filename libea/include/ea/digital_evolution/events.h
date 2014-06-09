@@ -29,24 +29,24 @@ namespace ealib {
     template <typename EA>
 	struct digital_evolution_event_handler : event_handler<EA> {
         //! Called when an individual performs a task.
-        boost::signal<void(typename EA::individual_type&, // individual
-                           typename EA::task_library_type::task_ptr_type, // task pointer
-                           EA&)> task;
+        boost::signals2::signal<void(typename EA::individual_type&, // individual
+                                     typename EA::task_library_type::task_ptr_type, // task pointer
+                                     EA&)> task;
         
         //! Called when an individual participates in a reaction.
-        boost::signal<void(typename EA::individual_type&, // individual
-                           typename EA::task_library_type::task_ptr_type, // task pointer
-                           double r, // resources consumed
-                           EA&)> reaction;
+        boost::signals2::signal<void(typename EA::individual_type&, // individual
+                                     typename EA::task_library_type::task_ptr_type, // task pointer
+                                     double r, // resources consumed
+                                     EA&)> reaction;
         
         //! Called when an individual is "born" (immediately after it is placed in the population).
-        boost::signal<void(typename EA::individual_type&, // individual offspring
-                           typename EA::individual_type&, // individual parent
-                           EA&)> birth;
+        boost::signals2::signal<void(typename EA::individual_type&, // individual offspring
+                                     typename EA::individual_type&, // individual parent
+                                     EA&)> birth;
         
         //! Called when an individual "dies" or is replaced.
-        boost::signal<void(typename EA::individual_type&, // individual
-                           EA&)> death;
+        boost::signals2::signal<void(typename EA::individual_type&, // individual
+                                     EA&)> death;
     };
     
     
@@ -60,7 +60,7 @@ namespace ealib {
                                 typename EA::task_library_type::task_ptr_type, // task pointer
                                 EA&) = 0;
     };
-
+    
     template <typename EA>
     struct reaction_event : event {
         reaction_event(EA& ea) {

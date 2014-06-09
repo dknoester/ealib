@@ -1,19 +1,19 @@
 /* events.h
- * 
+ *
  * This file is part of EALib.
- * 
+ *
  * Copyright 2014 David B. Knoester.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,10 +21,10 @@
 #define _EA_EVENTS_H_
 
 #include <boost/bind.hpp>
-#ifndef BOOST_SIGNALS_NO_DEPRECATION_WARNING
-#define BOOST_SIGNALS_NO_DEPRECATION_WARNING
-#endif
-#include <boost/signal.hpp>
+//#ifndef BOOST_SIGNALS_NO_DEPRECATION_WARNING
+//#define BOOST_SIGNALS_NO_DEPRECATION_WARNING
+//#endif
+#include <boost/signals2.hpp>
 #include <vector>
 
 #include <ea/metadata.h>
@@ -36,7 +36,7 @@ namespace ealib {
     struct event {
         virtual ~event() {
         }
-        boost::signals::scoped_connection conn;
+        boost::signals2::scoped_connection conn;
     };
     
     /*! Contains event handlers for generic events of interest within an evolutionary
@@ -48,37 +48,37 @@ namespace ealib {
 	 */
 	template <typename EA>
 	struct event_handler {
-
+        
         typedef std::vector<boost::shared_ptr<event> > slot_vector_type; //!< Storage for slots (event handlers).
-
+        
         /*! Called after the fitness of an individual has been evaluated.
          */
-        boost::signal<void(typename EA::individual_type&, // individual
-                           EA&)> fitness_evaluated;
+        boost::signals2::signal<void(typename EA::individual_type&, // individual
+                                     EA&)> fitness_evaluated;
         
 		/*! Called at the end of every update.
 		 */
-		boost::signal<void(EA&)> end_of_update;
+		boost::signals2::signal<void(EA&)> end_of_update;
 		
 		/*! Called after every epoch.
 		 */
-		boost::signal<void(EA&)> end_of_epoch;
+		boost::signals2::signal<void(EA&)> end_of_epoch;
 		
 		/*! Called when an offspring individual inherits from its parents.
 		 */
-		boost::signal<void(typename EA::population_type&, // parents
-                           typename EA::individual_type&, // offspring
-                           EA&)> inheritance;
-
+		boost::signals2::signal<void(typename EA::population_type&, // parents
+                                     typename EA::individual_type&, // offspring
+                                     EA&)> inheritance;
+        
         /*! Called when an individual asexually replicates.
 		 */
-		boost::signal<void(typename EA::individual_type&, // parent
-                           typename EA::individual_type&, // offspring
-                           EA&)> replication;
-
+		boost::signals2::signal<void(typename EA::individual_type&, // parent
+                                     typename EA::individual_type&, // offspring
+                                     EA&)> replication;
+        
         /*! Called at the beginning of epochs and at the end of every generation.
 		 */
-		boost::signal<void(EA&)> record_statistics;
+		boost::signals2::signal<void(EA&)> record_statistics;
         
         /*! Add a slot (event handler) to the events for this EA.
          */
@@ -91,14 +91,14 @@ namespace ealib {
         
         slot_vector_type _slots; //!< Connected slots (event handlers).
     };
-
+    
     /*! Free-method to easily add an event to the list of events that are registered for an EA.
      */
     template <template <typename> class Event, typename EA>
     void add_event(EA& ea) {
         ea.events().template add_event<Event>(ea);
     }
-
+    
     template <typename EA>
     struct fitness_evaluated_event : event {
         fitness_evaluated_event(EA& ea) {
@@ -136,7 +136,7 @@ namespace ealib {
                 operator()(ea);
             }
         }
-
+        
         virtual void operator()(EA& ea) = 0;
         
         unsigned int period() const { return _n; }
@@ -167,7 +167,7 @@ namespace ealib {
         }
         virtual void operator()(EA& ea) = 0;
     };
-
+    
     template <typename EA>
     struct inheritance_event : event {
         inheritance_event(EA& ea) {

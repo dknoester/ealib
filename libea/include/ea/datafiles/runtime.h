@@ -40,7 +40,7 @@ namespace ealib {
         template <typename EA>
         struct runtime : end_of_update_event<EA> {
             runtime(EA& ea) : end_of_update_event<EA>(ea) {
-                std::cerr << "update instantaneous_t average_t memory_usage" << std::endl;
+                std::cout << "update instantaneous_t average_t memory_usage" << std::endl;
                 _t.restart();
             }
             
@@ -51,7 +51,7 @@ namespace ealib {
                 using namespace boost::accumulators;
                 double t=_t.elapsed();
                 _tacc(t);
-                std::cerr << ea.current_update() << " ";
+                std::cout << ea.current_update() << " ";
                 
 //                accumulator_set<double, stats<tag::mean> > gen;
 //                accumulator_set<double, stats<tag::min, tag::mean, tag::max> > fit;
@@ -60,9 +60,9 @@ namespace ealib {
 //                    fit(static_cast<double>(ealib::fitness(**i,ea)));
 //                }
                 
-//                std::cerr << mean(gen) << " " << min(fit) << " " << mean(fit) << " " << max(fit) << " ";
-                std::cerr << std::fixed << std::setprecision(4) << t << " ";
-                std::cerr << std::fixed << std::setprecision(4) << boost::accumulators::mean(_tacc) << " ";
+//                std::cout << mean(gen) << " " << min(fit) << " " << mean(fit) << " " << max(fit) << " ";
+                std::cout << std::fixed << std::setprecision(4) << t << " ";
+                std::cout << std::fixed << std::setprecision(4) << boost::accumulators::mean(_tacc) << " ";
                 
                 double rss=1024.0;
 #ifdef __APPLE__
@@ -71,11 +71,48 @@ namespace ealib {
                 
                 rusage r;
                 getrusage(RUSAGE_SELF, &r);
-                std::cerr << std::fixed << std::setprecision(4) << r.ru_maxrss/rss << std::endl;
+                std::cout << std::fixed << std::setprecision(4) << r.ru_maxrss/rss << std::endl;
                 
                 _t.restart();
             }
                 
+            boost::timer _t;
+            boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::mean> > _tacc;
+        };
+        
+        /*! Output simple per-update run statistics.
+         */
+        template <typename EA>
+        struct emscript : end_of_update_event<EA> {
+            emscript(EA& ea) : end_of_update_event<EA>(ea) {
+                std::cout << "update instantaneous_t average_t population_size mean_generation mean_priority" << std::endl;
+                _t.restart();
+            }
+            
+            virtual ~emscript() {
+            }
+            
+            virtual void operator()(EA& ea) {
+                using namespace boost::accumulators;
+                double t=_t.elapsed();
+                _tacc(t);
+
+                std::cout << ea.current_update() << " ";
+                std::cout << std::fixed << std::setprecision(4) << t << " ";
+                std::cout << std::fixed << std::setprecision(4) << boost::accumulators::mean(_tacc) << " ";
+                std::cout << ea.size() << " ";
+                
+                accumulator_set<double, stats<tag::mean> > gen;
+                accumulator_set<double, stats<tag::mean> > priority;
+                for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                    gen(get<IND_GENERATION>(*i));
+                    priority(static_cast<double>(i->priority()));
+                }
+
+                std::cout << mean(gen) << " " << mean(priority) << std::endl;
+                _t.restart();
+            }
+            
             boost::timer _t;
             boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::mean> > _tacc;
         };

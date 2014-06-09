@@ -36,6 +36,81 @@
 
 namespace ealib {
     
+    /*! Location type.
+     
+     An individual's position in the environment can best be thought of as
+     an index into a location data structure which contains locale-specific
+     information; this is that data structure.
+     */
+    template <typename EA>
+    struct discrete_spatial_location {
+        typedef EA ea_type;
+        typedef typename ea_type::individual_type individual_type; //!< Individual type.
+        typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
+
+        //! Constructor.
+        discrete_spatial_location() : x(0), y(0) {
+        }
+        
+        //! Operator ==
+        bool operator==(const discrete_spatial_location& that) {
+            if((p==0) != (that.p==0)) { // pointer xor...
+                return false;
+            }
+            
+            bool r=true;
+            if(p != 0) {
+                r = ((*p) == (*that.p));
+            }
+            
+            return r && (x==that.x)
+            && (y==that.y)
+            && (_md==that._md);
+        }
+        
+        //! Location meta-data.
+        metadata& md() { return _md; }
+        
+        //! Is this location occupied?
+        bool occupied() { return ((p != 0) && (p->alive())); }
+        
+        //! Return the inhabitant.
+        individual_ptr_type inhabitant() { return p; }
+        
+        //! Sets the heading of this location's inhabitant.
+        void set_heading(int h) {
+            if(occupied()) {
+                p->position()[HEADING] = h % 8;
+            }
+        }
+        
+        //! Alters the heading of this location's inhabitant.
+        void alter_heading(int h) {
+            if(occupied()) {
+                p->position()[HEADING] = algorithm::roll(p->position()[HEADING]+h, 0, 7);
+            }
+        }
+        
+        //! Returns this location's position vector.
+        position_type position() {
+            return make_position(x,y);
+        }
+        
+        //! Serialize this location.
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            // we don't serialize the individual ptr - have to attach it after checkpoint load.
+            ar & boost::serialization::make_nvp("x", x);
+            ar & boost::serialization::make_nvp("y", y);
+            ar & boost::serialization::make_nvp("metadata", _md);
+        }
+        
+        individual_ptr_type p; //!< Individual (if any) at this location.
+        std::size_t x,y; //!< X-Y coordinates of this location.
+        metadata _md; //!< Meta-data container.
+    };
+    
+    
     /*! Discrete spatial environment.
      
      This spatial environment is divided into discrete cells.
@@ -52,91 +127,17 @@ namespace ealib {
      3  |  2  |  1
      4  |  Or.|  0
      5  |  6  |  7
-     
-     
      */
     template <typename EA>
     class discrete_spatial_environment {
     public:
-        //! EA type using this topology.
         typedef EA ea_type;
-        typedef typename ea_type::individual_type individual_type; //!< Individual type.
-        typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
-        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type; //!< Abstract resource type.
-        typedef std::vector<resource_ptr_type> resource_list_type; //!< List of resources.
-
-        /*! Location type.
-         
-         An individual's position in the environment can best be thought of as
-         an index into a location data structure which contains locale-specific
-         information; this is that data structure.
-         */
-        struct location_type {
-            //! Constructor.
-            location_type() : x(0), y(0) {
-            }
-            
-            //! Operator ==
-            bool operator==(const location_type& that) {
-                if((p==0) != (that.p==0)) { // pointer xor...
-                    return false;
-                }
-                
-                bool r=true;
-                if(p != 0) {
-                    r = ((*p) == (*that.p));
-                }
-                
-                return r && (x==that.x)
-                && (y==that.y)
-                && (_md==that._md);
-            }
-            
-            //! Location meta-data.
-            metadata& md() { return _md; }
-            
-            //! Is this location occupied?
-            bool occupied() { return ((p != 0) && (p->alive())); }
-            
-            //! Return the inhabitant.
-            individual_ptr_type inhabitant() { return p; }
-            
-            //! Sets the heading of this location's inhabitant.
-            void set_heading(int h) {
-                if(occupied()) {
-                    p->position()[HEADING] = h % 8;
-                }
-            }
-            
-            //! Alters the heading of this location's inhabitant.
-            void alter_heading(int h) {
-                if(occupied()) {
-                    p->position()[HEADING] = algorithm::roll(p->position()[HEADING]+h, 0, 7);
-                }
-            }
-
-            //! Returns this location's position vector.
-            position_type position() {
-                return make_position(x,y);
-            }
-            
-            //! Serialize this location.
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version) {
-                // we don't serialize the individual ptr - have to attach it after checkpoint load.
-                ar & boost::serialization::make_nvp("x", x);
-                ar & boost::serialization::make_nvp("y", y);
-                ar & boost::serialization::make_nvp("metadata", _md);
-            }
-
-            individual_ptr_type p; //!< Individual (if any) at this location.
-            std::size_t x,y; //!< X-Y coordinates of this location.
-            metadata _md; //!< Meta-data container.
-        };
-
-        //! Location pointer type.
+        typedef typename ea_type::individual_type individual_type;
+        typedef typename ea_type::individual_ptr_type individual_ptr_type;
+        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type;
+        typedef std::vector<resource_ptr_type> resource_list_type;
+        typedef discrete_spatial_location<EA> location_type;
         typedef location_type* location_ptr_type;
-        //! Location matrix type.
         typedef boost::numeric::ublas::matrix<location_type> location_matrix_type;
         
         //! Iterator for the neighborhood of a position.
@@ -233,14 +234,23 @@ namespace ealib {
             }
         }
         
-        //! Move an individual from position i to position j.
-        void move_ind(std::size_t i, std::size_t j) {
+        //! Swap individuals (if any) betweeen locations i and j.
+        void swap_locations(std::size_t i, std::size_t j) {
             assert(i < (_locs.size1()*_locs.size2()));
             assert(j < (_locs.size1()*_locs.size2()));
-            assert(_locs.data()[i].occupied());
-            
-            _locs.data()[j].p = _locs.data()[i].p;
-            _locs.data()[i].p.reset();
+            location_type& li=_locs.data()[i];
+            location_type& lj=_locs.data()[j];
+
+            // swap individual pointers:
+            std::swap(li.p, lj.p);
+
+            // and fixup positions:
+            if(li.occupied()) {
+                li.p->position() = li.position();
+            }
+            if(lj.occupied()) {
+                lj.p->position() = lj.position();
+            }
         }
         
         //! Replace the organism (if any) living in location l with p.

@@ -62,7 +62,7 @@ public:
     
     //! Define events (e.g., datafiles) here.
     virtual void gather_events(EA& ea) {
-        add_event<datafiles::fitness_dat>(ea);
+//        add_event<datafiles::fitness_dat>(ea);
     };
 };
 

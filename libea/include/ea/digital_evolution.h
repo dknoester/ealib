@@ -164,6 +164,7 @@ namespace ealib {
         void update() {
             _scheduler(_population, *this);
             _events.end_of_update(*this);
+            ++_update;
             _events.record_statistics(*this);
         }
 

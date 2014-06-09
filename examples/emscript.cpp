@@ -69,15 +69,15 @@ struct lifecycle : public default_lifecycle {
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
 
-        task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<0> >("not", ea);
-        task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<0> >("nand", ea);
-        task_ptr_type task_and = make_task<tasks::task_and,catalysts::additive<0> >("and", ea);
-        task_ptr_type task_ornot = make_task<tasks::task_ornot,catalysts::additive<0> >("ornot", ea);
-        task_ptr_type task_or = make_task<tasks::task_or,catalysts::additive<0> >("or", ea);
-        task_ptr_type task_andnot = make_task<tasks::task_andnot,catalysts::additive<0> >("andnot", ea);
-        task_ptr_type task_nor = make_task<tasks::task_nor,catalysts::additive<0> >("nor", ea);
-        task_ptr_type task_xor = make_task<tasks::task_xor,catalysts::additive<0> >("xor", ea);
-        task_ptr_type task_equals = make_task<tasks::task_equals,catalysts::additive<0> >("equals", ea);
+        task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<1> >("not", ea);
+        task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
+        task_ptr_type task_and = make_task<tasks::task_and,catalysts::additive<2> >("and", ea);
+        task_ptr_type task_ornot = make_task<tasks::task_ornot,catalysts::additive<2> >("ornot", ea);
+        task_ptr_type task_or = make_task<tasks::task_or,catalysts::additive<2> >("or", ea);
+        task_ptr_type task_andnot = make_task<tasks::task_andnot,catalysts::additive<3> >("andnot", ea);
+        task_ptr_type task_nor = make_task<tasks::task_nor,catalysts::additive<3> >("nor", ea);
+        task_ptr_type task_xor = make_task<tasks::task_xor,catalysts::additive<3> >("xor", ea);
+        task_ptr_type task_equals = make_task<tasks::task_equals,catalysts::additive<4> >("equals", ea);
         
         resource_ptr_type resA = make_resource("resA", 0.1, 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resB = make_resource("resB", 100.0, 1.0, 0.01, 0.05, ea);
@@ -113,9 +113,9 @@ typedef digital_evolution<lifecycle> ea_type;
 int main(int argc, char* argv[]) {
     using namespace std;
     using namespace boost;
-    cerr << "constructing..." << endl;
-//    ea_type ea;
-    cerr << "loading config..." << endl;
+    cout << "constructing..." << endl;
+    ea_type ea;
+    cout << "loading config..." << endl;
     ifstream infile("emscript.cfg");//argv[1]);
     if(!infile.is_open()) {
         ostringstream msg;
@@ -136,17 +136,17 @@ int main(int argc, char* argv[]) {
         split(fields, line, is_any_of("="));
         cout << fields[0] << "=" << fields[1] << endl;
         // set the meta data:
-//        ealib::put(fields[0], fields[1], ea.md());
+        ealib::put(fields[0], fields[1], ea.md());
     }
 
-//    cerr << "initializing..." << endl;
-//    ea.initialize();
-//    cerr << "adding events..." << endl;
-//    ealib::add_event<ealib::datafiles::runtime>(ea);
-//    cerr << "generating initial population..." << endl;
-//    ealib::generate_initial_population(ea);
-//    cerr << "advancing epoch..." << endl;
-//    ea.lifecycle().advance_all(ea);
+    cout << "initializing..." << endl;
+    ea.initialize();
+    cout << "adding events..." << endl;
+    ealib::add_event<ealib::datafiles::emscript>(ea);
+    cout << "generating initial population..." << endl;
+    ealib::generate_initial_population(ea);
+    cout << "advancing epoch..." << endl;
+    ea.lifecycle().advance_all(ea);
 
     return 0;
 }
