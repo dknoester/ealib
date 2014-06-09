@@ -118,7 +118,7 @@ namespace ealib {
             _lifecycle.after_construction(*this);
         }
         
-        //! Copy constructor (note that this is *not* a complete copy).
+        //! Copy constructor.
         digital_evolution(const digital_evolution& that) {
             _update = that._update;
             _rng = that._rng;
@@ -127,13 +127,11 @@ namespace ealib {
                 individual_ptr_type q = copy_individual(*i);
                 insert(end(),q);
             }
+            _env = that._env;
             _lifecycle.after_construction(*this);
         }
         
-        /*! Assignment operator (note that this is *not* a complete copy).
-         
-         \warning Not exception safe.
-         */
+        //! Assignment operator.
         digital_evolution& operator=(const digital_evolution& that) {
             if(this != &that) {
                 _update = that._update;
@@ -144,6 +142,7 @@ namespace ealib {
                     individual_ptr_type q = copy_individual(*i);
                     insert(end(),q);
                 }
+                _env = that._env;
                 _lifecycle.after_construction(*this);
             }
             return *this;

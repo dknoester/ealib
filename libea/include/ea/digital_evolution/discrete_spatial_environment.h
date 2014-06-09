@@ -241,7 +241,6 @@ namespace ealib {
             
             _locs.data()[j].p = _locs.data()[i].p;
             _locs.data()[i].p.reset();
- 
         }
         
         //! Replace the organism (if any) living in location l with p.

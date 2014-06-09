@@ -95,7 +95,7 @@ namespace ealib {
             _lifecycle.after_construction(*this);
         }
 
-        //! Copy constructor (note that this is *not* a complete copy).
+        //! Copy constructor.
         evolutionary_algorithm(const evolutionary_algorithm& that) {
             _update = that._update;
             _rng = that._rng;
@@ -107,10 +107,7 @@ namespace ealib {
             _lifecycle.after_construction(*this);
         }
 
-        /*! Assignment operator (note that this is *not* a complete copy).
-
-         \warning Not exception safe.
-         */
+        //! Assignment operator.
         evolutionary_algorithm& operator=(const evolutionary_algorithm& that) {
             if(this != &that) {
                 _update = that._update;
