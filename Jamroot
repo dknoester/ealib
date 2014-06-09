@@ -1,3 +1,7 @@
+project
+    : requirements <define>BOOST_PARAMETER_MAX_ARITY=7
+    ;
+
 use-project /libea : libea ;
 use-project /libmkv : libmkv ;
 build-project libea ;
