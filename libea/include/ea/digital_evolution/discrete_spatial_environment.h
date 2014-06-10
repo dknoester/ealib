@@ -263,12 +263,6 @@ namespace ealib {
             p->position() = l.position();
         }
         
-        //! Returns a value "read" from this environment.
-        template <typename Organism>
-        int read(Organism& org, ea_type& ea) {
-            return ea.rng()(std::numeric_limits<int>::max());
-        }
-
         //! Returns a location pointer given a position.
         location_ptr_type location(const position_type& pos) {
             return &_locs(pos[XPOS], pos[YPOS]);

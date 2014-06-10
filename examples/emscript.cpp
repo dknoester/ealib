@@ -17,6 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/* This file is meant for compilation by emscripten, like so:
+ 
+ ../emscripten/1.16.0/emcc -I../libea/include -I/usr/local/include \
+ emscript.cpp -o logic9.html --embed-file ../etc@/ \
+ -DLIBEA_CHECKPOINT_OFF -DBOOST_PARAMETER_MAX_ARITY=7
+ 
+ */
 #include <boost/algorithm/string/trim_all.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <sstream>

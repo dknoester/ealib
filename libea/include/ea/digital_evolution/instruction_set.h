@@ -23,6 +23,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <stdexcept>
+#include <limits>
 #include <vector>
 
 #include <ea/mutation.h>
@@ -279,8 +280,6 @@ namespace ealib {
             }
         }
         
-
-        
         /*! Read a new input into ?BX?.
          */
         DIGEVO_INSTRUCTION_DECL(input) {
@@ -291,7 +290,7 @@ namespace ealib {
                 p->inputs().push_back(p->inputs().front());
                 p->inputs().pop_front();
             } else {
-                hw.setRegValue(reg, ea.env().read(*p, ea));
+                hw.setRegValue(reg, ea.rng()(std::numeric_limits<int>::max()));
                 p->inputs().push_front(hw.getRegValue(reg));
             }
         }
