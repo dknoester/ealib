@@ -34,7 +34,7 @@ namespace ealib {
      */
     template <typename EA>
     struct abstract_task {
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type; //!< Pointer to resource for this task.
+        typedef typename EA::resource_ptr_type resource_ptr_type; //!< Pointer to resource for this task.
         
         abstract_task() : _limit(0.0), _exclusive(false) { }
         
@@ -51,7 +51,7 @@ namespace ealib {
         virtual abstract_task* consumes(resource_ptr_type r) = 0;
         
         //! Return the resource consumed by this task.
-        virtual resource_ptr_type consumed_resource() = 0;
+        virtual resource_ptr_type resource() = 0;
         
         //! Catalyze consumed resources r, adjusting current priority p, returns new priority.
         virtual double catalyze(double r, double p) = 0;
@@ -136,7 +136,7 @@ namespace ealib {
         }
         
         //! Return the resource consumed by this task.
-        virtual resource_ptr_type consumed_resource() { 
+        virtual resource_ptr_type resource() {
             return _consumed;
         }
         
@@ -208,7 +208,7 @@ namespace ealib {
                         
                         if(task.reaction_occurs(org,ea)) {
                             // if the reaction occurs, consume resources:
-                            double r = ea.env().consume_resource(task.consumed_resource(), org);
+                            double r = ea.resources().consume(task.resource(), org);
                             org.phenotype()[task.name()] += r;
                             ea.events().reaction(org, *i, r, ea);
                         } else {

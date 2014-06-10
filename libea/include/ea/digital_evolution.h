@@ -37,6 +37,7 @@
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/digital_evolution/replication.h>
 #include <ea/digital_evolution/task_library.h>
+#include <ea/digital_evolution/resources.h>
 #include <ea/metadata.h>
 #include <ea/lifecycle.h>
 #include <ea/population_structure.h>
@@ -107,6 +108,8 @@ namespace ealib {
         typedef instruction_set<digital_evolution> isa_type;
         typedef task_library<digital_evolution> task_library_type;
         typedef shared_ptr_vector<individual_ptr_type> population_type;
+        typedef resources<digital_evolution> resources_type;
+        typedef typename resources_type::resource_ptr_type resource_ptr_type;
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
@@ -228,6 +231,9 @@ namespace ealib {
         //! Retrieves this AL's task library.
         task_library_type& tasklib() { return _tasklib; }
         
+        //! Returns the resources for this EA.
+        resources_type& resources() { return _resources; }
+        
         //! Returns this EA's population.
         population_type& population() { return _population; }
         
@@ -314,7 +320,8 @@ namespace ealib {
         scheduler_type _scheduler; //!< Scheduler instance.
         isa_type _isa; //!< Instruction set architecture.
         task_library_type _tasklib; //!< Task library.
-        
+        resources_type _resources; //!< Resources.
+
     private:
         friend class boost::serialization::access;
 		template<class Archive>

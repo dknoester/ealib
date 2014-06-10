@@ -215,7 +215,7 @@ namespace ealib {
             std::size_t deadcount=0;
             while((budget > 0) && (deadcount<last)) {
                 if((budget % eff_population_size) == 0) {
-                    ea.env().update_resources(delta_t);
+                    ea.resources().update(delta_t);
                 }
                 typename EA::individual_ptr_type p=population[i];
                 i = (i+1) % last;

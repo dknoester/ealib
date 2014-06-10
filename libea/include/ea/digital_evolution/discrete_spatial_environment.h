@@ -134,8 +134,6 @@ namespace ealib {
         typedef EA ea_type;
         typedef typename ea_type::individual_type individual_type;
         typedef typename ea_type::individual_ptr_type individual_ptr_type;
-        typedef boost::shared_ptr<resources::abstract_resource> resource_ptr_type;
-        typedef std::vector<resource_ptr_type> resource_list_type;
         typedef discrete_spatial_location<EA> location_type;
         typedef location_type* location_ptr_type;
         typedef boost::numeric::ublas::matrix<location_type> location_matrix_type;
@@ -270,40 +268,6 @@ namespace ealib {
         int read(Organism& org, ea_type& ea) {
             return ea.rng()(std::numeric_limits<int>::max());
         }
-        
-        //! Returns the list of resources.
-        resource_list_type& resources() { return _resources; }
-        
-        //! Adds a new resource to this environment.
-        void add_resource(resource_ptr_type r) {
-            _resources.push_back(r);
-        }
-        
-        //! Clears all resource levels.
-        void clear_resources() {
-            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
-                (*i)->clear();
-            }
-        }
-        
-        //! Individual ind consumes resource r.
-        double consume_resource(resource_ptr_type r, individual_type& ind) {
-            return r->consume(ind.position());
-        }
-        
-        //! Updates resource levels based on delta t.
-        void update_resources(double delta_t) {
-            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
-                (*i)->update(delta_t);
-            }
-        }
-        
-        //! Reset resources -- may occur on successful group event
-        void reset_resources() {
-            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
-                (*i)->reset();
-            }
-        }
 
         //! Returns a location pointer given a position.
         location_ptr_type location(const position_type& pos) {
@@ -398,7 +362,6 @@ namespace ealib {
     protected:
         std::size_t _append_count; //!< Number of locations that have been appended to.
         location_matrix_type _locs; //!< Matrix of all locations in this topology.
-        resource_list_type _resources;
 
     private:
 		friend class boost::serialization::access;

@@ -34,7 +34,7 @@
 
 
 namespace ealib {
-    namespace resources {
+    namespace detail {
         
         /*! Abstract resource type.
          */
@@ -50,10 +50,10 @@ namespace ealib {
             
             //! Returns the current resource level.
             virtual double level(const position_type& pos) = 0;
-
+            
             //! Updates resource levels based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) { }
-
+            
             //! Resets resource levels.
             virtual void reset() { }
             
@@ -74,13 +74,13 @@ namespace ealib {
         struct unlimited : abstract_resource {
             //! Constructor.
             unlimited(const std::string& name) : abstract_resource(name) { }
-
+            
             //! Destructor.
             virtual ~unlimited() { }
-
+            
             //! Returns the amount of consumed resource.
             virtual double consume(const position_type& pos) { return 1.0; }
-
+            
             //! Returns the current resource level.
             virtual double level(const position_type& pos) { return 1.0; }
         };
@@ -140,8 +140,8 @@ namespace ealib {
          Diffusion is based on:
          http://www.timteatro.net/2010/10/29/performance-python-solving-the-2d-diffusion-equation-with-numpy/
          
-         The above reference assumes a boundary condition of zero resources at 
-         the edges of the grid.  To avoid this, we alter the size of the resource 
+         The above reference assumes a boundary condition of zero resources at
+         the edges of the grid.  To avoid this, we alter the size of the resource
          grid to add a single-cell boundary around the spatial environment.
          
          \note We assume a 2D discrete Cartesian environment.
@@ -162,7 +162,7 @@ namespace ealib {
             
             //! Destructor.
             virtual ~spatial() { }
-
+            
             //! Returns the amount of consumed resource.
             virtual double consume(const position_type& pos) {
                 double& level = _R(pos[XPOS]+1, pos[YPOS]+1); // +1 for boundaries!
@@ -170,13 +170,13 @@ namespace ealib {
                 level = std::max(0.0, level-r);
                 return r;
             }
-
+            
             //! Returns the current resource level.
             virtual double level(const position_type& pos) {
                 return _R(pos[XPOS]+1, pos[YPOS]+1);
             }
-
-            /*! Updates resource levels based on elapsed time since last update 
+            
+            /*! Updates resource levels based on elapsed time since last update
              (as a fraction of update length).
              */
             void update(double delta_t) {
@@ -233,36 +233,86 @@ namespace ealib {
         
     } // resources
     
-    //! Helper method that builds an unlimited resource and adds it to the environment.
+    
+    /*! Container for the different resources active in an EA.
+     */
+    template
+    < typename EA
+    > class resources {
+    public:
+        typedef boost::shared_ptr<detail::abstract_resource> resource_ptr_type;
+        typedef std::vector<resource_ptr_type> resource_list_type;
+        
+        //! Constructor.
+        resources() {
+        }
+        
+        //! Clears (zeroes-out) all resource levels.
+        void clear() {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->clear();
+            }
+        }
+        
+        //! Resets resources back to their initial leves.
+        void reset() {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->reset();
+            }
+        }
+        
+        //! Adds a new resource.
+        void add(resource_ptr_type r) {
+            _resources.push_back(r);
+        }
+        
+        //! Individual ind consumes resource r.
+        double consume(resource_ptr_type r, typename EA::individual_type& ind) {
+            return r->consume(ind.position());
+        }
+        
+        //! Updates resource levels based on delta t.
+        void update(double delta_t) {
+            for(typename resource_list_type::iterator i=_resources.begin(); i!=_resources.end(); ++i) {
+                (*i)->update(delta_t);
+            }
+        }
+        
+    private:
+        resource_list_type _resources; //!< Container for resources.
+    };
+    
+    
+    //! Helper method that builds an unlimited resource.
     template <typename EA>
-    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, EA& ea) {
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::unlimited(name));
-        ea.env().add_resource(p);
+    typename EA::resource_ptr_type make_resource(const std::string& name, EA& ea) {
+        typedef typename EA::resource_ptr_type resource_ptr_type;
+        resource_ptr_type p(new detail::unlimited(name));
+        ea.resources().add(p);
         return p;
     }
     
-    //! Helper method that builds a limited resource and adds it to the environment.
+    //! Helper method that builds a limited resource.
     template <typename EA>
-    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::limited(name, initial, inflow, outflow, consume));
-        ea.env().add_resource(p);
+    typename EA::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
+        typedef typename EA::resource_ptr_type resource_ptr_type;
+        resource_ptr_type p(new detail::limited(name, initial, inflow, outflow, consume));
+        ea.resources().add(p);
         return p;
     }
     
-    //! Helper method that builds a spatial resource and adds it to the environment.
+    //! Helper method that builds a spatial resource.
     template <typename EA>
-    typename EA::environment_type::resource_ptr_type make_resource(const std::string& name,
-                                                                   double diffuse,
-                                                                   double initial, double inflow, double outflow, double consume, EA& ea) {
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new resources::spatial(name, diffuse, initial, inflow,
-                                                   outflow, consume, get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea)));
-        ea.env().add_resource(p);
+    typename EA::resource_ptr_type make_resource(const std::string& name,
+                                                 double diffuse,
+                                                 double initial, double inflow, double outflow, double consume, EA& ea) {
+        typedef typename EA::resource_ptr_type resource_ptr_type;
+        resource_ptr_type p(new detail::spatial(name, diffuse, initial, inflow,
+                                                outflow, consume, get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea)));
+        ea.resources().add(p);
         return p;
     }
-
+    
 } // ealib
 
 #endif
