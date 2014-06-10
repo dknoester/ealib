@@ -38,6 +38,7 @@ namespace ealib {
         
         /*! Abstract resource type.
          */
+        template <typename EA>
         struct abstract_resource {
             //! Constructor.
             abstract_resource(const std::string& name) : _name(name) { }
@@ -46,10 +47,10 @@ namespace ealib {
             virtual ~abstract_resource() { }
             
             //! Returns the amount of consumed resource.
-            virtual double consume(const position_type& pos) = 0;
+            virtual double consume(typename EA::individual_type& ind) = 0;
             
             //! Returns the current resource level.
-            virtual double level(const position_type& pos) = 0;
+            virtual double level(typename EA::individual_type& ind) = 0;
             
             //! Updates resource levels based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) { }
@@ -71,18 +72,19 @@ namespace ealib {
          This resource type is neither limited nor spatial; individuals are always
          able to consume this resource, regardless of their position.
          */
-        struct unlimited : abstract_resource {
+        template <typename EA>
+        struct unlimited : abstract_resource<EA> {
             //! Constructor.
-            unlimited(const std::string& name) : abstract_resource(name) { }
+            unlimited(const std::string& name) : abstract_resource<EA>(name) { }
             
             //! Destructor.
             virtual ~unlimited() { }
             
             //! Returns the amount of consumed resource.
-            virtual double consume(const position_type& pos) { return 1.0; }
+            virtual double consume(typename EA::individual_type& ind) { return 1.0; }
             
             //! Returns the current resource level.
-            virtual double level(const position_type& pos) { return 1.0; }
+            virtual double level(typename EA::individual_type& ind) { return 1.0; }
         };
         
         /*! Limited resource type.
@@ -93,24 +95,25 @@ namespace ealib {
          
          This resource type is roughly akin to a chemostat.
          */
-        struct limited : abstract_resource {
+        template <typename EA>
+        struct limited : abstract_resource<EA> {
             //! Constructor.
             limited(const std::string& name, double initial, double inflow, double outflow, double consume)
-            : abstract_resource(name), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
+            : abstract_resource<EA>(name), _initial(initial), _level(initial), _inflow(inflow), _outflow(outflow), _consume(consume) {
             }
             
             //! Destructor.
             virtual ~limited() { }
             
             //! Returns the amount of consumed resource.
-            virtual double consume(const position_type& pos) {
+            virtual double consume(typename EA::individual_type& ind) {
                 double r = std::max(0.0, _level*_consume);
                 _level = std::max(0.0, _level-r);
                 return r;
             }
             
             //! Returns the current resource level.
-            virtual double level(const position_type& pos) { return _level; }
+            virtual double level(typename EA::individual_type& ind) { return _level; }
             
             //! Updates resource levels based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) {
@@ -146,13 +149,14 @@ namespace ealib {
          
          \note We assume a 2D discrete Cartesian environment.
          */
-        struct spatial : abstract_resource {
+        template <typename EA>
+        struct spatial : abstract_resource<EA> {
             typedef boost::numeric::ublas::matrix<double> matrix_type; //!< Type for matrix that will store resource levels.
             
             //! Constructor.
             spatial(const std::string& name, double diffuse, double initial,
                     double inflow, double outflow, double consume, std::size_t x, std::size_t y)
-            : abstract_resource(name)
+            : abstract_resource<EA>(name)
             , _diffuse(diffuse), _initial(initial), _level(initial)
             , _inflow(inflow), _outflow(outflow), _consume(consume) {
                 _R.resize(x+2,y+2); // +2 for boundaries!
@@ -164,7 +168,8 @@ namespace ealib {
             virtual ~spatial() { }
             
             //! Returns the amount of consumed resource.
-            virtual double consume(const position_type& pos) {
+            virtual double consume(typename EA::individual_type& ind) {
+                position_type& pos = ind.position();
                 double& level = _R(pos[XPOS]+1, pos[YPOS]+1); // +1 for boundaries!
                 double r = std::max(0.0, level*_consume);
                 level = std::max(0.0, level-r);
@@ -172,7 +177,8 @@ namespace ealib {
             }
             
             //! Returns the current resource level.
-            virtual double level(const position_type& pos) {
+            virtual double level(typename EA::individual_type& ind) {
+                position_type& pos = ind.position();
                 return _R(pos[XPOS]+1, pos[YPOS]+1);
             }
             
@@ -240,7 +246,8 @@ namespace ealib {
     < typename EA
     > class resources {
     public:
-        typedef boost::shared_ptr<detail::abstract_resource> resource_ptr_type;
+        typedef detail::abstract_resource<EA> abstract_resource_type;
+        typedef boost::shared_ptr<abstract_resource_type> resource_ptr_type;
         typedef std::vector<resource_ptr_type> resource_list_type;
         
         //! Constructor.
@@ -287,7 +294,7 @@ namespace ealib {
     template <typename EA>
     typename EA::resource_ptr_type make_resource(const std::string& name, EA& ea) {
         typedef typename EA::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new detail::unlimited(name));
+        resource_ptr_type p(new detail::unlimited<EA>(name));
         ea.resources().add(p);
         return p;
     }
@@ -296,7 +303,7 @@ namespace ealib {
     template <typename EA>
     typename EA::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
         typedef typename EA::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new detail::limited(name, initial, inflow, outflow, consume));
+        resource_ptr_type p(new detail::limited<EA>(name, initial, inflow, outflow, consume));
         ea.resources().add(p);
         return p;
     }
@@ -307,7 +314,7 @@ namespace ealib {
                                                  double diffuse,
                                                  double initial, double inflow, double outflow, double consume, EA& ea) {
         typedef typename EA::resource_ptr_type resource_ptr_type;
-        resource_ptr_type p(new detail::spatial(name, diffuse, initial, inflow,
+        resource_ptr_type p(new detail::spatial<EA>(name, diffuse, initial, inflow,
                                                 outflow, consume, get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea)));
         ea.resources().add(p);
         return p;

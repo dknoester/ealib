@@ -50,7 +50,7 @@ namespace ealib {
         //! Configure this task to consume resource r.
         virtual abstract_task* consumes(resource_ptr_type r) = 0;
         
-        //! Return the resource consumed by this task.
+        //! Returns the resource consumed by this task.
         virtual resource_ptr_type resource() = 0;
         
         //! Catalyze consumed resources r, adjusting current priority p, returns new priority.
@@ -135,7 +135,7 @@ namespace ealib {
             return this;
         }
         
-        //! Return the resource consumed by this task.
+        //! Returns the resource consumed by this task.
         virtual resource_ptr_type resource() {
             return _consumed;
         }
@@ -208,7 +208,7 @@ namespace ealib {
                         
                         if(task.reaction_occurs(org,ea)) {
                             // if the reaction occurs, consume resources:
-                            double r = ea.resources().consume(task.resource(), org);
+                            double r = task.resource()->consume(org);
                             org.phenotype()[task.name()] += r;
                             ea.events().reaction(org, *i, r, ea);
                         } else {
