@@ -628,6 +628,7 @@
 		42E192141876EF4E009EF3A7 /* evolutionary_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolutionary_algorithm.h; sourceTree = "<group>"; };
 		42EF7D7C19363266001A647B /* representation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = representation.h; sourceTree = "<group>"; };
 		42F9EB9419376A1F00FDF339 /* access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = access.h; sourceTree = "<group>"; };
+		42FAF70319478ECF0013939A /* emscript_bound.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = emscript_bound.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -927,6 +928,7 @@
 				4256FA611892BA14004AB7F9 /* all_ones.cpp */,
 				4256FA621892BA14004AB7F9 /* digital_evolution.cpp */,
 				42DF06851945311200C9A364 /* emscript.cpp */,
+				42FAF70319478ECF0013939A /* emscript_bound.cpp */,
 				4256FA631892BA14004AB7F9 /* lod.cpp */,
 				4256FA641892BA14004AB7F9 /* markov_network.cpp */,
 				4256FA651892BA14004AB7F9 /* metapopulation.cpp */,
