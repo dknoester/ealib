@@ -26,9 +26,6 @@ namespace ealib {
     
     /*! Selects the location of the first neighbor to the parent as the location
      for an offspring.
-     
-     This works well when combined with the well_mixed topology.  In this case, 
-     the net effect is ~mass action.
      */
     struct first_neighbor {
         template <typename EA>
@@ -39,7 +36,6 @@ namespace ealib {
     
     /*! Selects the location of a random neighbor to the parent as the location
      for an offspring.
-     
      */
     struct random_neighbor {
         template <typename EA>
@@ -52,12 +48,10 @@ namespace ealib {
 
     /*! Selects the location of the neighbor faced by the parent as the location
      for an offspring.
-     
      */
     struct empty_facing_neighbor {
         template <typename EA>
         std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
-            
             typedef typename EA::environment_type::iterator location_iterator;
             location_iterator l = ea.env().neighbor(parent);
             if (l->occupied()) {
@@ -68,21 +62,14 @@ namespace ealib {
         }
     };
     
-    
-    
     /*! Selects the location of an empty neighbor location to the parent as the location
      for an offspring. (Note: here empty includes locations occupied by dead organisms.)
-     
-     If there is not an empty location, then the replacement does not proceed. This method 
-     does not makes sense with well-mixed, since the 'neighborhood' of an organism is 
-     8 random locations.
      */
     struct empty_neighbor {
         template <typename EA>
         std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
             typedef typename EA::environment_type::iterator location_iterator;
             std::pair<location_iterator, location_iterator> i = ea.env().neighborhood(*parent);
-            
             for( ; i.first != i.second; ++i.first) {
                 if(!i.first->occupied()) {
                     return std::make_pair(i.first, true);
@@ -91,7 +78,6 @@ namespace ealib {
             return std::make_pair(i.second, false);
         }
     };
-    
     
     /*! Replicates a parent p to produce an offspring with representation r.
      */

@@ -44,10 +44,6 @@ namespace ealib {
      */
     template <typename EA>
     struct discrete_spatial_location {
-        typedef EA ea_type;
-        typedef typename ea_type::individual_type individual_type; //!< Individual type.
-        typedef typename ea_type::individual_ptr_type individual_ptr_type; //!< Pointer to individual type.
-
         //! Constructor.
         discrete_spatial_location() : x(0), y(0) {
         }
@@ -75,22 +71,8 @@ namespace ealib {
         bool occupied() { return ((p != 0) && (p->alive())); }
         
         //! Return the inhabitant.
-        individual_ptr_type inhabitant() { return p; }
-        
-        //! Sets the heading of this location's inhabitant.
-        void set_heading(int h) {
-            if(occupied()) {
-                p->position()[HEADING] = h % 8;
-            }
-        }
-        
-        //! Alters the heading of this location's inhabitant.
-        void alter_heading(int h) {
-            if(occupied()) {
-                p->position()[HEADING] = algorithm::roll(p->position()[HEADING]+h, 0, 7);
-            }
-        }
-        
+        typename EA::individual_ptr_type inhabitant() { return p; }
+
         //! Returns this location's position vector.
         position_type position() {
             return make_position(x,y);
@@ -105,7 +87,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("metadata", _md);
         }
         
-        individual_ptr_type p; //!< Individual (if any) at this location.
+        typename EA::individual_ptr_type p; //!< Individual (if any) at this location.
         std::size_t x,y; //!< X-Y coordinates of this location.
         metadata _md; //!< Meta-data container.
     };

@@ -498,22 +498,21 @@ namespace ealib {
         
         //! Rotate the organism to the heading in ?bx?.
         DIGEVO_INSTRUCTION_DECL(rotate) {
-            ea.env().location(p->position())->set_heading(hw.getRegValue(hw.modifyRegister()));
+            p->position()[HEADING] = hw.getRegValue(hw.modifyRegister()) % 8;
         }
         
         //! Rotate the organism clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_cw) {
-            ea.env().location(p->position())->alter_heading(-1);
+            p->position()[HEADING] = algorithm::roll(p->position()[HEADING]-1, 0, 7);
         }
         
         //! Rotate the organism counter-clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_ccw) {
-            ea.env().location(p->position())->alter_heading(1);
+            p->position()[HEADING] = algorithm::roll(p->position()[HEADING]+1, 0, 7);
         }
         
         //! Execute the next instruction if ?bx? < ?cx?.
         DIGEVO_INSTRUCTION_DECL(if_less) {
-
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
             if(hw.getRegValue(rbx) >= hw.getRegValue(rcx)) {
@@ -523,7 +522,6 @@ namespace ealib {
         
         //! Execute the next instruction if ?bx? == ?cx?.
         DIGEVO_INSTRUCTION_DECL(if_equal) {
-            
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
             if(hw.getRegValue(rbx) != hw.getRegValue(rcx)) {
@@ -533,7 +531,6 @@ namespace ealib {
         
         //! Execute the next instruction if ?bx? != ?cx?.
         DIGEVO_INSTRUCTION_DECL(if_not_equal) {
-            
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
             if(hw.getRegValue(rbx) == hw.getRegValue(rcx)) {

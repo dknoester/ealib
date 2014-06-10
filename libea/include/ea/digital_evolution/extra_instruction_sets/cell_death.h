@@ -25,18 +25,14 @@ namespace ealib {
     
     LIBEA_MD_DECL(APOPTOSIS_STATUS, "ea.digevo.apoptosis_status", int);
     
-    /*! This namespace contains all the instructions that are common features of
-     digital evolution.  Project specific instructions should NOT go here.
-     */
     namespace instructions {
         
+        //! Apaptosis (triggers death) instruction.
         DIGEVO_INSTRUCTION_DECL(apoptosis) {
             p->alive() = false;
             ea.events().death(*p,ea);
             put<APOPTOSIS_STATUS>(1, *p);
         }
-        
-        
         
     } // instructions
 } // ea
