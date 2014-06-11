@@ -24,3 +24,4 @@ dist
 *.js
 html/processing.min.js
 html/emscript.html
+*.swp
