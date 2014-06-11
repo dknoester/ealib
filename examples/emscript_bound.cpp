@@ -52,91 +52,49 @@
 #include <vector>
 #include <string>
 
-#include <ea/digital_evolution.h>
-#include <ea/datafiles/runtime.h>
-using namespace ealib;
-
 #include <emscripten/bind.h>
 using namespace emscripten;
 
-/*! Configures an instance of a digital evolution algorithm in a manner similar
- to Avida's classic logic9 environment.
- */
-struct lifecycle : public default_lifecycle {
-    //! Called as the final step of EA construction (must not depend on configuration parameters)
-    template <typename EA>
-    void after_construction(EA& ea) {
-        using namespace ealib::instructions;
-        append_isa<nop_a>(0,ea);
-        append_isa<nop_b>(0,ea);
-        append_isa<nop_c>(0,ea);
-        append_isa<nop_x>(ea);
-        append_isa<mov_head>(ea);
-        append_isa<if_label>(ea);
-        append_isa<h_search>(ea);
-        append_isa<nand>(ea);
-        append_isa<push>(ea);
-        append_isa<pop>(ea);
-        append_isa<swap>(ea);
-        append_isa<inc>(ea);
-        append_isa<dec>(ea);
-        append_isa<tx_msg>(ea);
-        append_isa<rx_msg>(ea);
-        append_isa<bc_msg>(ea);
-        append_isa<rotate>(ea);
-        append_isa<rotate_cw>(ea);
-        append_isa<rotate_ccw>(ea);
-        append_isa<if_less>(ea);
-        append_isa<h_alloc>(ea);
-        append_isa<h_copy>(ea);
-        append_isa<h_divide>(ea);
-        append_isa<fixed_input>(ea);
-        append_isa<output>(ea);
+#include "logic9.h"
+
+template <typename EA>
+class emscript_interface {
+public:
+
+    //! Constructor.
+    emscript_interface() {
     }
     
-    //! Initialize the EA (may use configuration parameters)
-    template <typename EA>
-    void initialize(EA& ea) {
-        typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
-        
-        task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<1> >("not", ea);
-        task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
-        task_ptr_type task_and = make_task<tasks::task_and,catalysts::additive<2> >("and", ea);
-        task_ptr_type task_ornot = make_task<tasks::task_ornot,catalysts::additive<2> >("ornot", ea);
-        task_ptr_type task_or = make_task<tasks::task_or,catalysts::additive<2> >("or", ea);
-        task_ptr_type task_andnot = make_task<tasks::task_andnot,catalysts::additive<3> >("andnot", ea);
-        task_ptr_type task_nor = make_task<tasks::task_nor,catalysts::additive<3> >("nor", ea);
-        task_ptr_type task_xor = make_task<tasks::task_xor,catalysts::additive<3> >("xor", ea);
-        task_ptr_type task_equals = make_task<tasks::task_equals,catalysts::additive<4> >("equals", ea);
-        
-        resource_ptr_type resA = make_resource("resA", 0.1, 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resB = make_resource("resB", 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resC = make_resource("resC", 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resD = make_resource("resD", 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resE = make_resource("resE", 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resF = make_resource("resF", 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resG = make_resource("resG", 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resH = make_resource("resH", 100.0, 1.0, 0.01, 0.05, ea);
-        resource_ptr_type resI = make_resource("resI", 100.0, 1.0, 0.01, 0.05, ea);
-        
-        task_not->consumes(resA);
-        task_nand->consumes(resB);
-        task_and->consumes(resC);
-        task_ornot->consumes(resD);
-        task_or->consumes(resE);
-        task_andnot->consumes(resF);
-        task_nor->consumes(resG);
-        task_xor->consumes(resH);
-        task_equals->consumes(resI);
+    //! Returns the number of individuals in the EA.
+    std::size_t size() const { return _ea.size(); }
+    
+    //! Put metadata in the underlying EA.
+    void put(const std::string& k, const std::string& v) {
+        ealib::put(k, v, _ea.md());
     }
+    
+    //! Initialize the underlying EA.
+    void initialize() {
+        _ea.lifecycle().prepare_new(_ea);
+    }
+    
+    //! Run the underlying EA.
+    void run() {
+        _ea.lifecycle().advance_all(_ea);
+    }
+    
+protected:
+    EA _ea; //!< Underlying EA.
 };
 
-//! Convenience typedef for the EA:
-typedef digital_evolution<lifecycle> ea_type;
+//! Interface typedef.
+typedef emscript_interface<ea_type> ea_interface;
 
-EMSCRIPTEN_BINDINGS(bound_ea_type) {
-    class_<ea_type>("EvolutionaryAlgorithm")
+EMSCRIPTEN_BINDINGS(bound_ea_interface) {
+    class_<ea_interface>("EvolutionaryAlgorithm")
     .constructor< >()
-    .function("size", &ea_type::size);
+    .function("initialize", &ea_interface::initialize)
+    .function("size", &ea_interface::size)
+    .function("put", &ea_interface::put)
+    .function("run", &ea_interface::run);
 }

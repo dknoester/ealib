@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<script src="processing.min.js"></script>
+<script src="emscript_bound.js"></script>
+<script type="text/processing" data-processing-target="processing-canvas">
+ea = new Module.EvolutionaryAlgorithm();
+
+void setup() {
+    size(200, 200);
+    background(100);
+    stroke(255);
+    ellipse(50, 50, 25, 25);
+    ea.put("ea.representation.size", "100");
+    ea.put("ea.population.size", "100");
+    ea.put("ea.environment.x", "10");
+    ea.put("ea.environment.y", "10");
+    ea.put("ea.scheduler.time_slice", "30");
+    ea.put("ea.mutation.site.p", "0.0075");
+    ea.put("ea.mutation.insertion.p", "0.05");
+    ea.put("ea.mutation.deletion.p", "0.05");
+    ea.put("ea.run.updates", "20");
+    ea.put("ea.run.epochs", "1");
+    ea.put("ea.run.checkpoint_prefix", "checkpoint");
+    ea.put("ea.statistics.recording.period", "10");
+    ea.initialize();
+    noLoop();
+}
+
+void draw() {
+    ea.run();
+    println(ea.size());
+}
+
+</script>
+<canvas id="processing-canvas"> </canvas>
+</html>

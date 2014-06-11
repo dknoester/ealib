@@ -29,11 +29,6 @@
 			<key>orderHint</key>
 			<integer>45</integer>
 		</dict>
-		<key>example-devo.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>46</integer>
-		</dict>
 		<key>example-emscript.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -43,6 +38,11 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>47</integer>
+		</dict>
+		<key>example-logic9.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>46</integer>
 		</dict>
 		<key>example-mkv.xcscheme</key>
 		<dict>

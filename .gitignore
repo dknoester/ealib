@@ -18,8 +18,9 @@ DerivedData
 build
 dist
 *.xcscheme
-
 *.xcuserstate
-
 *.plist
-
+*.map
+*.js
+html/processing.min.js
+html/emscript.html

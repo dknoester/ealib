@@ -28,6 +28,7 @@
 #include <boost/accumulators/statistics/min.hpp>
 #include <boost/timer.hpp>
 #include <iostream>
+#include <iomanip>
 
 #include <ea/events.h>
 #include <ea/fitness_function.h>

@@ -50,7 +50,7 @@ namespace ealib {
             virtual double consume(typename EA::individual_type& ind) = 0;
             
             //! Returns the current resource level.
-            virtual double level(typename EA::individual_type& ind) = 0;
+            virtual double level(const position_type& pos) = 0;
             
             //! Updates resource levels based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) { }
@@ -84,7 +84,7 @@ namespace ealib {
             virtual double consume(typename EA::individual_type& ind) { return 1.0; }
             
             //! Returns the current resource level.
-            virtual double level(typename EA::individual_type& ind) { return 1.0; }
+            virtual double level(const position_type& pos) { return 1.0; }
         };
         
         /*! Limited resource type.
@@ -113,7 +113,7 @@ namespace ealib {
             }
             
             //! Returns the current resource level.
-            virtual double level(typename EA::individual_type& ind) { return _level; }
+            virtual double level(const position_type& pos) { return _level; }
             
             //! Updates resource levels based on elapsed time since last update (as a fraction of update length).
             virtual void update(double delta_t) {
@@ -177,8 +177,7 @@ namespace ealib {
             }
             
             //! Returns the current resource level.
-            virtual double level(typename EA::individual_type& ind) {
-                position_type& pos = ind.position();
+            virtual double level(const position_type& pos) {
                 return _R(pos[XPOS]+1, pos[YPOS]+1);
             }
             
@@ -275,7 +274,7 @@ namespace ealib {
         
         //! Individual ind consumes resource r.
         double consume(resource_ptr_type r, typename EA::individual_type& ind) {
-            return r->consume(ind.position());
+            return r->consume(ind);
         }
         
         //! Updates resource levels based on delta t.

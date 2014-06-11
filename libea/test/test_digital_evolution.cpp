@@ -58,7 +58,7 @@ struct test_lifecycle : default_lifecycle {
     template <typename EA>
     void initialize(EA& ea) {
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
-        typedef typename EA::environment_type::resource_ptr_type resource_ptr_type;
+        typedef typename EA::resource_ptr_type resource_ptr_type;
         
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
         resource_ptr_type resA = make_resource("resA", ea);
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(test_resources) {
     put<MUTATION_UNIFORM_INT_MAX>(20,al);
     
     al.initialize();
-    al_type::environment_type::resource_ptr_type r = make_resource("resB", 0.1, 0.5, 1.0, 0.75, 0.1, al);
+    al_type::resource_ptr_type r = make_resource("resB", 0.1, 0.5, 1.0, 0.75, 0.1, al);
     
     for(std::size_t k=0; k<20; ++k) {
         //        std::cout << k << std::endl;

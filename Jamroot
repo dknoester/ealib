@@ -12,8 +12,8 @@ exe example-all-ones :
     : <link>static
     ;
 
-exe example-devo :
-    examples/digital_evolution.cpp
+exe example-logic9 :
+    examples/logic9.cpp
     /libea//libea_runner
     : <link>static
     ;

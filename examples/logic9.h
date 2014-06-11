@@ -1,8 +1,8 @@
-/* digital_evolution.cpp
+/* logic9.h
  *
  * This file is part of EALib.
  *
- * Copyright 2014 David B. Knoester, Heather J. Goldsby.
+ * Copyright 2014 David B. Knoester.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  */
 
 #include <ea/digital_evolution.h>
-#include <ea/cmdline_interface.h>
 using namespace ealib;
 
 /*! Configures an instance of digital evolution in a manner similar to Avida.
@@ -32,6 +31,8 @@ struct lifecycle : public default_lifecycle {
     //! Called as the final step of EA construction (must not depend on configuration parameters)
     template <typename EA>
     void after_construction(EA& ea) {
+        // for compatibility with emscripten, we're fully qualifying the names of
+        // some instructions.  for c++ only, feel free to drop them.
         using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
@@ -43,13 +44,13 @@ struct lifecycle : public default_lifecycle {
         append_isa<nand>(ea);
         append_isa<push>(ea);
         append_isa<pop>(ea);
-        append_isa<swap>(ea);
+        append_isa<ealib::instructions::swap>(ea); // namespace clash with std; emscripten bug
         append_isa<inc>(ea);
-        append_isa<dec>(ea);
+        append_isa<ealib::instructions::dec>(ea); // ""
         append_isa<tx_msg>(ea);
         append_isa<rx_msg>(ea);
         append_isa<bc_msg>(ea);
-        append_isa<rotate>(ea);
+        append_isa<ealib::instructions::rotate>(ea); // ""
         append_isa<rotate_cw>(ea);
         append_isa<rotate_ccw>(ea);
         append_isa<if_less>(ea);
@@ -65,7 +66,7 @@ struct lifecycle : public default_lifecycle {
     void initialize(EA& ea) {
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::resource_ptr_type resource_ptr_type;
-
+        
         // Add tasks
         task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<1> >("not", ea);
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
@@ -103,37 +104,4 @@ struct lifecycle : public default_lifecycle {
 
 /*! Artificial life simulation definition.
  */
-typedef digital_evolution<
-lifecycle
-> ea_type;
-    
-    
-/*!
- */
-template <typename EA>
-class cli : public cmdline_interface<EA> {
-public:
-    virtual void gather_options() {
-        add_option<SPATIAL_X>(this);
-        add_option<SPATIAL_Y>(this);
-        add_option<POPULATION_SIZE>(this);
-        add_option<REPRESENTATION_SIZE>(this);
-        add_option<SCHEDULER_TIME_SLICE>(this);
-        add_option<MUTATION_PER_SITE_P>(this);
-        add_option<MUTATION_INSERTION_P>(this);
-        add_option<MUTATION_DELETION_P>(this);
-        add_option<RUN_UPDATES>(this);
-        add_option<RUN_EPOCHS>(this);
-        add_option<CHECKPOINT_PREFIX>(this);
-        add_option<RNG_SEED>(this);
-        add_option<RECORDING_PERIOD>(this);
-    }
-    
-    virtual void gather_tools() {
-    }
-    
-    virtual void gather_events(EA& ea) {
-    };
-};
-
-LIBEA_CMDLINE_INSTANCE(ea_type, cli);
+typedef digital_evolution<lifecycle> ea_type;

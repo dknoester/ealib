@@ -255,6 +255,10 @@ namespace ealib {
             return &_locs(x, y);
         }
         
+        void set_heading(individual_type& ind, int heading) {
+            ind.position()[2] = heading;
+        }
+        
         //! Rotates two individuals to face one another.
         void face_org(individual_type& p1, individual_type& p2) {
             location_ptr_type l1 = location(p1.position());
@@ -267,45 +271,45 @@ namespace ealib {
             
             // think in terms of x,y. sort out later.
             if ((l1->x < l2->x) && (l1->y < l2->y)) {
-                l1->set_heading(1);
-                l2->set_heading(5);
+                set_heading(p1,1);
+                set_heading(p2,5);
                 // l1 heading = 1
                 // l2 heading = 5
             } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
                 // l1 heading = 5
                 // l2 heading = 1
-                l1->set_heading(5);
-                l2->set_heading(1);
+                set_heading(p1, 5);
+                set_heading(p2, 1);
             } else if ((l1->x < l2->x) && (l1->y > l2->y)) {
                 // l1 heading = 7
                 // l2 heading = 3
-                l1->set_heading(7);
-                l2->set_heading(3);
+                set_heading(p1, 7);
+                set_heading(p2, 3);
             } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
                 // l1 heading = 3
                 // l2 heading = 7
-                l1->set_heading(3);
-                l2->set_heading(7);
+                set_heading(p1, 3);
+                set_heading(p2, 7);
             } else if ((l1->x < l2->x) && (l1->y == l2->y)) {
                 // l1 heading = 0
                 // l2 heading = 4
-                l1->set_heading(0);
-                l2->set_heading(4);
+                set_heading(p1, 0);
+                set_heading(p2, 4);
             } else if ((l1->x > l2->x) && (l1->y == l2->y)) {
                 // l1 heading = 4
                 // l2 heading = 0
-                l1->set_heading(4);
-                l2->set_heading(0);
+                set_heading(p1, 4);
+                set_heading(p2, 0);
             } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
                 // l1 heading = 2
                 // l2 heading = 6
-                l1->set_heading(2);
-                l2->set_heading(6);
+                set_heading(p1, 2);
+                set_heading(p2, 6);
             } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
                 // l1 heading = 6
                 // l2 heading = 2
-                l1->set_heading(6);
-                l2->set_heading(2);
+                set_heading(p1, 6);
+                set_heading(p2, 2);
             }
         }
 

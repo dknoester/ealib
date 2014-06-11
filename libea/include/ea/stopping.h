@@ -63,9 +63,9 @@ namespace ealib {
                 fit(static_cast<double>(ealib::fitness(*i,ea)));
             }
 
-            if((_last_improvement == 0) || (_maxf < max(fit))) {
+            if((_last_improvement == 0) || (_maxf < boost::accumulators::max(fit))) {
                 _last_improvement = ea.current_update();
-                _maxf = max(fit);
+                _maxf = boost::accumulators::max(fit);
             }
             
             if((ea.current_update() - _last_improvement) > get<STAGNANT_UPDATES>(ea)) {
