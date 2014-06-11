@@ -98,7 +98,7 @@ namespace mkv {
     void add_options(cmdline_interface<EA>* ci) {
         using namespace ealib;
         // markov network options
-        add_option<MKV_LAYERS_N>(ci);
+        add_option<MKV_UPDATE_N>(ci);
         add_option<MKV_INPUT_N>(ci);
         add_option<MKV_OUTPUT_N>(ci);
         add_option<MKV_HIDDEN_N>(ci);

@@ -26,7 +26,7 @@
 #include <mkv/gates.h>
 
 namespace mkv {
-    LIBEA_MD_DECL(MKV_LAYERS_N, "markov_network.layers.n", std::size_t);
+    LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", std::size_t);
     LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", std::size_t);
     LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", std::size_t);
     LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", std::size_t);
