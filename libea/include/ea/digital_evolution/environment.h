@@ -18,23 +18,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EA_DIGITAL_EVOLUTION_DISCRETE_SPATIAL_ENVIRONMENT_H_
-#define _EA_DIGITAL_EVOLUTION_DISCRETE_SPATIAL_ENVIRONMENT_H_
+#ifndef _EA_DIGITAL_EVOLUTION_ENVIRONMENT_H_
+#define _EA_DIGITAL_EVOLUTION_ENVIRONMENT_H_
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-#include <limits>
 #include <utility>
 #include <vector>
-#include <stdexcept>
 
 #include <ea/algorithm.h>
 #include <ea/metadata.h>
-#include <ea/digital_evolution/position.h>
-#include <ea/digital_evolution/resources.h>
 
 namespace ealib {
+
+    /*! Type that is contained (and owned) by organisms to uniquely identify
+     their position in the environment.
+     
+     \warning: This type must be serializable.
+     */
+    struct position_type {
+        //! Constructor.
+        position_type(int xpos=0, int ypos=0, int head=0) : x(xpos), y(ypos), heading(head) {
+        }
+        
+        //! Operator==.
+        bool operator==(const position_type& that) const {
+            return (x==that.x) && (y==that.y) && (heading==that.heading);
+        }
+        
+        //! Serialize this position.
+		template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("x", x);
+            ar & boost::serialization::make_nvp("y", y);
+            ar & boost::serialization::make_nvp("heading", heading);
+		}
+        
+        int x; //!< Individual's x-position.
+        int y; //!< Individual's y-position.
+        int heading; //!< Individual's heading.
+    };
+    
     
     /*! Location type.
      
@@ -43,13 +68,13 @@ namespace ealib {
      information; this is that data structure.
      */
     template <typename EA>
-    struct discrete_spatial_location {
+    struct environment_location {
         //! Constructor.
-        discrete_spatial_location() : x(0), y(0) {
+        environment_location() : x(0), y(0) {
         }
         
         //! Operator ==
-        bool operator==(const discrete_spatial_location& that) {
+        bool operator==(const environment_location& that) {
             if((p==0) != (that.p==0)) { // pointer xor...
                 return false;
             }
@@ -73,9 +98,9 @@ namespace ealib {
         //! Return the inhabitant.
         typename EA::individual_ptr_type inhabitant() { return p; }
 
-        //! Returns this location's position vector.
+        //! Returns a position_type for this location.
         position_type position() {
-            return make_position(x,y);
+            return position_type(x,y);
         }
         
         //! Serialize this location.
@@ -92,6 +117,7 @@ namespace ealib {
         metadata _md; //!< Meta-data container.
     };
     
+
     
     /*! Discrete spatial environment.
      
@@ -111,32 +137,30 @@ namespace ealib {
      5  |  6  |  7
      */
     template <typename EA>
-    class discrete_spatial_environment {
+    class environment {
     public:
-        typedef EA ea_type;
-        typedef typename ea_type::individual_type individual_type;
-        typedef typename ea_type::individual_ptr_type individual_ptr_type;
-        typedef discrete_spatial_location<EA> location_type;
-        typedef location_type* location_ptr_type;
-        typedef boost::numeric::ublas::matrix<location_type> location_matrix_type;
+        typedef environment_location<EA> location_type;
+        typedef boost::numeric::ublas::matrix<location_type> location_storage_type;
+        typedef typename location_storage_type::array_type::iterator location_iterator;
+        typedef typename location_storage_type::array_type::const_iterator const_location_iterator;
+        typedef typename EA::individual_type individual_type;
+        typedef typename EA::individual_ptr_type individual_ptr_type;
         
-        //! Iterator for the neighborhood of a position.
-        struct iterator : boost::iterator_facade<iterator, location_type, boost::single_pass_traversal_tag> {
+        struct neighborhood_iterator : boost::iterator_facade<neighborhood_iterator, location_type, boost::single_pass_traversal_tag> {
             //! Constructor.
-            iterator(position_type& pos, int h, location_matrix_type& locs)
-            : _origin(locs(pos[XPOS], pos[YPOS])), _heading(h), _locs(locs) {
+            neighborhood_iterator(position_type& pos, int h, location_storage_type& locs)
+            : _origin(locs(pos.x, pos.y)), _heading(h), _locs(locs) {
             }
             
             //! Increment operator.
             void increment() { ++_heading; }
             
             //! Iterator equality comparison.
-            bool equal(iterator const& that) const {
+            bool equal(const neighborhood_iterator& that) const {
                 return (_origin.y==that._origin.y) && (_origin.x==that._origin.x) && (_heading==that._heading);
             }
             
-            /*! Dereference this iterator.
-             */
+            //! Dereference this iterator.
             location_type& dereference() const {
                 int x=_origin.x;
                 int y=_origin.y;
@@ -158,17 +182,23 @@ namespace ealib {
                 return _locs(x,y);
             }
             
+            //! Get an iterator to the location this neighborhood iterator points to.
+            location_iterator make_location_iterator() {
+                location_type& l=dereference();
+                return _locs.data().begin() + _locs.size2()*l.y + l.x;
+            }
+
             location_type& _origin; //!< Origin of this iterator.
             int _heading; //!< Current heading for the iterator.
-            location_matrix_type& _locs; //!< list of all possible locations.
+            location_storage_type& _locs; //!< Location storage.
         };
-
+        
         //! Constructor.
-        discrete_spatial_environment() : _append_count(0) {
+        environment() {
         }
         
         //! Operator==.
-        bool operator==(const discrete_spatial_environment& that) {
+        bool operator==(const environment& that) {
             if(_locs.size1() != that._locs.size1())
                 return false;
             if(_locs.size2() != that._locs.size2())
@@ -186,7 +216,7 @@ namespace ealib {
         }
         
         //! Initialize this environment.
-        void initialize(ea_type& ea) {
+        void initialize(EA& ea) {
             assert((get<SPATIAL_X>(ea) * get<SPATIAL_Y>(ea)) <= get<POPULATION_SIZE>(ea));
             _locs.resize(get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea), true);
             for(std::size_t i=0; i<_locs.size1(); ++i) {
@@ -197,23 +227,49 @@ namespace ealib {
             }
         }
         
-        //! Inserts individual p into the environment at index i.
-        void insert_at(std::size_t i, individual_ptr_type p) {
-            assert(i < (_locs.size1()*_locs.size2()));
-            _locs.data()[i].p = p;
-            if(p->position().empty()) {
-                p->position() = _locs.data()[i].position();
-            }
+        //! Returns an iterator to the beginning of this environment.
+        location_iterator begin() {
+            return _locs.data().begin();
         }
         
-        //! Inserts the range of individuals [f,l) into the environment starting at index i.
-        template <typename ForwardIterator>
-        void insert_at(std::size_t i, ForwardIterator f, ForwardIterator l) {
-            for( ; f!=l; ++f, ++i) {
-                insert_at(i,*f);
-            }
+        //! Returns an iterator to the end of this environment.
+        location_iterator end() {
+            return _locs.data().end();
         }
         
+        /*! Replaces an individual living at location i (if any) with
+         individual p.  The individual's heading is set to 0.  If i is end(),
+         sequentially search for the first available location.  If an available
+         location cannot be found, throw an exception.
+         */
+        void replace(location_iterator i, individual_ptr_type p, EA& ea) {
+            if(i == end()) {
+                // search for an available location in the environment;
+                // by default, this insertion is sequential.
+                for(std::size_t i=0; i<_locs.size1(); ++i) {
+                    for(std::size_t j=0; j<_locs.size2(); ++j) {
+                        location_type& l=_locs(i,j);
+                        if(!l.occupied()) {
+                            l.p = p;
+                            p->position() = l.position();
+                            return;
+                        }
+                    }
+                }
+                // if we get here, the environment is full; throw.
+                throw fatal_error_exception("environment: could not find available location");
+            } else {
+                location_type& l=(*i);
+                // kill the occupant of l, if any
+                if(l.p) {
+                    l.p->alive() = false;
+                    ea.events().death(*l.p,ea);
+                }
+                l.p = p;
+                p->position() = l.position();
+            }
+        }
+
         //! Swap individuals (if any) betweeen locations i and j.
         void swap_locations(std::size_t i, std::size_t j) {
             assert(i < (_locs.size1()*_locs.size2()));
@@ -233,115 +289,71 @@ namespace ealib {
             }
         }
         
-        //! Replace the organism (if any) living in location l with p.
-        void replace(iterator i, individual_ptr_type p, ea_type& ea) {
-            location_type& l=(*i);
-            // kill the occupant of l, if any
-            if(l.p) {
-                l.p->alive() = false;
-                ea.events().death(*l.p,ea);
-            }
-            l.p = p;
-            p->position() = l.position();
-        }
-        
-        //! Returns a location pointer given a position.
-        location_ptr_type location(const position_type& pos) {
-            return &_locs(pos[XPOS], pos[YPOS]);
+        //! Returns a location given a position.
+        location_type& location(const position_type& pos) {
+            return _locs(pos.x, pos.y);
         }
 
-        //! Returns a location pointer given x and y coordinates.
-        location_ptr_type location(int x, int y) {
-            return &_locs(x, y);
-        }
-        
-        void set_heading(individual_type& ind, int heading) {
-            ind.position()[2] = heading;
+        //! Returns a location given x and y coordinates.
+        location_type& location(int x, int y) {
+            return _locs(x, y);
         }
         
         //! Rotates two individuals to face one another.
-        void face_org(individual_type& p1, individual_type& p2) {
-            location_ptr_type l1 = location(p1.position());
-            location_ptr_type l2 = location(p2.position());
-            
-            // Make sure everyone has a location...
-            if ((l1 == NULL) || (l2 == NULL)) {
-                return;
-            }
-            
-            // think in terms of x,y. sort out later.
-            if ((l1->x < l2->x) && (l1->y < l2->y)) {
-                set_heading(p1,1);
-                set_heading(p2,5);
-                // l1 heading = 1
-                // l2 heading = 5
-            } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
-                // l1 heading = 5
-                // l2 heading = 1
-                set_heading(p1, 5);
-                set_heading(p2, 1);
-            } else if ((l1->x < l2->x) && (l1->y > l2->y)) {
-                // l1 heading = 7
-                // l2 heading = 3
-                set_heading(p1, 7);
-                set_heading(p2, 3);
-            } else if ((l1->x > l2->x) && (l1->y > l2->y)) {
-                // l1 heading = 3
-                // l2 heading = 7
-                set_heading(p1, 3);
-                set_heading(p2, 7);
-            } else if ((l1->x < l2->x) && (l1->y == l2->y)) {
-                // l1 heading = 0
-                // l2 heading = 4
-                set_heading(p1, 0);
-                set_heading(p2, 4);
-            } else if ((l1->x > l2->x) && (l1->y == l2->y)) {
-                // l1 heading = 4
-                // l2 heading = 0
-                set_heading(p1, 4);
-                set_heading(p2, 0);
-            } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
-                // l1 heading = 2
-                // l2 heading = 6
-                set_heading(p1, 2);
-                set_heading(p2, 6);
-            } else if ((l1->x == l2->x) && (l1->x < l2->y)) {
-                // l1 heading = 6
-                // l2 heading = 2
-                set_heading(p1, 6);
-                set_heading(p2, 2);
+        void face_org(individual_type& ind1, individual_type& ind2) {
+            position_type& p1 = ind1.position();
+            position_type& p2 = ind2.position();
+
+            if ((p1.x < p2.x) && (p1.y < p2.y)) {
+                p1.heading = 1;
+                p2.heading = 5;
+            } else if ((p1.x > p2.x) && (p1.y > p2.y)) {
+                p1.heading = 5;
+                p2.heading = 1;
+            } else if ((p1.x < p2.x) && (p1.y > p2.y)) {
+                p1.heading = 7;
+                p2.heading = 3;
+            } else if ((p1.x > p2.x) && (p1.y > p2.y)) {
+                p1.heading = 3;
+                p2.heading = 7;
+            } else if ((p1.x < p2.x) && (p1.y == p2.y)) {
+                p1.heading = 0;
+                p2.heading = 4;
+            } else if ((p1.x > p2.x) && (p1.y == p2.y)) {
+                p1.heading = 4;
+                p2.heading = 0;
+            } else if ((p1.x == p2.x) && (p1.x < p2.y)) {
+                p1.heading = 2;
+                p2.heading = 6;
+            } else if ((p1.x == p2.x) && (p1.x < p2.y)) {
+                p1.heading = 6;
+                p2.heading = 2;
             }
         }
 
         //! Returns a [begin,end) pair of iterators over an individual's neighborhood.
-        std::pair<iterator,iterator> neighborhood(individual_type& p) {
-            return std::make_pair(iterator(p.position(), 0, _locs),
-                                  iterator(p.position(), 8, _locs));
+        std::pair<neighborhood_iterator,neighborhood_iterator> neighborhood(individual_type& p) {
+            return std::make_pair(neighborhood_iterator(p.position(), 0, _locs),
+                                  neighborhood_iterator(p.position(), 8, _locs));
         }
         
-        //! Returns an iterator to the location in the specified direction from p.
-        iterator neighbor(individual_type p, int dir) {
-            assert(dir >= 0 && dir < 8);
-            return iterator(p.position(), dir, _locs);
-        }
-        
-        //! Returns an iterator to the currently faced neighboring location.
-        iterator neighbor(individual_ptr_type p) {
-            return iterator(p->position(), p->position()[HEADING], _locs);
+        //! Returns the location currently faced by an organism.
+        location_iterator neighbor(individual_ptr_type p) {
+            return neighborhood_iterator(p->position(), p->position().heading, _locs).make_location_iterator();
         }
         
         /*! Called after load (deserialization) to attach the environment to
          the population.  This sets the individual_ptr_type held by each location.
          */
-        void after_load(ea_type& ea) {
-            for(typename ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                location((*i)->position())->p = *i;
+        void after_load(EA& ea) {
+            for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+                location((*i)->position()).p = *i;
             }
         }
 
     protected:
         std::size_t _append_count; //!< Number of locations that have been appended to.
-        location_matrix_type _locs; //!< Matrix of all locations in this topology.
+        location_storage_type _locs; //!< Matrix of all locations in this topology.
 
     private:
 		friend class boost::serialization::access;

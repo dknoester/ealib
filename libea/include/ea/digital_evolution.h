@@ -25,13 +25,12 @@
 #include <boost/serialization/split_member.hpp>
 #include <boost/shared_ptr.hpp>
 
-
 #include <ea/ancestors.h>
 #include <ea/concepts.h>
 #include <ea/lifecycle.h>
 #include <ea/digital_evolution/events.h>
 #include <ea/digital_evolution/ancestors.h>
-#include <ea/digital_evolution/discrete_spatial_environment.h>
+#include <ea/digital_evolution/environment.h>
 #include <ea/digital_evolution/instruction_set.h>
 #include <ea/digital_evolution/organism.h>
 #include <ea/digital_evolution/schedulers.h>
@@ -104,7 +103,10 @@ namespace ealib {
         typedef metadata md_type;
         typedef default_rng_type rng_type;
         typedef digital_evolution_event_handler<digital_evolution> event_handler_type;
-        typedef discrete_spatial_environment<digital_evolution> environment_type;
+        typedef environment<digital_evolution> environment_type;
+        typedef typename environment_type::location_type location_type;
+        typedef typename environment_type::location_iterator location_iterator;
+        typedef typename environment_type::neighborhood_iterator neighborhood_iterator;
         typedef instruction_set<digital_evolution> isa_type;
         typedef task_library<digital_evolution> task_library_type;
         typedef shared_ptr_vector<individual_ptr_type> population_type;
@@ -267,38 +269,47 @@ namespace ealib {
         //! Returns a reverse end iterator to the population (const-qualified).
         const_reverse_iterator rend() const { return const_reverse_iterator(_population.rend()); }
         
-        //! Inserts individual x into the population before pos.
-        void insert(iterator pos, individual_ptr_type x) {
-            _env.insert_at(_population.size(), x);
-            _population.insert(pos.base(), x);
+        /*! Inserts individual x into the population before pos and at the
+         first available location in the environment.
+         */
+        iterator insert(iterator pos, individual_ptr_type x) {
+            _env.replace(_env.end(), x, *this);
+            return iterator(_population.insert(pos.base(), x));
         }
-        
+
         //! Inserts individuals [f,l) into the population before pos.
         template <typename InputIterator>
         void insert(iterator pos, InputIterator f, InputIterator l) {
-            _env.insert_at(_population.size(), f, l);
-            _population.insert(pos.base(), f, l);
+            iterator i=pos;
+            for( ; f!=l; ++f, ++i) {
+                i=insert(i,*f);
+            }
         }
-        
+
         //! Erases the given individual from the population.
         void erase(iterator i) {
+            _env.erase(*i);
             _population.erase(i.base());
         }
         
         //! Erases the given range from the population.
         void erase(iterator f, iterator l) {
+            for(iterator i=f; i!=l; ++i) {
+                _env.erase(*i);
+            }
             _population.erase(f.base(), l.base());
         }
         
         //! Erases all individuals in this EA.
         void clear() {
+            _env.clear();
             _population.clear();
         }
 
         //! (Re-)Place an offspring in the population, if possible.
         void replace(individual_ptr_type parent, individual_ptr_type offspring) {
             replacement_type r;
-            std::pair<typename environment_type::iterator, bool> l=r(parent, *this);
+            std::pair<location_iterator, bool> l=r(parent, *this);
             
             if(l.second) {
                 _env.replace(l.first, offspring, *this);

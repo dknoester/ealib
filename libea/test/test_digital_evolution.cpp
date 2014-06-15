@@ -95,8 +95,8 @@ BOOST_AUTO_TEST_CASE(test_resources) {
         r->update(1);
     }
     
-    BOOST_CHECK_CLOSE(0.128744, r->level(make_position(0,0)), 0.001);
-    BOOST_CHECK_CLOSE(0.0721839, r->level(make_position(1,0)), 0.001);
+    BOOST_CHECK_CLOSE(0.128744, r->level(position_type(0,0)), 0.001);
+    BOOST_CHECK_CLOSE(0.0721839, r->level(position_type(1,0)), 0.001);
 }
 
 

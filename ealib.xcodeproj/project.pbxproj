@@ -433,7 +433,7 @@
 		4210C5B2188877BA00A8FAFA /* organism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = organism.h; sourceTree = "<group>"; };
 		4210C5B4188877BA00A8FAFA /* replication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = replication.h; sourceTree = "<group>"; };
 		4210C5B5188877BA00A8FAFA /* schedulers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = schedulers.h; sourceTree = "<group>"; };
-		4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discrete_spatial_environment.h; sourceTree = "<group>"; };
+		4210C5B6188877BA00A8FAFA /* environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = environment.h; sourceTree = "<group>"; };
 		4210C5B7188877BA00A8FAFA /* task_library.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = task_library.h; sourceTree = "<group>"; };
 		4210C5B9188877BA00A8FAFA /* digital_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digital_evolution.h; sourceTree = "<group>"; };
 		4210C5BA1889634C00A8FAFA /* resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
@@ -471,7 +471,7 @@
 		4256FA661892BA14004AB7F9 /* nsga2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = nsga2.cpp; sourceTree = "<group>"; };
 		4256FA671892BA14004AB7F9 /* qhfc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = qhfc.cpp; sourceTree = "<group>"; };
 		4256FA6C1892BB02004AB7F9 /* example-all-ones */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-all-ones"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4256FA841892BBB2004AB7F9 /* example-devo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-devo"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4256FA841892BBB2004AB7F9 /* example-devo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "example-devo"; path = "example-logic9"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4256FA901892BBBE004AB7F9 /* example-lod */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-lod"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4256FA9C1892BBC5004AB7F9 /* example-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-mkv"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4256FAA81892BBCD004AB7F9 /* example-mp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-mp"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -568,7 +568,6 @@
 		42B89ECF19377EDC00435794 /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
 		42B89ED019377EDC00435794 /* markov_network_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network_evolution.h; sourceTree = "<group>"; };
 		42B89ED119377EDC00435794 /* translator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translator.h; sourceTree = "<group>"; };
-		42B8BAC5188B0D96003307CB /* position.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = position.h; sourceTree = "<group>"; };
 		42C26B3F1945E62400F0E6B9 /* emscript.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = emscript.cfg; sourceTree = "<group>"; };
 		42C26B401945FA7900F0E6B9 /* torus2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = torus2.h; sourceTree = "<group>"; };
 		42C661251860A403004476D3 /* constant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constant.h; sourceTree = "<group>"; };
@@ -778,14 +777,13 @@
 			children = (
 				42DC57121941F0CF005044F1 /* ancestors */,
 				4210C5AC188877BA00A8FAFA /* ancestors.h */,
-				4210C5B6188877BA00A8FAFA /* discrete_spatial_environment.h */,
+				4210C5B6188877BA00A8FAFA /* environment.h */,
 				4210C5AD188877BA00A8FAFA /* events.h */,
 				4210C5AF188877BA00A8FAFA /* groups.h */,
 				4210C5B0188877BA00A8FAFA /* hardware.h */,
 				42DC57191941F0D5005044F1 /* extra_instruction_sets */,
 				4210C5B1188877BA00A8FAFA /* instruction_set.h */,
 				4210C5B2188877BA00A8FAFA /* organism.h */,
-				42B8BAC5188B0D96003307CB /* position.h */,
 				4210C5B4188877BA00A8FAFA /* replication.h */,
 				4210C5BA1889634C00A8FAFA /* resources.h */,
 				4210C5B5188877BA00A8FAFA /* schedulers.h */,

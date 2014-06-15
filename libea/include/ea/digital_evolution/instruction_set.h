@@ -486,8 +486,8 @@ namespace ealib {
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
             
-            typedef typename EA::environment_type::iterator iterator;
-            std::pair<iterator,iterator> ni=ea.env().neighborhood(*p);
+            typedef typename EA::environment_type::neighborhood_iterator neighborhood_iterator;
+            std::pair<neighborhood_iterator,neighborhood_iterator> ni=ea.env().neighborhood(*p);
             for(; ni.first!=ni.second; ++ni.first) {
                 typename EA::environment_type::location_type& l=*ni.first;
                 if(l.occupied()) {
@@ -498,17 +498,17 @@ namespace ealib {
         
         //! Rotate the organism to the heading in ?bx?.
         DIGEVO_INSTRUCTION_DECL(rotate) {
-            p->position()[HEADING] = hw.getRegValue(hw.modifyRegister()) % 8;
+            p->position().heading = hw.getRegValue(hw.modifyRegister()) % 8;
         }
         
         //! Rotate the organism clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_cw) {
-            p->position()[HEADING] = algorithm::roll(p->position()[HEADING]-1, 0, 7);
+            p->position().heading = algorithm::roll(p->position().heading-1, 0, 7);
         }
         
         //! Rotate the organism counter-clockwise once.
         DIGEVO_INSTRUCTION_DECL(rotate_ccw) {
-            p->position()[HEADING] = algorithm::roll(p->position()[HEADING]+1, 0, 7);
+            p->position().heading = algorithm::roll(p->position().heading+1, 0, 7);
         }
         
         //! Execute the next instruction if ?bx? < ?cx?.

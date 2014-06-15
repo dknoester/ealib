@@ -26,14 +26,12 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/deque.hpp>
 #include <boost/serialization/map.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
 #include <fstream>
 #include <deque>
 #include <vector>
 #include <map>
 
-#include <ea/digital_evolution/position.h>
+#include <ea/digital_evolution/environment.h>
 #include <ea/digital_evolution/hardware.h>
 #include <ea/digital_evolution/schedulers.h>
 #include <ea/metadata.h>

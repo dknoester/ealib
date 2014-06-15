@@ -29,7 +29,6 @@
 #include <stdexcept>
 
 #include <ea/algorithm.h>
-#include <ea/digital_evolution/position.h>
 #include <ea/metadata.h>
 
 
@@ -170,7 +169,7 @@ namespace ealib {
             //! Returns the amount of consumed resource.
             virtual double consume(typename EA::individual_type& ind) {
                 position_type& pos = ind.position();
-                double& level = _R(pos[XPOS]+1, pos[YPOS]+1); // +1 for boundaries!
+                double& level = _R(pos.x+1, pos.y+1); // +1 for boundaries!
                 double r = std::max(0.0, level*_consume);
                 level = std::max(0.0, level-r);
                 return r;
@@ -178,7 +177,7 @@ namespace ealib {
             
             //! Returns the current resource level.
             virtual double level(const position_type& pos) {
-                return _R(pos[XPOS]+1, pos[YPOS]+1);
+                return _R(pos.x+1, pos.y+1);
             }
             
             /*! Updates resource levels based on elapsed time since last update

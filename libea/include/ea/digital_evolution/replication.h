@@ -23,14 +23,14 @@
 
 
 namespace ealib {
-    
+
     /*! Selects the location of the first neighbor to the parent as the location
      for an offspring.
      */
     struct first_neighbor {
         template <typename EA>
-        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
-            return std::make_pair(ea.env().neighborhood(parent,ea).first, true);
+        std::pair<typename EA::location_iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
+            return std::make_pair(ea.env().neighborhood(parent,ea).first.make_location_iterator(), true);
         }
     };
     
@@ -39,10 +39,9 @@ namespace ealib {
      */
     struct random_neighbor {
         template <typename EA>
-        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
-            typedef typename EA::environment_type::iterator location_iterator;
-            std::pair<location_iterator, location_iterator> i = ea.env().neighborhood(*parent);
-            return std::make_pair(ea.rng().choice(i.first, i.second), true);
+        std::pair<typename EA::location_iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
+            std::pair<typename EA::neighborhood_iterator, typename EA::neighborhood_iterator> i = ea.env().neighborhood(*parent);
+            return std::make_pair(ea.rng().choice(i.first, i.second).make_location_iterator(), true);
         }
     };
 
@@ -51,9 +50,8 @@ namespace ealib {
      */
     struct empty_facing_neighbor {
         template <typename EA>
-        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
-            typedef typename EA::environment_type::iterator location_iterator;
-            location_iterator l = ea.env().neighbor(parent);
+        std::pair<typename EA::location_iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
+            typename EA::location_iterator l = ea.env().neighbor(parent);
             if (l->occupied()) {
                 return std::make_pair(l, false);
 
@@ -67,9 +65,8 @@ namespace ealib {
      */
     struct empty_neighbor {
         template <typename EA>
-        std::pair<typename EA::environment_type::iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
-            typedef typename EA::environment_type::iterator location_iterator;
-            std::pair<location_iterator, location_iterator> i = ea.env().neighborhood(*parent);
+        std::pair<typename EA::location_iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
+            std::pair<typename EA::neighborhood_iterator, typename EA::neighborhood_iterator> i = ea.env().neighborhood(*parent);
             for( ; i.first != i.second; ++i.first) {
                 if(!i.first->occupied()) {
                     return std::make_pair(i.first, true);
