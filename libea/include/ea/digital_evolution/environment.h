@@ -24,40 +24,94 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+
 #include <utility>
 #include <vector>
 
 #include <ea/algorithm.h>
 #include <ea/metadata.h>
+#include <ea/data_structures/torus2.h>
 
 namespace ealib {
 
-    /*! Type that is contained (and owned) by organisms to uniquely identify
-     their position in the environment.
-     
-     \warning: This type must be serializable.
+    /*! Type that is contained by individuals to describe their position and
+     orientation in the environment.
      */
     struct position_type {
         //! Constructor.
-        position_type(int xpos=0, int ypos=0, int head=0) : x(xpos), y(ypos), heading(head) {
+        position_type(int xpos=0, int ypos=0, int xatt=1, int yatt=0) {
+            r[0] = xpos; r[1] = ypos;
+            h[0] = xatt; h[1] = yatt;
+        }
+        
+        //! Copy constructor.
+        position_type(const position_type& that) {
+            r[0] = that.r[0]; r[1] = that.r[1];
+            h[0] = that.h[0]; h[1] = that.h[1];
         }
         
         //! Operator==.
         bool operator==(const position_type& that) const {
-            return (x==that.x) && (y==that.y) && (heading==that.heading);
+            return (r[0] == that.r[0]) && (r[1] == that.r[1]) && (h[0] == that.h[0]) && (h[1] == that.h[1]);
+        }
+        
+        /*! Rotate this position by matrix R.
+
+         Specifically, multiply this position's heading vector h by R.  This
+         enables a quick lookup of the neighboring location, and avoids large
+         switch statements on heading.  The math is pretty straightforward:
+         
+         h' = R*h,
+         
+         where R is a rotation matrix, h is the current heading vector, and h' is
+         the new heading vector.  For reference, rotation matrices are:
+         R = [ cos\theta  -sin\theta ]
+             [ sin\theta   cos\theta ]
+         
+         where \theta is the angle by which we're rotating (in radians).
+         
+         We go to some length to make sure that h is integer-valued, which also
+         means that we can quickly calculate the x and y offsets for the neighboring
+         location (x+h[0], y+h[1]).
+         */
+        void rotate(const double R[2][2]) {
+            double x = R[0][0] * static_cast<double>(h[0]) + R[0][1] * static_cast<double>(h[1]);
+            double y = R[1][0] * static_cast<double>(h[0]) + R[1][1] * static_cast<double>(h[1]);
+            h[0] = std::copysign(static_cast<int>(fabs(x) + 0.5), x);
+            h[1] = std::copysign(static_cast<int>(fabs(y) + 0.5), y);
+        }
+        
+        //! Rotate by theta radians.
+        void rotate(double theta) {
+            double R[2][2];
+            R[0][0] = R[1][1] = cos(theta);
+            R[0][1] = -sin(theta);
+            R[1][0] = -R[0][1];
+            rotate(R);
+        }
+
+        //! Convenience method to rotate ccw by pi/4 radians.
+        void rotate_ccw() {
+            static const double R[2][2] = {{0.707, -0.707}, {0.707, 0.707}};
+            rotate(R);
+        }
+        
+        //! Convenience method to rotate cw by pi/4 radians.
+        void rotate_cw() {
+            static const double R[2][2] = {{0.707, 0.707}, {-0.707, 0.707}};
+            rotate(R);
         }
         
         //! Serialize this position.
 		template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("x", x);
-            ar & boost::serialization::make_nvp("y", y);
-            ar & boost::serialization::make_nvp("heading", heading);
+            ar & boost::serialization::make_nvp("r", r);
+            ar & boost::serialization::make_nvp("h", h);
 		}
-        
-        int x; //!< Individual's x-position.
-        int y; //!< Individual's y-position.
-        int heading; //!< Individual's heading.
+
+        int r[2]; //!< Individual's position vector (x,y).
+        int h[2]; //!< Individual's orientation vector (x,y).
     };
     
     
@@ -65,7 +119,7 @@ namespace ealib {
      
      An individual's position in the environment can best be thought of as
      an index into a location data structure which contains locale-specific
-     information; this is that data structure.
+     information; this is the locale-specific data.
      */
     template <typename EA>
     struct environment_location {
@@ -121,65 +175,40 @@ namespace ealib {
     
     /*! Discrete spatial environment.
      
-     This spatial environment is divided into discrete cells.
-     
-     ON ORIENTATION:
-     This environment is oriented as the standard X-Y Cartesian coordinate
-     system.  I.e., (0,0) is in the lower left, positive is up and right, etc.
-     
-     ON POSITION:
-     Positions in this space are a triple (x, y, heading), where heading is a
-     number in the range [0,8), such that for a given position Origin (Or.),
-     headings point in the following directions:
-     
-     3  |  2  |  1
-     4  |  Or.|  0
-     5  |  6  |  7
      */
     template <typename EA>
     class environment {
     public:
         typedef environment_location<EA> location_type;
-        typedef boost::numeric::ublas::matrix<location_type> location_storage_type;
+        typedef torus2<location_type> location_storage_type;
         typedef typename location_storage_type::array_type::iterator location_iterator;
         typedef typename location_storage_type::array_type::const_iterator const_location_iterator;
         typedef typename EA::individual_type individual_type;
         typedef typename EA::individual_ptr_type individual_ptr_type;
         
+        /*! This iterator is used to iterate over the neighborhood of a position
+         in the environment (the 8 surrounding locations; a Moore neighborhood).
+         */
         struct neighborhood_iterator : boost::iterator_facade<neighborhood_iterator, location_type, boost::single_pass_traversal_tag> {
             //! Constructor.
-            neighborhood_iterator(position_type& pos, int h, location_storage_type& locs)
-            : _origin(locs(pos.x, pos.y)), _heading(h), _locs(locs) {
+            neighborhood_iterator(const position_type& pos, int c, location_storage_type& locs)
+            : _p(pos), _count(c), _locs(locs) {
             }
             
             //! Increment operator.
-            void increment() { ++_heading; }
+            void increment() {
+                _p.rotate_ccw();
+                ++_count;
+            }
             
             //! Iterator equality comparison.
             bool equal(const neighborhood_iterator& that) const {
-                return (_origin.y==that._origin.y) && (_origin.x==that._origin.x) && (_heading==that._heading);
+                return (_p == that._p) && (_count == that._count);
             }
             
             //! Dereference this iterator.
             location_type& dereference() const {
-                int x=_origin.x;
-                int y=_origin.y;
-                
-                switch(_heading%8) {
-                    case 0: ++x; break;
-                    case 1: ++x; ++y; break;
-                    case 2: ++y; break;
-                    case 3: --x; ++y; break;
-                    case 4: --x; break;
-                    case 5: --x; --y; break;
-                    case 6: --y; break;
-                    case 7: ++x; --y; break;
-                }
-                
-                x = algorithm::roll(x, 0, static_cast<int>(_locs.size2()-1));
-                y = algorithm::roll(y, 0, static_cast<int>(_locs.size1()-1));
-                
-                return _locs(x,y);
+                return _locs(_p.r[0]+_p.h[0], _p.r[1]+_p.h[1]);
             }
             
             //! Get an iterator to the location this neighborhood iterator points to.
@@ -188,8 +217,8 @@ namespace ealib {
                 return _locs.data().begin() + _locs.size2()*l.y + l.x;
             }
 
-            location_type& _origin; //!< Origin of this iterator.
-            int _heading; //!< Current heading for the iterator.
+            position_type _p; //!< Position of the origin of this iterator.
+            int _count; //!< Increment count for this iterator, used to check end.
             location_storage_type& _locs; //!< Location storage.
         };
         
@@ -291,7 +320,7 @@ namespace ealib {
         
         //! Returns a location given a position.
         location_type& location(const position_type& pos) {
-            return _locs(pos.x, pos.y);
+            return _locs(pos.r[0], pos.r[1]);
         }
 
         //! Returns a location given x and y coordinates.
@@ -304,31 +333,14 @@ namespace ealib {
             position_type& p1 = ind1.position();
             position_type& p2 = ind2.position();
 
-            if ((p1.x < p2.x) && (p1.y < p2.y)) {
-                p1.heading = 1;
-                p2.heading = 5;
-            } else if ((p1.x > p2.x) && (p1.y > p2.y)) {
-                p1.heading = 5;
-                p2.heading = 1;
-            } else if ((p1.x < p2.x) && (p1.y > p2.y)) {
-                p1.heading = 7;
-                p2.heading = 3;
-            } else if ((p1.x > p2.x) && (p1.y > p2.y)) {
-                p1.heading = 3;
-                p2.heading = 7;
-            } else if ((p1.x < p2.x) && (p1.y == p2.y)) {
-                p1.heading = 0;
-                p2.heading = 4;
-            } else if ((p1.x > p2.x) && (p1.y == p2.y)) {
-                p1.heading = 4;
-                p2.heading = 0;
-            } else if ((p1.x == p2.x) && (p1.x < p2.y)) {
-                p1.heading = 2;
-                p2.heading = 6;
-            } else if ((p1.x == p2.x) && (p1.x < p2.y)) {
-                p1.heading = 6;
-                p2.heading = 2;
-            }
+            int x = p1.r[0] - p2.r[0];
+            int y = p1.r[1] - p2.r[1];
+            
+            assert((x>=-1) && (x<=1));
+            assert((y>=-1) && (y<=1));
+            
+            p1.h[0] = -x; p2.h[0] = x;
+            p1.h[1] = -y; p2.h[1] = y;
         }
 
         //! Returns a [begin,end) pair of iterators over an individual's neighborhood.
@@ -339,7 +351,7 @@ namespace ealib {
         
         //! Returns the location currently faced by an organism.
         location_iterator neighbor(individual_ptr_type p) {
-            return neighborhood_iterator(p->position(), p->position().heading, _locs).make_location_iterator();
+            return neighborhood_iterator(p->position(), 0, _locs).make_location_iterator();
         }
         
         /*! Called after load (deserialization) to attach the environment to
@@ -352,7 +364,6 @@ namespace ealib {
         }
 
     protected:
-        std::size_t _append_count; //!< Number of locations that have been appended to.
         location_storage_type _locs; //!< Matrix of all locations in this topology.
 
     private:
@@ -361,7 +372,6 @@ namespace ealib {
 		void save(Archive & ar, const unsigned int version) const {
             std::size_t size1=_locs.size1();
             std::size_t size2=_locs.size2();
-            ar & boost::serialization::make_nvp("append_count", _append_count);
             ar & boost::serialization::make_nvp("size1", size1);
             ar & boost::serialization::make_nvp("size2", size2);
             for(std::size_t i=0; i<_locs.size1(); ++i) {
@@ -374,7 +384,6 @@ namespace ealib {
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
             std::size_t size1=0, size2=0;
-            ar & boost::serialization::make_nvp("append_count", _append_count);
             ar & boost::serialization::make_nvp("size1", size1);
             ar & boost::serialization::make_nvp("size2", size2);
             _locs.resize(size1,size2);

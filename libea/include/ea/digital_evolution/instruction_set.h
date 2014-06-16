@@ -496,19 +496,19 @@ namespace ealib {
             }
         }
         
-        //! Rotate the organism to the heading in ?bx?.
+        //! Rotates the organism by ?bx? * pi/4.
         DIGEVO_INSTRUCTION_DECL(rotate) {
-            p->position().heading = hw.getRegValue(hw.modifyRegister()) % 8;
+            p->position().rotate(hw.getRegValue(hw.modifyRegister()) * M_PI/4);
         }
         
-        //! Rotate the organism clockwise once.
+        //! Rotates the organism clockwise by pi/4.
         DIGEVO_INSTRUCTION_DECL(rotate_cw) {
-            p->position().heading = algorithm::roll(p->position().heading-1, 0, 7);
+            p->position().rotate_cw();
         }
         
-        //! Rotate the organism counter-clockwise once.
+        //! Rotates the organism counter-clockwise by pi/4.
         DIGEVO_INSTRUCTION_DECL(rotate_ccw) {
-            p->position().heading = algorithm::roll(p->position().heading+1, 0, 7);
+            p->position().rotate_ccw();
         }
         
         //! Execute the next instruction if ?bx? < ?cx?.
