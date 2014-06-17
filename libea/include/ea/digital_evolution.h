@@ -123,32 +123,49 @@ namespace ealib {
             _lifecycle.after_construction(*this);
         }
         
-        //! Copy constructor.
+        //! Copy constructor (see copy construction note in evolutionary_algorithm.h).
         digital_evolution(const digital_evolution& that) {
             _update = that._update;
             _rng = that._rng;
             _md = that._md;
+            _stop = _stop;
+            _lifecycle = that._lifecycle;
+            _scheduler = that._scheduler;
+            
+            // call the lifecycle object to take care of non-copyables:
+            _lifecycle.after_construction(*this);
+            initialize(); // and initialize the EA
+            
+            // copy the individuals:
             for(const_iterator i=that.begin(); i!=that.end(); ++i) {
                 individual_ptr_type q = copy_individual(*i);
                 insert(end(),q);
             }
-            _env = that._env;
-            _lifecycle.after_construction(*this);
+            // and fixup the environment:
+            _env.link(*this);
         }
         
-        //! Assignment operator.
+        //! Assignment operator (see copy construction note in evolutionary_algorithm.h).
         digital_evolution& operator=(const digital_evolution& that) {
             if(this != &that) {
                 _update = that._update;
                 _rng = that._rng;
                 _md = that._md;
-                clear();
+                _stop = _stop;
+                _lifecycle = that._lifecycle;
+                _scheduler = that._scheduler;
+                
+                // call the lifecycle object to take care of non-copyables:
+                _lifecycle.after_construction(*this);
+                initialize(); // and initialize the EA
+                
+                // copy the individuals:
                 for(const_iterator i=that.begin(); i!=that.end(); ++i) {
                     individual_ptr_type q = copy_individual(*i);
                     insert(end(),q);
                 }
-                _env = that._env;
-                _lifecycle.after_construction(*this);
+                // and fixup the environment:
+                _env.link(*this);
             }
             return *this;
         }
@@ -269,11 +286,9 @@ namespace ealib {
         //! Returns a reverse end iterator to the population (const-qualified).
         const_reverse_iterator rend() const { return const_reverse_iterator(_population.rend()); }
         
-        /*! Inserts individual x into the population before pos and at the
-         first available location in the environment.
-         */
+        //! Inserts individual x into the population and environment.
         iterator insert(iterator pos, individual_ptr_type x) {
-            _env.replace(_env.end(), x, *this);
+            _env.insert(x, *this);
             return iterator(_population.insert(pos.base(), x));
         }
 
@@ -353,7 +368,7 @@ namespace ealib {
             ar & boost::serialization::make_nvp("environment", _env);
             
             // now we have to fix up the connection between the environment and organisms:
-            _env.after_load(*this);
+            _env.link(*this);
         }
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
     };

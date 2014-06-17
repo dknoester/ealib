@@ -280,10 +280,7 @@ namespace mkv {
         datafile df("mkv_dominant_genetic_graph.dot"); // dot file!
         
         std::ostringstream title;
-        title << "name=" << get<IND_NAME>(*i)
-        << ", gen=" << get<IND_GENERATION>(*i)
-        << ", w=" << ealib::fitness(*i,ea) << " (genetic graph)";
-        
+        title << "name=" << get<IND_NAME>(*i) << ", gen=" << get<IND_GENERATION>(*i) << " (genetic graph)";
         write_graphviz(title.str(), df, as_genetic_graph(P));
     }
     
@@ -297,10 +294,7 @@ namespace mkv {
         datafile df("mkv_dominant_reduced_graph.dot"); // dot file!
         
         std::ostringstream title;
-        title << "name=" << get<IND_NAME>(*i)
-        << ", gen=" << get<IND_GENERATION>(*i)
-        << ", w=" << ealib::fitness(*i,ea) << " (reduced graph)";
-        
+        title << "name=" << get<IND_NAME>(*i) << ", gen=" << get<IND_GENERATION>(*i) << " (reduced graph)";
         write_graphviz(title.str(), df, as_reduced_graph(P));
     }
     
@@ -314,10 +308,7 @@ namespace mkv {
         datafile df("mkv_dominant_causal_graph.dot"); // dot file!
         
         std::ostringstream title;
-        title << "name=" << get<IND_NAME>(*i)
-        << ", gen=" << get<IND_GENERATION>(*i)
-        << ", w=" << ealib::fitness(*i,ea) << " (causal graph)";
-        
+        title << "name=" << get<IND_NAME>(*i) << ", gen=" << get<IND_GENERATION>(*i) << " (causal graph)";
         write_graphviz(title.str(), df, as_causal_graph(P));
     }
     

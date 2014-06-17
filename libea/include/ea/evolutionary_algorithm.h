@@ -44,11 +44,13 @@ namespace ealib {
     
     /*! Generic evolutionary algorithm class.
 	 
-	 This class is designed to be generic, such that all the main features of 
+	 This class is designed to be generic, such that all (most) main features of
      evolutionary algorithms can be incorporated.  The focus of this class is on 
      the common features of most EAs, while leaving the problem-specific 
      components easily customizable.
-	 */
+
+     \warning See note below regarding copy construction.
+     */
     template
     < typename Representation
     , typename FitnessFunction
@@ -95,30 +97,58 @@ namespace ealib {
             _lifecycle.after_construction(*this);
         }
 
-        //! Copy constructor.
+        /*! Copy constructor.
+         
+         Regarding copy construction and assignment: There are a number of
+         features of EAs that do not lend themselves to copy construction and assignment,
+         particularly those related to events (the situation is a bit worse in digital
+         evolution, where we also need to configure tasks and resources).  For this
+         reason, a copy (or assignment) of an EA, while allowed, does not copy the
+         entire EA.  A quick rule of thumb is that if it's configured via the lifecycle
+         object, then it's likely not copied (or assigned).
+         */
         evolutionary_algorithm(const evolutionary_algorithm& that) {
             _update = that._update;
             _rng = that._rng;
             _md = that._md;
+            _fitness_function = that._fitness_function;
+            _generational_model = that._generational_model;
+            _stop = _stop;
+            // _events are not copied; they must be configured via the lifecycle
+            _lifecycle = that._lifecycle;
+
+            // call the lifecycle object to take care of non-copyables:
+            _lifecycle.after_construction(*this);
+            initialize(); // and initialize the EA
+            
+            // and finally copy the individuals:
             for(const_iterator i=that.begin(); i!=that.end(); ++i) {
                 individual_ptr_type q = copy_individual(*i);
                 insert(end(),q);
             }
-            _lifecycle.after_construction(*this);
         }
 
-        //! Assignment operator.
+        //! Assignment operator (see note above re: copy construction).
         evolutionary_algorithm& operator=(const evolutionary_algorithm& that) {
             if(this != &that) {
                 _update = that._update;
                 _rng = that._rng;
                 _md = that._md;
-                clear();
+                _fitness_function = that._fitness_function;
+                _generational_model = that._generational_model;
+                _stop = _stop;
+                // _events are not copied; they must be configured via the lifecycle
+                _lifecycle = that._lifecycle;
+                
+                // call the lifecycle object to take care of non-copyables:
+                _lifecycle.after_construction(*this);
+                initialize(); // and initialize the EA
+                
+                // and finally copy the individuals:
                 for(const_iterator i=that.begin(); i!=that.end(); ++i) {
                     individual_ptr_type q = copy_individual(*i);
                     insert(end(),q);
                 }
-                _lifecycle.after_construction(*this);
             }
             return *this;
         }

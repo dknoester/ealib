@@ -18,23 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <ea/evolutionary_algorithm.h>
-#include <ea/metapopulation.h>
 #include <ea/genome_types/bitstring.h>
 #include <ea/cmdline_interface.h>
 #include <ea/fitness_functions/all_ones.h>
 #include <ea/nsga2.h>
 using namespace ealib;
-
-
-//
-//template <typename T>
-//struct mytraits : default_traits<T>, nsga2_traits<T> {
-//    template <class Archive>
-//    void serialize(Archive& ar, const unsigned int version) {
-//        ar & boost::serialization::make_nvp("default_traits", boost::serialization::base_object<default_traits<T> >(*this));
-//        ar & boost::serialization::make_nvp("nsga2_traits", boost::serialization::base_object<nsga2_traits<T> >(*this));
-//    }
-//};
 
 typedef evolutionary_algorithm
 < direct<bitstring>

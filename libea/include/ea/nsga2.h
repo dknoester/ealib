@@ -137,8 +137,6 @@ namespace ealib {
                     
                     for(std::size_t i=1; i<(I.size()-1); ++i) {
                         I[i]->traits().distance += (ealib::fitness(*I[i+1],ea)[m] - ealib::fitness(*I[i-1],ea)[m]) / ea.fitness_function().range(m);
-                        
-//                        I[i]->traits().distance += (I[i+1]->fitness()[m] - I[i-1]->fitness()[m]) / ea.fitness_function().range(m);
                     }
                 }
             }
