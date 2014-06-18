@@ -29,7 +29,7 @@ namespace ealib {
 	struct quiet_nan : public fitness_function<unary_fitness<double> > {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            std::numeric_limits<double>::quiet_NaN();
+            return std::numeric_limits<double>::quiet_NaN();
 		}
 	};
     
