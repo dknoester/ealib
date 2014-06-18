@@ -27,8 +27,7 @@
 #include <ea/metadata.h>
 #include <ea/comparators.h>
 #include <ea/access.h>
-#include <ea/selection/proportionate.h>
-#include <ea/selection/tournament.h>
+#include <ea/selection/rank.h>
 #include <ea/traits.h>
 
 namespace ealib {
@@ -73,9 +72,11 @@ namespace ealib {
     
     /*! Crowding comparison operator, <_n.
      
-     If a has lower rank than b, return true.
-     If a has the same rank as b, but greater crowding distance, return true.
-     Otherwise, return false.
+     Read: "a <_n b" as "b is better than a"
+     
+     If a has lower rank (is better) than b, return false.
+     If a has the same rank as b, but greater crowding distance, return false.
+     Else return true (meaning, a is "worse than" b).
      */
     template <typename AttributeAccessor, typename EA>
     struct crowding_comparator {
@@ -85,8 +86,8 @@ namespace ealib {
         
         //! Returns true if a <_n b, false otherwise.
         bool operator()(typename EA::individual_ptr_type a, typename EA::individual_ptr_type b) {
-            return (_acc(*a,_ea).rank < _acc(*b,_ea).rank)
-            || ((_acc(*a,_ea).rank == _acc(*b,_ea).rank) && (_acc(*a,_ea).distance > _acc(*b,_ea).distance));
+            return (_acc(*a,_ea).rank > _acc(*b,_ea).rank) // greater ranks are worse
+            || ((_acc(*a,_ea).rank == _acc(*b,_ea).rank) && (_acc(*a,_ea).distance < _acc(*b,_ea).distance)); // lesser distances are worse
         }
         
         AttributeAccessor _acc;
@@ -127,7 +128,7 @@ namespace ealib {
                     (*i)->traits().distance = 0.0;
                 }
                 
-                std::size_t M = ealib::fitness(**I.begin(),ea).size(); // how many objectives?
+                std::size_t M = ea.fitness_function().size();
                 
                 for(std::size_t m=0; m<M; ++m) {
                     std::sort(I.begin(), I.end(), comparators::objective<EA>(m,ea));
@@ -154,6 +155,8 @@ namespace ealib {
                                 (*p)->traits().S.push_back(*q);
                             } else if(dominates(**q,**p,ea)) {
                                 ++(*p)->traits().n;
+                            } else {
+                                // p may == q;
                             }
                         }
                     }
@@ -187,13 +190,13 @@ namespace ealib {
                 // build up the fronts:
                 std::map<int,Population> F;
                 nondominated_sort(src, n, F, ea);
-                
-                // the set of all possible parents are pulled from the best fronts:
+
                 for(std::size_t i=0; (i<F.size()) && (dst.size()<n); ++i) {
                     crowding_distance(F[i],ea);
+                    std::sort(F[i].begin(), F[i].end(), crowding_comparator<access::traits,EA>(ea));
                     dst.insert(dst.end(),
-                               F[i].begin(),
-                               F[i].begin() + std::min(F[i].size(), (n-dst.size())));
+                               F[i].rbegin(), // start from **greatest** crowding distance
+                               F[i].rbegin() + std::min(F[i].size(), (n-dst.size())));
                 }
             }
         };
@@ -270,18 +273,18 @@ namespace ealib {
             //! Apply NSGA2 to produce the next generation.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
-                std::size_t n=get<POPULATION_SIZE>(ea)/2; // nsga2 uses a population split evenly between parents and offspring
+                std::size_t n = get<POPULATION_SIZE>(ea)/2;
                 
                 // select the parents via nondominated sorting:
                 Population parents;
                 select_n<selection::nsga2>(population, parents, n, ea);
                 
-                // select parents & recombine to create offspring:
                 Population offspring;
                 recombine_n(parents, offspring,
-                            selection::tournament<access::traits,crowding_comparator>(n,parents,ea),
+                            selection::rank<access::traits,crowding_comparator>(n,parents,ea),
                             typename EA::recombination_operator_type(),
-                            n, ea);
+                            get<POPULATION_SIZE>(ea)-parents.size(),
+                            ea);
                 
                 // mutate the offspring:
 				mutate(offspring.begin(), offspring.end(), ea);

@@ -20,6 +20,7 @@
 #ifndef _EA_DATAFILES_MULTIOBJECTIVE_FITNESS_H_
 #define _EA_DATAFILES_MULTIOBJECTIVE_FITNESS_H_
 
+#include <boost/lexical_cast.hpp>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
@@ -41,9 +42,9 @@ namespace ealib {
                 .add_field("mean_generation");
                 
                 for(std::size_t i=0; i<ea.fitness_function().size(); ++i) {
-                    std::ostringstream f;
-                    f << "max_fitness_" << i;
-                    _df.add_field(f.str());
+                    _df.add_field("min_"+boost::lexical_cast<std::string>(i))
+                    .add_field("mean_"+boost::lexical_cast<std::string>(i))
+                    .add_field("max_"+boost::lexical_cast<std::string>(i));
                 }
             }
             
@@ -54,7 +55,7 @@ namespace ealib {
                 std::size_t fsize = ea.fitness_function().size();
                 using namespace boost::accumulators;
                 accumulator_set<double, stats<tag::mean> > gen;
-                std::vector<accumulator_set<double, stats<tag::max> > > fit(fsize);
+                std::vector<accumulator_set<double, stats<tag::max, tag::mean, tag::min> > > fit(fsize);
                 
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                     gen(get<IND_GENERATION>(*i));
@@ -68,7 +69,7 @@ namespace ealib {
                 .write(mean(gen));
                 
                 for(std::size_t i=0; i<fsize; ++i) {
-                    _df.write(max(fit[i]));
+                    _df.write(min(fit[i])).write(mean(fit[i])).write(max(fit[i]));
                 }
                 _df.endl();
             }

@@ -30,6 +30,7 @@ namespace ealib {
 		
 		/*! Selects individuals based on the rank of their fitness.
 		 */
+        template <typename AttributeAccessor=access::fitness, template <typename,typename> class Comparator=comparators::attribute>
 		struct rank {
 			//! Constructor.
 			template <typename Population, typename EA>
@@ -39,7 +40,7 @@ namespace ealib {
 			//! Select n individuals via rank selection.
 			template <typename Population, typename EA>
 			void operator()(Population& src, Population& dst, std::size_t n, EA& ea) {
-                std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
+                std::sort(src.begin(), src.end(), Comparator<AttributeAccessor,EA>(ea));
                 algorithm::copy_n(src.rbegin(), std::min(src.size(),n), std::inserter(dst,dst.end()));
             }
         };

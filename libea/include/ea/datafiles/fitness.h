@@ -20,7 +20,6 @@
 #ifndef _EA_DATAFILES_FITNESS_H_
 #define _EA_DATAFILES_FITNESS_H_
 
-#include <boost/lexical_cast.hpp>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
