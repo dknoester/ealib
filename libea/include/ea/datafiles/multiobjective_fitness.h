@@ -39,13 +39,11 @@ namespace ealib {
         struct multiobjective_fitness_dat : record_statistics_event<EA> {
             multiobjective_fitness_dat(EA& ea) : record_statistics_event<EA>(ea), _df("multiobjective_fitness.dat") {
                 _df.add_field("update")
-                .add_field("mean_generation");
-                
-                for(std::size_t i=0; i<ea.fitness_function().size(); ++i) {
-                    _df.add_field("min_"+boost::lexical_cast<std::string>(i))
-                    .add_field("mean_"+boost::lexical_cast<std::string>(i))
-                    .add_field("max_"+boost::lexical_cast<std::string>(i));
-                }
+                .add_field("mean_generation")
+                .add_field("objective")
+                .add_field("min_fitness")
+                .add_field("mean_fitness")
+                .add_field("max_fitness");
             }
             
             virtual ~multiobjective_fitness_dat() {
@@ -65,13 +63,15 @@ namespace ealib {
                     }
                 }
                 
-                _df.write(ea.current_update())
-                .write(mean(gen));
-                
                 for(std::size_t i=0; i<fsize; ++i) {
-                    _df.write(min(fit[i])).write(mean(fit[i])).write(max(fit[i]));
+                    _df.write(ea.current_update())
+                    .write(mean(gen))
+                    .write(i)
+                    .write(min(fit[i]))
+                    .write(mean(fit[i]))
+                    .write(max(fit[i]))
+                    .endl();
                 }
-                _df.endl();
             }
             
             datafile _df;
