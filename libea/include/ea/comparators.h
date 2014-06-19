@@ -71,6 +71,11 @@ namespace ealib {
                 return ealib::fitness(*x,_ea)[_i] < ealib::fitness(*y,_ea)[_i];
             }
             
+            //! Returns true if objective(i,x) < objective(i,y), false otherwise.
+            bool operator()(typename EA::individual_type& x, typename EA::individual_type& y) {
+                return ealib::fitness(x,_ea)[_i] < ealib::fitness(y,_ea)[_i];
+            }
+
             std::size_t _i; //!< Index of the objective that individuals will be compared by.
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
         };
