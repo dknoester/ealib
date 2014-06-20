@@ -297,7 +297,29 @@ namespace mkv {
         title << "name=" << get<IND_NAME>(*i) << ", gen=" << get<IND_GENERATION>(*i) << " (reduced graph)";
         write_graphviz(title.str(), df, as_reduced_graph(P));
     }
-    
+
+    /*! Generates a graphviz format reduced view of a dominant Markov network for each objective.
+     */
+    LIBEA_ANALYSIS_TOOL(multi_reduced_graph) {
+        using namespace ealib;
+        
+        for(std::size_t i=0; i<ea.fitness_function().size(); ++i) {
+            std::sort(ea.population().begin(), ea.population().end(), comparators::objective<EA>(i,ea));
+            typename EA::reverse_iterator ind=ea.rbegin();
+
+            // take the "best" individual for this objective:
+            typename EA::phenotype_type& P=ealib::phenotype(*ind,ea);
+        
+            std::ostringstream fname;
+            fname << "mkv_reduced_graph_obj" << i << ".dot";
+            datafile df(fname.str());
+
+            std::ostringstream title;
+            title << "name=" << get<IND_NAME>(*ind) << ", gen=" << get<IND_GENERATION>(*ind) << " (reduced graph)";
+            write_graphviz(title.str(), df, as_reduced_graph(P));
+        }
+    }
+
     /*! Generates a graphviz format causal view of the dominant Markov network.
      */
     LIBEA_ANALYSIS_TOOL(dominant_causal_graph) {
