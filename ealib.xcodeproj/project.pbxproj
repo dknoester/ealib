@@ -555,6 +555,7 @@
 		428B7288184F77AB00E3BB4E /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
 		428CB52518F81F0500E6093D /* test-torus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-torus"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42A170E218E9C41D00C3A248 /* rank.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rank.h; sourceTree = "<group>"; };
+		42AFECF81955AEE100847019 /* roc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = roc.h; sourceTree = "<group>"; };
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
 		42B55B6E1641C2C500F240C5 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		42B55B701641C2C500F240C5 /* test_information.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_information.cpp; sourceTree = "<group>"; };
@@ -948,6 +949,7 @@
 			isa = PBXGroup;
 			children = (
 				426F9F5D18E363CC00910682 /* information.h */,
+				42AFECF81955AEE100847019 /* roc.h */,
 				426F9F5E18E363CC00910682 /* statistics.h */,
 			);
 			path = math;
