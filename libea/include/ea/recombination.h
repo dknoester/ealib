@@ -169,6 +169,8 @@ namespace ealib {
         
         
         /*! Two-point crossover.
+         
+         Swaps equally-sized regions from two parent genomes to produce two offspring.
          */
         struct two_point_crossover {
             std::size_t capacity() const { return 2; }
@@ -176,26 +178,27 @@ namespace ealib {
             //! Perform two-point crossover on two parents to produce two offspring.
             template <typename Population, typename EA>
             void operator()(Population& parents, Population& offspring, EA& ea) {
-                // build the offspring:
+                // copy the parent's genomes:
                 assert(parents.size() == capacity());
                 typename EA::genome_type o1=parents[0]->genome();
                 typename EA::genome_type o2=parents[1]->genome();
                 
-                // they need to be the same size...
-                assert(o1.size() == o2.size());
+                // figure out the size of the xover region:
+                std::size_t e=ea.rng()(1, std::min(o1.size(),o2.size()));
                 
-                // select the crossover points:
-                std::pair<std::size_t, std::size_t> xover = ea.rng().choose_two(static_cast<std::size_t>(0), o1.size());
+                // pick the beginning of the xover point in both o1 & o2:
+                std::size_t x1=ea.rng()(0, o1.size()-e);
+                std::size_t x2=ea.rng()(0, o2.size()-e);
                 
-                // and swap [begin+first,begin+second) between o1 and o2:
-                std::swap_ranges(o1.begin()+xover.first, o1.begin()+xover.second, o2.begin()+xover.first);
+                // swap 'em:
+                std::swap_ranges(o1.begin()+x1, o1.begin()+x1+e, o2.begin()+x2);
                 
                 // output the individuals:
                 offspring.insert(offspring.end(), ea.make_individual(o1));
                 offspring.insert(offspring.end(), ea.make_individual(o2));
             }
         };
-        
+
     } // recombination
 } // ea
 

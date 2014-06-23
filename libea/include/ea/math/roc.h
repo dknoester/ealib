@@ -20,6 +20,7 @@
 #ifndef _EA_MATH_ROC_H_
 #define _EA_MATH_ROC_H_
 
+#include <boost/serialization/nvp.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/accumulators/accumulators.hpp>
@@ -121,18 +122,29 @@ struct roc {
         return (tp()+tn())/(p()+n());
     }
     
+    //! Returns the error rate.
+    double err() {
+        return (fp()+fn())/(p()+n());
+    }
+    
     //! Returns the F1 score.
     double f1() {
         return (2.0*tp())/(2.0*tp()+fp()+fn());
     }
 
-    //! Returns the Matthews correlation coeffiecient.
+    //! Returns the Matthews correlation coefficient.
     double mcc() {
         double t = (tp()+fp()) * (tp()+fn()) * (tn()+fp()) * (tn()+fn());
         if(t == 0.0) {
             t = 1.0;
         }
         return (tp()*tn() - fp()*fn()) / sqrt(t);
+    }
+    
+    //! Serialize the ROC matrix.
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+        ar & boost::serialization::make_nvp("roc", _M);
     }
 
     matrix_type _M; //!< ROC matrix.
