@@ -498,6 +498,7 @@
 		4256FAA81892BBCD004AB7F9 /* example-mp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-mp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4256FAB41892BBD5004AB7F9 /* example-nsga2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-nsga2"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4256FAC01892BBDC004AB7F9 /* example-qhfc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-qhfc"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4259F9C519657F9200A78321 /* ann.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = ann.cfg; sourceTree = "<group>"; };
 		425BF6401950756E001D36A2 /* multiobjective_fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multiobjective_fitness.h; sourceTree = "<group>"; };
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
 		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
@@ -899,6 +900,7 @@
 			isa = PBXGroup;
 			children = (
 				42DC57041940BE5B005044F1 /* all_ones.cfg */,
+				4259F9C519657F9200A78321 /* ann.cfg */,
 				42DC57051940BE5B005044F1 /* digital_evolution.cfg */,
 				42C26B3F1945E62400F0E6B9 /* emscript.cfg */,
 				42DC57061940BE5B005044F1 /* markov_network.cfg */,

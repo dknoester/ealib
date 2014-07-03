@@ -23,6 +23,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
+#include <ea/algorithm.h>
 #include <ea/functional.h>
 
 namespace ann {
@@ -42,36 +43,40 @@ namespace ann {
         typedef ealib::unary_compose<filter_type,sigmoid_type> output_conditioning_type;
         typedef UpdateFunction update_function_type;
         typedef bnu::vector<double> state_vector_type;
+        typedef state_vector_type::iterator iterator;
+        typedef state_vector_type::const_iterator const_iterator;
+        typedef state_vector_type::reverse_iterator reverse_iterator;
+        typedef state_vector_type::const_reverse_iterator const_reverse_iterator;
         typedef bnu::matrix<double> weight_matrix_type;
-        typedef weight_matrix_type::array_type::iterator iterator;
-        typedef weight_matrix_type::array_type::const_iterator const_iterator;
-        typedef weight_matrix_type::array_type::reverse_iterator reverse_iterator;
-        typedef weight_matrix_type::array_type::const_reverse_iterator const_reverse_iterator;
         
         //! Constructor.
-        neural_network(std::size_t n) {
-            resize(n);
+        neural_network(std::size_t nin, std::size_t nout, std::size_t nhid) {
+            resize(nin, nout, nhid);
         }
         
         //! Constructor.
-        neural_network(std::size_t n, const filter_type& filt)
+        neural_network(std::size_t nin, std::size_t nout, std::size_t nhid, const filter_type& filt)
         : _fin(filt), _fout(filt,sigmoid_type()) {
-            resize(n);
+            resize(nin, nout, nhid);
         }
         
         //! Constructor.
         template <typename ForwardIterator>
-        neural_network(std::size_t n, ForwardIterator f) {
-            resize(n);
-            for(std::size_t i=0; i<n; ++i) {
-                for(std::size_t j=0; j<n; ++j, ++f) {
+        neural_network(std::size_t nin, std::size_t nout, std::size_t nhid, ForwardIterator f) {
+            resize(nin, nout, nhid);
+            for(std::size_t i=0; i<_A.size1(); ++i) {
+                for(std::size_t j=0; j<_A.size2(); ++j, ++f) {
                     _A(i,j) = *f;
                 }
             }
         }
         
         //! Resize this network.
-        void resize(std::size_t n) {
+        void resize(std::size_t nin, std::size_t nout, std::size_t nhid) {
+            _nin = nin;
+            _nout = nout;
+            _nhid = nhid;
+            std::size_t n = _nin + _nout + _nhid;
             _A = bnu::scalar_matrix<double>(n,n,0.0);
             _T = bnu::scalar_vector<double>(n,0.0);
             _Tplus1 = bnu::scalar_vector<double>(n,0.0);
@@ -83,30 +88,6 @@ namespace ann {
             _T.clear();
             _Tplus1.clear();
         }
-
-        //! Returns a begin iterator to the weight matrix.
-        iterator begin() { return _A.data().begin(); }
-        
-        //! Returns an end iterator to the weight matrix.
-        iterator end() { return _A.data().end(); }
-        
-        //! Returns a begin iterator to the weight matrix (const-qualified).
-        const_iterator begin() const { return _A.data().begin(); }
-        
-        //! Returns an end iterator to the weight matrix (const-qualified).
-        const_iterator end() const { return _A.data().end(); }
-        
-        //! Returns a reverse begin iterator to the weight matrix.
-        reverse_iterator rbegin() { return _A.data().rbegin(); }
-        
-        //! Returns a reverse end iterator to the weight matrix.
-        reverse_iterator rend() { return _A.data().rend(); }
-        
-        //! Returns a reverse begin iterator to the weight matrix (const-qualified).
-        const_reverse_iterator rbegin() const { return _A.data().rbegin(); }
-        
-        //! Returns a reverse end iterator to the weight matrix (const-qualified).
-        const_reverse_iterator rend() const { return _A.data().rend(); }
         
         //! Link neuron_i -> neuron_j with weight w.
         double& link(std::size_t i, std::size_t j) {
@@ -124,7 +105,25 @@ namespace ann {
             _T(i) = _fin(x);
         }
 
-        //! Update this network (produce outputs, assuming that inputs have been set).
+        //! Retrieve an iterator to the beginning of the inputs.
+        iterator begin_input() { return _T.begin(); }
+        
+        //! Retrieve an iterator to the end of the inputs.
+        iterator end_input() { return _T.begin() + _nin; }
+        
+        //! Retrieve an iterator to the beginning of the outputs.
+        iterator begin_output() { return _T.begin() + _nin; }
+        
+        //! Retrieve an iterator to the end of the outputs.
+        iterator end_output() { return _T.begin() + _nin + _nout; }
+        
+        //! Retrieve an iterator to the beginning of the hidden states.
+        iterator begin_hidden() { return _T.begin() + _nin + _nout; }
+        
+        //! Retrieve an iterator to the end of the hidden states.
+        iterator end_hidden() { return _T.end(); }
+        
+        //! Update this network (assumes that inputs have been set).
         void update() {
             // update the network:
             _update(_Tplus1, _T, _A);
@@ -134,12 +133,19 @@ namespace ann {
             std::swap(_T,_Tplus1);
         }
         
-        //! Serialization.
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version) {
+        //! Updates the ANN n times given inputs [f,l).
+        template <typename ForwardIterator>
+        void update(ForwardIterator f, ForwardIterator l, std::size_t n=1) {
+            assert(std::distance(f,l)==_nin);
+            for( ; n>0; --n) {
+                // apply input conditioning and copy the inputs into our state vector (req'd for the matrix math):
+                std::transform(f, l, _T.begin(), _fin);
+                update();
+            }
         }
 
     protected:
+        std::size_t _nin, _nout, _nhid; //!< Number of inputs, outputs, and hidden neurons.
         input_conditioning_type _fin; //!< Input conditioning function.
         output_conditioning_type _fout; //!< Output conditioning function.
         update_function_type _update; //!< Function object that updates this neural network.

@@ -29,7 +29,7 @@
 BOOST_AUTO_TEST_CASE(test_logistic) {
     using namespace ealib;
     using namespace ann;
-    feed_forward< > N(2);
+    feed_forward< > N(1,1,0);
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(test_logistic) {
 BOOST_AUTO_TEST_CASE(test_heaviside) {
     using namespace ealib;
     using namespace ann;
-    feed_forward<heaviside> N(2);
+    feed_forward<heaviside> N(1,1,0);
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(test_heaviside) {
 BOOST_AUTO_TEST_CASE(test_htan) {
     using namespace ealib;
     using namespace ann;
-    feed_forward<hyperbolic_tangent> N(2);
+    feed_forward<hyperbolic_tangent> N(1,1,0);
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_htan) {
 BOOST_AUTO_TEST_CASE(test_clipping_htan) {
     using namespace ealib;
     using namespace ann;
-    feed_forward<hyperbolic_tangent,clip<double> > N(2, clip<double>(-0.95,-1.0,0.95,1.0));
+    feed_forward<hyperbolic_tangent,clip<double> > N(1,1,0, clip<double>(-0.95,-1.0,0.95,1.0));
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;

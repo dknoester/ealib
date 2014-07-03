@@ -59,16 +59,16 @@ namespace ann {
         typedef neural_network<Sigmoid,Filter,feed_forward_update> parent;
 
         //! Constructor.
-        feed_forward(std::size_t n) : parent(n) {
+        feed_forward(std::size_t nin, std::size_t nout, std::size_t nhid) : parent(nin, nout, nhid) {
         }
         
         //! Constructor.
-        feed_forward(std::size_t n, const Filter& filt) : parent(n, filt) {
+        feed_forward(std::size_t nin, std::size_t nout, std::size_t nhid, const Filter& filt) : parent(nin, nout, nhid, filt) {
         }
-        
+
         //! Constructor.
         template <typename ForwardIterator>
-        feed_forward(std::size_t n, ForwardIterator f) : parent(n, f) {
+        feed_forward(std::size_t nin, std::size_t nout, std::size_t nhid, ForwardIterator f) : parent(nin, nout, nhid, f) {
         }
     };
     

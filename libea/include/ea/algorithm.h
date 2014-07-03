@@ -45,7 +45,7 @@ namespace ealib {
             }
             return oi;
         }
-        
+
         //! Copy n elements from f to r.
         template <class InputIterator, class OutputIterator>
         OutputIterator copy_n(InputIterator first, std::size_t n, OutputIterator result) {

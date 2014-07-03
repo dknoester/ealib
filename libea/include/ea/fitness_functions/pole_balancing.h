@@ -91,8 +91,8 @@ namespace ealib {
                 input[4] = (theta_dot + 1.0) / 2.0;
 
                 // code to update the inputs and get outputs from the phenotype goes here, e.g.:
-                //                P.update(input);
-                //                update_cart(*P.output_begin(), x, x_dot, theta, theta_dot);
+                P.update(input, input+5);
+                update_cart(*P.begin_output(), x, x_dot, theta, theta_dot);
                 
                 if((x < -2.4) || (x > 2.4) // out of bounds
                    || (theta < -twelve_degrees) || (theta > twelve_degrees)) { // dropped the pole
@@ -100,7 +100,7 @@ namespace ealib {
                 }
             }
             
-            return 0.0;
+            return static_cast<double>(maxsteps);
         }
 	};
     

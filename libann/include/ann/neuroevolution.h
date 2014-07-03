@@ -27,10 +27,12 @@ namespace ann {
     
     LIBEA_MD_DECL(ANN_INPUT_N, "neural_network.input.n", std::size_t);
     LIBEA_MD_DECL(ANN_OUTPUT_N, "neural_network.output.n", std::size_t);
+    LIBEA_MD_DECL(ANN_HIDDEN_N, "neural_network.hidden.n", std::size_t);
     
-    /*! This translator is used to "reconstruct" an ANN from a genome.  It's a
-     simple way to get around EALib's requirement that genome_types be default
-     constructable, without needing a full-blown genome translator.
+    /*! This simple translator is used to "reconstruct" an ANN from a genome.
+     When the genome is simply the weight matrix for an ANN, this translator
+     can be used to construct the phenotype via one of neural_network's
+     initializing constructor.
      */
     struct neural_network_reconstruction {
         template <typename EA>
@@ -39,7 +41,7 @@ namespace ann {
         
         template <typename EA>
         typename EA::phenotype_type operator()(typename EA::genome_type& g, EA& ea) {
-            return typename EA::phenotype_type(ealib::get<ANN_INPUT_N>(ea) + ealib::get<ANN_OUTPUT_N>(ea), g.begin());
+            return typename EA::phenotype_type(ealib::get<ANN_INPUT_N>(ea), ealib::get<ANN_OUTPUT_N>(ea), ealib::get<ANN_HIDDEN_N>(ea), g.begin());
         }
     };
     
