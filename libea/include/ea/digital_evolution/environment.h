@@ -324,7 +324,7 @@ namespace ealib {
          */
         void link(EA& ea) {
             for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                operator[]((*i)->position()).p = *i;
+                location((*i)->position()).p = *i;
             }
         }
 
@@ -363,10 +363,15 @@ namespace ealib {
         }
 
         //! Returns a location given a position.
-        location_type& operator[](const position_type& pos) {
+        location_type& location(const position_type& pos) {
             return _locs(pos.r[0], pos.r[1]);
         }
-        
+
+        //! Returns a location given (x,y) coordinates.
+        location_type& location(std::size_t x, std::size_t y) {
+            return _locs(x, y);
+        }
+
         //! Returns a [begin,end) pair of iterators over an individual's neighborhood.
         std::pair<neighborhood_iterator,neighborhood_iterator> neighborhood(individual_type& p) {
             return std::make_pair(neighborhood_iterator(p.position(), 0, _locs),

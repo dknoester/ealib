@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <limits>
 #include <vector>
+#include <deque>
 
 #include <ea/mutation.h>
 

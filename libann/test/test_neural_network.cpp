@@ -24,11 +24,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <ann/neural_network.h>
+#include <ann/feed_forward.h>
 
 BOOST_AUTO_TEST_CASE(test_logistic) {
     using namespace ealib;
-    neural_network<logistic> N(2);
+    using namespace ann;
+    feed_forward< > N(2);
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;
@@ -50,7 +51,8 @@ BOOST_AUTO_TEST_CASE(test_logistic) {
 
 BOOST_AUTO_TEST_CASE(test_heaviside) {
     using namespace ealib;
-    neural_network<heaviside> N(2);
+    using namespace ann;
+    feed_forward<heaviside> N(2);
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;
@@ -72,7 +74,8 @@ BOOST_AUTO_TEST_CASE(test_heaviside) {
 
 BOOST_AUTO_TEST_CASE(test_htan) {
     using namespace ealib;
-    neural_network<hyperbolic_tangent> N(2);
+    using namespace ann;
+    feed_forward<hyperbolic_tangent> N(2);
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;
@@ -94,7 +97,8 @@ BOOST_AUTO_TEST_CASE(test_htan) {
 
 BOOST_AUTO_TEST_CASE(test_clipping_htan) {
     using namespace ealib;
-    neural_network<hyperbolic_tangent,clip<double> > N(2, clip<double>(-0.95,-1.0,0.95,1.0));
+    using namespace ann;
+    feed_forward<hyperbolic_tangent,clip<double> > N(2, clip<double>(-0.95,-1.0,0.95,1.0));
     N.link(0,1) = 1.0;
     
     N[0] = 1.0;

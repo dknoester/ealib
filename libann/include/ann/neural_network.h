@@ -21,58 +21,33 @@
 #define _EA_NEURAL_NETWORK_H_
 
 #include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <boost/numeric/ublas/vector.hpp>
 
 #include <ea/functional.h>
-#include <ann/sigmoid.h>
-#include <ann/filter.h>
 
-namespace ealib {
+namespace ann {
     namespace bnu = boost::numeric::ublas;
     
-    /*! "Simple" update method.
-     
-     For all nodes i:
-     state(n_i)_t+1 = \sum_{j=in_edges} state(source(j)_t) * w_j
+    /*! Generic artificial neural network class.
      */
-    struct simple_update {
-        //!  Update the neural network x: t+1 = t * A
-        template <typename NeuralNetwork>
-        void operator()(NeuralNetwork& N) {
-            N._Tplus1 = bnu::prod(N._T, N._A);
-        }
-    };
-
-    /*! CTRNN update method.
-     
-     \todo
-     */
-    struct ctrnn_update {
-        template <typename NeuralNetwork>
-        void operator()(NeuralNetwork& N) {
-        }
-    };
-
-    
-    /*! Artificial neural network.
-     */
-    template <
-    typename Sigmoid=logistic,
-    typename Filter=identity<double>,
-    typename UpdateFunction=simple_update,
-    typename StateVector=bnu::vector<double> >
-    class neural_network {
+    template
+    < typename Sigmoid
+    , typename Filter
+    , typename UpdateFunction
+    > class neural_network {
     public:
         typedef Sigmoid sigmoid_type;
         typedef Filter filter_type;
         typedef filter_type input_conditioning_type;
-        typedef unary_compose<filter_type,sigmoid_type> output_conditioning_type;
+        typedef ealib::unary_compose<filter_type,sigmoid_type> output_conditioning_type;
         typedef UpdateFunction update_function_type;
-        typedef StateVector state_vector_type;
+        typedef bnu::vector<double> state_vector_type;
         typedef bnu::matrix<double> weight_matrix_type;
-        typedef bnu::matrix_column<weight_matrix_type> weight_column_type;
-        typedef bnu::matrix_row<weight_matrix_type> weight_row_type;
-
+        typedef weight_matrix_type::array_type::iterator iterator;
+        typedef weight_matrix_type::array_type::const_iterator const_iterator;
+        typedef weight_matrix_type::array_type::reverse_iterator reverse_iterator;
+        typedef weight_matrix_type::array_type::const_reverse_iterator const_reverse_iterator;
+        
         //! Constructor.
         neural_network(std::size_t n) {
             resize(n);
@@ -82,6 +57,17 @@ namespace ealib {
         neural_network(std::size_t n, const filter_type& filt)
         : _fin(filt), _fout(filt,sigmoid_type()) {
             resize(n);
+        }
+        
+        //! Constructor.
+        template <typename ForwardIterator>
+        neural_network(std::size_t n, ForwardIterator f) {
+            resize(n);
+            for(std::size_t i=0; i<n; ++i) {
+                for(std::size_t j=0; j<n; ++j, ++f) {
+                    _A(i,j) = *f;
+                }
+            }
         }
         
         //! Resize this network.
@@ -98,18 +84,42 @@ namespace ealib {
             _Tplus1.clear();
         }
 
+        //! Returns a begin iterator to the weight matrix.
+        iterator begin() { return _A.data().begin(); }
+        
+        //! Returns an end iterator to the weight matrix.
+        iterator end() { return _A.data().end(); }
+        
+        //! Returns a begin iterator to the weight matrix (const-qualified).
+        const_iterator begin() const { return _A.data().begin(); }
+        
+        //! Returns an end iterator to the weight matrix (const-qualified).
+        const_iterator end() const { return _A.data().end(); }
+        
+        //! Returns a reverse begin iterator to the weight matrix.
+        reverse_iterator rbegin() { return _A.data().rbegin(); }
+        
+        //! Returns a reverse end iterator to the weight matrix.
+        reverse_iterator rend() { return _A.data().rend(); }
+        
+        //! Returns a reverse begin iterator to the weight matrix (const-qualified).
+        const_reverse_iterator rbegin() const { return _A.data().rbegin(); }
+        
+        //! Returns a reverse end iterator to the weight matrix (const-qualified).
+        const_reverse_iterator rend() const { return _A.data().rend(); }
+        
         //! Link neuron_i -> neuron_j with weight w.
         double& link(std::size_t i, std::size_t j) {
             return _A(i,j);
         }
         
-        //! Retrieve the value of neuron i.
+        //! Returns the state of neuron i at time t.
         double& operator[](std::size_t i) { return _T(i); }
 
-        //! Retrieve the value of neuron i (const-qualified).
+        //! Returns the state of neuron i at time t (const-qualified).
         const double& operator[](std::size_t i) const { return _T(i); }
         
-        //! Set the state of neuron i to x (and apply input conditioning).
+        //! Set the state of neuron i at time t to x (and apply input conditioning).
         void set(std::size_t i, double x) {
             _T(i) = _fin(x);
         }
@@ -117,17 +127,19 @@ namespace ealib {
         //! Update this network (produce outputs, assuming that inputs have been set).
         void update() {
             // update the network:
-            _update(*this);
+            _update(_Tplus1, _T, _A);
             // filter(sigmoid(t+1)):
             std::transform(_Tplus1.begin(), _Tplus1.end(), _Tplus1.begin(), _fout);
             // rotate t,t+1
             std::swap(_T,_Tplus1);
         }
         
-    protected:
-        // the various update methods need access to internals:
-        friend struct simple_update;
+        //! Serialization.
+        template <class Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+        }
 
+    protected:
         input_conditioning_type _fin; //!< Input conditioning function.
         output_conditioning_type _fout; //!< Output conditioning function.
         update_function_type _update; //!< Function object that updates this neural network.

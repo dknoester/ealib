@@ -23,7 +23,7 @@
 #include <cmath>
 #include <functional>
 
-namespace ealib {
+namespace ann {
     
 	/*! Heaviside function (aka unit step), a binary activation sigmoid type.
      
@@ -101,6 +101,6 @@ namespace ealib {
         double _lambda; //!< Used to steepen the gradient of the sigmoid.
 	};
 	
-} // filter
+} // ann
 
 #endif

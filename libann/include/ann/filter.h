@@ -23,7 +23,7 @@
 #include <cmath>
 #include <functional>
 
-namespace ealib {
+namespace ann {
     
     /*! These unary function objects are for applying "filters" to values, e.g.,
      for scaling a variable to be within a given range.
@@ -81,6 +81,6 @@ namespace ealib {
         }
     };
 	
-} // network
+} // ann
 
 #endif

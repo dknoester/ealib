@@ -29,6 +29,11 @@
 			<key>orderHint</key>
 			<integer>43</integer>
 		</dict>
+		<key>example-ann.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>65</integer>
+		</dict>
 		<key>example-emscript.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -113,6 +118,11 @@
 			<true/>
 		</dict>
 		<key>4210C5971886C81600A8FAFA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>422B05B819641F6E00DA675B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

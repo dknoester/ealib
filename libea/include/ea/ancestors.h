@@ -134,8 +134,8 @@ namespace ealib {
             }
         };
         
-        //! Generates a default-constructed representation.
-        struct default_representation {
+        //! Generates a default-constructed genome.
+        struct default_genome {
             template <typename EA>
             typename EA::genome_type operator()(EA& ea) {
                 return typename EA::genome_type();
