@@ -19,10 +19,18 @@
  */
 #include "test.h"
 #include <ea/analysis/fitness.h>
+#include <ea/analysis/archive.h>
 
 //! Population analysis tests.
-BOOST_AUTO_TEST_CASE(poplation_analysis) {
+BOOST_AUTO_TEST_CASE(test_population_analysis) {
     all_ones_ea ea;
     analysis::unary_population_fitness<all_ones_ea> upf;
     upf(ea);
+}
+
+//! Archive tests.
+BOOST_AUTO_TEST_CASE(test_archive_analysis) {
+    all_ones_ea ea;
+	analysis::archive_dominant<all_ones_ea> ad_tool;
+	analysis::trim_archive<all_ones_ea> ta_tool;
 }

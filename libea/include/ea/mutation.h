@@ -222,7 +222,7 @@ namespace ealib {
                 //! Mutate a single point in the given representation.
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
-                    typename EA::representation_type& repr=ind.repr();
+                    typename EA::genome_type& repr=ind.genome();
                     _mt(ea.rng().choice(repr.begin(), repr.end()), ea);
                 }
                 

@@ -24,6 +24,7 @@
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/fitness.h>
 #include <ea/translation.h>
+#include <ann/feed_forward.h>
 #include <ann/neuroevolution.h>
 using namespace ealib;
 

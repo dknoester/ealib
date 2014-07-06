@@ -400,7 +400,7 @@ namespace ealib {
         
         struct graph_rep_mutator {
             template <typename EA>
-            void operator()(typename EA::representation_type& G, EA& ea) {
+            void operator()(typename EA::genome_type& G, EA& ea) {
                 graph::growth_descriptor D(get<GRAPH_VERTEX_EVENT_P>(ea),
                                            get<GRAPH_EDGE_EVENT_P>(ea),
                                            get<GRAPH_DUPLICATE_EVENT_P>(ea),
@@ -433,7 +433,7 @@ namespace ealib {
         struct graph_mutator {
             template <typename EA>
             void operator()(typename EA::individual_type& ind, EA& ea) {
-                _m(ind.repr(), ea);
+                _m(ind.genome(), ea);
             }
             graph_rep_mutator _m;
         };

@@ -25,7 +25,6 @@
 #include <boost/filesystem.hpp>
 
 #include <ea/analysis.h>
-#include <ea/archive.h>
 #include <ea/comparators.h>
 
 namespace ealib {
@@ -35,24 +34,6 @@ namespace ealib {
         template <typename EA>
         typename EA::iterator dominant(EA& ea) {
             return std::max_element(ea.begin(), ea.end(), comparators::fitness<EA>(ea));
-        }
-        
-        /*! Analysis tool to append a dominant to a population archive.
-         
-         The dominant is drawn from the loaded checkpoint, while the archive
-         is set via ANALYSIS_INPUT and ANALYSIS_OUTPUT.
-         */
-        LIBEA_ANALYSIS_TOOL(archive_dominant) {
-            const std::string& input = get<ANALYSIS_INPUT>(ea);
-            const std::string& output = get<ANALYSIS_OUTPUT>(ea);
-            
-            EA archive;
-            if(boost::filesystem::exists(input)) {
-                load_archive(input, archive);
-            }
-            
-            archive.insert(archive.end(), *dominant(ea));
-            save_archive(output, archive);
         }
         
     } // analysis

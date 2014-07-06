@@ -26,7 +26,7 @@
 // ea.analysis.*
 LIBEA_MD_DECL(ANALYSIS_INPUT, "ea.analysis.input.filename", std::string);
 LIBEA_MD_DECL(ANALYSIS_OUTPUT, "ea.analysis.output.filename", std::string);
-
+LIBEA_MD_DECL(ANALYSIS_N, "ea.analysis.n", std::size_t);
 
 //! Convenience macro for analysis tools.
 #define LIBEA_ANALYSIS_TOOL(toolname) \

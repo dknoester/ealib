@@ -20,7 +20,6 @@
 #ifndef _ANN_NEUROEVOLUTION_H_
 #define _ANN_NEUROEVOLUTION_H_
 
-#include <ann/feed_forward.h>
 #include <ea/metadata.h>
 
 namespace ann {

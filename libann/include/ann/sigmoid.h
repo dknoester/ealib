@@ -100,7 +100,7 @@ namespace ann {
         
         double _lambda; //!< Used to steepen the gradient of the sigmoid.
 	};
-	
+
 } // ann
 
 #endif

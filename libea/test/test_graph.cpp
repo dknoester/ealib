@@ -32,14 +32,16 @@ struct graph_fitness : public fitness_function<unary_fitness<double> > {
 
 typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex, graph::mutable_edge> Graph;
 
-typedef evolutionary_algorithm<
-Graph,
-ancestors::random_graph,
-mutation::graph_mutator,
-graph_fitness,
-abstract_configuration,
-recombination::asexual
+
+typedef evolutionary_algorithm
+< direct<Graph>
+, graph_fitness
+, mutation::graph_mutator
+, recombination::asexual
+, generational_models::steady_state< >
+, ancestors::random_graph
 > graph_ea;
+
 
 BOOST_AUTO_TEST_CASE(test_graph_mutations) {
 	using namespace ealib;
