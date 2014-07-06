@@ -24,12 +24,12 @@
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/fitness.h>
 #include <ea/translation.h>
-#include <ann/feed_forward.h>
+#include <ann/basic_neural_network.h>
 #include <ann/neuroevolution.h>
 using namespace ealib;
 
 typedef evolutionary_algorithm
-< indirect<realstring, ann::feed_forward< >, ann::neural_network_reconstruction>
+< indirect<realstring, ann::basic_neural_network< >, ann::neural_network_reconstruction>
 , pole_balancing
 , mutation::operators::per_site<mutation::site::relative_normal_real>
 , recombination::asexual
