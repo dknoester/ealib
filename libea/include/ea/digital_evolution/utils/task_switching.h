@@ -34,7 +34,7 @@
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/hardware.h>
 #include <ea/digital_evolution/instruction_set.h>
-#include <ea/digital_evolution/discrete_spatial_environment.h>
+#include <ea/digital_evolution/environment.h>
 #include <ea/digital_evolution/utils/resource_consumption.h>
 #include <ea/digital_evolution/utils/configurable_mutation.h>
 #include <ea/datafiles/reactions.h>

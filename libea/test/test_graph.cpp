@@ -33,10 +33,10 @@ typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, g
 typedef evolutionary_algorithm
 < direct<Graph>
 , graph_fitness
-, mutation::graph_mutator
+, mutation::operators::delta_growth
 , recombination::asexual
 , generational_models::steady_state< >
-, ancestors::random_graph
+, ancestors::random_delta_graph
 > graph_ea;
 
 
@@ -81,5 +81,5 @@ BOOST_AUTO_TEST_CASE(test_graph_growth) {
     desc.Pc[conditional::r] = 0.75;
     default_rng_type rng(1);
     Graph G;
-    graph::grow_network(G, 100, desc, rng);
+    graph::delta_growth_n(G, 100, desc, rng);
 }

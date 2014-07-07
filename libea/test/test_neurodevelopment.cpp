@@ -18,117 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <boost/test/unit_test.hpp>
-#include <ea/graph.h>
-#include "test.h"
 
-struct graph_fitness : public fitness_function<unary_fitness<double> > {
-    template <typename Individual, typename EA>
-    double operator()(Individual& ind, EA& ea) {
-        return 1.0;
-    }
-};
+#include <ea/evolutionary_algorithm.h>
+#include <ea/generational_models/moran_process.h>
+#include <ea/fitness_functions/pole_balancing.h>
+#include <ea/ann/neurodevelopment.h>
+#include <ann/basic_neural_network.h>
+using namespace ealib;
 
-BOOST_AUTO_TEST_CASE(test_var_size_network) {
-	typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex, graph::mutable_edge> Graph;
-	
+BOOST_AUTO_TEST_CASE(test_neurodevelopment) {
 	typedef evolutionary_algorithm
-	< direct<Graph>
-	, graph_fitness
-	, mutation::graph_mutator
+	< indirect<graph::developmental_graph, ann::basic_neural_network< >, translators::phi>
+	, pole_balancing
+	, mutation::operators::delta_growth
 	, recombination::asexual
-	, generational_models::steady_state< >
-	, ancestors::random_graph
-	> graph_ea;
+	, generational_models::moran_process< >
+	, ancestors::random_delta_graph
+	> ea_type;
 
-	graph_ea ea;
+	ea_type ea;
 }
-
-//
-//
-//
-//
-//#include <boost/test/unit_test.hpp>
-//#include <ea/ann/neurodevelopment.h>
-////#include <ann/graph/feed_forward.h>
-//#include <ea/graph.h>
-//#include "test.h"
-//
-//using namespace ann;
-//
-//struct graph_fitness : public fitness_function<unary_fitness<double> > {
-//    template <typename Individual, typename EA>
-//    double operator()(Individual& ind, EA& ea) {
-////        neural_network<neuroevolution<feed_forward_neuron< > > > G;
-////
-////        delta_growth(G, get<DEV_VERTICES_N>(ea), ind.repr(), ea.rng());
-//        return 1.0;
-//    }
-//};
-//
-//template <typename EA>
-//struct graph_configuration : public abstract_configuration<EA> {
-//    typedef random_ann representation_generator_type;
-//
-//    void initial_population(EA& ea) {
-////        generate_ancestors(random_ann(), get<POPULATION_SIZE>(ea), ea);
-//    }
-//};
-//
-////typedef evolutionary_algorithm<
-////developmental_network,
-////mutation::graph_mutator,
-////graph_fitness,
-////graph_configuration,
-////recombination::asexual
-////> graph_ea;
-////
-////
-////BOOST_AUTO_TEST_CASE(test_neurodevelopment) {
-////	using namespace ealib;
-////    graph_ea E;
-////}
-
-
-//BOOST_AUTO_TEST_CASE(test_var_size_network) {
-//	typedef evolutionary_algorithm
-//	< direct<developmental_network>
-//	, graph_fitness
-//	, mutation::graph_mutator
-//	, recombination::asexual
-//	, generational_models::moran_process< >
-//	, ancestors::random_graph
-//	> ea_type;
-//	
-//    ea_type ea;
-//}
-//
-
-//
-//#include <ann/graph/feed_forward.h>
-//#include <ea/graph.h>
-//
-//struct graph_fitness : public fitness_function<unary_fitness<double> > {
-//    template <typename Individual, typename EA>
-//    double operator()(Individual& ind, EA& ea) {
-//		//        typename EA::representation_type& G=ind.repr();
-//        return 1.0;
-//    }
-//};
-//
-//template <typename EA>
-//struct graph_configuration : public abstract_configuration<EA> {
-//    typedef random_ann representation_generator_type;
-//
-//    void initial_population(EA& ea) {
-//        generate_ancestors(random_ann(), get<POPULATION_SIZE>(ea), ea);
-//    }
-//};
-//
-//typedef evolutionary_algorithm<
-//neural_network<neuroevolution<feed_forward_neuron< > > >,
-//mutation::graph_mutator,
-//graph_fitness,
-//graph_configuration,
-//recombination::asexual
-//> graph_ea;
-//

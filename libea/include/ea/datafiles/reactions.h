@@ -71,7 +71,7 @@ namespace ealib {
             }
             
             datafile _df;
-            boost::signals::scoped_connection _conn2;
+            boost::signals2::scoped_connection _conn2;
             std::map<std::string, double> _tasks;
         };
 

@@ -51,7 +51,7 @@ namespace ann {
 			resize(nin, nout, nhid);
         }
         
-        //! Constructor.
+        //! Constructor that initializes the adjacency matrix via an iterator.
         template <typename ForwardIterator>
         basic_neural_network(std::size_t nin, std::size_t nout, std::size_t nhid, ForwardIterator f) {
 			resize(nin, nout, nhid);
@@ -61,7 +61,7 @@ namespace ann {
 				}
 			}
         }
-		
+        
 		//! Resize this network.
 		void resize(std::size_t nin, std::size_t nout, std::size_t nhid) {
 			_nin = nin;

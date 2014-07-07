@@ -26,9 +26,9 @@
 
 #include <ea/evolutionary_algorithm.h>
 #include <ea/generational_models/moran_process.h>
-#include <ea/genome_types/realstring.h>
 #include <ea/fitness_functions/pole_balancing.h>
 #include <ea/ann/neuroevolution.h>
+#include <ann/basic_neural_network.h>
 using namespace ealib;
 
 BOOST_AUTO_TEST_CASE(test_basic_direct) {

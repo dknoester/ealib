@@ -26,7 +26,7 @@
 #include <ea/digital_evolution.h>
 #include <ea/digital_evolution/hardware.h>
 #include <ea/digital_evolution/instruction_set.h>
-#include <ea/digital_evolution/discrete_spatial_environment.h>
+#include <ea/digital_evolution/environment.h>
 #include <ea/datafiles/reactions.h>
 #include <ea/cmdline_interface.h>
 #include <ea/metapopulation.h>
