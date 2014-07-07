@@ -27,47 +27,47 @@
 		<key>example-all-ones.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>13</integer>
-		</dict>
-		<key>example-ann.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
 			<integer>12</integer>
 		</dict>
 		<key>example-emscript.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>20</integer>
+			<integer>19</integer>
 		</dict>
 		<key>example-lod.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>15</integer>
+			<integer>14</integer>
 		</dict>
 		<key>example-logic9.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>14</integer>
+			<integer>13</integer>
 		</dict>
 		<key>example-mkv.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>16</integer>
+			<integer>15</integer>
 		</dict>
 		<key>example-mp.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>17</integer>
+			<integer>16</integer>
 		</dict>
 		<key>example-nsga2.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>18</integer>
+			<integer>17</integer>
+		</dict>
+		<key>example-pole.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>20</integer>
 		</dict>
 		<key>example-qhfc.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>19</integer>
+			<integer>18</integer>
 		</dict>
 		<key>test-ann.xcscheme</key>
 		<dict>
@@ -103,6 +103,11 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>10</integer>
+		</dict>
+		<key>test-neuroevolution.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>21</integer>
 		</dict>
 		<key>test-torus.xcscheme</key>
 		<dict>
@@ -318,6 +323,11 @@
 			<true/>
 		</dict>
 		<key>42C661631860FBE5004476D3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>42CF4A66196A204D00CBA20B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

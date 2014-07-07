@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <mkv/markov_network_evolution.h>
+#include <ea/mkv/markov_network_evolution.h>
 #include <ea/generational_models/moran_process.h>
 #include <ea/fitness_function.h>
 #include <ea/cmdline_interface.h>

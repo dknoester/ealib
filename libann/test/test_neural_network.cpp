@@ -30,7 +30,7 @@
 BOOST_AUTO_TEST_CASE(test_logistic) {
     using namespace ann;
     basic_neural_network< > N(1,1,0);
-    N.link(0,1) = 1.0;
+    N(0,1) = 1.0;
     
     N[0] = 1.0;
     N.update();
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(test_logistic) {
 BOOST_AUTO_TEST_CASE(test_heaviside) {
     using namespace ann;
     basic_neural_network<heaviside> N(1,1,0);
-    N.link(0,1) = 1.0;
+    N(0,1) = 1.0;
     
     N[0] = 1.0;
     N.update();
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_heaviside) {
 BOOST_AUTO_TEST_CASE(test_htan) {
     using namespace ann;
     basic_neural_network<hyperbolic_tangent> N(1,1,0);
-    N.link(0,1) = 1.0;
+    N(0,1) = 1.0;
     
     N[0] = 1.0;
     N.update();
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(test_htan) {
 BOOST_AUTO_TEST_CASE(test_ctrnn) {
     using namespace ann;
 	ctrnn< > N(0.05, 1, 1, 0);
-    N.link(0,1) = 1.0;
+    N(0,1) = 1.0;
     
     N[0] = 1.0;
     N.update();

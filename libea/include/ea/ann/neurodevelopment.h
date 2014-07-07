@@ -21,17 +21,17 @@
 #define _EA_NEURODEVELOPMENT_H_
 
 #include <vector>
-#include <ann/graph/abstract_neuron.h>
+//#include <ann/graph/abstract_neuron.h>
 #include <ea/algorithm.h>
 #include <ea/graph.h>
 #include <ea/metadata.h>
-#include <ann/graph/neuroevolution.h>
+#include <ea/ann/neuroevolution.h>
 
 LIBEA_MD_DECL(DEV_VERTICES_N, "development.vertices.n", int);
 
 namespace ealib {
     
-    /* The following code develops a graph from a "developmental template," which 
+    /* The following code develops a graph from a "developmental template," which
      is itself a graph that defines a high-level topology.
      
      It is based on the idea that we can evolve the gross topology of a neural network,
@@ -82,16 +82,16 @@ namespace ealib {
                 }
             }
         }
-
+		
         //! Mutate this vertex.
         template <typename EA>
         void mutate(EA& ea) {
         }
-
+		
         double weight; //!< Relative weight of this vertex.
         double degree_mean; //!< Mean degree of neurons belonging to this vertex.
         double degree_var; //!< Variance of the degree of neurons belonging to this vertex.
-
+		
         // while per-module learning rates are appealing, best leave this out for now:
         //double learning_rate; //!< Learning rate for neurons belonging to this vertex.
         //double decay_rate; //!< Decay rate for neurons belonging to this vertex.
@@ -106,15 +106,15 @@ namespace ealib {
         bool allows(graph::graph_operation::flag m) {
             return true;
         }
-
+		
         //! Mutate this edge.
         template <typename EA>
         void mutate(EA& ea) {
         }
-
+		
         double weight; //!< Relative weight of this edge.
     };
-
+	
     //! Developmental network D(M,L).
     typedef
     boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, developmental_vertex, developmental_edge>
@@ -145,7 +145,7 @@ namespace ealib {
                 M_extant[boost::vertex(G[*vi]).color].insert(*vi);
             }
         }
-
+		
         // allocate n new vertices in G, and assign them to modules:
         int module=0;
         for(typename module_weights::iterator i=W.begin(); i!=W.end(); ++i, ++module) {

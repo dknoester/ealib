@@ -21,6 +21,7 @@
 #define _EA_GRAPH_H_
 
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/adj_list_serialize.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/vector.hpp>

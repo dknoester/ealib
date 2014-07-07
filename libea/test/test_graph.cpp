@@ -24,14 +24,11 @@
 struct graph_fitness : public fitness_function<unary_fitness<double> > {
     template <typename Individual, typename EA>
     double operator()(Individual& ind, EA& ea) {
-//        typename EA::representation_type& G=ind.repr();
         return 1.0;
     }
 };
 
-
 typedef boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex, graph::mutable_edge> Graph;
-
 
 typedef evolutionary_algorithm
 < direct<Graph>

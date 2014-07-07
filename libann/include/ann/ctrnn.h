@@ -95,8 +95,13 @@ namespace ann {
 			_bias.clear();
 		}
 		
-		//! Link neuron_i -> neuron_j with weight w.
-		double& link(std::size_t i, std::size_t j) {
+		//! Returns the size (number of neurons) in this neural network.
+		std::size_t size() const {
+			return _Y.size();
+		}
+		
+		//! Returns the weight between neuron i and j.
+		double& operator()(std::size_t i, std::size_t j) {
 			return _A(i,j);
 		}
 
@@ -192,6 +197,23 @@ namespace ann {
 		state_vector_type _tau; //!< Time constants.
 		state_vector_type _gain; //!< Gains.
 		state_vector_type _bias; //!< Biases.
+
+	private:
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+			ar & boost::serialization::make_nvp("delta_t", _delta_t);
+			ar & boost::serialization::make_nvp("ninputs", _nin);
+			ar & boost::serialization::make_nvp("noutputs", _nout);
+			ar & boost::serialization::make_nvp("nhidden", _nhid);
+			ar & boost::serialization::make_nvp("weights", _A);
+			ar & boost::serialization::make_nvp("inputs", _X);
+			ar & boost::serialization::make_nvp("activation_levels", _Y);
+			ar & boost::serialization::make_nvp("states", _S);
+			ar & boost::serialization::make_nvp("tau", _tau);
+			ar & boost::serialization::make_nvp("gain", _gain);
+			ar & boost::serialization::make_nvp("bias", _bias);
+        }
 	};
 	
 } // ann

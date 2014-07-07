@@ -22,16 +22,9 @@
 
 #include <set>
 #include <string>
-#include <ea/metadata.h>
 #include <mkv/gates.h>
 
 namespace mkv {
-    LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", std::size_t);
-    LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", std::size_t);
-    LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", std::size_t);
-    LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", std::size_t);
-    LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", std::size_t);
-    LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
         
     enum gate_type { LOGIC=42, PROBABILISTIC=43, ADAPTIVE=44 };
     

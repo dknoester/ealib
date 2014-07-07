@@ -27,12 +27,20 @@
 #include <ea/cmdline_interface.h>
 #include <ea/functional.h>
 #include <ea/genome_types/circular_genome.h>
+#include <ea/metadata.h>
 #include <mkv/markov_network.h>
 #include <mkv/translator.h>
 #include <mkv/analysis.h>
 
 namespace mkv {
     using namespace ealib;
+	LIBEA_MD_DECL(MKV_UPDATE_N, "markov_network.update.n", std::size_t);
+    LIBEA_MD_DECL(MKV_INPUT_N, "markov_network.input.n", std::size_t);
+    LIBEA_MD_DECL(MKV_OUTPUT_N, "markov_network.output.n", std::size_t);
+    LIBEA_MD_DECL(MKV_HIDDEN_N, "markov_network.hidden.n", std::size_t);
+    LIBEA_MD_DECL(MKV_INITIAL_GATES, "markov_network.initial_gates", std::size_t);
+    LIBEA_MD_DECL(MKV_GATE_TYPES, "markov_network.gate_types", std::string);
+
 
     //! Generates random Markov network-based individuals.
     struct markov_network_ancestor {

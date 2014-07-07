@@ -22,6 +22,7 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <algorithm>
 
 #include <ann/sigmoid.h>
@@ -46,7 +47,7 @@ namespace ann {
 		typedef bnu::matrix<double> adj_matrix_type;
 		
         //! Constructor.
-        basic_neural_network(std::size_t nin, std::size_t nout, std::size_t nhid) {
+        basic_neural_network(std::size_t nin=0, std::size_t nout=0, std::size_t nhid=0) {
 			resize(nin, nout, nhid);
         }
         
@@ -77,8 +78,13 @@ namespace ann {
 			_Y.clear();
 		}
 		
-		//! Link neuron_i -> neuron_j with weight w.
-		double& link(std::size_t i, std::size_t j) {
+		//! Returns the size (number of neurons) in this neural network.
+		std::size_t size() const {
+			return _Y.size();
+		}
+		
+		//! Returns the weight between neuron i and j.
+		double& operator()(std::size_t i, std::size_t j) {
 			return _A(i,j);
 		}
 		
@@ -121,6 +127,17 @@ namespace ann {
 		sigmoid_type _sig; //!< Sigmoid type.
 		adj_matrix_type _A; //!< Adjacency matrix; a_ij == weight(e_ij).
 		state_vector_type _Y; //!< Activation level state vector.
+		
+	private:
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+			ar & boost::serialization::make_nvp("ninputs", _nin);
+			ar & boost::serialization::make_nvp("noutputs", _nout);
+			ar & boost::serialization::make_nvp("nhidden", _nhid);
+			ar & boost::serialization::make_nvp("weights", _A);
+			ar & boost::serialization::make_nvp("activation_levels", _Y);
+        }
 	};
 	
 } // ann

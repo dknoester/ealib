@@ -19,23 +19,22 @@
  */
 #include <ea/evolutionary_algorithm.h>
 #include <ea/generational_models/moran_process.h>
-#include <ea/genome_types/realstring.h>
 #include <ea/fitness_functions/pole_balancing.h>
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/fitness.h>
-#include <ea/translation.h>
-#include <ann/feed_forward.h>
-#include <ann/neuroevolution.h>
+#include <ann/basic_neural_network.h>
+#include <ea/ann/neuroevolution.h>
 using namespace ealib;
 
 typedef evolutionary_algorithm
-< indirect<realstring, ann::feed_forward< >, ann::neural_network_reconstruction>
+< direct<ann::basic_neural_network< > >
 , pole_balancing
-, mutation::operators::per_site<mutation::site::relative_normal_real>
+, mutation::operators::weight_matrix
 , recombination::asexual
 , generational_models::moran_process< >
-, ancestors::uniform_real
+, ancestors::random_weight_neural_network
 > ea_type;
+
 
 /*! Define the EA's command-line interface.
  */
@@ -48,8 +47,6 @@ public:
         add_option<MORAN_REPLACEMENT_RATE_P>(this);
         add_option<MUTATION_PER_SITE_P>(this);
         add_option<MUTATION_NORMAL_REAL_VAR>(this);
-        add_option<MUTATION_UNIFORM_REAL_MIN>(this);
-        add_option<MUTATION_UNIFORM_REAL_MAX>(this);
         
         add_option<RUN_UPDATES>(this);
         add_option<RUN_EPOCHS>(this);
@@ -58,11 +55,10 @@ public:
         add_option<RECORDING_PERIOD>(this);
         add_option<POLE_MAXSTEPS>(this);
 
-        add_option<ann::ANN_INPUT_N>(this);
-        add_option<ann::ANN_OUTPUT_N>(this);
-        add_option<ann::ANN_HIDDEN_N>(this);
+        add_option<ANN_INPUT_N>(this);
+        add_option<ANN_OUTPUT_N>(this);
+        add_option<ANN_HIDDEN_N>(this);
     }
-    
     
     virtual void gather_tools() {
     }
