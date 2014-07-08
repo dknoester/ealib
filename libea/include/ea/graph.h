@@ -69,7 +69,7 @@ namespace ealib {
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
             }
-
+			
             module_type module; //!< Module assignment for this vertex.
         };
         
@@ -78,7 +78,7 @@ namespace ealib {
             template <typename EA>
             void mutate(EA& ea) {
             }
-
+			
             template <class Archive>
             void serialize(Archive& ar, const unsigned int version) {
             }
@@ -134,19 +134,22 @@ namespace ealib {
             enum probability { p=0, q, r };
         }
         
-        /*! Holds information related to graph event probabilities and module
-         assignments.
+        /*! The delta_graph contains information that describes how to build a
+		 graph.
+		 
+		 It holds a series of independent and conditional probabilties, as well
+		 as a module assortativity matrix.
          */
-        struct growth_descriptor {
+        struct delta_graph {
             typedef std::vector<double> pr_sequence_type;
             typedef boost::numeric::ublas::matrix<double> assortativity_matrix_type;
             
             //! Default constructor.
-            growth_descriptor() : Pe(3,0.0), Pc(3,0.0), Pm(1,1.0), M(1,1) {
+            delta_graph() : Pe(3,0.0), Pc(3,0.0), Pm(1,1.0), M(1,1) {
                 M(0,0) = 1.0;
             }
             
-            growth_descriptor(double pv, double pe, double pd, double p, double q, double r)
+            delta_graph(double pv, double pe, double pd, double p, double q, double r)
             : Pe(3,0.0), Pc(3,0.0), Pm(1,1.0), M(1,1) {
                 Pe[growth::P_V] = pv;
                 Pe[growth::P_E] = pe;
@@ -173,7 +176,7 @@ namespace ealib {
         
         //! Add a vertex, and select its color from an existing module.
         template <typename Graph, typename RNG>
-        typename Graph::vertex_descriptor add_vertex(Graph& G, RNG& rng, const growth_descriptor& D=growth_descriptor()) {
+        typename Graph::vertex_descriptor add_vertex(Graph& G, RNG& rng, const delta_graph& D=delta_graph()) {
             typename Graph::vertex_descriptor v=boost::add_vertex(G);
             G[v].module = algorithm::roulette_wheel(rng.p(),D.Pm.begin(), D.Pm.end()).first;
             return v;
@@ -256,7 +259,7 @@ namespace ealib {
          are assumed to have a valid module (0 is acceptable).
          */
         template <typename Graph, typename RNG>
-        void delta_growth_n(Graph& G, int n, growth_descriptor& D, RNG& rng) {
+        void delta_growth_n(Graph& G, int n, delta_graph& D, RNG& rng) {
             // sanity...
             assert(D.Pm.size() == D.M.size1());
             assert(D.Pm.size() == D.M.size2());
@@ -339,12 +342,12 @@ namespace ealib {
             struct delta_growth {
                 template <typename EA>
                 void operator()(typename EA::genome_type& G, EA& ea) {
-                    graph::growth_descriptor D(get<GRAPH_VERTEX_EVENT_P>(ea),
-                                               get<GRAPH_EDGE_EVENT_P>(ea),
-                                               get<GRAPH_DUPLICATE_EVENT_P>(ea),
-                                               get<GRAPH_VERTEX_ADDITION_P>(ea),
-                                               get<GRAPH_EDGE_ADDITION_P>(ea),
-                                               get<GRAPH_DUPLICATE_VERTEX_P>(ea));
+                    graph::delta_graph D(get<GRAPH_VERTEX_EVENT_P>(ea),
+										 get<GRAPH_EDGE_EVENT_P>(ea),
+										 get<GRAPH_DUPLICATE_EVENT_P>(ea),
+										 get<GRAPH_VERTEX_ADDITION_P>(ea),
+										 get<GRAPH_EDGE_ADDITION_P>(ea),
+										 get<GRAPH_DUPLICATE_VERTEX_P>(ea));
                     
                     graph::delta_growth_n(G, 1, D, ea.rng());
                     
@@ -395,7 +398,7 @@ namespace ealib {
         /*! Generates a random graph representation based on calling the graph
          mutation operator GRAPH_EVENTS_N times.
          */
-        struct random_delta_graph {
+        struct random_delta_growth_graph {
             template <typename EA>
             typename EA::genome_type operator()(EA& ea) {
                 typename EA::genome_type G;
@@ -527,64 +530,71 @@ namespace ealib {
                 }
             }
         }
-
+		
     } // graph
+	
+	
+	/* The following code defines the evolutionary operators for using a
+	 delta_graph as a genome.  This means that, instead of operating on
+	 a graph (even a developmental graph), the EA operates on a descriptor that
+	 can be used to build a graph.
+	 */
+	namespace mutation {
+		namespace operators {
+			
+            struct delta {
+                template <typename EA>
+                void operator()(typename EA::individual_type& ind, EA& ea) {
+					typename EA::genome_type& g=ind.genome();
+					mutation::site::relative_normal_real smt;
+					
+					apply_mutation(g.Pe.begin(), g.Pe.end(), smt, ea);
+					apply_mutation(g.Pc.begin(), g.Pc.end(), smt, ea);
+					apply_mutation(g.Pm.begin(), g.Pm.end(), smt, ea);
+					apply_mutation(g.M.data().begin(), g.M.data().end(), smt, ea);
+										
+                    // P of changing # of modules is persite / #modules
+                    if(ea.rng().p(get<MUTATION_PER_SITE_P>(ea)/static_cast<double>(g.Pm.size()))) {
+                        if(ea.rng().bit()) {
+                            // increase
+                            g.Pm.push_back(ea.rng().p());
+                            g.M.resize(g.M.size1()+1, g.M.size2()+1, true);
+                            for(std::size_t i=0; i<g.M.size1(); ++i) {
+                                g.M(i,g.M.size2()-1) = ea.rng().p();
+                            }
+                            for(std::size_t j=0; j<g.M.size2(); ++j) {
+                                g.M(g.M.size1()-1,j) = ea.rng().p();
+                            }
+                        } else if(g.Pm.size() > 1) {
+                            // decrease
+                            g.Pm.pop_back();
+                            g.M.resize(g.M.size1()-1, g.M.size2()-1, true);
+                        }
+                    }
+                }
+            };
+			
+		} // operators
+	} // mutation
 
+	namespace ancestors {
+
+		//! Generates a random growth descriptor for a single module graph.
+		struct random_delta_graph {
+			template <typename EA>
+            typename EA::genome_type operator()(EA& ea) {
+				typename EA::genome_type g;
+				
+				std::generate(g.Pe.begin(), g.Pe.end(), probability_generator<typename EA::rng_type>(ea.rng()));
+				std::generate(g.Pc.begin(), g.Pc.end(), probability_generator<typename EA::rng_type>(ea.rng()));
+				
+				// we rely on default construction of the growth descriptor to be sane;
+				// ie, one module, 100% likelihood of edges connecting.
+				return g;
+			}
+		};
+
+	} // ancestors
 } // ea
-
-
-// the below chunks of code are for manipulating growth descriptors;
-// but there's a bit of work to get this all hooked up.
-//
-//            /*! Mutate a graph growth descriptor.
-//             */
-//            struct growth_descriptor_mutator {
-//                typedef mutation::operators::per_site<mutation::site::uniform_real> sequence_mutator_type;
-//
-//                template <typename Representation, typename EA>
-//                void operator()(Representation& repr, EA& ea) {
-//                    sequence_mutator_type sm;
-//
-//                    sm(repr.Pe, ea);
-//                    sm(repr.Pc, ea);
-//                    sm(repr.Pm, ea);
-//                    sm(repr.M.data(), ea);
-//
-//                    // P of changing # of modules is persite / #modules
-//                    if(ea.rng().p(get<MUTATION_PER_SITE_P>(ea)/static_cast<double>(repr.Pm.size()))) {
-//                        if(ea.rng().bit()) {
-//                            // increase
-//                            repr.Pm.push_back(ea.rng().p());
-//                            repr.M.resize(repr.M.size1()+1, repr.M.size2()+1, true);
-//                            for(std::size_t i=0; i<repr.M.size1(); ++i) {
-//                                repr.M(i,repr.M.size2()-1) = ea.rng().p();
-//                            }
-//                            for(std::size_t j=0; j<repr.M.size2(); ++j) {
-//                                repr.M(repr.M.size1()-1,j) = ea.rng().p();
-//                            }
-//                        } else if(repr.Pm.size() > 1) {
-//                            // decrease
-//                            repr.Pm.pop_back();
-//                            repr.M.resize(repr.M.size1()-1, repr.M.size2()-1, true);
-//                        }
-//                    }
-//                }
-//            };
-//
-///*! Generates a random growth descriptor for a single module graph.
-// */
-//struct random_growth_descriptor {
-//    template <typename EA>
-//    typename EA::representation_type operator()(EA& ea) {
-//        typename EA::representation_type repr;
-//
-//        std::generate(repr.Pe.begin(), repr.Pe.end(), probability_generator<typename EA::rng_type>(ea.rng()));
-//        std::generate(repr.Pc.begin(), repr.Pc.end(), probability_generator<typename EA::rng_type>(ea.rng()));
-//
-//        // we rely on default construction of the growth descriptor to be sane;
-//        // ie, one module, 100% likelihood of edges connecting.
-//        return repr;
-//    }
-//};
 
 #endif

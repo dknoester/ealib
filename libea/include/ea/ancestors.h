@@ -166,7 +166,6 @@ namespace ealib {
             typename EA::genome_type operator()(EA& ea) {
                 typename EA::genome_type r;
                 r.resize(get<REPRESENTATION_SIZE>(ea));
-                
                 for(typename EA::genome_type::iterator i=r.begin(); i!=r.end(); ++i) {
                     *i = ea.rng().bit();
                 }

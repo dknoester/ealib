@@ -52,7 +52,7 @@ namespace ealib {
                 
                 std::size_t nin=get<ANN_INPUT_N>(ea);
                 std::size_t nout=get<ANN_OUTPUT_N>(ea);
-                assert((nin+nout) <  boost::num_vertices(T));
+                assert((nin+nout) < boost::num_vertices(T));
                 
                 // build an ANN from T:
                 typename EA::phenotype_type N(nin, nout, boost::num_vertices(T) - nin - nout);

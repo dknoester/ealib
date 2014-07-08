@@ -22,19 +22,34 @@
 #include <ea/evolutionary_algorithm.h>
 #include <ea/generational_models/moran_process.h>
 #include <ea/fitness_functions/pole_balancing.h>
+#include <ea/fitness_functions/quiet_nan.h>
 #include <ea/ann/neurodevelopment.h>
 #include <ann/basic_neural_network.h>
 using namespace ealib;
 
-BOOST_AUTO_TEST_CASE(test_neurodevelopment) {
+BOOST_AUTO_TEST_CASE(test_phi) {
 	typedef evolutionary_algorithm
 	< indirect<graph::developmental_graph, ann::basic_neural_network< >, translators::phi>
 	, pole_balancing
 	, mutation::operators::delta_growth
 	, recombination::asexual
 	, generational_models::moran_process< >
-	, ancestors::random_delta_graph
+	, ancestors::random_delta_growth_graph
 	> ea_type;
 
+	ea_type ea;
+}
+
+
+BOOST_AUTO_TEST_CASE(test_delta) {
+	typedef evolutionary_algorithm
+	< direct<graph::delta_graph>
+	, quiet_nan
+	, mutation::operators::delta
+	, recombination::asexual
+	, generational_models::moran_process< >
+	, ancestors::random_delta_graph
+	> ea_type;
+	
 	ea_type ea;
 }

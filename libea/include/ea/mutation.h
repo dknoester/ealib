@@ -85,6 +85,17 @@ namespace ealib {
 		mutate(first, last, mutator, ea);
 	}
 	
+	/*! Apply a site-specific mutation operator to every element in a sequence
+	 */
+	template <typename ForwardIterator, typename SiteMutator, typename EA>
+	void apply_mutation(ForwardIterator f, ForwardIterator l,
+						SiteMutator sm, EA& ea) {
+		for( ; f!=l; ++f) {
+			sm(f,ea);
+		}
+	}
+	
+	
 
     namespace mutation {
         
