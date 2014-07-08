@@ -28,7 +28,8 @@
 
 namespace ealib {
     LIBEA_MD_DECL(DEV_VERTICES_N, "ea.ann.development.vertices.n", int);
-
+    LIBEA_MD_DECL(DEV_EVENTS_N, "ea.ann.development.events.n", int);
+    
     namespace translators {
         
         /*! Phi translator, which produces a phenotype from a developmental 
@@ -74,7 +75,49 @@ namespace ealib {
                 return N;
             }
         };
-        
+
+        /*! Delta translator, which produces a phenotype from a delta graph.
+         
+         As with the Phi translator above, here we also go through a two-step 
+         translation process whereby we first build T, which has the right
+         connectivity, and then translate that into an ANN.
+         */
+        struct delta {
+            template <typename EA>
+            delta(EA& ea) {
+            }
+            
+            template <typename EA>
+            typename EA::phenotype_type operator()(typename EA::genome_type& G, EA& ea) {
+                // construct T, a bidirectional unweighted graph from a developmental template:
+                boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex> T;
+                graph::delta_growth_n(T, get<DEV_EVENTS_N>(ea), G, ea.rng());
+                
+                std::size_t nin=get<ANN_INPUT_N>(ea);
+                std::size_t nout=get<ANN_OUTPUT_N>(ea);
+                assert((nin+nout) < boost::num_vertices(T));
+                
+                // build an ANN from T:
+                typename EA::phenotype_type N(nin, nout, boost::num_vertices(T) - nin - nout);
+                
+                // ok, module 0 and 1 are inputs and outputs, respectively.
+                // we need to make sure that those get put in the right place in the ANN.
+                // the rest of them can go anywhere.
+                
+                for(std::size_t i=0; i<N.size(); ++i) {
+                    for(std::size_t j=0; j<N.size(); ++j) {
+                        if(boost::edge(boost::vertex(i,T), boost::vertex(j,T), T).second) {
+                            // not sure if this is right; the inputs and outputs are likely to be
+                            // totally confused if we're not assigning them to the right modules...
+                            N(i,j) = ea.rng().normal_real(0.0, get<MUTATION_NORMAL_REAL_VAR>(ea));
+                        }
+                    }
+                }
+                
+                return N;
+            }
+        };
+
     } // translators
 } // ealib
 

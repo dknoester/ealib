@@ -31,6 +31,8 @@
 #include <ann/basic_neural_network.h>
 using namespace ealib;
 
+/* This checks that we can directly evolve the weights of an ANN.
+ */
 BOOST_AUTO_TEST_CASE(test_basic_direct) {
 	typedef evolutionary_algorithm
 	< direct<ann::basic_neural_network< > >
@@ -43,3 +45,18 @@ BOOST_AUTO_TEST_CASE(test_basic_direct) {
 	
     ea_type ea;
 }
+
+///* And this checks for direct evolution of the topology and weights of an ANN.
+// */
+//BOOST_AUTO_TEST_CASE(test_basic_direct) {
+//	typedef evolutionary_algorithm
+//	< direct<ann::basic_neural_network< > >
+//	, pole_balancing
+//	, mutation::operators::weight_matrix
+//	, recombination::asexual
+//	, generational_models::moran_process< >
+//	, ancestors::random_weight_neural_network
+//	> ea_type;
+//	
+//    ea_type ea;
+//}

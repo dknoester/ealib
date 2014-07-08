@@ -545,9 +545,14 @@ namespace ealib {
             struct delta {
                 template <typename EA>
                 void operator()(typename EA::individual_type& ind, EA& ea) {
-					typename EA::genome_type& g=ind.genome();
-					mutation::site::relative_normal_real smt;
-					
+                    operator()(ind.genome(), ea);
+                }
+
+                template <typename EA>
+                void operator()(typename EA::genome_type& g, EA& ea) {
+                    namespace ms=ealib::mutation::site;
+                    ms::site_probabilistic<ms::relative_normal_real> smt;
+
 					apply_mutation(g.Pe.begin(), g.Pe.end(), smt, ea);
 					apply_mutation(g.Pc.begin(), g.Pc.end(), smt, ea);
 					apply_mutation(g.Pm.begin(), g.Pm.end(), smt, ea);
@@ -577,20 +582,22 @@ namespace ealib {
 		} // operators
 	} // mutation
 
+    LIBEA_MD_DECL(DELTA_GRAPH_N, "delta_graph.n", int);
+
 	namespace ancestors {
 
 		//! Generates a random growth descriptor for a single module graph.
 		struct random_delta_graph {
 			template <typename EA>
             typename EA::genome_type operator()(EA& ea) {
-				typename EA::genome_type g;
-				
-				std::generate(g.Pe.begin(), g.Pe.end(), probability_generator<typename EA::rng_type>(ea.rng()));
-				std::generate(g.Pc.begin(), g.Pc.end(), probability_generator<typename EA::rng_type>(ea.rng()));
-				
-				// we rely on default construction of the growth descriptor to be sane;
-				// ie, one module, 100% likelihood of edges connecting.
-				return g;
+				typename EA::genome_type D;
+                mutation::operators::delta m;
+                
+				for(std::size_t i=0; i<get<DELTA_GRAPH_N>(ea); ++i) {
+                    m(D,ea);
+                }
+
+				return D;
 			}
 		};
 

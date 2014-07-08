@@ -94,11 +94,8 @@ namespace ealib {
 			sm(f,ea);
 		}
 	}
-	
-	
 
     namespace mutation {
-        
         namespace site {
             struct uniform_integer {
                 template <typename Iterator, typename EA>
@@ -164,6 +161,20 @@ namespace ealib {
                     if(ea.rng().p(get<MUTATION_ZERO_P>(ea))) {
                         *i = 0.0;
                     } else {
+                        _mt(i, ea);
+                    }
+                }
+                
+                mutation_type _mt;
+            };
+
+            template <typename MutationType>
+            struct site_probabilistic {
+                typedef MutationType mutation_type;
+                
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    if(ea.rng().p(get<MUTATION_PER_SITE_P>(ea))) {
                         _mt(i, ea);
                     }
                 }
