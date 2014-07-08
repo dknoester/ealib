@@ -180,20 +180,29 @@ namespace ealib {
         }
         
         //! Returns a new individual built from the given individual (subpopulation).
-        individual_ptr_type make_individual(const individual_type& r=individual_type()) {
-            individual_ptr_type p(new individual_type(r));
-            p->md() += md(); // WARNING: Meta-data comes from the meta-population.
+        individual_ptr_type make_individual() {
+            individual_ptr_type p(new individual_type());
+//            p->md() += md(); // WARNING: Meta-data comes from the meta-population.
             p->reset_rng(_rng.seed());
-            p->initialize();
+//            p->initialize();
+            return p;
+        }
+
+        //! Returns a new individual built from the given individual (subpopulation).
+        individual_ptr_type make_individual(const individual_type& r) {
+            individual_ptr_type p(new individual_type(r));
+//            p->md() += md(); // WARNING: Meta-data comes from the meta-population.
+            p->reset_rng(_rng.seed());
+//            p->initialize();
             return p;
         }
         
         //! Returns a copy of an individual.
         individual_ptr_type copy_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
-            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
+//            p->md() += ind.md(); // WARNING: Meta-data comes from the individual.
             p->reset_rng(_rng.seed());
-            p->initialize();
+//            p->initialize();
             return p;
         }
         

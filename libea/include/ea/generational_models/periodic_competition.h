@@ -23,7 +23,7 @@
 #include <ea/algorithm.h>
 #include <ea/metadata.h>
 #include <ea/generational_models/isolated_subpopulations.h>
-#include <ea/generational_models/moran_process.h>
+#include <ea/generational_models/generational.h>
 
 namespace ealib {
     LIBEA_MD_DECL(METAPOP_COMPETITION_PERIOD, "ea.metapopulation.competition_period", unsigned int);
@@ -42,8 +42,8 @@ namespace ealib {
          of a subpopulation can change over time, then it must be nonstationary.
          */
         template
-        < typename UpdateModel=isolated_subpopulations
-        , typename CompetitionModel=moran_process< >
+        < typename CompetitionModel=generational< >
+        , typename UpdateModel=isolated_subpopulations
         > struct periodic_competition {
             typedef UpdateModel update_model_type;
             typedef CompetitionModel competition_model_type;

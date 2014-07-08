@@ -35,7 +35,10 @@
 
 namespace ealib {
 
-    /*! The position_type is contained by individuals to describe their position 
+    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
+    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
+
+    /*! The position_type is contained by individuals to describe their position
      and orientation in the environment.  It can be thought of as an index into 
      the environment.
      
@@ -406,15 +409,21 @@ namespace ealib {
         void face_org(individual_type& ind1, individual_type& ind2) {
             position_type& p1 = ind1.position();
             position_type& p2 = ind2.position();
-
+            
             int x = p1.r[0] - p2.r[0];
+            if(abs(x) > 1) { // crossing torus boundary
+                x = static_cast<int>(std::copysign(1.0, -x));
+            }
+            
             int y = p1.r[1] - p2.r[1];
+            if(abs(y) > 1) { // crossing torus boundary
+                y = static_cast<int>(std::copysign(1.0, -y));
+            }
             
-            assert((x>=-1) && (x<=1));
-            assert((y>=-1) && (y<=1));
-            
-            p1.h[0] = -x; p2.h[0] = x;
-            p1.h[1] = -y; p2.h[1] = y;
+            // p1.h = (-x,-y)
+            p1.h[0] = -x; p1.h[1] = -y;
+            // p2.h == (x,y)
+            p2.h[0] = x;  p2.h[1] = y;
         }
         
     protected:

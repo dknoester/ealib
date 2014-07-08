@@ -304,8 +304,6 @@ namespace ealib {
 	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
 	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
 
-    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
-    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
 
     // ea.individual.*
     LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);

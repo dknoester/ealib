@@ -126,11 +126,15 @@ namespace ealib {
     
     namespace ancestors {
         
-        //! Generates a default-constructed subpopulation.
+        //! Generates a default subpopulation.
         struct default_subpopulation {
-            template <typename EA>
-            typename EA::individual_type operator()(EA& ea) {
-                return typename EA::individual_type();
+            template <typename MEA>
+            typename MEA::individual_type operator()(MEA& mea) {
+                typename MEA::individual_type sea;
+                sea.md() = mea.md();
+                sea.reset_rng(mea.rng().seed());
+                sea.initialize();
+                return sea;
             }
         };
         
