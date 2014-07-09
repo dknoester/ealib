@@ -178,23 +178,29 @@ namespace ealib {
          Meta-data is assigned after checkpoint load to provide for overriding.
          */
         template <typename Checkpoint, typename EA>
-        void prepare_checkpoint(Checkpoint& cp, EA& ea, metadata& md) {
+        void prepare_checkpoint(Checkpoint& cp, EA& ea, const metadata& md=metadata()) {
             load_checkpoint(cp, ea);
             ea.initialize(md);
         }
         
-        /*! Advance the EA by one epoch.
-         */
+
+        //! Advance the EA by one epoch of n updates.
         template <typename EA>
-        void advance_epoch(EA& ea) {
+        void advance_epoch(int n, EA& ea) {
             ea.begin_epoch();
-            for(int n=get<RUN_UPDATES>(ea); n>0; --n) {
+            for( ; n>0; --n) {
                 ea.update();
                 if(ea.stop()) {
                     break;
                 }
             }
             ea.end_epoch();
+        }
+
+        //! Advance the EA by one epoch.
+        template <typename EA>
+        void advance_epoch(EA& ea) {
+            advance_epoch(get<RUN_UPDATES>(ea), ea);
         }
         
         //! Advance the EA by all configured epochs.

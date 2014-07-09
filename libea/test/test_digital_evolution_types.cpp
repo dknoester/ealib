@@ -30,9 +30,15 @@
 //! Configuration object; this is fairly standard across DE simulations.
 
 struct digevo_lifecycle : public default_lifecycle {
-    //! Called as the final step of EA construction (must not depend on configuration parameters).
+    
+    /*! Called after EA initialization.
+     
+     This is a good place to handle programmatic setup tasks.  E.g., adding
+     instructions to a digital evolution ISA, loading external data files,
+     and the like.
+     */
     template <typename EA>
-    void after_construction(EA& ea) {
+    void after_initialization(EA& ea) {
         using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
@@ -59,11 +65,7 @@ struct digevo_lifecycle : public default_lifecycle {
         append_isa<h_divide>(ea);
         append_isa<fixed_input>(ea);
         append_isa<output>(ea);
-    }
-    
-    //! Initialize the EA (may use configuration parameters)
-    template <typename EA>
-    void initialize(EA& ea) {
+
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::resource_ptr_type resource_ptr_type;
         
@@ -113,7 +115,7 @@ struct mp_founder_lifecycle : public default_lifecycle {
 
 LIBEA_ANALYSIS_TOOL(test_population_lod_tool) {
     using namespace ealib;
-//    using namespace ealib::analysis;
+    //    using namespace ealib::analysis;
     
     line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
     typename line_of_descent<EA>::iterator i=lod.begin(); ++i;

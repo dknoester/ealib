@@ -1,4 +1,4 @@
-/* test_ealife.cpp
+/* test_digital_evolution.cpp
  *
  * This file is part of EALib.
  *
@@ -22,9 +22,9 @@
 
 
 struct test_lifecycle : default_lifecycle {
-    //! Called as the final step of EA construction.
+    //! Called after EA initialization.
     template <typename EA>
-    void after_construction(EA& ea) {
+    void after_initialization(EA& ea) {
         using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
@@ -53,10 +53,7 @@ struct test_lifecycle : default_lifecycle {
         append_isa<fixed_input>(ea);
         append_isa<output>(ea);
         append_isa<repro>(ea);
-    }
-    
-    template <typename EA>
-    void initialize(EA& ea) {
+
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::resource_ptr_type resource_ptr_type;
         
@@ -64,30 +61,34 @@ struct test_lifecycle : default_lifecycle {
         resource_ptr_type resA = make_resource("resA", ea);
         task_nand->consumes(resA);
     }
-    
 };
 
 typedef digital_evolution
 < test_lifecycle
-> al_type;
+> ea_type;
+
+metadata build_md() {
+    metadata md;
+    put<POPULATION_SIZE>(100,md);
+	put<REPRESENTATION_SIZE>(100,md);
+    put<SPATIAL_X>(10,md);
+    put<SPATIAL_Y>(10,md);
+    put<SCHEDULER_TIME_SLICE>(30,md);
+    put<MUTATION_PER_SITE_P>(0.0075,md);
+    put<CHECKPOINT_PREFIX>("checkpoint",md);
+    put<RNG_SEED>(1,md);
+    put<RECORDING_PERIOD>(10,md);
+    return md;
+}
 
 BOOST_AUTO_TEST_CASE(test_resources) {
-    al_type al;
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(10,al);
-	put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(20,al);
-    
-    al.initialize();
-    al_type::resource_ptr_type r = make_resource("resB", 0.1, 0.5, 1.0, 0.75, 0.1, al);
+    ea_type ea(build_md());
+    ea_type::resource_ptr_type r = make_resource("resB", 0.1, 0.5, 1.0, 0.75, 0.1, ea);
     
     for(std::size_t k=0; k<20; ++k) {
         //        std::cout << k << std::endl;
-        //        for(std::size_t y=get<SPATIAL_Y>(al); y>0; --y) {
-        //            for(std::size_t i=0; i<get<SPATIAL_X>(al); ++i) {
+        //        for(std::size_t y=get<SPATIAL_Y>(ea); y>0; --y) {
+        //            for(std::size_t i=0; i<get<SPATIAL_X>(ea); ++i) {
         //                std::cout << r->level(make_position(i,y-1)) << " ";
         //            }
         //            std::cout << std::endl;
@@ -99,27 +100,14 @@ BOOST_AUTO_TEST_CASE(test_resources) {
     BOOST_CHECK_CLOSE(0.0721839, r->level(position_type(1,0)), 0.001);
 }
 
-
-/*!
- */
 BOOST_AUTO_TEST_CASE(test_avida_hardware) {
-    al_type al;
-    al_type::isa_type& isa=al.isa();
+    ea_type ea(build_md());
+    ea_type::isa_type& isa=ea.isa();
+    generate_ancestors(nopx_ancestor(), 1, ea);
     
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(10,al);
-	put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(20,al);
-    
-    al.initialize();
-    generate_ancestors(nopx_ancestor(), 1, al);
-    
-    al_type::individual_ptr_type p = al.population()[0];
-    al_type::genome_type& r = p->repr();
-    al_type::hardware_type& hw = p->hw();
+    ea_type::individual_ptr_type p = ea.population()[0];
+    ea_type::genome_type& r = p->repr();
+    ea_type::hardware_type& hw = p->hw();
     
     r[8] = isa["nop_a"];
     r[9] = isa["nop_b"];
@@ -134,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
 	BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::IP), 5);
     
     // Advance a head location - should deal with circular genome
-    hw.advanceHead(hardware::FH, 12);
+    hw.advanceHead(hardware::FH, 102);
 	BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::FH), 2);
     
     // Find a label's complement
@@ -152,23 +140,13 @@ BOOST_AUTO_TEST_CASE(test_avida_hardware) {
 }
 
 BOOST_AUTO_TEST_CASE(test_avida_instructions) {
-    al_type al;
-    al_type::isa_type& isa=al.isa();
+    ea_type ea(build_md());
+    ea_type::isa_type& isa=ea.isa();
+    generate_ancestors(nopx_ancestor(), 1, ea);
     
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(100,al);
-	put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(20,al);
-    
-    al.lifecycle().prepare_new(al);
-    generate_ancestors(nopx_ancestor(), 1, al);
-    
-    al_type::individual_ptr_type p = al.population()[0];
-    al_type::genome_type& r = p->repr();
-    al_type::hardware_type& hw = p->hw();
+    ea_type::individual_ptr_type p = ea.population()[0];
+    ea_type::genome_type& r = p->repr();
+    ea_type::hardware_type& hw = p->hw();
     
     r[4] = isa["nop_a"];
     r[5] = isa["nop_b"];
@@ -179,7 +157,7 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     // in the same place
     // FH at 10
     hw.setHeadLocation(hardware::FH, 10);
-    isa(isa["mov_head"], p->hw(), p, al);
+    isa(isa["mov_head"], p->hw(), p, ea);
 	BOOST_CHECK_EQUAL(hw.getHeadLocation(hardware::IP), 9);
     
     // Check h-search when complement is found
@@ -187,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
     hw.pushLabelStack(hardware::NOP_C);
     hw.pushLabelStack(hardware::NOP_A);
     hw.pushLabelStack(hardware::NOP_B);
-    isa(isa["h_search"], p->hw(), p, al);
+    isa(isa["h_search"], p->hw(), p, ea);
     
     // If a complement is found, BX is set to the distance to the complement,
     BOOST_CHECK_EQUAL(hw.getRegValue(hardware::BX), 95);
@@ -202,25 +180,15 @@ BOOST_AUTO_TEST_CASE(test_avida_instructions) {
 
 
 BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
-    al_type al;
-    al_type::isa_type& isa=al.isa();
+    ea_type ea(build_md());
+    ea_type::isa_type& isa=ea.isa();
+    generate_ancestors(nopx_ancestor(), 1, ea);
     
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(100,al);
-	put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(20,al);
-    
-    al.lifecycle().prepare_new(al);
-    generate_ancestors(nopx_ancestor(), 1, al);
-    
-    al_type::individual_ptr_type p = al.population()[0];
-    al_type::genome_type& r = p->repr();
+    ea_type::individual_ptr_type p = ea.population()[0];
+    ea_type::genome_type& r = p->repr();
     
     // check that h_alloc increases the size of the organism's memory:
-    isa(isa["h_alloc"], p->hw(), p, al);
+    isa(isa["h_alloc"], p->hw(), p, ea);
     BOOST_CHECK_EQUAL(r.size(), 250);
     
     // Check that h_copy:
@@ -230,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     p->hw().setHeadLocation(hardware::RH, 10);
     p->hw().setHeadLocation(hardware::WH, 20);
     
-    isa(isa["h_copy"], p->hw(), p, al);
+    isa(isa["h_copy"], p->hw(), p, ea);
 	BOOST_CHECK_EQUAL(r[20], isa["input"]);
     
     // (2) Advances the read and write head positions by 1.
@@ -266,58 +234,46 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
     BOOST_CHECK(tnor(x, y, 4294967284));
     BOOST_CHECK(txor(x, y, 3));
     BOOST_CHECK(tequals(x, y, 4294967292));
-    
-    // test resources
 }
 
 
-BOOST_AUTO_TEST_CASE(test_al_type) {
-    typedef al_type::task_library_type::task_ptr_type task_ptr_type;
-    al_type al;
+BOOST_AUTO_TEST_CASE(test_ea_type) {
+    ea_type ea(build_md());
+    ea_type::isa_type& isa=ea.isa();
+    generate_ancestors(repro_ancestor(), 1, ea);
     
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(100,al);
-	put<MUTATION_PER_SITE_P>(0.0,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(25,al);
+    ea_type::individual_ptr_type p = ea.population()[0];
+    ea_type::genome_type& r = p->genome();
     
-    al.initialize();
-    generate_ancestors(repro_ancestor(), 1, al);
-    
-    al_type::individual_ptr_type p = al.population()[0];
-    al_type::genome_type& r = p->repr();
-    
-    r[94] = al.isa()["nop_c"];
-    r[95] = al.isa()["input"];
-    r[96] = al.isa()["input"];
-    r[97] = al.isa()["nand"];
-    r[98] = al.isa()["output"];
+    r[94] = ea.isa()["nop_c"];
+    r[95] = ea.isa()["input"];
+    r[96] = ea.isa()["input"];
+    r[97] = ea.isa()["nand"];
+    r[98] = ea.isa()["output"];
     
     p->priority() = 1.0;
     
-    BOOST_CHECK(al.population().size()==1);
+    BOOST_CHECK(ea.population().size()==1);
     
-    put<SCHEDULER_TIME_SLICE>(100,al);
-    al.scheduler()(al.population(),al);
+    put<SCHEDULER_TIME_SLICE>(100,ea);
+    ea.scheduler()(ea.population(),ea);
     
-    BOOST_CHECK(al.population().size()==2);
+    BOOST_CHECK(ea.population().size()==2);
     
-    for(al_type::population_type::iterator i=al.population().begin(); i!=al.population().end(); ++i) {
-        BOOST_CHECK(al.population()[0]->priority() == 2.0);
+    for(ea_type::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+        BOOST_CHECK(ea.population()[0]->priority() == 2.0);
     }
     
     // now let's check serialization...
     std::ostringstream out;
-    al.lifecycle().save_checkpoint(out, al);
+    ea.lifecycle().save_checkpoint(out, ea);
     
-    al_type al2;
+    ea_type ea2;
     std::istringstream in(out.str());
-    al.lifecycle().load_checkpoint(in,al2);
+    ea.lifecycle().load_checkpoint(in,ea2);
     
-    al_type::individual_type& i1=*al.population()[0];
-    al_type::individual_type& i2=*al2.population()[0];
+    ea_type::individual_type& i1=*ea.population()[0];
+    ea_type::individual_type& i2=*ea2.population()[0];
     
     BOOST_CHECK(i1.repr() == i2.repr());
     BOOST_CHECK(i1.hw() == i2.hw());
@@ -325,127 +281,97 @@ BOOST_AUTO_TEST_CASE(test_al_type) {
 
 
 BOOST_AUTO_TEST_CASE(test_self_replication) {
-    al_type al;
+    ea_type ea(build_md());
+    put<MUTATION_PER_SITE_P>(0.0,ea);
+
+    ea_type::isa_type& isa=ea.isa();
+    generate_ancestors(nopx_ancestor(), 1, ea);
     
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(100,al);
-	put<MUTATION_PER_SITE_P>(0.0,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(25,al);
+    ea_type::individual_ptr_type p = ea.population()[0];
+    ea_type::genome_type& r = p->repr();
     
-    al.initialize();
-    generate_ancestors(nopx_ancestor(), 1, al);
+    r[0] = ea.isa()["h_alloc"];
+    r[1] = ea.isa()["nop_c"];
+    r[2] = ea.isa()["nop_a"];
+    r[3] = ea.isa()["h_search"];
+    r[4] = ea.isa()["nop_c"];
+    r[5] = ea.isa()["mov_head"];
     
-    al_type::individual_ptr_type p = al.population()[0];
-    al_type::genome_type& r = p->repr();
-    
-    r[0] = al.isa()["h_alloc"];
-    r[1] = al.isa()["nop_c"];
-    r[2] = al.isa()["nop_a"];
-    r[3] = al.isa()["h_search"];
-    r[4] = al.isa()["nop_c"];
-    r[5] = al.isa()["mov_head"];
-    
-    r[91] = al.isa()["h_search"];
-    r[92] = al.isa()["h_copy"];
-    r[93] = al.isa()["nop_c"];
-    r[94] = al.isa()["nop_a"];
-    r[95] = al.isa()["if_label"];
-    r[96] = al.isa()["h_divide"];
-    r[97] = al.isa()["mov_head"];
-    r[98] = al.isa()["nop_a"];
-    r[99] = al.isa()["nop_b"];
+    r[91] = ea.isa()["h_search"];
+    r[92] = ea.isa()["h_copy"];
+    r[93] = ea.isa()["nop_c"];
+    r[94] = ea.isa()["nop_a"];
+    r[95] = ea.isa()["if_label"];
+    r[96] = ea.isa()["h_divide"];
+    r[97] = ea.isa()["mov_head"];
+    r[98] = ea.isa()["nop_a"];
+    r[99] = ea.isa()["nop_b"];
     
     p->priority() = 1.0;
-    BOOST_CHECK(al.population().size()==1);
+    BOOST_CHECK(ea.population().size()==1);
     
-    put<SCHEDULER_TIME_SLICE>(389,al);
-    al.scheduler()(al.population(),al);
+    put<SCHEDULER_TIME_SLICE>(389,ea);
+    ea.scheduler()(ea.population(),ea);
     
-    BOOST_CHECK(al.population().size()==2);
+    BOOST_CHECK(ea.population().size()==2);
     
-    BOOST_CHECK(al.population()[0]->hw().repr() == al.population()[1]->hw().repr());
-    BOOST_CHECK(al.population()[0]->hw() == al.population()[1]->hw());
+    BOOST_CHECK(ea.population()[0]->hw().repr() == ea.population()[1]->hw().repr());
+    BOOST_CHECK(ea.population()[0]->hw() == ea.population()[1]->hw());
 }
 
 
 
 BOOST_AUTO_TEST_CASE(test_al_messaging) {
-    al_type al;
+    ea_type ea(build_md());
+    ea_type::isa_type& isa=ea.isa();
+    generate_ancestors(nopx_ancestor(), 2, ea);
     
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(100,al);
-	put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(20,al);
+    ea_type::individual_ptr_type p = ea.population()[0];
+    ea_type::genome_type& r = p->repr();
     
-    al.initialize();
-    generate_ancestors(nopx_ancestor(), 2, al);
-    
-    al_type::individual_ptr_type p = al.population()[0];
-    al_type::genome_type& r = p->repr();
-    
-    r[4] = al.isa()["nop_c"];
-    r[5] = al.isa()["input"];
-    r[6] = al.isa()["input"];
-    r[7] = al.isa()["nand"];
-    r[8] = al.isa()["bc_msg"];
+    r[4] = ea.isa()["nop_c"];
+    r[5] = ea.isa()["input"];
+    r[6] = ea.isa()["input"];
+    r[7] = ea.isa()["nand"];
+    r[8] = ea.isa()["bc_msg"];
     
     p->priority() = 1.0;
-    BOOST_CHECK(al.population().size()==2);
+    BOOST_CHECK(ea.population().size()==2);
     
-    al.env().face_org(al[0], al[1]);
+    ea.env().face_org(ea[0], ea[1]);
     
-    put<SCHEDULER_TIME_SLICE>(100,al);
-    al.scheduler()(al.population(),al);
+    put<SCHEDULER_TIME_SLICE>(100,ea);
+    ea.scheduler()(ea.population(),ea);
     
     // the scheduler may shuffle the population -- so, we have to check that
     // *one of* the individuals received a message, not a particular one:
-    BOOST_CHECK((al.population()[0]->hw().msgs_queued()>0)
-                || (al.population()[1]->hw().msgs_queued()>0));
+    BOOST_CHECK((ea.population()[0]->hw().msgs_queued()>0)
+                || (ea.population()[1]->hw().msgs_queued()>0));
 }
 
 BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
-    al_type al, al2;
+    ea_type ea(build_md()), ea2;
     
-    put<POPULATION_SIZE>(100,al);
-	put<REPRESENTATION_SIZE>(100,al);
-	put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<SPATIAL_X>(10,al);
-    put<SPATIAL_Y>(10,al);
-    put<MUTATION_UNIFORM_INT_MIN>(0,al);
-    put<MUTATION_UNIFORM_INT_MAX>(20,al);
-    put<SCHEDULER_TIME_SLICE>(30,al);
-    put<MUTATION_PER_SITE_P>(0.0075,al);
-    put<CHECKPOINT_PREFIX>("checkpoint",al);
-    put<RNG_SEED>(1,al);
-    put<RECORDING_PERIOD>(10,al);
-    
-    al.initialize();
-    generate_ancestors(repro_ancestor(), 1, al);
-    al_type::individual_ptr_type p = al.population()[0];
+    generate_ancestors(repro_ancestor(), 1, ea);
+    ea_type::individual_ptr_type p = ea.population()[0];
     p->priority() = 1.0;
-    al.lifecycle().advance_epoch(400,al);
-    BOOST_CHECK(al.population().size()>1);
+    ea.lifecycle().advance_epoch(400,ea);
+    BOOST_CHECK(ea.population().size()>1);
     
     std::ostringstream out;
-    al.lifecycle().save_checkpoint(out, al);
+    ea.lifecycle().save_checkpoint(out, ea);
     
     std::istringstream in(out.str());
-    al.lifecycle().prepare_checkpoint(in,al2);
+    ea.lifecycle().prepare_checkpoint(in,ea2);
     
-    BOOST_CHECK(al.population() == al2.population());
-    BOOST_CHECK(al.env() == al2.env());
-    BOOST_CHECK(al.rng() == al2.rng());
+    BOOST_CHECK(ea.population() == ea2.population());
+    BOOST_CHECK(ea.env() == ea2.env());
+    BOOST_CHECK(ea.rng() == ea2.rng());
     
-    al.lifecycle().advance_epoch(10,al);
-    al.lifecycle().advance_epoch(10,al2);
+    ea.lifecycle().advance_epoch(10,ea);
+    ea.lifecycle().advance_epoch(10,ea2);
     
-    BOOST_CHECK(al.population() == al2.population());
-    BOOST_CHECK(al.env() == al2.env());
-    BOOST_CHECK(al.rng() == al2.rng());
+    BOOST_CHECK(ea.population() == ea2.population());
+    BOOST_CHECK(ea.env() == ea2.env());
+    BOOST_CHECK(ea.rng() == ea2.rng());
 }

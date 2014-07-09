@@ -40,7 +40,7 @@ namespace ealib {
 	template <typename RepresentationGenerator, typename EA>
 	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
         // build the placeholder ancestor:
-        typename EA::individual_ptr_type ap = ea.make_individual();
+        typename EA::individual_ptr_type ap = ea.make_individual(g(ea));
         put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);
         put<IND_GENERATION>(-1.0, *ap);
         put<IND_BIRTH_UPDATE>(ea.current_update(), *ap);
@@ -130,10 +130,8 @@ namespace ealib {
         struct default_subpopulation {
             template <typename MEA>
             typename MEA::individual_type operator()(MEA& mea) {
-                typename MEA::individual_type sea;
-                sea.md() = mea.md();
+                typename MEA::individual_type sea(mea.md());
                 sea.reset_rng(mea.rng().seed());
-                sea.initialize();
                 return sea;
             }
         };

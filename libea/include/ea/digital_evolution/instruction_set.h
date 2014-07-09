@@ -570,7 +570,7 @@ namespace ealib {
             int jumpAmt = hw.getRegValue(rbx);
             hw.advanceHead(Hardware::IP, jumpAmt);
         }
-
+        
     } // instructions
 
 

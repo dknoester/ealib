@@ -113,12 +113,15 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
         
-        /*! Similar to the envelope/letter idiom, here we're defining a type
+        /*! Similar to the letter/envelope idiom, here we're defining a type
          that is used to hold the guts of a digital_evolution instance.  The
          problem we're trying to solve here is that we have to provide a way
          to default construct an instance of digital_evolution that doesn't
          actually require initialization, and yet follows the RAII paradigm to
          smooth out the relationship between metapopulations and subpopulations.
+         
+         Copy/assignment: These are handled by digital_evolution; the state_type
+         is simply a container.
          */
         class state_type {
         public:
@@ -126,18 +129,7 @@ namespace ealib {
             state_type() : update(0) {
             }
             
-            //! Assignment operator.
-            state_type& operator=(const state_type& that) {
-                if(this != &that) {
-                    update = that.update;
-                    rng = that.rng;
-                    md = that.md;
-                    stop = stop;
-                    lifecycle = that.lifecycle;
-                }
-            }
-            
-            // we assume these members can be assigned:
+            // assignable:
             unsigned long update; //!< Update number for this EA.
             rng_type rng; //!< Random number generator.
             md_type md; //!< Meta-data for this evolutionary algorithm instance.
@@ -150,13 +142,14 @@ namespace ealib {
             task_library_type tasklib; //!< Task library.
             resources_type resources; //!< Resources.
             
-            // these have to be handled by digital_evolution:
+            // these have to be handled carefully:
             population_type population; //!< Population instance.
             environment_type env; //!< Environment object.
             scheduler_type scheduler; //!< Scheduler instance.
 
         private:
             state_type(const state_type&);
+            state_type& operator=(const state_type&);
             
             friend class boost::serialization::access;
             template<class Archive>
@@ -174,17 +167,35 @@ namespace ealib {
             BOOST_CONCEPT_ASSERT((DigitalEvolutionConcept<digital_evolution>));
         }
         
-        //! Copy constructor.
+        //! Initializing constructor.
+        digital_evolution(const metadata& md) {
+            initialize(md);
+        }
+        
+        /*! Copy constructor.
+         
+         Because the state of an instance of digital_evolution is held by the
+         state_type, copy construction can be defined in terms of assignment.
+         */
         digital_evolution(const digital_evolution& that) {
             *this = that;
         }
         
-        //! Assignment operator.
+        /*! Assignment operator.
+         
+         This assignment operator is a bit more powerful than most: First,
+         because we hide state behind a separate object, releasing the old state
+         is easy.  Second, it's easy to check to see if we in fact need to
+         release old state, so it works for copy construction as well.  Finally,
+         since state is held in a scoped_ptr, we don't need to worry about
+         memory management and exception safety.
+         
+         \warning This assignment operator is destructive: if something goes
+         wrong during assignment, we assume that we're done and that the EA 
+         should crash.
+         */
         digital_evolution& operator=(const digital_evolution& that) {
             if(this != &that) {
-                // the assignment operator is destructive: if something
-                // goes wrong during assignment, we assume that we're done
-                // and that the EA shold crash:
                 if(_state) {
                     _state.reset();
                 }
@@ -193,10 +204,13 @@ namespace ealib {
                     // empty EA from that's metadata:
                     initialize(that.md());
                     // at this point, all the non-copyables are configured (e.g.,
-                    // events, isa, etc).  call state_type's assignment
-                    // operator to handle the easy ones:
-                    *_state = *that._state;
-                    
+                    // events, isa, etc).  copy the easy parts of state first:
+                    _state->update = that._state->update;
+                    _state->rng = that._state->rng;
+                    _state->md = that._state->md;
+                    _state->stop = that._state->stop;
+                    _state->lifecycle = that._state->lifecycle;
+
                     // copy the individuals, link them to the environment, and
                     // update the scheduler:
                     for(const_iterator i=that.begin(); i!=that.end(); ++i) {
@@ -281,6 +295,11 @@ namespace ealib {
         individual_ptr_type copy_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
             return p;
+        }
+        
+        //! Returns true if this instance of digital_evolution has state.
+        bool has_state() const {
+            return _state != 0;
         }
         
         //! Returns the current update of this EA.
