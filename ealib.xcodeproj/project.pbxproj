@@ -533,7 +533,6 @@
 		423CBDFB157D0E450003A644 /* test_rng.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_rng.cpp; sourceTree = "<group>"; };
 		423CBE57157D0FCC0003A644 /* test-ealib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-ealib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_unit_test_framework.dylib; path = /usr/local/lib/libboost_unit_test_framework.dylib; sourceTree = "<absolute>"; };
-		4243E771189417F900431D18 /* genetic_algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = genetic_algorithm.h; sourceTree = "<group>"; };
 		4243E7821894180F00431D18 /* test-ealib copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-ealib copy"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4243E7831894184F00431D18 /* test_genetic_algorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_genetic_algorithm.cpp; sourceTree = "<group>"; };
 		4245004516D3BA8E007827D7 /* test_digital_evolution_types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution_types.cpp; sourceTree = "<group>"; };
@@ -607,15 +606,6 @@
 		428B7260184F77AB00E3BB4E /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		428B7261184F77AB00E3BB4E /* individual.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = individual.h; sourceTree = "<group>"; };
 		428B7262184F77AB00E3BB4E /* island_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = island_model.h; sourceTree = "<group>"; };
-		428B7264184F77AB00E3BB4E /* action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = action.h; sourceTree = "<group>"; };
-		428B7265184F77AB00E3BB4E /* cover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cover.h; sourceTree = "<group>"; };
-		428B7266184F77AB00E3BB4E /* environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = environment.h; sourceTree = "<group>"; };
-		428B7267184F77AB00E3BB4E /* fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fitness.h; sourceTree = "<group>"; };
-		428B7268184F77AB00E3BB4E /* learning_classifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = learning_classifier.h; sourceTree = "<group>"; };
-		428B7269184F77AB00E3BB4E /* match.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = match.h; sourceTree = "<group>"; };
-		428B726A184F77AB00E3BB4E /* message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = message.h; sourceTree = "<group>"; };
-		428B726B184F77AB00E3BB4E /* reward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = reward.h; sourceTree = "<group>"; };
-		428B726C184F77AB00E3BB4E /* woods.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = woods.h; sourceTree = "<group>"; };
 		428B726D184F77AB00E3BB4E /* lifecycle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lifecycle.h; sourceTree = "<group>"; };
 		428B726E184F77AB00E3BB4E /* line_of_descent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = line_of_descent.h; sourceTree = "<group>"; };
 		428B726F184F77AB00E3BB4E /* metadata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = metadata.h; sourceTree = "<group>"; };
@@ -1094,7 +1084,6 @@
 				428B724E184F77AB00E3BB4E /* fitness_function.h */,
 				428B724F184F77AB00E3BB4E /* fitness_functions */,
 				428B7255184F77AB00E3BB4E /* functional.h */,
-				4243E771189417F900431D18 /* genetic_algorithm.h */,
 				428B7257184F77AB00E3BB4E /* generational_models */,
 				428B725E184F77AB00E3BB4E /* generators.h */,
 				4212C0C319375DAB001D435A /* genome_types */,
@@ -1102,7 +1091,6 @@
 				428B7261184F77AB00E3BB4E /* individual.h */,
 				428B7262184F77AB00E3BB4E /* island_model.h */,
 				42B89EC819377D7C00435794 /* iterators */,
-				428B7263184F77AB00E3BB4E /* lcs */,
 				428B726D184F77AB00E3BB4E /* lifecycle.h */,
 				428B726E184F77AB00E3BB4E /* line_of_descent.h */,
 				426F9F5C18E363CC00910682 /* math */,
@@ -1186,22 +1174,6 @@
 				428B725D184F77AB00E3BB4E /* steady_state.h */,
 			);
 			path = generational_models;
-			sourceTree = "<group>";
-		};
-		428B7263184F77AB00E3BB4E /* lcs */ = {
-			isa = PBXGroup;
-			children = (
-				428B7264184F77AB00E3BB4E /* action.h */,
-				428B7265184F77AB00E3BB4E /* cover.h */,
-				428B7266184F77AB00E3BB4E /* environment.h */,
-				428B7267184F77AB00E3BB4E /* fitness.h */,
-				428B7268184F77AB00E3BB4E /* learning_classifier.h */,
-				428B7269184F77AB00E3BB4E /* match.h */,
-				428B726A184F77AB00E3BB4E /* message.h */,
-				428B726B184F77AB00E3BB4E /* reward.h */,
-				428B726C184F77AB00E3BB4E /* woods.h */,
-			);
-			path = lcs;
 			sourceTree = "<group>";
 		};
 		428B7280184F77AB00E3BB4E /* selection */ = {

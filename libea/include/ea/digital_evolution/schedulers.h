@@ -127,6 +127,11 @@ namespace ealib {
             }
             std::swap(population, next);
         }
+        
+        //! Link a standing population to this scheduler.
+        template <typename EA>
+        void link(EA& ea) {
+        }
     };
     
 
@@ -187,6 +192,11 @@ namespace ealib {
             }
             std::swap(population, next);
         }
+        
+        //! Link a standing population to this scheduler.
+        template <typename EA>
+        void link(EA& ea) {
+        }
     };
 
     
@@ -236,6 +246,11 @@ namespace ealib {
                 }
             }
             std::swap(population, next);
+        }
+        
+        //! Link a standing population to this scheduler.
+        template <typename EA>
+        void link(EA& ea) {
         }
     };
     
@@ -288,6 +303,11 @@ namespace ealib {
                 }
             }
             std::swap(population, next);
+        }
+        
+        //! Link a standing population to this scheduler.
+        template <typename EA>
+        void link(EA& ea) {
         }
     };
     

@@ -48,54 +48,53 @@ namespace ealib {
      defined below.
      
      There are two main paths to get to the "ready-to-run" state, a new EA and an
-     EA loaded from a checkpoint.  You could handle these pieces yourself, or
-     use the handy "prepare_*" methods defined below.  (Use the prepare methods.)
+     EA loaded from a checkpoint.  See the prepare_* methods defined below.
      
      After calling prepare_*, use advance_epoch to run the EA for a specified number
-     of updates.
+     of updates.  By default, a checkpoint is created after every epoch.
      
      object construction
-     |
-     v
-     after_construction (cannot depend on meta-data)
-     |     \
-     |      v
-     |      meta-data assignment
      |          |
      v          |
      load       |
      |          |
-     override   |
-     meta-data? |
+     v          v
+     meta-data assignment
      |          |
      v          v
      initialize (final resource preparation, event attachment, etc.)
      |          |
+     **after_initialization()**
+     |          |
      |    initial_population
-     |        |
-     v        v
+     |          |
+     |          |
+     |    **after_initial_population()**
+     |          |
+     v          v
      begin epoch
      |
      v
      update <-N-- stop? --Y-> end epoch ---> save
           \___ /
-     
      */
     struct default_lifecycle {
         
-        //! Called after construction of the EA (no meta-data available).
+        /*! Called after EA initialization.
+         
+         This is a good place to handle programmatic setup tasks.  E.g., adding
+         instructions to a digital evolution ISA, loading external data files,
+         and the like.
+         */
         template <typename EA>
-        void after_construction(EA& ea) {
+        void after_initialization(EA& ea) {
         }
         
-        //! Called after EA initialization (meta-data available).
+        /*! Called after the initial population has been generated.
+         
+         */
         template <typename EA>
-        void initialize(EA& ea) {
-        }
-        
-        //! Called after the initial population has been generated.
-        template <typename EA>
-        void initial_population(EA& ea) {
+        void after_initial_population(EA& ea) {
         }
         
         //! Called to reset the state of this population.
@@ -165,30 +164,12 @@ namespace ealib {
         }
         
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
-         state.
-         */
-        template <typename EA>
-        void prepare_new(EA& ea) {
-            ea.initialize();
-            generate_initial_population(ea);
-        }
-        
-        /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
          state, given meta-data.
          */
         template <typename EA>
         void prepare_new(EA& ea, metadata& md) {
-            ea.md() += md;
-            prepare_new(ea);
-        }
-        
-        /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
-         state using a checkpoint.
-         */
-        template <typename Checkpoint, typename EA>
-        void prepare_checkpoint(Checkpoint& cp, EA& ea) {
-            load_checkpoint(cp, ea);
-            ea.initialize();
+            ea.initialize(md);
+            generate_initial_population(ea);
         }
         
         /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
@@ -199,16 +180,15 @@ namespace ealib {
         template <typename Checkpoint, typename EA>
         void prepare_checkpoint(Checkpoint& cp, EA& ea, metadata& md) {
             load_checkpoint(cp, ea);
-            ea.md() += md;
-            ea.initialize();
+            ea.initialize(md);
         }
         
-        /*! Advance the EA by one epoch of n updates.
+        /*! Advance the EA by one epoch.
          */
         template <typename EA>
-        void advance_epoch(int n, EA& ea) {
+        void advance_epoch(EA& ea) {
             ea.begin_epoch();
-            for( ; n>0; --n) {
+            for(int n=get<RUN_UPDATES>(ea); n>0; --n) {
                 ea.update();
                 if(ea.stop()) {
                     break;
@@ -221,7 +201,7 @@ namespace ealib {
         template <typename EA>
         void advance_all(EA& ea) {
 			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
-                advance_epoch(get<RUN_UPDATES>(ea), ea);
+                advance_epoch(ea);
                 if(!get<CHECKPOINT_OFF>(ea,0)) {
                     std::ostringstream filename;
                     filename << get<CHECKPOINT_PREFIX>(ea) << "-" << ea.current_update() << ".xml";

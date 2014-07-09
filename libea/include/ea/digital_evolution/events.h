@@ -27,7 +27,12 @@ namespace ealib {
     /*! Digital evolution event handler.
      */
     template <typename EA>
-	struct digital_evolution_event_handler : event_handler<EA> {
+	class digital_evolution_event_handler : public event_handler<EA> {
+    public:
+        //! Default constructor.
+        digital_evolution_event_handler() {
+        }
+        
         //! Called when an individual performs a task.
         boost::signals2::signal<void(typename EA::individual_type&, // individual
                                      typename EA::task_library_type::task_ptr_type, // task pointer
@@ -47,6 +52,10 @@ namespace ealib {
         //! Called when an individual "dies" or is replaced.
         boost::signals2::signal<void(typename EA::individual_type&, // individual
                                      EA&)> death;
+        
+    private:
+        digital_evolution_event_handler(const digital_evolution_event_handler&);
+        digital_evolution_event_handler& operator=(const digital_evolution_event_handler&);
     };
     
     

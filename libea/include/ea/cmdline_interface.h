@@ -41,8 +41,6 @@
 
 namespace ealib {
 
-    LIBEA_MD_DECL(COMMAND_LINE, "ea.run.command_line", std::string);
-
     //! Abstract base class allowing for a limited set of interactions with an EA.
     class ea_interface {
     public:
@@ -103,9 +101,7 @@ namespace ealib {
         ci->_tools[tool_type::name()] = p;
     }
     
-    
-    /*! This selector is used with the command-line interface to DISABLE registration.
-     */
+    //! This selector is used with the command-line interface to DISABLE registration.
     struct do_not_registerS { };
     
     /*! Command-line interface to an EA.
@@ -123,7 +119,11 @@ namespace ealib {
             registrar::instance()->register_ea(this);
         }
 
-        //! Non-registering constructor.
+        /*! Non-registering constructor.
+         
+         This enables us to use the cmdline_interface class without triggering
+         the registrar defined above.
+         */
         cmdline_interface(do_not_registerS) : ea_interface(), _ea_options("Configuration file and command-line options") {
         }
         
@@ -136,14 +136,13 @@ namespace ealib {
         //! Gather the events that occur during a trial of this EA.
         virtual void gather_events(EA& ea) { }
         
-        //! Called before initialization (good place to calculate config options).
-        virtual void before_initialization(EA& ea) { }
+        //! Called after initialization (good place to calculate config options).
+        virtual void after_initialization(EA& ea) { }
         
         //! Execute an EA based on the given command-line parameters.
         virtual void exec(int argc, char* argv[]) {
             gather_options();
             parse_all(argc, argv);
-            
             ea_type ea;
             
             if(_vm.count("analyze")) {
@@ -214,14 +213,23 @@ namespace ealib {
             }
             
             po::notify(_vm);
+            
+            // print 'em out, stuff the options in metadata:
+            std::cerr << std::endl << "Active configuration options:" << std::endl;
+            for(po::variables_map::iterator i=_vm.begin(); i!=_vm.end(); ++i) {
+                const std::string& k=i->first;
+                const std::string& v=i->second.as<std::string>();
+                put(k, v, _md);
+                std::cerr << "\t" << k << "=" << v << std::endl;
+            }
+            std::cerr << std::endl;
         }
 
         //! Analyze an EA instance.
 		void analyze(ea_type& ea) {
             load_if(ea);
-            apply(ea);
-            before_initialization(ea);
-            ea.initialize();
+            ea.initialize(_md);
+            after_initialization(ea);
             gather_tools();
             
             std::string toolname = _vm["analyze"].template as<std::string>();
@@ -236,19 +244,12 @@ namespace ealib {
         //! Continue a previously-checkpointed EA.
 		void continue_checkpoint(ea_type& ea) {
             load(ea);
-            
-            // conditionally apply command-line and/or file parameters:
-            if(_vm.count("override")) {
-                apply(ea);
-            }
-            
-            // conditionally reset all fitnesses
+            // conditionally reset the EA:
             if(_vm.count("reset")) {
                 ea.reset();
             }
-            
-            before_initialization(ea);
-            ea.initialize();
+            ea.initialize(_md);
+            after_initialization(ea);
             gather_events(ea);
             if(_vm.count("verbose")) {
                 add_event<datafiles::runtime>(ea);
@@ -256,90 +257,29 @@ namespace ealib {
             ea.lifecycle().advance_all(ea);
         }
         
-        //! Initialize an EA.
-        void initialize_ea(ea_type& ea) {
-            apply(ea);
-            
-            if(exists<RNG_SEED>(ea)) {
-                ea.reset_rng(get<RNG_SEED>(ea));
-            }
-            
-            before_initialization(ea);
-            ea.initialize();
+		//! Run the EA.
+		void run(ea_type& ea) {
+            ea.initialize(_md);
+            after_initialization(ea);
             gather_events(ea);
             if(_vm.count("verbose")) {
                 add_event<datafiles::runtime>(ea);
             }
             generate_initial_population(ea);
-        }
-
-        //! Continue an already initialized EA for another epoch.
-        void continue_ea(ea_type& ea) {
             ea.lifecycle().advance_all(ea);
-        }
-
-		//! Run the EA.
-		void run(ea_type& ea) {
-            initialize_ea(ea);
-            continue_ea(ea);
         }
         
     protected:
-
-        //! Apply meta-data to a single population.
-        void apply(const std::string& k, const std::string& v, EA& ea, bool verbose, singlePopulationS) {
-            if(verbose) {
-                std::cerr << "\t" << k << "=" << v << std::endl;
-            }
-            put(k, v, ea.md());
-        }
-        
-        //! Apply meta-data to multiple populations.
-        void apply(const std::string& k, const std::string& v, EA& ea, bool verbose, multiPopulationS) {
-            if(verbose) {
-                std::cerr << "\t" << k << "=" << v << " (+subpopulations)" << std::endl;
-            }
-            put(k, v, ea.md());
-            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                put(k,v,i->md());
-            }
-        }
-
-        //! Apply any command line options to the EA.
-        void apply(EA& ea) {
-            namespace po = boost::program_options;
-            bool verbose = (_vm.count("verbose") > 0);
-
-            if(verbose) {
-                std::cerr << std::endl << "Active configuration options:" << std::endl;
-            }
-            
-            for(po::variables_map::iterator i=_vm.begin(); i!=_vm.end(); ++i) {
-                const std::string& k=i->first;
-                const std::string& v=i->second.as<std::string>();
-                apply(k, v, ea, verbose, typename EA::population_structure_tag());
-            }
-            
-            if(verbose) {
-                std::cerr << std::endl;
-            }
-        }
-        
-        //! Returns true if a checkpoint file should be loaded.
-        bool has_checkpoint() {
-            return (_vm.count("checkpoint") > 0);
-        }
-
         //! Load the EA from the checkpoint file, if present.
         void load_if(ea_type& ea) {
-            if(has_checkpoint()) {
+            if(_vm.count("checkpoint") > 0) {
                 load(ea);
             }
         }
         
         //! Load the EA from the checkpoint file.
         void load(ea_type& ea) {
-            if(!has_checkpoint()) {
+            if(_vm.count("checkpoint") == 0) {
                 throw fatal_error_exception("required checkpoint file not found.");
             }
             std::string cpfile(_vm["checkpoint"].template as<std::string>());
@@ -354,6 +294,7 @@ namespace ealib {
 
         boost::program_options::options_description _ea_options; //!< Options that are configured for this EA.
         boost::program_options::variables_map _vm; //!< Variables (loaded from options).
+        metadata _md; //!< Metadata for the EA.
         tool_registry _tools; //!< Registry for EA analysis tools.
     };
 

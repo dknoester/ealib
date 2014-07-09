@@ -274,7 +274,7 @@ namespace ealib {
             location_storage_type& _locs; //!< Location storage.
         };
         
-        //! Constructor.
+        //! Default constructor.
         environment() {
         }
         
@@ -430,6 +430,9 @@ namespace ealib {
         location_storage_type _locs; //!< Torus of locations in this environment.
 
     private:
+        environment(const environment&);
+        environment& operator=(const environment&);
+        
 		friend class boost::serialization::access;
         template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {

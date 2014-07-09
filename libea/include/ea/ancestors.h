@@ -81,7 +81,7 @@ namespace ealib {
     template <typename EA>
     void generate_initial_population(EA& ea) {
         generate_population(ea);
-        ea.lifecycle().initial_population(ea);
+        ea.lifecycle().after_initial_population(ea);
     }
     
     /*! Fills the entire population with ancestors.
