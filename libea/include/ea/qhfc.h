@@ -335,6 +335,36 @@ namespace ealib {
     , fill_metapopulation
     , qhfc_lifecycle
     > {
+    public:
+        typedef metapopulation
+        < evolutionary_algorithm // begin subpopulation
+        < Representation
+        , FitnessFunction
+        , MutationOperator
+        , RecombinationOperator
+        , generational_models::deterministic_crowding< >
+        , AncestorGenerator
+        , dont_stop
+        , fill_population
+        , Lifecycle
+        > // end subpopulation
+        , quiet_nan
+        , mutation::operators::no_mutation
+        , recombination::no_recombination
+        , generational_models::qhfc
+        , ancestors::default_subpopulation
+        , StopCondition
+        , fill_metapopulation
+        , qhfc_lifecycle
+        > parent_type;
+        
+        //! Default constructor.
+        qhfc() {
+        }
+        
+        //! Initializing constructor.
+        qhfc(const metadata& md) : parent_type(md) {
+        }
     };
     
 

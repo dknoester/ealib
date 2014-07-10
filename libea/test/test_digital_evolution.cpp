@@ -266,11 +266,11 @@ BOOST_AUTO_TEST_CASE(test_ea_type) {
     
     // now let's check serialization...
     std::ostringstream out;
-    ea.lifecycle().save_checkpoint(out, ea);
+    checkpoint::save(out, ea);
     
     ea_type ea2;
     std::istringstream in(out.str());
-    ea.lifecycle().load_checkpoint(in,ea2);
+    checkpoint::load(in, ea2);
     
     ea_type::individual_type& i1=*ea.population()[0];
     ea_type::individual_type& i2=*ea2.population()[0];
@@ -319,8 +319,6 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     BOOST_CHECK(ea.population()[0]->hw() == ea.population()[1]->hw());
 }
 
-
-
 BOOST_AUTO_TEST_CASE(test_al_messaging) {
     ea_type ea(build_md());
     ea_type::isa_type& isa=ea.isa();
@@ -359,10 +357,10 @@ BOOST_AUTO_TEST_CASE(test_digevo_checkpoint) {
     BOOST_CHECK(ea.population().size()>1);
     
     std::ostringstream out;
-    ea.lifecycle().save_checkpoint(out, ea);
+    checkpoint::save(out, ea);
     
     std::istringstream in(out.str());
-    ea.lifecycle().prepare_checkpoint(in,ea2);
+    checkpoint::load(in, ea2);
     
     BOOST_CHECK(ea.population() == ea2.population());
     BOOST_CHECK(ea.env() == ea2.env());

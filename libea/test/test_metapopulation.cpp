@@ -22,10 +22,8 @@
 
 BOOST_AUTO_TEST_CASE(test_meta_population) {
     typedef metapopulation<all_ones_ea> ea_type;
-    ea_type M;
-    add_std_metadata(M);
-    put<METAPOPULATION_SIZE>(5,M);
     
-    M.lifecycle().prepare_new(M);
-    M.lifecycle().advance_epoch(10,M);
+    ea_type M(build_ea_md());
+
+    M.lifecycle().advance_epoch(M);
 }

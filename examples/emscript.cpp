@@ -44,8 +44,6 @@ using namespace ealib;
 int main(int argc, char* argv[]) {
     using namespace std;
     using namespace boost;
-    cout << "constructing..." << endl;
-    ea_type ea;
     cout << "loading config..." << endl;
     ifstream infile("emscript.cfg");//argv[1]);
     if(!infile.is_open()) {
@@ -54,6 +52,7 @@ int main(int argc, char* argv[]) {
         throw file_io_exception(msg.str());
     }
 
+    metadata md;
     string line;
     while(getline(infile, line)) {
         // remove leading & trailing whitespace:
@@ -67,11 +66,11 @@ int main(int argc, char* argv[]) {
         split(fields, line, is_any_of("="));
         cout << fields[0] << "=" << fields[1] << endl;
         // set the meta data:
-        ealib::put(fields[0], fields[1], ea.md());
+        ealib::put(fields[0], fields[1], md);
     }
 
-    cout << "initializing..." << endl;
-    ea.initialize();
+    cout << "constructing..." << endl;
+    ea_type ea(md);
     cout << "adding events..." << endl;
     ealib::add_event<ealib::datafiles::emscript>(ea);
     cout << "generating initial population..." << endl;

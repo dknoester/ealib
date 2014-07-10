@@ -228,7 +228,6 @@ namespace ealib {
         //! Analyze an EA instance.
 		void analyze(ea_type& ea) {
             load_if(ea);
-            ea.initialize(_md);
             after_initialization(ea);
             gather_tools();
             
@@ -248,7 +247,6 @@ namespace ealib {
             if(_vm.count("reset")) {
                 ea.reset();
             }
-            ea.initialize(_md);
             after_initialization(ea);
             gather_events(ea);
             if(_vm.count("verbose")) {
@@ -283,7 +281,7 @@ namespace ealib {
                 throw fatal_error_exception("required checkpoint file not found.");
             }
             std::string cpfile(_vm["checkpoint"].template as<std::string>());
-            ea.lifecycle().load_checkpoint(cpfile, ea);
+            checkpoint::load(cpfile, ea, _md);
         }
         
         // This grants the following templated functions access to the internals

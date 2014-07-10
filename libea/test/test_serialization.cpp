@@ -66,20 +66,20 @@ BOOST_AUTO_TEST_CASE(test_replicability) {
 /*! Test of EA archiving.
  */
 BOOST_AUTO_TEST_CASE(test_archive) {
-//    all_ones_ea ea1(build_ea_md()), ea2;
-//    
-//    // run and archive ea1:
-//    ea1.lifecycle().advance_epoch(10,ea1);
-//    std::ostringstream out;
-//    save_archive(out, ea1);
-//    
-//    // load the archive into ea2:
-//    std::istringstream in(out.str());
-//    load_archive(in, ea2);
-//    
-//    // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
-//    for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
-//        BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
-//        BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
-//    }
+    all_ones_ea ea1(build_ea_md()), ea2(build_ea_md());
+    
+    // run and archive ea1:
+    ea1.lifecycle().advance_epoch(10,ea1);
+    std::ostringstream out;
+    archive::save(out, ea1.population(), ea1);
+    
+    // load the archive into ea2:
+    std::istringstream in(out.str());
+    archive::load(in, ea2.population(), ea2);
+    
+    // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
+    for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
+        BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
+        BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
+    }
 }

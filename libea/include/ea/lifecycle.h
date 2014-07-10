@@ -20,21 +20,8 @@
 #ifndef _EA_LIFECYCLE_H_
 #define _EA_LIFECYCLE_H_
 
-#ifndef LIBEA_CHECKPOINT_OFF
-#include <boost/regex.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/serialization/nvp.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-#endif
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-#include <ea/algorithm.h>
+#include <ea/checkpoint.h>
 #include <ea/metadata.h>
-
 
 namespace ealib {
     
@@ -105,6 +92,7 @@ namespace ealib {
                 }
             }
             ea.end_epoch();
+            checkpoint::save(ea);
         }
 
         //! Advance the EA by one epoch.
@@ -118,11 +106,6 @@ namespace ealib {
         void advance_all(EA& ea) {
 			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
                 advance_epoch(ea);
-                if(!get<CHECKPOINT_OFF>(ea,0)) {
-                    std::ostringstream filename;
-                    filename << get<CHECKPOINT_PREFIX>(ea) << "-" << ea.current_update() << ".xml";
-                    save_checkpoint(filename.str(), ea);
-                }
 			}
 		}
     };
