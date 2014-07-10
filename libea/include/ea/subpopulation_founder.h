@@ -40,8 +40,8 @@ namespace ealib {
         typedef typename T::individual_type individual_type;
         typedef typename T::individual_ptr_type individual_ptr_type;
         
-        //! Returns a pointer to the subpopulation founder.
-        individual_ptr_type founder() { return _founder; }
+        //! Returns a reference to the subpopulation founder pointer.
+        individual_ptr_type& founder() { return _founder; }
 
         individual_ptr_type _founder; //!< Founder.
         
