@@ -40,18 +40,10 @@ namespace ealib {
     
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
-    LIBEA_MD_DECL(CHECKPOINT_OFF, "ea.run.checkpoint_off", int);
-	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
     
     /*! At the conceptual level, this class defines the states and actions of
      an EA's lifecycle.  Where appropriate, these states correspond to methods
      defined below.
-     
-     There are two main paths to get to the "ready-to-run" state, a new EA and an
-     EA loaded from a checkpoint.  See the prepare_* methods defined below.
-     
-     After calling prepare_*, use advance_epoch to run the EA for a specified number
-     of updates.  By default, a checkpoint is created after every epoch.
      
      object construction
      |          |
@@ -101,88 +93,6 @@ namespace ealib {
         template <typename EA>
         void reset(EA& ea) {
         }
-        
-        //! Load an EA from the given input stream.
-        template <typename EA>
-        void load_checkpoint(std::istream& in, EA& ea) {
-#ifndef LIBEA_CHECKPOINT_OFF
-            boost::archive::xml_iarchive ia(in);
-            ia >> BOOST_SERIALIZATION_NVP(ea);
-#endif
-        }
-        
-        //! Load an EA from the given checkpoint file.
-        template <typename EA>
-        void load_checkpoint(const std::string& filename, EA& ea) {
-#ifndef LIBEA_CHECKPOINT_OFF
-            std::ifstream ifs(filename.c_str());
-            if(!ifs.good()) {
-                throw file_io_exception("could not open " + filename + " for reading.");
-            }
-            std::cerr << "loading " << filename << "... ";
-            
-            // is this a gzipped file?  test by checking file extension...
-            static const boost::regex e(".*\\.gz$");
-            if(boost::regex_match(filename, e)) {
-                namespace bio = boost::iostreams;
-                bio::filtering_stream<bio::input> f;
-                f.push(bio::gzip_decompressor());
-                f.push(ifs);
-                load_checkpoint(f,ea);
-            } else {
-                load_checkpoint(ifs,ea);
-            }
-            std::cerr << "done." << std::endl;
-#endif
-        }
-        
-        //! Save an EA to the given output stream.
-        template <typename EA>
-        void save_checkpoint(std::ostream& out, EA& ea) {
-#ifndef LIBEA_CHECKPOINT_OFF
-            boost::archive::xml_oarchive oa(out);
-            oa << BOOST_SERIALIZATION_NVP(ea);
-#endif
-        }
-        
-        //! Save an EA to the given checkpoint file.
-        template <typename EA>
-        void save_checkpoint(const std::string& filename, EA& ea) {
-            std::ofstream ofs(filename.c_str());
-            if(!ofs.good()) {
-                throw file_io_exception("could not open " + filename + " for writing.");
-            }
-            save_checkpoint(ofs,ea);
-        }
-        
-        //! Save an EA to a generated checkpoint file.
-        template <typename EA>
-        void save_checkpoint(EA& ea) {
-            std::ostringstream filename;
-            filename << get<CHECKPOINT_PREFIX>(ea) << "-" << ea.current_update() << ".xml";
-            save_checkpoint(filename.str(), ea);
-        }
-        
-        /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
-         state, given meta-data.
-         */
-        template <typename EA>
-        void prepare_new(EA& ea, metadata& md) {
-            ea.initialize(md);
-            generate_initial_population(ea);
-        }
-        
-        /*! Convenience method to fast-forward a newly constructed EA to a ready-to-run
-         state using a checkpoint, given meta-data.
-         
-         Meta-data is assigned after checkpoint load to provide for overriding.
-         */
-        template <typename Checkpoint, typename EA>
-        void prepare_checkpoint(Checkpoint& cp, EA& ea, const metadata& md=metadata()) {
-            load_checkpoint(cp, ea);
-            ea.initialize(md);
-        }
-        
 
         //! Advance the EA by one epoch of n updates.
         template <typename EA>

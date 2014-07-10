@@ -27,6 +27,7 @@
 #include <boost/scoped_ptr.hpp>
 
 #include <ea/ancestors.h>
+#include <ea/checkpoint.h>
 #include <ea/concepts.h>
 #include <ea/lifecycle.h>
 #include <ea/digital_evolution/events.h>

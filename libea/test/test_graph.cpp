@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(test_graph_mutations) {
 	using namespace ealib;
     namespace eg = ealib::graph;
     
-    graph_ea ea;
+    graph_ea ea(build_ea_md());
     Graph G;
     
     eg::add_vertex(G,ea.rng());

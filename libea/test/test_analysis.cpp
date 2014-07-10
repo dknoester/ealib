@@ -23,7 +23,7 @@
 
 //! Population analysis tests.
 BOOST_AUTO_TEST_CASE(test_population_analysis) {
-    all_ones_ea ea;
+    all_ones_ea ea(build_ea_md());
     analysis::unary_population_fitness<all_ones_ea> upf;
     upf(ea);
 }

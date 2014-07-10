@@ -26,6 +26,7 @@
 #include <boost/scoped_ptr.hpp>
 
 #include <ea/lifecycle.h>
+#include <ea/checkpoint.h>
 #include <ea/concepts.h>
 #include <ea/ancestors.h>
 #include <ea/data_structures/shared_ptr_vector.h>
@@ -252,17 +253,6 @@ namespace ealib {
             _state->events.end_of_epoch(*this); // checkpoint!
         }
         
-        //! Resets the population (does nothing in digital evolution).
-        void reset() {
-            nullify_fitness(begin(), end(), *this);
-        }
-        
-        //! Resets this EA's RNG seed.
-        void reset_rng(unsigned int s) {
-            put<RNG_SEED>(s,*this); // save the seed!
-            _state->rng.reset(s);
-        }
-        
         //! Returns a new individual built from the given individual.
         individual_ptr_type make_individual(const individual_type& r=individual_type()) {
             individual_ptr_type p(new individual_type(r));
@@ -276,6 +266,17 @@ namespace ealib {
         individual_ptr_type copy_individual(const individual_type& ind) {
             individual_ptr_type p(new individual_type(ind));
             return p;
+        }
+        
+        //! Resets the population (does nothing in digital evolution).
+        void reset() {
+            nullify_fitness(begin(), end(), *this);
+        }
+        
+        //! Resets this EA's RNG seed.
+        void reset_rng(unsigned int s) {
+            put<RNG_SEED>(s,*this); // save the seed!
+            _state->rng.reset(s);
         }
         
         //! Returns true if this instance of digital_evolution has state.

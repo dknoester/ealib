@@ -54,15 +54,6 @@ typedef evolutionary_algorithm
 , lod_trait
 > all_ones_lod_ea;
 
-template <typename EA>
-void add_std_metadata(EA& ea) {
-	put<POPULATION_SIZE>(1024,ea);
-	put<STEADY_STATE_LAMBDA>(2,ea);
-	put<REPRESENTATION_SIZE>(10,ea);
-	put<MUTATION_PER_SITE_P>(0.1,ea);
-	put<TOURNAMENT_SELECTION_N>(2,ea);
-	put<TOURNAMENT_SELECTION_K>(1,ea);	
-}
-
+metadata build_ea_md();
 
 #endif

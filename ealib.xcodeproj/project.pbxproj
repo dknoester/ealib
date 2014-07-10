@@ -554,6 +554,7 @@
 		4256FAC01892BBDC004AB7F9 /* example-qhfc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-qhfc"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4259F9C519657F9200A78321 /* pole.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = pole.cfg; sourceTree = "<group>"; };
 		425BF6401950756E001D36A2 /* multiobjective_fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multiobjective_fitness.h; sourceTree = "<group>"; };
+		42678A15196E21B100214873 /* checkpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkpoint.h; sourceTree = "<group>"; };
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
 		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
 		426F9F5E18E363CC00910682 /* statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = statistics.h; sourceTree = "<group>"; };
@@ -1092,6 +1093,7 @@
 				428B7262184F77AB00E3BB4E /* island_model.h */,
 				42B89EC819377D7C00435794 /* iterators */,
 				428B726D184F77AB00E3BB4E /* lifecycle.h */,
+				42678A15196E21B100214873 /* checkpoint.h */,
 				428B726E184F77AB00E3BB4E /* line_of_descent.h */,
 				426F9F5C18E363CC00910682 /* math */,
 				428B726F184F77AB00E3BB4E /* metadata.h */,
