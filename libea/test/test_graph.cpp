@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(test_graph_mutations) {
 BOOST_AUTO_TEST_CASE(test_graph_growth) {
 	using namespace ealib;
     using namespace ealib::graph;
-    growth_descriptor desc;
+    delta_graph desc;
     desc.Pc[conditional::p] = 0.5;
     desc.Pc[conditional::q] = 0.8;
     desc.Pc[conditional::r] = 0.75;
