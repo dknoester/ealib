@@ -130,7 +130,7 @@ namespace ealib {
             }
             
             EA& _ea;
-            std::vector<boost::signals::scoped_connection> _connections;
+            std::vector<boost::signals2::scoped_connection> _connections;
             datafile _df;
             long _evals;
         };

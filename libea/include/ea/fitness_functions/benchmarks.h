@@ -37,7 +37,7 @@ namespace ealib {
 	struct rana : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            typename EA::representation_type& params = ind.repr();
+            typename EA::genome_type& params = ind.genome();
             
             double p1=params[0];
             double p2=params[1];
@@ -60,7 +60,7 @@ namespace ealib {
 	struct griewangk : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            typename EA::representation_type& params = ind.repr();
+            typename EA::genome_type& params = ind.genome();
             
             assert(params.size()>0);
             double sum=0.0;
@@ -80,7 +80,7 @@ namespace ealib {
 	struct rosenbrock : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            typename EA::representation_type& params = ind.repr();
+            typename EA::genome_type& params = ind.genome();
             
             double x1=params[0];
             double x2=params[1];
@@ -102,7 +102,7 @@ namespace ealib {
 	struct schwefel : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            typename EA::representation_type& params = ind.repr();
+            typename EA::genome_type& params = ind.genome();
             
             assert(params.size()>0);
             double result=0.0;
@@ -120,7 +120,7 @@ namespace ealib {
 	struct f101 : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            typename EA::representation_type& params = ind.repr();
+            typename EA::genome_type& params = ind.genome();
             
             double x=params[0];
             double y=params[1];
@@ -139,7 +139,7 @@ namespace ealib {
 	struct f8f2 : public fitness_function<unary_fitness<double,minimizeS>, constantS, deterministicS> {
 		template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            typename EA::representation_type& params = ind.repr();
+            typename EA::genome_type& params = ind.genome();
             
             double p1=params[0];
             double p2=params[1];

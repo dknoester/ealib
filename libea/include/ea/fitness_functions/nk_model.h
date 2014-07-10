@@ -100,7 +100,7 @@ namespace ealib {
         //! Calculate the fitness of the given representation.
         template <typename Individual, typename EA>
         double operator()(Individual& ind, EA& ea) {
-            typename EA::representation_type& repr=ind.repr();
+            typename EA::genome_type& repr=ind.genome();
 
             double S=0.0;
             for(std::size_t i=0; i<nkt.size(); ++i) {
