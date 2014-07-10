@@ -42,13 +42,13 @@ namespace ealib {
             const std::string& input = get<ANALYSIS_INPUT>(ea);
             const std::string& output = get<ANALYSIS_OUTPUT>(ea);
             
-            EA archive;
+            typename EA::population_type archive;
             if(boost::filesystem::exists(input)) {
-                load_archive(input, archive);
+                archive::load(input, archive, ea);
             }
             
-            archive.insert(archive.end(), archive.copy_individual(*dominant(ea)));
-            save_archive(output, archive);
+            archive.insert(archive.end(), ea.copy_individual(*dominant(ea)));
+            archive::save(output, archive, ea);
         }
         
         /*! Trim an archive down to the top ANALYSIS_N best-ranked individuals.
@@ -61,15 +61,15 @@ namespace ealib {
 				throw bad_argument_exception("could not open file: " + input);
 			}
 			
-			EA archive;
-			load_archive(input, archive);
+			typename EA::population_type archive;
+            archive::load(input, archive, ea);
 
 			int nerase = archive.size() - get<ANALYSIS_N>(ea);
 			
 			if(nerase > 0) {
 				std::sort(archive.begin(), archive.end(), comparators::fitness<EA>(ea));
 				archive.erase(archive.begin(), archive.begin() + nerase);
-				save_archive(output, archive);
+                archive::save(output, archive, ea);
 			}
         }
         

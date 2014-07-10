@@ -27,10 +27,9 @@ using namespace ealib;
  of the EQU logic task (bitwise equals).
  */
 struct lifecycle : public default_lifecycle {
-    
-    //! Called as the final step of EA construction (must not depend on configuration parameters)
+    //! Called after EA initialization.
     template <typename EA>
-    void after_construction(EA& ea) {
+    void after_initialization(EA& ea) {
         // for compatibility with emscripten, we're fully qualifying the names of
         // some instructions.  for c++ only, feel free to drop them.
         using namespace ealib::instructions;
@@ -59,15 +58,11 @@ struct lifecycle : public default_lifecycle {
         append_isa<h_divide>(ea);
         append_isa<fixed_input>(ea);
         append_isa<output>(ea);
-    }
-    
-    //! Initialize the EA (may use configuration parameters)
-    template <typename EA>
-    void initialize(EA& ea) {
+
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::resource_ptr_type resource_ptr_type;
         
-        // Add tasks
+        // tasks:
         task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<1> >("not", ea);
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<1> >("nand", ea);
         task_ptr_type task_and = make_task<tasks::task_and,catalysts::additive<2> >("and", ea);
@@ -78,7 +73,7 @@ struct lifecycle : public default_lifecycle {
         task_ptr_type task_xor = make_task<tasks::task_xor,catalysts::additive<3> >("xor", ea);
         task_ptr_type task_equals = make_task<tasks::task_equals,catalysts::additive<4> >("equals", ea);
         
-        
+        // resources:
         resource_ptr_type resA = make_resource("resA", 0.1, 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resB = make_resource("resB", 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resC = make_resource("resC", 100.0, 1.0, 0.01, 0.05, ea);
@@ -88,7 +83,7 @@ struct lifecycle : public default_lifecycle {
         resource_ptr_type resG = make_resource("resG", 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resH = make_resource("resH", 100.0, 1.0, 0.01, 0.05, ea);
         resource_ptr_type resI = make_resource("resI", 100.0, 1.0, 0.01, 0.05, ea);
-        
+
         task_not->consumes(resA);
         task_nand->consumes(resB);
         task_and->consumes(resC);

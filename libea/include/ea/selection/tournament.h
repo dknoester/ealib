@@ -22,9 +22,11 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ea/access.h>
 #include <ea/algorithm.h>
 #include <ea/comparators.h>
 #include <ea/metadata.h>
+
 
 namespace ealib {
     LIBEA_MD_DECL(TOURNAMENT_SELECTION_N, "ea.selection.tournament.n", int);

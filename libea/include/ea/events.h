@@ -31,8 +31,7 @@
 
 namespace ealib {
     
-    /*! Base class for events.
-     */
+    //! Base class for events.
     struct event {
         virtual ~event() {
         }
@@ -47,41 +46,38 @@ namespace ealib {
      avoid any difficulty with copy construction of the slots.
 	 */
 	template <typename EA>
-	struct event_handler {
+	class event_handler {
+    public:
+        typedef std::vector<boost::shared_ptr<event> > slot_vector_type;
         
-        typedef std::vector<boost::shared_ptr<event> > slot_vector_type; //!< Storage for slots (event handlers).
+        //! Default constructor.
+        event_handler() {
+        }
         
-        /*! Called after the fitness of an individual has been evaluated.
-         */
+        // Called after the fitness of an individual has been evaluated.
         boost::signals2::signal<void(typename EA::individual_type&, // individual
                                      EA&)> fitness_evaluated;
         
-		/*! Called at the end of every update.
-		 */
+		//! Called at the end of every update.
 		boost::signals2::signal<void(EA&)> end_of_update;
 		
-		/*! Called after every epoch.
-		 */
+		//! Called after every epoch.
 		boost::signals2::signal<void(EA&)> end_of_epoch;
 		
-		/*! Called when an offspring individual inherits from its parents.
-		 */
+		//! Called when an offspring individual inherits from its parents.
 		boost::signals2::signal<void(typename EA::population_type&, // parents
                                      typename EA::individual_type&, // offspring
                                      EA&)> inheritance;
         
-        /*! Called when an individual asexually replicates.
-		 */
+        //! Called when an individual asexually replicates.
 		boost::signals2::signal<void(typename EA::individual_type&, // parent
                                      typename EA::individual_type&, // offspring
                                      EA&)> replication;
         
-        /*! Called at the beginning of epochs and at the end of every generation.
-		 */
+        //! Called at the beginning of epochs and at the end of every generation.
 		boost::signals2::signal<void(EA&)> record_statistics;
         
-        /*! Add a slot (event handler) to the events for this EA.
-         */
+        //! Add a slot (event handler) to the events for this EA.
         template <template <typename> class Event>
         void add_event(EA& ea) {
             typedef Event<EA> event_type;
@@ -89,7 +85,12 @@ namespace ealib {
             _slots.push_back(p);
         }
         
+    protected:
         slot_vector_type _slots; //!< Connected slots (event handlers).
+        
+    private:
+        event_handler(const event_handler&);
+        event_handler& operator=(const event_handler&);
     };
     
     /*! Free-method to easily add an event to the list of events that are registered for an EA.

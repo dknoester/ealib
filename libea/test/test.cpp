@@ -22,3 +22,18 @@
 #endif
 #define BOOST_TEST_MAIN
 #include "test.h"
+
+metadata build_ea_md() {
+	metadata md;
+	put<POPULATION_SIZE>(1024,md);
+	put<STEADY_STATE_LAMBDA>(2,md);
+	put<REPRESENTATION_SIZE>(10,md);
+	put<MUTATION_PER_SITE_P>(0.1,md);
+	put<TOURNAMENT_SELECTION_N>(2,md);
+	put<TOURNAMENT_SELECTION_K>(1,md);
+    put<CHECKPOINT_PREFIX>("checkpoint",md);
+    put<CHECKPOINT_OFF>(0,md);
+    put<METAPOPULATION_SIZE>(5,md);
+    put<RUN_UPDATES>(10,md);
+    return md;
+}

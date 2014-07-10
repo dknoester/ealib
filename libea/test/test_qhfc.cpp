@@ -30,8 +30,8 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     , recombination::two_point_crossover
     , ancestors::random_bitstring
     > ea_type;
-    
-    ea_type M;
+
+    metadata M;
     put<POPULATION_SIZE>(50,M);
     put<METAPOPULATION_SIZE>(5,M);
 	put<REPRESENTATION_SIZE>(100,M);
@@ -43,8 +43,10 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     put<QHFC_PERCENT_REFILL>(0.25,M);
     put<QHFC_CATCHUP_GEN>(20,M);
     put<QHFC_NO_PROGRESS_GEN>(2,M);
+    put<CHECKPOINT_PREFIX>("checkpoint",M);
+    put<CHECKPOINT_OFF>(0,M);
     
-    M.initialize();
-    generate_initial_population(M);
-    M.lifecycle().advance_epoch(10,M);
+    ea_type ea(M);
+    generate_initial_population(ea);
+    ea.lifecycle().advance_epoch(10,ea);
 }

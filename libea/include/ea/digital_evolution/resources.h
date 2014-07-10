@@ -248,7 +248,7 @@ namespace ealib {
         typedef boost::shared_ptr<abstract_resource_type> resource_ptr_type;
         typedef std::vector<resource_ptr_type> resource_list_type;
         
-        //! Constructor.
+        //! Default constructor.
         resources() {
         }
         
@@ -283,8 +283,12 @@ namespace ealib {
             }
         }
         
-    private:
+    protected:
         resource_list_type _resources; //!< Container for resources.
+        
+    private:
+        resources(const resources&);
+        resources& operator=(const resources&);
     };
     
     

@@ -570,7 +570,7 @@ namespace ealib {
             int jumpAmt = hw.getRegValue(rbx);
             hw.advanceHead(Hardware::IP, jumpAmt);
         }
-
+        
     } // instructions
 
 
@@ -592,13 +592,7 @@ namespace ealib {
         //! Constructor.
         instruction_set() {
         }
-        
-        //! Initialize the ISA.
-        void initialize(EA& ea) {
-            put<MUTATION_UNIFORM_INT_MIN>(0, ea);
-            put<MUTATION_UNIFORM_INT_MAX>(_isa.size(), ea);
-        }
-        
+
         //! Append the given instruction to the ISA.
         template <template <typename,typename> class Instruction>
         void append(std::size_t cost) {
@@ -642,7 +636,11 @@ namespace ealib {
     protected:
         isa_type _isa; //!< List of available instructions.
         name_map_type _name; //<! Map of human-readable instruction names to their index in the ISA.
-    };        
+        
+    private:
+        instruction_set(const instruction_set&);
+        instruction_set& operator=(const instruction_set&);
+    };
     
     //! Helper method to add an instruction to the ISA with the given cost.
     template <template <typename,typename> class Instruction, typename EA>

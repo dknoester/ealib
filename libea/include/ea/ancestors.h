@@ -40,7 +40,7 @@ namespace ealib {
 	template <typename RepresentationGenerator, typename EA>
 	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
         // build the placeholder ancestor:
-        typename EA::individual_ptr_type ap = ea.make_individual();
+        typename EA::individual_ptr_type ap = ea.make_individual(g(ea));
         put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);
         put<IND_GENERATION>(-1.0, *ap);
         put<IND_BIRTH_UPDATE>(ea.current_update(), *ap);
@@ -81,7 +81,7 @@ namespace ealib {
     template <typename EA>
     void generate_initial_population(EA& ea) {
         generate_population(ea);
-        ea.lifecycle().initial_population(ea);
+        ea.lifecycle().after_initial_population(ea);
     }
     
     /*! Fills the entire population with ancestors.
@@ -126,11 +126,13 @@ namespace ealib {
     
     namespace ancestors {
         
-        //! Generates a default-constructed subpopulation.
+        //! Generates a default subpopulation.
         struct default_subpopulation {
-            template <typename EA>
-            typename EA::individual_type operator()(EA& ea) {
-                return typename EA::individual_type();
+            template <typename MEA>
+            typename MEA::individual_type operator()(MEA& mea) {
+                typename MEA::individual_type sea(mea.md());
+                sea.reset_rng(mea.rng().seed());
+                return sea;
             }
         };
         

@@ -31,6 +31,20 @@
 
 namespace ealib {
     
+    namespace mutation {
+        namespace site {
+            
+            //! Mutation operator that selects a random instruction from the ISA.
+            struct uniform_isa {
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    *i = ea.rng().uniform_integer(0, ea.isa().size());
+                }
+            };
+
+        } // site
+    } // mutation
+    
     /*! Digital evolution hardware.
      
      This class defines the representation and hardware for digital evolution, a
@@ -42,7 +56,7 @@ namespace ealib {
     class hardware {
     public:
         typedef circular_genome<unsigned int> genome_type;
-        typedef mutation::operators::per_site<mutation::site::uniform_integer> mutation_operator_type;
+        typedef mutation::operators::per_site<mutation::site::uniform_isa> mutation_operator_type;
         
         const static int NOP_A = 0;
         const static int NOP_B = 1; 

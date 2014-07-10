@@ -43,8 +43,12 @@ namespace ealib {
         subpopulation() {
         }
         
+        //! Initializing constructor.
+        subpopulation(const metadata& md) : parent(md) {
+        }
+
         //! Copy constructor.
-        subpopulation(const subpopulation& sub) : parent(sub), _traits(sub._traits) {
+        subpopulation(const subpopulation& that) : parent(that), _traits(that._traits) {
         }
         
         //! Returns this subpopulation's traits.

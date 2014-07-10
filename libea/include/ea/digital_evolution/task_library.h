@@ -161,6 +161,10 @@ namespace ealib {
         typedef boost::shared_ptr<abstract_task_type> task_ptr_type;
         typedef std::vector<task_ptr_type> tasklist_type;
         
+        //! Default constructor.
+        task_library() {
+        }
+        
         //! Append a task to the task library.
         void append(task_ptr_type p) {
             _tasklist.push_back(p);
@@ -223,6 +227,10 @@ namespace ealib {
         
     protected:
         tasklist_type _tasklist; //!< Active tasks.
+        
+    private:
+        task_library(const task_library&);
+        task_library& operator=(const task_library&);
     };
     
     //! Helper method that builds tasks and adds them to the task library.

@@ -24,18 +24,16 @@
 /*! Test of EA checkpointing.
  */
 BOOST_AUTO_TEST_CASE(test_checkpoint) {
-    all_ones_ea ea1, ea2;
-    add_std_metadata(ea1);
-    ea1.lifecycle().prepare_new(ea1);
+    all_ones_ea ea1(build_ea_md()), ea2;
     
     // run and checkpoint ea1:
     ea1.lifecycle().advance_epoch(10,ea1);
     std::ostringstream out;
-    ea1.lifecycle().save_checkpoint(out, ea1);
+	checkpoint::save(out, ea1);
     
     // load the saved state into ea2:
     std::istringstream in(out.str());
-    ea2.lifecycle().load_checkpoint(in, ea2);
+	checkpoint::load(in, ea2);
     
     // run each a little longer:
     ea1.lifecycle().advance_epoch(10,ea1);
@@ -50,14 +48,9 @@ BOOST_AUTO_TEST_CASE(test_checkpoint) {
 }
 
 BOOST_AUTO_TEST_CASE(test_replicability) {
-    all_ones_ea ea1, ea2;
-    add_std_metadata(ea1);
-    add_std_metadata(ea2);
+    all_ones_ea ea1(build_ea_md()), ea2(build_ea_md());
     ea1.rng().reset(42);
     ea2.rng().reset(42);
-    
-    ea1.lifecycle().prepare_new(ea1);
-    ea2.lifecycle().prepare_new(ea2);
     
     ea1.lifecycle().advance_epoch(100,ea1);
     ea2.lifecycle().advance_epoch(100,ea2);
@@ -73,18 +66,16 @@ BOOST_AUTO_TEST_CASE(test_replicability) {
 /*! Test of EA archiving.
  */
 BOOST_AUTO_TEST_CASE(test_archive) {
-    all_ones_ea ea1, ea2;
-    add_std_metadata(ea1);
-    ea1.lifecycle().prepare_new(ea1);
+    all_ones_ea ea1(build_ea_md()), ea2(build_ea_md());
     
     // run and archive ea1:
     ea1.lifecycle().advance_epoch(10,ea1);
     std::ostringstream out;
-    save_archive(out, ea1);
+    archive::save(out, ea1.population(), ea1);
     
     // load the archive into ea2:
     std::istringstream in(out.str());
-    load_archive(in, ea2);
+    archive::load(in, ea2.population(), ea2);
     
     // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {

@@ -22,8 +22,6 @@
 
 BOOST_AUTO_TEST_CASE(test_genetic_algorithm) {
     using namespace ealib;
-    all_ones_ea ea;
-    add_std_metadata(ea);
-    ea.lifecycle().prepare_new(ea);
+    all_ones_ea ea(build_ea_md());
     ea.lifecycle().advance_epoch(10,ea);
 }

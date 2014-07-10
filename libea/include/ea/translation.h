@@ -21,27 +21,28 @@
 #define _EA_TRANSLATION_H_
 
 namespace ealib {
-    
-    /*! This translator is used to "reconstruct" a phenotype from a genome.
-     
-     It can be thought of as a *very* simple form of indirect encoding, where the
-     phenotype is directly represented in the genome, but we need to wrap it
-     some functionality before we can use it.
-     
-     In other words, the phenotype != genome_type, but we don't need a full-blown
-     translator.
-     */
-    struct reconstruction_translator {
-        template <typename EA>
-        reconstruction_translator(EA& ea) {
-        }
+    namespace translators {
         
-        template <typename EA>
-        typename EA::phenotype_type operator()(typename EA::genome_type& g, EA& ea) {
-            return typename EA::phenotype_type(g, ea);
-        }
-    };
-    
+        /*! This translator is used to "reconstruct" a phenotype from a genome.
+         
+         It can be thought of as a *very* simple form of indirect encoding, where 
+         the phenotype is constructable from the genome.
+         
+         In other words, the phenotype != genome_type, but we don't need a full-blown
+         translator.
+         */
+        struct construction {
+            template <typename EA>
+            construction(EA& ea) {
+            }
+            
+            template <typename EA>
+            typename EA::phenotype_type operator()(typename EA::genome_type& g, EA& ea) {
+                return typename EA::phenotype_type(g, ea);
+            }
+        };
+        
+    } // translators
 } // network
 
 #endif

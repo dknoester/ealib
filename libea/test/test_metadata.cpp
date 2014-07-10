@@ -20,7 +20,7 @@
 #include "test.h"
 
 BOOST_AUTO_TEST_CASE(test_md) {
-    all_ones_ea ea1, ea2;
+    all_ones_ea ea1(build_ea_md()), ea2;
 	put<POPULATION_SIZE>(10,ea1);
 	put<MUTATION_PER_SITE_P>(1.0,ea1);
 	
