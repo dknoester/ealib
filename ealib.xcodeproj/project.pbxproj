@@ -87,6 +87,9 @@
 		4256FAC61892BC25004AB7F9 /* lod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4256FA631892BA14004AB7F9 /* lod.cpp */; };
 		4256FAC71892BC2D004AB7F9 /* logic9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4256FA621892BA14004AB7F9 /* logic9.cpp */; };
 		426A04A617B1205B000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
+		42801D5C1971AAB000A633A0 /* test_lsystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42801D56197155CA00A633A0 /* test_lsystem.cpp */; };
+		42801D631971AAB000A633A0 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
+		42801D651971AAB000A633A0 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42856627196B0B4100C5B13F /* libea.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBD9F157D0E0B0003A644 /* libea.a */; };
 		4285662F196B0B7800C5B13F /* developmental.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4285662D196B0B7800C5B13F /* developmental.cpp */; };
 		42856630196DBC9200C5B13F /* test_digital_evolution_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4245004516D3BA8E007827D7 /* test_digital_evolution_types.cpp */; };
@@ -413,6 +416,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		42801D661971AAB000A633A0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		42856628196B0B4100C5B13F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -559,6 +571,11 @@
 		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
 		426F9F5E18E363CC00910682 /* statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = statistics.h; sourceTree = "<group>"; };
 		427F5E5918806FB3003CCA5C /* subpopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = subpopulation.h; sourceTree = "<group>"; };
+		42801D54197024C900A633A0 /* xor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xor.h; sourceTree = "<group>"; };
+		42801D5519705ECC00A633A0 /* izhikevich.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = izhikevich.h; sourceTree = "<group>"; };
+		42801D56197155CA00A633A0 /* test_lsystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_lsystem.cpp; sourceTree = "<group>"; };
+		42801D591971562F00A633A0 /* lsystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lsystem.h; sourceTree = "<group>"; };
+		42801D6A1971AAB000A633A0 /* test-lsys */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-lsys"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4281FEDA16C45C840066610C /* test_graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_graph.cpp; sourceTree = "<group>"; };
 		42841C2915A5F4D800AB18BE /* test_torus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_torus.cpp; sourceTree = "<group>"; };
 		42841C7E15ADACF000AB18BE /* CONTRIBUTORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = CONTRIBUTORS; sourceTree = "<group>"; };
@@ -632,7 +649,7 @@
 		42B55B701641C2C500F240C5 /* test_information.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_information.cpp; sourceTree = "<group>"; };
 		42B55B711641C2C500F240C5 /* test_novelty_search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_novelty_search.cpp; sourceTree = "<group>"; };
 		42B5EBD019599FE700093AB3 /* basic_neural_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = basic_neural_network.h; sourceTree = "<group>"; };
-		42B5EBD11959A43800093AB3 /* ctrnn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ctrnn.h; sourceTree = "<group>"; };
+		42B5EBD11959A43800093AB3 /* continuous_time.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = continuous_time.h; sourceTree = "<group>"; };
 		42B89EC719377D7200435794 /* convolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convolution.h; sourceTree = "<group>"; };
 		42B89EC919377D7C00435794 /* camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
 		42B89ECA19377D8F00435794 /* sequence_matrix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sequence_matrix.h; sourceTree = "<group>"; };
@@ -785,6 +802,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				4256FABB1892BBDC004AB7F9 /* libea.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42801D641971AAB000A633A0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42801D651971AAB000A633A0 /* libboost_unit_test_framework.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -948,6 +973,7 @@
 				422B05C319641F6E00DA675B /* example-pole */,
 				42CF4A6F196A204D00CBA20B /* test-neuroevolution */,
 				4285662C196B0B4100C5B13F /* example-dev */,
+				42801D6A1971AAB000A633A0 /* test-lsys */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -996,21 +1022,22 @@
 				421D68B61735719700A45DD6 /* test_analysis.cpp */,
 				42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */,
 				4245004516D3BA8E007827D7 /* test_digital_evolution_types.cpp */,
-				423CBDF6157D0E450003A644 /* test_serialization.cpp */,
 				4243E7831894184F00431D18 /* test_genetic_algorithm.cpp */,
-				42841C2915A5F4D800AB18BE /* test_torus.cpp */,
 				4281FEDA16C45C840066610C /* test_graph.cpp */,
 				42B55B701641C2C500F240C5 /* test_information.cpp */,
+				4234C3FE178B1ACE0078BD85 /* test_lcs.cpp */,
+				42C6617A1860FC0B004476D3 /* test_lod.cpp */,
+				42801D56197155CA00A633A0 /* test_lsystem.cpp */,
 				42CF4A75196A393D00CBA20B /* test_markov_network_ea.cpp */,
+				423CBDF9157D0E450003A644 /* test_metadata.cpp */,
 				42D68D89163F891F00659AE1 /* test_metapopulation.cpp */,
 				42CF4A70196A208D00CBA20B /* test_neurodevelopment.cpp */,
 				42CF4A71196A208D00CBA20B /* test_neuroevolution.cpp */,
-				42C6617A1860FC0B004476D3 /* test_lod.cpp */,
-				42C661321860D2FF004476D3 /* test_qhfc.cpp */,
 				42B55B711641C2C500F240C5 /* test_novelty_search.cpp */,
-				4234C3FE178B1ACE0078BD85 /* test_lcs.cpp */,
-				423CBDF9157D0E450003A644 /* test_metadata.cpp */,
+				42C661321860D2FF004476D3 /* test_qhfc.cpp */,
 				423CBDFB157D0E450003A644 /* test_rng.cpp */,
+				423CBDF6157D0E450003A644 /* test_serialization.cpp */,
+				42841C2915A5F4D800AB18BE /* test_torus.cpp */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -1095,6 +1122,7 @@
 				42B89EC819377D7C00435794 /* iterators */,
 				428B726D184F77AB00E3BB4E /* lifecycle.h */,
 				428B726E184F77AB00E3BB4E /* line_of_descent.h */,
+				42801D591971562F00A633A0 /* lsystem.h */,
 				426F9F5C18E363CC00910682 /* math */,
 				428B726F184F77AB00E3BB4E /* metadata.h */,
 				428B7270184F77AB00E3BB4E /* metapopulation.h */,
@@ -1159,6 +1187,7 @@
 				428B7252184F77AB00E3BB4E /* direct.h */,
 				428B7253184F77AB00E3BB4E /* nk_model.h */,
 				422B05B719641F1E00DA675B /* pole_balancing.h */,
+				42801D54197024C900A633A0 /* xor.h */,
 				428B7254184F77AB00E3BB4E /* target.h */,
 			);
 			path = fitness_functions;
@@ -1260,9 +1289,10 @@
 		42D17889193770940063A55B /* ann */ = {
 			isa = PBXGroup;
 			children = (
-				42D1788A193770940063A55B /* filter.h */,
 				42B5EBD019599FE700093AB3 /* basic_neural_network.h */,
-				42B5EBD11959A43800093AB3 /* ctrnn.h */,
+				42B5EBD11959A43800093AB3 /* continuous_time.h */,
+				42D1788A193770940063A55B /* filter.h */,
+				42801D5519705ECC00A633A0 /* izhikevich.h */,
 				42D17898193770940063A55B /* sigmoid.h */,
 			);
 			path = ann;
@@ -1565,6 +1595,23 @@
 			productReference = 4256FAC01892BBDC004AB7F9 /* example-qhfc */;
 			productType = "com.apple.product-type.tool";
 		};
+		42801D5A1971AAB000A633A0 /* test-lsys */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 42801D671971AAB000A633A0 /* Build configuration list for PBXNativeTarget "test-lsys" */;
+			buildPhases = (
+				42801D5B1971AAB000A633A0 /* Sources */,
+				42801D641971AAB000A633A0 /* Frameworks */,
+				42801D661971AAB000A633A0 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "test-lsys";
+			productName = libea_test;
+			productReference = 42801D6A1971AAB000A633A0 /* test-lsys */;
+			productType = "com.apple.product-type.tool";
+		};
 		42856621196B0B4100C5B13F /* example-dev */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 42856629196B0B4100C5B13F /* Build configuration list for PBXNativeTarget "example-dev" */;
@@ -1749,6 +1796,7 @@
 				423CBE56157D0FCC0003A644 /* test-ealib */,
 				4243E7721894180F00431D18 /* test-ga */,
 				42C661631860FBE5004476D3 /* test-lod */,
+				42801D5A1971AAB000A633A0 /* test-lsys */,
 				428B711C18490E8F00E3BB4E /* test-mkv */,
 				42C661361860DC07004476D3 /* test-mp */,
 				42CF4A66196A204D00CBA20B /* test-neuroevolution */,
@@ -1861,6 +1909,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				4256FAC11892BBF1004AB7F9 /* qhfc.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42801D5B1971AAB000A633A0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42801D5C1971AAB000A633A0 /* test_lsystem.cpp in Sources */,
+				42801D631971AAB000A633A0 /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2272,6 +2329,18 @@
 			};
 			name = Release;
 		};
+		42801D681971AAB000A633A0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		42801D691971AAB000A633A0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		42841C8515AFB14100AB18BE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2521,6 +2590,15 @@
 			buildConfigurations = (
 				4256FAE01892BC7F004AB7F9 /* Debug */,
 				4256FAE11892BC7F004AB7F9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		42801D671971AAB000A633A0 /* Build configuration list for PBXNativeTarget "test-lsys" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42801D681971AAB000A633A0 /* Debug */,
+				42801D691971AAB000A633A0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

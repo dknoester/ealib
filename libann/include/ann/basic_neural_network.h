@@ -121,6 +121,31 @@ namespace ann {
 				update();
 			}
 		}
+        
+        /*! Update the weights in the adjacency matrix via Hebb's rule with decay.
+         
+         w_ij(t+1) = w_ij(t) + \eta * x_i(t) * x_j(t) - \gamma * (1.0 - x_i(t) * x_j(t))
+         */
+        void hebbian_update(double eta, double gamma) {
+            for(std::size_t i=0; i<_A.size1(); ++i) {
+                for(std::size_t j=0; j<_A.size2(); ++j) {
+                    double x = _Y(i) * _Y(j);
+                    _A(i,j) = _A(i,j) + eta * x - gamma * (1.0 - x);
+                }
+            }
+        }
+        
+        /*! Update the weights in the adjacency matrix via Oja's rule.
+         
+         w_ij(t+1) = w_ij(t) + \eta * x_j(t) * (x_i(t) - w_ij(t)*x_j(t))
+         */
+        void oja_update(double eta) {
+            for(std::size_t i=0; i<_A.size1(); ++i) {
+                for(std::size_t j=0; j<_A.size2(); ++j) {
+                    _A(i,j) = _A(i,j) + eta * _Y(j) * (_Y(i) - _A(i,j) * _Y(j));
+                }
+            }
+        }
 		
 	protected:
 		std::size_t _nin, _nout, _nhid; //!< Number of inputs, outputs, and hidden neurons.

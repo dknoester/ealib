@@ -25,7 +25,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include <ann/basic_neural_network.h>
-#include <ann/ctrnn.h>
+#include <ann/continuous_time.h>
+#include <ann/izhikevich.h>
 
 BOOST_AUTO_TEST_CASE(test_logistic) {
     using namespace ann;
@@ -95,7 +96,7 @@ BOOST_AUTO_TEST_CASE(test_htan) {
 
 BOOST_AUTO_TEST_CASE(test_ctrnn) {
     using namespace ann;
-	ctrnn< > N(0.05, 1, 1, 0);
+	continuous_time< > N(0.05, 1, 1, 0);
     N(0,1) = 1.0;
     
     N[0] = 1.0;
@@ -113,4 +114,26 @@ BOOST_AUTO_TEST_CASE(test_ctrnn) {
     N[0] = -1.0;
     N.update();
 //    BOOST_CHECK_CLOSE(N[1], 0.00247, 1.0);
+}
+
+BOOST_AUTO_TEST_CASE(test_izhikevich) {
+    using namespace ann;
+	izhikevich N(0.05, 1, 1, 0);
+    N(0,1) = 1.0;
+    
+    N[0] = 1.0;
+    N.update();
+    //    BOOST_CHECK_CLOSE(N[1], 0.99, 1.0);
+	
+    N[0] = 0.5;
+    N.update();
+    //    BOOST_CHECK_CLOSE(N[1], 0.95, 1.0);
+	
+    N[0] = 0.0;
+    N.update();
+    //    BOOST_CHECK_CLOSE(N[1], 0.5, 1.0);
+	
+    N[0] = -1.0;
+    N.update();
+    //    BOOST_CHECK_CLOSE(N[1], 0.00247, 1.0);
 }

@@ -1,4 +1,4 @@
-/* ctrnn.h
+/* continuous_time.h
  *
  * This file is part of EALib.
  *
@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _ANN_CTRNN_H_
-#define _ANN_CTRNN_H_
+#ifndef _ANN_CONTINUOUS_TIME_H_
+#define _ANN_CONTINUOUS_TIME_H_
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
@@ -42,7 +42,7 @@ namespace ann {
 	template
     < typename Sigmoid=logistic
 	, typename StepFunctionTag=rk4stepS
-    > class ctrnn {
+    > class continuous_time {
     public:
 		typedef Sigmoid sigmoid_type;
 		typedef bnu::vector<double> state_vector_type;
@@ -54,13 +54,13 @@ namespace ann {
 		typedef StepFunctionTag step_function_tag;
 		
         //! Constructor.
-        ctrnn(double dt, std::size_t nin, std::size_t nout, std::size_t nhid) : _delta_t(dt) {
+        continuous_time(double dt, std::size_t nin, std::size_t nout, std::size_t nhid) : _delta_t(dt) {
 			resize(nin, nout, nhid);
         }
         
         //! Constructor.
         template <typename ForwardIterator>
-        ctrnn(double dt, std::size_t nin, std::size_t nout, std::size_t nhid, ForwardIterator f) : _delta_t(dt) {
+        continuous_time(double dt, std::size_t nin, std::size_t nout, std::size_t nhid, ForwardIterator f) : _delta_t(dt) {
 			resize(nin, nout, nhid);
 			for(std::size_t i=0; i<_A.size1(); ++i) {
 				for(std::size_t j=0; j<_A.size2(); ++j, ++f) {

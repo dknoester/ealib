@@ -73,7 +73,7 @@ namespace ealib {
          */
         template <typename Individual, typename EA>
 		double operator()(Individual& ind, EA& ea) {
-            const double twelve_degrees=12.0 * 2.0 * boost::math::constants::pi<double>() / 360.0;
+            const double twelve_degrees=12.0 * boost::math::constants::pi<double>() / 180.0;
             double x=0.0; // cart position, meters
             double x_dot=0.0; // cart velocity
             double theta=0.0; // pole angle, radians
