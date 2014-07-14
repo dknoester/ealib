@@ -576,7 +576,7 @@
 		42801D56197155CA00A633A0 /* test_lsystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_lsystem.cpp; sourceTree = "<group>"; };
 		42801D6A1971AAB000A633A0 /* test-lsys */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-lsys"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42801D6C1973F80500A633A0 /* lsystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lsystem.h; sourceTree = "<group>"; };
-		42801D6D1973F82100A633A0 /* turtle2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = turtle2.h; sourceTree = "<group>"; };
+		42801D6D1973F82100A633A0 /* turtle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = turtle.h; sourceTree = "<group>"; };
 		42801D6E1973F8FB00A633A0 /* python.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = python.h; sourceTree = "<group>"; };
 		42801D6F1973FC4F00A633A0 /* cartesian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cartesian.h; sourceTree = "<group>"; };
 		4281FEDA16C45C840066610C /* test_graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_graph.cpp; sourceTree = "<group>"; };
@@ -1086,7 +1086,7 @@
 			isa = PBXGroup;
 			children = (
 				42801D6C1973F80500A633A0 /* lsystem.h */,
-				42801D6D1973F82100A633A0 /* turtle2.h */,
+				42801D6D1973F82100A633A0 /* turtle.h */,
 				42801D6E1973F8FB00A633A0 /* python.h */,
 				42801D6F1973FC4F00A633A0 /* cartesian.h */,
 			);

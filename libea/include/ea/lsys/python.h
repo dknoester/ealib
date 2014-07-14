@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_LSYS_PYTHON_CS_H_
-#define _EA_LSYS_PYTHON_CS_H_
+#ifndef _EA_LSYS_PYTHON_H_
+#define _EA_LSYS_PYTHON_H_
 
 namespace ealib {
     namespace lsys {

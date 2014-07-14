@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_LSYS_CARTESIAN_CS_H_
-#define _EA_LSYS_CARTESIAN_CS_H_
+#ifndef _EA_LSYS_CARTESIAN_H_
+#define _EA_LSYS_CARTESIAN_H_
 
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
@@ -45,15 +45,6 @@ namespace ealib {
             
             //! Constructor.
             cartesian2() {
-//
-//                // find values intersecting some area defined by a box
-//                box query_box(point_type(0, 0), point_type(5, 5));
-//                std::vector<value> result_s;
-//                rtree.query(bgi::intersects(query_box), std::back_inserter(result_s));
-//                
-//                // find 5 nearest values to a point_type
-//                std::vector<value> result_n;
-//                rtree.query(bgi::nearest(point_type(0, 0), 5), std::back_inserter(result_n));
             }
             
             template <typename Point>

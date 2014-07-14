@@ -1,4 +1,4 @@
-/* turtle2.h
+/* turtle.h
  *
  * This file is part of EALib.
  *
@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_LSYS_TURTLE2_H_
-#define _EA_LSYS_TURTLE2_H_
+#ifndef _EA_LSYS_TURTLE_H_
+#define _EA_LSYS_TURTLE_H_
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>

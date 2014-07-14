@@ -19,7 +19,7 @@
  */
 #include <algorithm>
 #include "test.h"
-#include <ea/lsys/turtle2.h>
+#include <ea/lsys/turtle.h>
 #include <ea/lsys/python.h>
 #include <ea/lsys/cartesian.h>
 
