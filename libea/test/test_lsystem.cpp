@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_lsystem_turtle) {
 }
 
 BOOST_AUTO_TEST_CASE(test_lsystem_koch) {
-    typedef lsystem_turtle2< > LSystem;
+    typedef lsystem_turtle2<python_grid2> LSystem;
     LSystem L;
     L.axiom(L.string('F')).rule('F', L.splitc("F+F-F-F+F"));
     
@@ -62,13 +62,45 @@ BOOST_AUTO_TEST_CASE(test_lsystem_koch) {
     .origin(0,0)
     .angle(90)
     .heading(1,0)
-    .magnitude(1.0);
+    .step_magnitude(1.0);
     
     LSystem::string_type s = L.exec_n(2);
     const std::string t("F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F");
     BOOST_CHECK(std::equal(s.begin(), s.end(), t.begin()));
     
-    echo_grid2 g;
+    python_grid2 g("koch.py");
     L.draw(g,s);
+}
+
+BOOST_AUTO_TEST_CASE(test_lsystem_dragon) {
+    typedef lsystem_turtle2<python_grid2> LSystem;
+    LSystem L;
+    L.axiom(L.splitc("FX"))
+    .rule('X', L.splitc("X+YF"))
+    .rule('Y', L.splitc("FX-Y"));
+    
+    L.context()
+    .origin(0,0)
+    .angle(90)
+    .heading(1,0);
+    
+    python_grid2 g("dragon.py");
+    L.draw(g,10);
+}
+
+BOOST_AUTO_TEST_CASE(test_lsystem_plant) {
+    typedef lsystem_turtle2<python_grid2, pointS> LSystem;
+    LSystem L;
+    L.axiom(L.splitc("X"))
+    .rule('F', L.splitc("FF"))
+    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
+    
+    L.context()
+    .origin(0,0)
+    .angle(-25)
+    .heading(1,2);
+    
+    python_grid2 g("plant.py");
+    L.draw(g,6);
 }
 

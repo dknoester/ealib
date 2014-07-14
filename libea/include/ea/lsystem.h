@@ -151,19 +151,62 @@ namespace ealib {
     };
     
     
+
+    
+    /*! Simple 2D echoing coordinate system.
+     */
+    struct echo_grid2 {
+        template <typename Point>
+        void line(const Point& p1, const Point& p2) {
+            std::cout << "l: (" << p1(0) << "," << p1(1) << ") -> ("
+            << p2(0) << "," << p2(1) << ")" << std::endl;
+        }
+        template <typename Point>
+        void point(const Point& p) {
+            std::cout << "p: (" << p(0) << "," << p(1) << ")" << std::endl;
+        }
+    };
+
+    /*! Simple 2D coordinate system that prints out Python plotting commands.
+     */
+    struct python_grid2 {
+        python_grid2(const std::string& filename) {
+            _out.open(filename.c_str());
+            _out << "import pylab as pl" << std::endl;
+            _out << "import matplotlib as mp" << std::endl << std::endl;
+        }
+        
+        ~python_grid2() {
+            _out << "pl.show()" << std::endl;
+            _out.close();
+        }
+        
+        template <typename Point>
+        void line(const Point& p1, const Point& p2) {
+            _out << "pl.plot([" << p1(0) << "," << p2(0) << "], [" << p1(1) << "," << p2(1) << "], c=\"red\")" << std::endl;
+        }
+        template <typename Point>
+        void point(const Point& p) {
+            _out << "pl.plot([" << p(0) << "], [" << p(1) << "], 'o', markersize=3, c=\"red\")" << std::endl;
+        }
+        
+        std::ofstream _out;
+    };
+    
+    
     /*! Context for 2D turtles.
      */
-    struct context2 {
+    struct turtle_context2 {
         typedef bnu::vector<double> vector_type;
         typedef vector_type point_type;
         typedef bnu::matrix<double> rotation_matrix_type;
         
         //! Default constructor.
-        context2() {
+        turtle_context2() : _mag(1.0), _scale(1.0) {
         }
         
         //! Sets the angle for both cw (-d) and ccw (+d) rotations.
-        context2& angle(double d) {
+        turtle_context2& angle(double d) {
             double theta=d*boost::math::constants::pi<double>() / 180.0;
             rotation_matrix(_Rccw, theta);
             rotation_matrix(_Rcw, -theta);
@@ -171,29 +214,37 @@ namespace ealib {
         }
         
         //! Sets the initial origin of this context.
-        context2& origin(double x, double y) {
+        turtle_context2& origin(double x, double y) {
             _p.resize(2);
             _p(0) = x; _p(1) = y;
             return *this;
         }
-
+        
         //! Sets the initial heading of this context.
-        context2& heading(double x, double y) {
+        turtle_context2& heading(double x, double y) {
             _h.resize(2);
             _h(0) = x; _h(1) = y;
             _h = _h / bnu::norm_2(_h);
             return *this;
         }
-
+        
         //! Sets the magnitude of the distance traveled during a single step.
-        context2& magnitude(double d) {
+        turtle_context2& step_magnitude(double d) {
             _mag = d;
             return *this;
         }
-
-        //! Move x steps from the current position, in the direction of the current heading.
-        void step(int x) {
-            _p += static_cast<double>(x) * _mag * _h;
+        
+        //! Set the depth scaling factor.
+        turtle_context2& scaling_factor(double d) {
+            _scale = d;
+            return *this;
+        }
+        
+        /*! Move x steps from the current position in the direction of the
+         current heading, scaled by the given depth d.
+         */
+        void step(double x, double d=1.0) {
+            _p += x * _mag * pow(_scale,d) * _h;
         }
         
         //! Returns the current position of this context.
@@ -229,45 +280,38 @@ namespace ealib {
         }
         
         double _mag; //!< Step magnitude.
+        double _scale; //!< Depth scaling factor.
         vector_type _p; //!< Current position.
         vector_type _h; //!< Current heading.
         rotation_matrix_type _Rccw, _Rcw; //! CCW and CW rotation matrices.
     };
 
     
-    /*! Simple 2D echoing coordinate system.
-     */
-    struct echo_grid2 {
-        template <typename Point>
-        void line(const Point& p1, const Point& p2) {
-            std::cout << "(" << p1(0) << "," << p1(1) << ") -> ("
-            << p2(0) << "," << p2(1) << ")" << std::endl;
-        }
-        template <typename Point>
-        void point(const Point& p) {
-            std::cout << "(" << p(0) << "," << p(1) << ")" << std::endl;
-        }
-    };
-
+    //! Tag to select drawing lines.
+    struct lineS { };
+    
+    //! Tag to select drawing points.
+    struct pointS { };
     
     /*! 2D turtle for an L-system.
      */
     template
-    < typename LSystem=lsystem<char>
-    , typename CoordinateSystem=echo_grid2
+    < typename CoordinateSystem=echo_grid2
+    , typename LineSelector=lineS
+    , typename LSystem=lsystem<char>
     > class lsystem_turtle2 : public LSystem {
     public:
         typedef LSystem parent;
         typedef CoordinateSystem coor_system_type;
-        typedef context2 context_type;
+        typedef turtle_context2 context_type;
         typedef std::stack<context_type> context_stack_type;
         typedef std::stack<int> param_stack_type;
+        typedef LineSelector line_selector_tag;
         
         //! Constructor.
         lsystem_turtle2() {
             parent::symbol('F')
             .symbol('G')
-            .symbol('P')
             .symbol('+')
             .symbol('-')
             .symbol('[')
@@ -287,7 +331,6 @@ namespace ealib {
                 switch(*i) {
                     case 'F': line(coor); break;
                     case 'G': fwd(coor); break;
-                    case 'P': point(coor); break;
                     case '+': ccw(coor); break;
                     case '-': cw(coor); break;
                     case '[': push(coor); break;
@@ -321,23 +364,36 @@ namespace ealib {
         }
         
         //! Draw a line.
+        void draw(coor_system_type& coor, const context_type::point_type& p1, const context_type::point_type& p2, lineS) {
+            coor.line(p1, p2);
+        }
+
+        //! Draw a point.
+        void draw(coor_system_type& coor, const context_type::point_type& p1, const context_type::point_type& p2, pointS) {
+            coor.point(p2);
+        }
+
+        //! Draw a line from the current position to a single step.
         void line(coor_system_type& coor) {
             context_type& c=current_context();
             context_type::point_type p1=c.point();
             c.step(param());
             context_type::point_type p2=c.point();
-            // draw p1->p2:
-            coor.line(p1, p2);
+            draw(coor, p1, p2, line_selector_tag());
         }
         
+        //! Draw a line scaled by the current recursion depth.
+        void scaled_line(coor_system_type& coor) {
+            context_type& c=current_context();
+            context_type::point_type p1=c.point();
+            c.step(param(), static_cast<double>(_cstack.size()));
+            context_type::point_type p2=c.point();
+            draw(coor, p1, p2, line_selector_tag());
+        }
+
         //! Move forward.
         void fwd(coor_system_type& coor) {
             current_context().step(param());
-        }
-        
-        //! Draw a point.
-        void point(coor_system_type& coor) {
-            coor.point(current_context().point());
         }
         
         //! Rotate counter-clockwise.
@@ -360,10 +416,6 @@ namespace ealib {
             if(_cstack.size() > 1) {
                 _cstack.pop();
             }
-        }
-        
-        //! Draw a scaled line.
-        void scaled_line(coor_system_type& coor) {
         }
         
         context_stack_type _cstack; //!< Stack for context.
