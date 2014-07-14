@@ -104,6 +104,11 @@
 			<key>orderHint</key>
 			<integer>11</integer>
 		</dict>
+		<key>test-geometry.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>70</integer>
+		</dict>
 		<key>test-lod.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -273,6 +278,11 @@
 			<true/>
 		</dict>
 		<key>42801D5A1971AAB000A633A0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>42801D7019742A6A00A633A0</key>
 		<dict>
 			<key>primary</key>
 			<true/>

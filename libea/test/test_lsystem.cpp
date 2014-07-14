@@ -19,7 +19,11 @@
  */
 #include <algorithm>
 #include "test.h"
-#include <ea/lsystem.h>
+#include <ea/lsys/turtle2.h>
+#include <ea/lsys/python.h>
+#include <ea/lsys/cartesian.h>
+
+using namespace ealib::lsys;
 
 BOOST_AUTO_TEST_CASE(test_lsystem_algae) {
     typedef lsystem<char> lsys_type;
@@ -54,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_lsystem_turtle) {
 }
 
 BOOST_AUTO_TEST_CASE(test_lsystem_koch) {
-    typedef lsystem_turtle2<python_grid2> LSystem;
+    typedef lsystem_turtle2<python2> LSystem;
     LSystem L;
     L.axiom(L.string('F')).rule('F', L.splitc("F+F-F-F+F"));
     
@@ -68,12 +72,12 @@ BOOST_AUTO_TEST_CASE(test_lsystem_koch) {
     const std::string t("F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F");
     BOOST_CHECK(std::equal(s.begin(), s.end(), t.begin()));
     
-    python_grid2 g("koch.py");
+    python2 g("koch.py");
     L.draw(g,s);
 }
 
 BOOST_AUTO_TEST_CASE(test_lsystem_dragon) {
-    typedef lsystem_turtle2<python_grid2> LSystem;
+    typedef lsystem_turtle2<python2> LSystem;
     LSystem L;
     L.axiom(L.splitc("FX"))
     .rule('X', L.splitc("X+YF"))
@@ -84,12 +88,12 @@ BOOST_AUTO_TEST_CASE(test_lsystem_dragon) {
     .angle(90)
     .heading(1,0);
     
-    python_grid2 g("dragon.py");
+    python2 g("dragon.py");
     L.draw(g,10);
 }
 
 BOOST_AUTO_TEST_CASE(test_lsystem_plant) {
-    typedef lsystem_turtle2<python_grid2, pointS> LSystem;
+    typedef lsystem_turtle2<python2, pointS> LSystem;
     LSystem L;
     L.axiom(L.splitc("X"))
     .rule('F', L.splitc("FF"))
@@ -100,7 +104,60 @@ BOOST_AUTO_TEST_CASE(test_lsystem_plant) {
     .angle(-25)
     .heading(1,2);
     
-    python_grid2 g("plant.py");
-    L.draw(g,6);
+    python2 g("plant-points.py");
+    L.draw(g,7);
 }
 
+BOOST_AUTO_TEST_CASE(test_lsystem_plant2) {
+    typedef lsystem_turtle2<python2> LSystem;
+    LSystem L;
+    L.axiom(L.splitc("X"))
+    .rule('F', L.splitc("FF"))
+    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
+    
+    L.context()
+    .origin(0,0)
+    .angle(-25)
+    .heading(1,2);
+    
+    python2 g("plant-lines.py");
+    L.draw(g,7);
+}
+
+BOOST_AUTO_TEST_CASE(test_lsystem_nn) {
+    namespace bg = boost::geometry;
+    
+    typedef lsystem_turtle2<cartesian2, pointS> LSystem;
+    LSystem L;
+    L.axiom(L.string('F')).rule('F', L.splitc("F+F-F-F+F"));
+    
+    L.context()
+    .origin(0,0)
+    .angle(90)
+    .heading(1,0)
+    .step_magnitude(1.0);
+    
+    LSystem::string_type s = L.exec_n(2);
+    const std::string t("F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F");
+    BOOST_CHECK(std::equal(s.begin(), s.end(), t.begin()));
+    
+    cartesian2 g;
+    L.draw(g,s);
+    
+    cartesian2::object_vector_type n;
+    g.knn(cartesian2::point_type(0,0), 5, std::back_inserter(n));
+    BOOST_CHECK_EQUAL(5, n.size());
+    
+    //    for(std::size_t i=0; i<n.size(); ++i) {
+    //        std::cout << "(" << bg::get<0>(n[i].first) << "," << bg::get<1>(n[i].first) << "), " << n[i].second << std::endl;
+    //    }
+    
+    n.clear();
+    g.enclosed(cartesian2::point_type(0,0), cartesian2::point_type(4,2), std::back_inserter(n));
+    BOOST_CHECK_EQUAL(10, n.size());
+    
+    //    for(std::size_t i=0; i<n.size(); ++i) {
+    //        std::cout << "(" << bg::get<0>(n[i].first) << "," << bg::get<1>(n[i].first) << "), " << n[i].second << std::endl;
+    //    }
+    
+}

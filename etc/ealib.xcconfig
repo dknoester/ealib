@@ -2,7 +2,7 @@ LIBEA_INCLUDE = ./libea/include
 LIBANN_INCLUDE = ./libann/include
 LIBMKV_INCLUDE = ./libmkv/include
 HEADER_SEARCH_PATHS = $(LIBMKV_INCLUDE) $(LIBANN_INCLUDE) $(LIBEA_INCLUDE) $(HOME)/include /usr/local/include
-OTHER_CPLUSPLUSFLAGS = -ftemplate-depth=255 -DBOOST_PARAMETER_MAX_ARITY=7
+OTHER_CPLUSPLUSFLAGS = -ftemplate-depth=255 -DBOOST_PARAMETER_MAX_ARITY=7 -DBOOST_GEOMETRY_EMPTY_INPUT_NO_THROW
 OTHER_LDFLAGS = -lboost_iostreams -lboost_program_options -lboost_regex -lboost_serialization -lboost_filesystem -lboost_system
 LIBRARY_SEARCH_PATHS = $(HOME)/lib /usr/local/lib
 USE_HEADERMAP = NO
