@@ -231,12 +231,12 @@ BOOST_AUTO_TEST_CASE(test_lsystem_graph) {
     
     spatial_graph2 g;
     L.draw(g,4);
-    g.grow(1.2);
+    g.grow(0.5);
     
-    spatial_graph2::carrier_graph_type& G=g.graph();
+    spatial_graph2::graph_type& G=g.graph();
     python2 p("graph.pl");
     
-    spatial_graph2::carrier_graph_type::edge_iterator ei,ei_end;
+    spatial_graph2::graph_type::edge_iterator ei,ei_end;
     for(boost::tie(ei,ei_end)=boost::edges(G); ei!=ei_end; ++ei) {
         p.gline(G[boost::source(*ei,G)].point, G[boost::target(*ei,G)].point);
     }

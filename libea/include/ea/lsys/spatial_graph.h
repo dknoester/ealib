@@ -42,35 +42,22 @@ namespace ealib {
         class spatial_graph2 {
         public:
             typedef bg::model::point<double, 2, bg::cs::cartesian> point_type;
-            typedef std::list<point_type> point_list_type;
-            typedef std::pair<point_type, point_list_type::iterator> value_type;
-            typedef std::vector<value_type> query_result_type;
-            typedef bgi::rtree<value_type, bgi::rstar<16> > rtree_type;
-            
+
             //! Data structure to describe a carrier point.
             struct carrier_point_type {
-                //! Default constructor.
-                carrier_point_type() : root(0.0), point(0.0, 0.0) {
-                }
-                
-                //! Constructor.
-                carrier_point_type(const point_type& p) : root(0.0), point(p) {
-                }
-                
-                //! Constructor.
-                carrier_point_type(double x, double y) : root(0.0), point(x,y) {
-                }
+                carrier_point_type() : root(0.0), point(0.0, 0.0) { }
+                carrier_point_type(const point_type& p) : root(0.0), point(p) { }
+                carrier_point_type(double x, double y) : root(0.0), point(x,y) { }
+
                 double root; //!< Distance to root (path length).
                 point_type point; //!< Location in space of this carrier point.
             };
-            
-            //! Type for the graph produced by neuron growth.
-            typedef boost::adjacency_list
-            < boost::setS
-            , boost::vecS
-            , boost::undirectedS
-            , carrier_point_type
-            > carrier_graph_type;
+
+            //! Type for the underlying graph connecting carrier points.
+            typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, carrier_point_type> graph_type;
+            typedef std::pair<point_type, graph_type::vertex_descriptor> value_type; //!< Type that is stored in the RTree.
+            typedef std::vector<value_type> query_result_type; //!< Type for storing spatial query results.
+            typedef bgi::rtree<value_type, bgi::rstar<16> > rtree_type;
             
             //! Constructor.
             spatial_graph2() {
@@ -79,8 +66,8 @@ namespace ealib {
             //! Add a point to this coordinate system.
             template <typename Point>
             void point(const Point& p) {
-                point_list_type::iterator i = _cpoints.insert(_cpoints.end(), point_type(p(0), p(1)));
-                _rtree.insert(std::make_pair(*i, i));
+                graph_type::vertex_descriptor v = boost::add_vertex(carrier_point_type(p(0), p(1)), _G);
+                _rtree.insert(std::make_pair(_G[v].point, v));
             }
             
             //! Outputs the K-nearest neighbors to point p.
@@ -97,84 +84,81 @@ namespace ealib {
             }
 
             //! Returns the current graph representation of the points in this coordinate space.
-            carrier_graph_type& graph() {
+            graph_type& graph() {
                 return _G;
             }
 
+            //! Returns the carrier point corresponding to vertex v.
+            carrier_point_type& carrier_point(graph_type::vertex_descriptor v) {
+                return _G[v];
+            }
+            
             //! Returns the root point (by default, the first node).
-            point_type& root() {
-                return _cpoints.front();
+            carrier_point_type& root() {
+                return _G[boost::vertex(0, _G)];
             }
             
-            //! Returns the cost of connecting point p to the carrier point n.
-            double cost(double bf, const point_type& p, const carrier_point_type& n) {
-                double d = bg::distance(p,n.point);
-                return d + bf * (n.root+d);
-            }
-            
-            /*! Returns a graph grown from the current list of carrier points
-             with balancing factor bf.
+            /*! Returns the cost of connecting carrier point u to the tree at
+             carrier point v.
              */
+            double cost(double bf, const graph_type::vertex_descriptor u, const graph_type::vertex_descriptor v) {
+                return bg::distance(_G[u].point, _G[v].point) + bf * _G[v].root;
+            }
+            
+            //! Grow the tree.
             void grow(double bf) {
-                _G.clear();
-                
-                // watch out for empty lists:
-                if(_cpoints.empty()) {
+                if(boost::num_vertices(_G) == 0) {
                     return;
                 }
                 
-                // <point, vertex of min cost connection, cost>
-                typedef boost::tuple<point_type, carrier_graph_type::vertex_descriptor, double> tuple_type;
+                // <source vertex, target vertex of min cost connection, cost>
+                typedef boost::tuple<graph_type::vertex_descriptor, graph_type::vertex_descriptor, double> tuple_type;
                 typedef std::list<tuple_type> connection_list;
                 connection_list P;
                 
-                // first, add the root carrier point to the tree, which we assume
-                // to be the first point in the list:
-                point_list_type::iterator ci=_cpoints.begin();
-                carrier_graph_type::vertex_descriptor root=boost::add_vertex(carrier_point_type(*ci), _G);
+                // the root is the 0'th vertex:
+                graph_type::vertex_descriptor root=boost::vertex(0, _G);
                 
-                // iterate through the rest of the carrier points and add
+                // iterate through the non-root carrier points and add
                 // them to the connection list.  the root is the only node in the
-                // graph at this point, so we initialize all costs in the connection
-                // list to point to the root node.  As an optimization, keep track
-                // of the minimum cost connection:
+                // tree at this point, so we initialize all costs in the connection
+                // list to point to the root node, keeping track of the minimum
+                // cost connection:
                 connection_list::iterator mini=P.end();
-                for( ++ci; ci!=_cpoints.end(); ++ci) {
+                for(std::size_t i=1; i<boost::num_vertices(_G); ++i) {
+                    graph_type::vertex_descriptor u=boost::vertex(i,_G);
                     connection_list::iterator last=P.insert(P.end(),
-                                                            boost::make_tuple(*ci, root, cost(bf, *ci, _G[root])));
+                                                            boost::make_tuple(u, root, cost(bf, u, root)));
                     if((mini==P.end()) || (last->get<2>() < mini->get<2>())) {
                         mini = last;
                     }
                 }
                 
-                // until all the points in P are exhausted, add the minimum cost
-                // connection from P to its corresponding min cost vertex in _G:
+                // add all the connections in P in min-cost order:
                 while(!P.empty()) {
                     // mini currently points at the minimum cost connection.
-                    // add the corresponding vertex and edge to _G:
-                    carrier_graph_type::vertex_descriptor u = mini->get<1>();
-                    carrier_graph_type::vertex_descriptor v = boost::add_vertex(carrier_point_type(mini->get<0>()), _G);
+                    graph_type::vertex_descriptor u = mini->get<0>(); // source
+                    graph_type::vertex_descriptor v = mini->get<1>(); // target
                     boost::add_edge(u, v, _G);
-                    _G[v].root = _G[u].root + bg::distance(_G[u].point, _G[v].point);
+                    _G[u].root = _G[v].root + bg::distance(_G[u].point, _G[v].point);
                     
                     // remove mini from the connection list and check to see
                     // if any points in P need to update their minimum to point
-                    // to the vertex we just added:
+                    // to vertex u (the one we just added):
                     P.erase(mini);
                     if(!P.empty()) {
                         mini = P.end();
                         for(connection_list::iterator i=P.begin(); i!=P.end(); ++i) {
-                            // check to see if we need to update the cost of i
-                            // based on the new node we just added.
+                            // check to see if we need to update the cost of
+                            // connection i based on the node we just added.
                             //
                             // we only need to check all unconnected points in P
-                            // against v (the node we just added).  we do not
-                            // need to check against all vertices in _G.  By
-                            // contradiction, this would imply that the minimums
-                            // in P were wrong initially.
-                            double c = cost(bf, i->get<0>(), _G[v]);
+                            // against u, not everything in _G.  By contradiction,
+                            // this would imply that the minimum in P was wrong
+                            // initially.
+                            double c = cost(bf, i->get<0>(), u);
                             if(c < i->get<2>()) {
-                                i->get<1>() = v;
+                                i->get<1>() = u;
                                 i->get<2>() = c;
                             }
                             
@@ -190,8 +174,7 @@ namespace ealib {
             
         protected:
             rtree_type _rtree; //!< Spatial index of carrier points.
-            point_list_type _cpoints; //!< List of all carrier points.
-            carrier_graph_type _G; //!< Graph version of carrier points.
+            graph_type _G; //!< Graph version of carrier points.
         };
         
     } // lsys
