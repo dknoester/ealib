@@ -44,11 +44,6 @@
 			<key>orderHint</key>
 			<integer>29</integer>
 		</dict>
-		<key>example-graph.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>66</integer>
-		</dict>
 		<key>example-lod.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -104,11 +99,6 @@
 			<key>orderHint</key>
 			<integer>11</integer>
 		</dict>
-		<key>test-geometry.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>70</integer>
-		</dict>
 		<key>test-lod.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -117,7 +107,7 @@
 		<key>test-lsys.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>69</integer>
+			<integer>67</integer>
 		</dict>
 		<key>test-mkv.xcscheme</key>
 		<dict>
@@ -132,7 +122,7 @@
 		<key>test-neuroevolution.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>67</integer>
+			<integer>66</integer>
 		</dict>
 		<key>test-torus.xcscheme</key>
 		<dict>
@@ -268,6 +258,11 @@
 			<true/>
 		</dict>
 		<key>426A049317AFFD58000F5151</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>426BAECC1975A415002DF6AA</key>
 		<dict>
 			<key>primary</key>
 			<true/>

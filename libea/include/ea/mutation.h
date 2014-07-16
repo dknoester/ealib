@@ -23,6 +23,7 @@
 #include <ea/algorithm.h>
 #include <ea/concepts.h>
 #include <ea/metadata.h>
+#include <ea/representation.h>
 
 namespace ealib {
     
@@ -96,6 +97,11 @@ namespace ealib {
 	}
 
     namespace mutation {
+
+        /*! Functors in the mutation::site namespace are site-specific mutation 
+         types.  They are meant to be applied on a single site by a mutation 
+         operator.
+         */
         namespace site {
             struct uniform_integer {
                 template <typename Iterator, typename EA>
@@ -139,6 +145,7 @@ namespace ealib {
                 }
             };
             
+            //! This site operator clips a mutation type to a bounded value.
             template <typename MutationType>
             struct clip {
                 typedef MutationType mutation_type;
@@ -152,6 +159,7 @@ namespace ealib {
                 mutation_type _mt;
             };
             
+            //! This site operator introduces a separate zeroing probability.
             template <typename MutationType>
             struct zero {
                 typedef MutationType mutation_type;
@@ -168,6 +176,7 @@ namespace ealib {
                 mutation_type _mt;
             };
 
+            //! This site operator probabilistically applies a mutation type.
             template <typename MutationType>
             struct site_probabilistic {
                 typedef MutationType mutation_type;
@@ -184,6 +193,9 @@ namespace ealib {
             
         } // site
         
+        /*! This namespace contains various mutation operators.  The idea is
+         that they "stack" with one or more of the site operators defined above.
+         */
         namespace operators {
             
             /*! Null mutation operator; a placeholder.
@@ -197,8 +209,8 @@ namespace ealib {
             
             /*! Variable-size subpopulation mutation.
              
-             Here, the EA is assumed to be a meta-population, individuals are in
-             fact a subpopulation EA, and mutation involves operations on that EA.
+             Here, the EA is assumed to be a meta-population, individuals are
+             subpopulation EAs, and mutation involves operations on that EA.
              */
             struct variable_size_subpopulation {
                 template <typename EA>

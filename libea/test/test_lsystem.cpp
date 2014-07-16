@@ -17,13 +17,67 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <algorithm>
-#include "test.h"
-#include <ea/lsys/turtle.h>
-#include <ea/lsys/python.h>
-#include <ea/lsys/cartesian.h>
+#ifndef BOOST_TEST_DYN_LINK
+#define BOOST_TEST_DYN_LINK
+#endif
+#define BOOST_TEST_MAIN
 
+#include <boost/test/unit_test.hpp>
+#include <boost/geometry.hpp>
+#include <algorithm>
+#include <fstream>
+#include <ea/lsys/turtle.h>
+#include <ea/lsys/cartesian.h>
+#include <ea/lsys/spatial_graph.h>
 using namespace ealib::lsys;
+namespace bg = boost::geometry;
+namespace bgi = boost::geometry::index;
+
+
+/*! Simple 2D coordinate system that writes Python plotting commands to
+ a file.
+ */
+struct python2 {
+    //! Constructor.
+    python2(const std::string& filename) {
+        _out.open(filename.c_str());
+        _out << "import pylab as pl" << std::endl;
+        _out << "import matplotlib as mp" << std::endl << std::endl;
+    }
+    
+    //! Destructor.
+    ~python2() {
+        _out << "pl.show()" << std::endl;
+        _out.close();
+    }
+    
+    //! Add a line to this coordinate system.
+    template <typename Point>
+    void line(const Point& p1, const Point& p2, const std::string c="red") {
+        _out << "pl.plot([" << p1(0) << "," << p2(0) << "], [" << p1(1) << "," << p2(1) << "], c=\"" << c << "\")" << std::endl;
+    }
+    
+    //! Add a line to this coordinate system.
+    template <typename Point>
+    void gline(const Point& p1, const Point& p2, const std::string c="red") {
+        _out << "pl.plot([" << bg::get<0>(p1) << "," << bg::get<0>(p2) << "], ["
+        << bg::get<1>(p1) << "," << bg::get<1>(p2) << "], c=\"" << c << "\")" << std::endl;
+    }
+    
+    //! Add a point to this coordinate system.
+    template <typename Point>
+    void point(const Point& p, const std::string c="red") {
+        _out << "pl.plot([" << p(0) << "], [" << p(1) << "], 'o', markersize=3, c=\"" << c << "\")" << std::endl;
+    }
+    
+    //! Add a point to this coordinate system.
+    template <typename Point>
+    void gpoint(const Point& p, const std::string c="red") {
+        _out << "pl.plot([" << bg::get<0>(p) << "], [" << bg::get<1>(p) << "], 'o', markersize=3, c=\"" << c << "\")" << std::endl;
+    }
+    
+    std::ofstream _out;
+};
 
 BOOST_AUTO_TEST_CASE(test_lsystem_algae) {
     typedef lsystem<char> lsys_type;
@@ -160,4 +214,30 @@ BOOST_AUTO_TEST_CASE(test_lsystem_nn) {
     //        std::cout << "(" << bg::get<0>(n[i].first) << "," << bg::get<1>(n[i].first) << "), " << n[i].second << std::endl;
     //    }
     
+}
+
+BOOST_AUTO_TEST_CASE(test_lsystem_graph) {
+    typedef lsystem_turtle2<spatial_graph2, pointS> LSystem;
+    LSystem L;
+    
+    L.axiom(L.splitc("X"))
+    .rule('F', L.splitc("FF"))
+    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
+    
+    L.context()
+    .origin(0,0)
+    .angle(-25)
+    .heading(0,1);
+    
+    spatial_graph2 g;
+    L.draw(g,4);
+    g.grow(1.2);
+    
+    spatial_graph2::carrier_graph_type& G=g.graph();
+    python2 p("graph.pl");
+    
+    spatial_graph2::carrier_graph_type::edge_iterator ei,ei_end;
+    for(boost::tie(ei,ei_end)=boost::edges(G); ei!=ei_end; ++ei) {
+        p.gline(G[boost::source(*ei,G)].point, G[boost::target(*ei,G)].point);
+    }
 }

@@ -27,6 +27,7 @@
 #include <ea/metadata.h>
 
 namespace ealib {
+    
     LIBEA_MD_DECL(DEV_VERTICES_N, "ea.ann.development.vertices.n", int);
     LIBEA_MD_DECL(DEV_EVENTS_N, "ea.ann.development.events.n", int);
     
@@ -44,9 +45,9 @@ namespace ealib {
             template <typename EA>
             phi(EA& ea) {
             }
-            
-            template <typename EA>
-            typename EA::phenotype_type operator()(typename EA::genome_type& G, EA& ea) {
+
+            template <typename Genome, typename Phenotype, typename EA>
+            void operator()(Genome& G, Phenotype& N, EA& ea) {
                 // construct T, a bidirectional unweighted graph from a developmental template:
                 boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex> T;
                 graph::phi(T, get<DEV_VERTICES_N>(ea), G, ea.rng());
@@ -56,7 +57,7 @@ namespace ealib {
                 assert((nin+nout) < boost::num_vertices(T));
                 
                 // build an ANN from T:
-                typename EA::phenotype_type N(nin, nout, boost::num_vertices(T) - nin - nout);
+                N.resize(nin, nout, boost::num_vertices(T) - nin - nout);
                 
                 // ok, module 0 and 1 are inputs and outputs, respectively.
                 // we need to make sure that those get put in the right place in the ANN.
@@ -71,11 +72,10 @@ namespace ealib {
                         }
                     }
                 }
-                
-                return N;
             }
         };
 
+        
         /*! Delta translator, which produces a phenotype from a delta graph.
          
          As with the Phi translator above, here we also go through a two-step 
@@ -87,8 +87,8 @@ namespace ealib {
             delta(EA& ea) {
             }
             
-            template <typename EA>
-            typename EA::phenotype_type operator()(typename EA::genome_type& G, EA& ea) {
+            template <typename Genome, typename Phenotype, typename EA>
+            void operator()(Genome& G, Phenotype& N, EA& ea) {
                 // construct T, a bidirectional unweighted graph from a developmental template:
                 boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, graph::mutable_vertex> T;
                 graph::delta_growth_n(T, get<DEV_EVENTS_N>(ea), G, ea.rng());
@@ -98,7 +98,7 @@ namespace ealib {
                 assert((nin+nout) < boost::num_vertices(T));
                 
                 // build an ANN from T:
-                typename EA::phenotype_type N(nin, nout, boost::num_vertices(T) - nin - nout);
+                N.resize(nin, nout, boost::num_vertices(T) - nin - nout);
                 
                 // ok, module 0 and 1 are inputs and outputs, respectively.
                 // we need to make sure that those get put in the right place in the ANN.
@@ -113,8 +113,6 @@ namespace ealib {
                         }
                     }
                 }
-                
-                return N;
             }
         };
 

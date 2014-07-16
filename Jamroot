@@ -1,10 +1,18 @@
 project
-    : requirements <define>BOOST_PARAMETER_MAX_ARITY=7
+    : requirements <define>BOOST_PARAMETER_MAX_ARITY=7 <define>BOOST_GEOMETRY_EMPTY_INPUT_NO_THROW
     ;
 
 use-project /libea : libea ;
 use-project /libmkv : libmkv ;
+use-project /libann : libann ;
 build-project libea ;
+
+exe example-pole :
+    examples/pole_balancing.cpp
+    /libea//libea_runner
+    /libann//libann
+    : <link>static
+    ;
 
 exe example-all-ones :
     examples/all_ones.cpp
@@ -46,5 +54,18 @@ exe example-nsga2 :
 exe example-qhfc :
     examples/qhfc.cpp
     /libea//libea_runner
+    : <link>static
+    ;
+
+exe example-emscript :
+    examples/emscript.cpp
+    /libea//libea_runner
+    : <link>static
+    ;
+
+exe example-dev :
+    examples/developmental.cpp
+    /libea//libea_runner
+    /libann//libann
     : <link>static
     ;

@@ -20,7 +20,6 @@
 
 #include "test.h"
 #include <ea/analysis.h>
-#include <ea/cmdline_interface.h>
 #include <ea/line_of_descent.h>
 
 LIBEA_ANALYSIS_TOOL(test_population_lod_tool) {
@@ -33,19 +32,7 @@ LIBEA_ANALYSIS_TOOL(test_population_lod_tool) {
     }
 }
 
-template <typename EA>
-class cli : public cmdline_interface<EA> {
-public:
-    virtual void gather_tools() {
-        add_tool<test_population_lod_tool>(this);
-    }
-    
-    virtual void gather_events(EA& ea) {
-        add_event<lod_event>(ea);
-    }
-};
-
 BOOST_AUTO_TEST_CASE(test_lod) {
-    cli<all_ones_lod_ea> ea;
-    
+    all_ones_lod_ea ea(build_ea_md());
+    add_event<lod_event>(ea);
 }

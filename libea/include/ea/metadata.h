@@ -299,12 +299,6 @@ namespace ealib {
     LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
     LIBEA_MD_DECL(METAPOPULATION_SIZE, "ea.metapopulation.size", unsigned int);
 
-    LIBEA_MD_DECL(REPRESENTATION_SIZE, "ea.representation.size", int);
-    LIBEA_MD_DECL(REPRESENTATION_INITIAL_SIZE, "ea.representation.initial_size", int);
-	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
-	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
-
-
     // ea.individual.*
     LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);
     

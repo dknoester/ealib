@@ -239,7 +239,6 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
 
 BOOST_AUTO_TEST_CASE(test_ea_type) {
     ea_type ea(build_md());
-    ea_type::isa_type& isa=ea.isa();
     generate_ancestors(repro_ancestor(), 1, ea);
     
     ea_type::individual_ptr_type p = ea.population()[0];
@@ -284,7 +283,6 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
     ea_type ea(build_md());
     put<MUTATION_PER_SITE_P>(0.0,ea);
 
-    ea_type::isa_type& isa=ea.isa();
     generate_ancestors(nopx_ancestor(), 1, ea);
     
     ea_type::individual_ptr_type p = ea.population()[0];
@@ -321,7 +319,6 @@ BOOST_AUTO_TEST_CASE(test_self_replication) {
 
 BOOST_AUTO_TEST_CASE(test_al_messaging) {
     ea_type ea(build_md());
-    ea_type::isa_type& isa=ea.isa();
     generate_ancestors(nopx_ancestor(), 2, ea);
     
     ea_type::individual_ptr_type p = ea.population()[0];

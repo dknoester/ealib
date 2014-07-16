@@ -91,13 +91,13 @@ namespace mkv {
         call_markov_network_translator(EA& ea) {
         }
         
-        template <typename EA>
-        typename EA::phenotype_type operator()(typename EA::genome_type& g, EA& ea) {
-            typename EA::phenotype_type M(get<MKV_INPUT_N>(ea),
-                                          get<MKV_OUTPUT_N>(ea),
-                                          get<MKV_HIDDEN_N>(ea));
-            ea.lifecycle().translator.translate_genome(M,g);
-            return M;
+        //! Translate the given genome into an L-System.
+        template <typename Genome, typename Phenotype, typename EA>
+        void operator()(Genome& G, Phenotype& P, EA& ea) {
+            P.resize(get<MKV_INPUT_N>(ea),
+                     get<MKV_OUTPUT_N>(ea),
+                     get<MKV_HIDDEN_N>(ea));
+            ea.lifecycle().translator.translate_genome(P,G);
         }
     };
     

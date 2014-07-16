@@ -52,6 +52,11 @@ namespace mkv {
         typedef InputFunction input_function_type; //!< Unary function that calculates the value of an input.
         typedef RandomNumberGenerator rng_type; //!< Random number generator type.
         
+        //! Default constructor.
+        markov_network() {
+            resize(0,0,0);
+        }
+        
         //! Constructor.
         markov_network(std::size_t nin, std::size_t nout, std::size_t nhid, unsigned int seed=0) : _rng(seed) {
             resize(nin, nout, nhid);

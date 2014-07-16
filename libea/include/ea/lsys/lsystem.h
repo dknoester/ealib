@@ -23,8 +23,12 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <ea/metadata.h>
 
 namespace ealib {
+    
+    LIBEA_MD_DECL(LSYS_INITIAL_RULES, "ea.lsystem.initial_rules", std::size_t);
+    
     namespace lsys {
         
         /* Lindenmeyer system (L-system) class.
@@ -47,18 +51,7 @@ namespace ealib {
         public:
             typedef Symbol symbol_type;
             typedef std::set<symbol_type> alphabet_type;
-            
-            //! Convenience wrapper that makes it easy to assemble Lsystem strings.
-            template <typename T, typename U>
-            struct string_wrapper : T {
-                typedef T parent;
-                string_wrapper& add(const U& u) {
-                    parent::push_back(u);
-                    return *this;
-                }
-            };
-            
-            typedef string_wrapper<std::vector<symbol_type>, symbol_type> string_type;
+            typedef std::vector<symbol_type> string_type;
             typedef std::map<symbol_type, string_type> production_type;
             
             //! Default constructor.
@@ -108,11 +101,11 @@ namespace ealib {
                 return s;
             }
             
-            //! Build a string from a c-style array.
-            string_type splitc(const symbol_type* c) const {
+            //! Build a string from a c-style char array.
+            string_type splitc(const char* c) const {
                 string_type s;
                 while(*c != '\0') {
-                    s.push_back(static_cast<char>(*c));
+                    s.push_back(static_cast<symbol_type>(*c));
                     ++c;
                 }
                 return s;
@@ -125,24 +118,36 @@ namespace ealib {
                 return st;
             }
             
+            //! Add a symbol to this lsystem.
+            lsystem& symbol(const symbol_type& s) {
+                _V.insert(s);
+                return *this;
+            }
+            
             //! Set the initial state (axiom).
             lsystem& axiom(const string_type& s) {
                 _omega = s;
                 return *this;
             }
             
-            //! Add a variable to this lsystem.
-            lsystem& symbol(const symbol_type& s) {
-                _V.insert(s);
+            //! Set the initial state (axiom).
+            lsystem& axiom(const symbol_type& s) {
+                _omega.clear();
+                _omega.push_back(s);
                 return *this;
             }
             
             //! Add a rule to this lsystem.
             lsystem& rule(const symbol_type& p, const string_type& s) {
+                symbol(p);
                 _P[p] = s;
                 return *this;
             }
             
+            //! Returns this L-System's alphabet.
+            alphabet_type& alphabet() {
+                return _V;
+            }
             
         protected:
             alphabet_type _V; //!< Set of all symbols this lsystem understands.
@@ -151,6 +156,84 @@ namespace ealib {
         };
         
     } // lsys
+    
+    
+    namespace translators {
+        
+        /*! Translate an LSystem from a genome to a phenotype.
+         
+         Three different kinds of genes defined:
+         
+         SYMBOL: start_codon | id | symbol | stop_codon?
+         AXIOM: start_codon | id | symbol | stop_codon?
+         RULE: start_codon | id | symbol | string | stop_codon?
+         
+         start_codon: (x \in {SYMBOL, AXIOM, RULE}, 255-x); used to indicate the
+         beginning of a gene that should be translated.
+         
+         stop_codon: (255, 0); indicates the end of a gene.
+         
+         id: Currently a placeholder, id is meant to indicate to which lsystem 
+         the given rule belongs, if the genome holds multiple lsystems.  Not yet
+         implemented.
+         
+         symbol: A variable; symbols are never treated as parameters.
+         */
+        struct lsystem {
+
+            //! Constants for the gene types.
+            enum gene_type { SYMBOL=42, AXIOM=43, RULE=44, PARAMS=45, STOP=255 };
+
+            //! Constructor.
+            template <typename EA>
+            lsystem(EA& ea) {
+            }
+            
+            //! Translate the given genome into an L-System.
+            template <typename Genome, typename Phenotype, typename EA>
+            void operator()(Genome& G, Phenotype& P, EA& ea) {
+                for(typename Genome::iterator i=G.begin(); i!=G.end(); ++i) {
+                    if(((*i + *(i+1)) == 255) && (*i != STOP)) {
+                        translate_gene(i,P);
+                    }
+                }
+            }
+            
+            //! Returns an iterator to the first stop codon after f, or f+32, whichever is closest.
+            template <typename ForwardIterator>
+            ForwardIterator stop_codon(ForwardIterator f) {
+                ForwardIterator l=f;
+                for( ; l!=f+32; ++l) {
+                    if(((*l + *(l+1)) == 255) && (*l == STOP)) {
+                        break;
+                    }
+                }
+                return l;
+            }
+            
+            //! Translate a gene starting at f.
+            template <typename ForwardIterator, typename LSystem>
+            void translate_gene(ForwardIterator f, LSystem& L) {
+                switch(*f) {
+                    case SYMBOL: {
+                        L.symbol(*(f+3));
+                        break;
+                    }
+                    case AXIOM: {
+                        L.axiom(*(f+3));
+                        break;
+                    }
+                    case RULE: {
+                        L.rule(*(f+3), typename LSystem::string_type(f+4, stop_codon(f+4)));
+                        break;
+                    }
+                    case STOP: break;
+                    default: break;
+                }
+            }
+        };
+        
+    } // translators
 } // ealib
 
 #endif

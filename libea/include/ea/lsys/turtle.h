@@ -25,25 +25,12 @@
 #include <deque>
 
 #include <ea/lsys/lsystem.h>
+#include <ea/mutation.h>
+#include <ea/representation.h>
+namespace bnu = boost::numeric::ublas;
 
 namespace ealib {
     namespace lsys {
-        namespace bnu = boost::numeric::ublas;
-        
-        /*! Simple 2D echoing coordinate system.
-         */
-        struct echo2 {
-            template <typename Point>
-            void line(const Point& p1, const Point& p2) {
-                std::cout << "l: (" << p1(0) << "," << p1(1) << ") -> ("
-                << p2(0) << "," << p2(1) << ")" << std::endl;
-            }
-            template <typename Point>
-            void point(const Point& p) {
-                std::cout << "p: (" << p(0) << "," << p(1) << ")" << std::endl;
-            }
-        };
-        
         
         /*! Context for 2D turtles.
          */
@@ -150,14 +137,15 @@ namespace ealib {
         /*! 2D turtle for an L-system.
          */
         template
-        < typename CoordinateSystem=echo2
+        < typename CoordinateSystem
         , typename LineSelector=lineS
-        , typename LSystem=lsystem<char>
+        , typename LSystem=lsystem<int>
         > class lsystem_turtle2 : public LSystem {
         public:
             typedef LSystem parent;
             typedef CoordinateSystem coor_system_type;
             typedef turtle_context2 context_type;
+            typedef turtle_context2::point_type point_type;
             typedef std::deque<context_type> context_stack_type;
             typedef std::deque<int> param_stack_type;
             typedef LineSelector line_selector_tag;
@@ -301,6 +289,52 @@ namespace ealib {
         };
         
     } // lsys
+    
+    
+	namespace ancestors {
+
+		//! Generates a random 2D LSystem turtle ancestor.
+		struct random_turtle2 {
+			template <typename EA>
+			typename EA::genome_type operator()(EA& ea) {
+                typename EA::genome_type g;
+                g.resize(get<REPRESENTATION_INITIAL_SIZE>(ea), 127);
+                
+                int symbols[] = { 'F', 'G', '+', '-', '[', ']', '|' };
+
+                // add the symbols:
+                for(std::size_t i=0; i<7; ++i) {
+                    int j=ea.rng()(g.size());
+                    g[j] = translators::lsystem::SYMBOL;
+                    g[++j] = 255 - translators::lsystem::SYMBOL;
+                }
+                
+                // add the axiom:
+                int j=ea.rng()(g.size());
+                g[j] = translators::lsystem::AXIOM;
+                g[++j] = 255 - translators::lsystem::AXIOM;
+                g[++j] = 'F';
+                
+                // add a few random rules:
+                for(std::size_t i=0; i<get<LSYS_INITIAL_RULES>(ea); ++i) {
+                    int j=ea.rng()(g.size());
+                    g[j] = translators::lsystem::RULE;
+                    g[++j] = 255 - translators::lsystem::RULE;
+
+                    std::size_t rsize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
+                                               get<MUTATION_INDEL_MAX_SIZE>(ea));
+                    for(std::size_t k=0; k<rsize; ++k) {
+                        g[++j] = *ea.rng().choice(symbols, symbols+7);
+                    }
+                    
+                    g[++j] = translators::lsystem::STOP;
+                    g[++j] = 255 - translators::lsystem::STOP;
+                }
+                return g;
+			}
+		};
+		
+	} // ancestors
 } // ealib
 
 #endif

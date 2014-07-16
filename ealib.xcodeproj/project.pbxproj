@@ -32,6 +32,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				428808691976C53900F53B79 /* PBXTargetDependency */,
 				4285661C196B086400C5B13F /* PBXTargetDependency */,
 				428CB52718F81F6400E6093D /* PBXTargetDependency */,
 				4243E788189429D200431D18 /* PBXTargetDependency */,
@@ -88,7 +89,6 @@
 		4256FAC71892BC2D004AB7F9 /* logic9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4256FA621892BA14004AB7F9 /* logic9.cpp */; };
 		426A04A617B1205B000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		42801D5C1971AAB000A633A0 /* test_lsystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42801D56197155CA00A633A0 /* test_lsystem.cpp */; };
-		42801D631971AAB000A633A0 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test.cpp */; };
 		42801D651971AAB000A633A0 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42856627196B0B4100C5B13F /* libea.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBD9F157D0E0B0003A644 /* libea.a */; };
 		4285662F196B0B7800C5B13F /* developmental.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4285662D196B0B7800C5B13F /* developmental.cpp */; };
@@ -315,6 +315,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 423CBD9E157D0E0B0003A644;
 			remoteInfo = ea;
+		};
+		428808681976C53900F53B79 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 423CBC72157D0D440003A644 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 42801D5A1971AAB000A633A0;
+			remoteInfo = "test-lsys";
 		};
 		428CB52618F81F6400E6093D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -577,8 +584,8 @@
 		42801D6A1971AAB000A633A0 /* test-lsys */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-lsys"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42801D6C1973F80500A633A0 /* lsystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lsystem.h; sourceTree = "<group>"; };
 		42801D6D1973F82100A633A0 /* turtle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = turtle.h; sourceTree = "<group>"; };
-		42801D6E1973F8FB00A633A0 /* python.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = python.h; sourceTree = "<group>"; };
 		42801D6F1973FC4F00A633A0 /* cartesian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cartesian.h; sourceTree = "<group>"; };
+		42801D7E1974A57400A633A0 /* spatial_graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spatial_graph.h; sourceTree = "<group>"; };
 		4281FEDA16C45C840066610C /* test_graph.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_graph.cpp; sourceTree = "<group>"; };
 		42841C2915A5F4D800AB18BE /* test_torus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_torus.cpp; sourceTree = "<group>"; };
 		42841C7E15ADACF000AB18BE /* CONTRIBUTORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = CONTRIBUTORS; sourceTree = "<group>"; };
@@ -1087,8 +1094,8 @@
 			children = (
 				42801D6C1973F80500A633A0 /* lsystem.h */,
 				42801D6D1973F82100A633A0 /* turtle.h */,
-				42801D6E1973F8FB00A633A0 /* python.h */,
 				42801D6F1973FC4F00A633A0 /* cartesian.h */,
+				42801D7E1974A57400A633A0 /* spatial_graph.h */,
 			);
 			path = lsys;
 			sourceTree = "<group>";
@@ -1931,7 +1938,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				42801D5C1971AAB000A633A0 /* test_lsystem.cpp in Sources */,
-				42801D631971AAB000A633A0 /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2157,6 +2163,11 @@
 			isa = PBXTargetDependency;
 			target = 423CBD9E157D0E0B0003A644 /* ea */;
 			targetProxy = 42856623196B0B4100C5B13F /* PBXContainerItemProxy */;
+		};
+		428808691976C53900F53B79 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 42801D5A1971AAB000A633A0 /* test-lsys */;
+			targetProxy = 428808681976C53900F53B79 /* PBXContainerItemProxy */;
 		};
 		428CB52718F81F6400E6093D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

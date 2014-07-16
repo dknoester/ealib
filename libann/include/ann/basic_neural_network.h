@@ -87,6 +87,21 @@ namespace ann {
 		double& operator()(std::size_t i, std::size_t j) {
 			return _A(i,j);
 		}
+        
+        //! Returns the index of input neuron i.
+        std::size_t input(std::size_t i) {
+            return i;
+        }
+        
+        //! Returns the index of output neuron i.
+        std::size_t output(std::size_t i) {
+            return _nin + i;
+        }
+
+        //! Returns the index of hidden neuron i.
+        std::size_t hidden(std::size_t i) {
+            return _nin + _nout + i;
+        }
 		
 		//! Returns the activation level of neuron i at time t.
 		double& operator[](std::size_t i) { return _Y(i); }

@@ -20,8 +20,14 @@
 #ifndef _EA_REPRESENTATION_H_
 #define _EA_REPRESENTATION_H_
 
+#include <ea/metadata.h>
 
 namespace ealib {
+    
+    LIBEA_MD_DECL(REPRESENTATION_SIZE, "ea.representation.size", int);
+    LIBEA_MD_DECL(REPRESENTATION_INITIAL_SIZE, "ea.representation.initial_size", int);
+	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
+	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
     
     /* We are defining a {\em representation} as a (genome, phenotype, 
      translation code) tuple.
@@ -105,6 +111,12 @@ namespace ealib {
     };
     
     
+    //! Helper method to aid in translation of genome -> phenotype.
+    template <typename Genome, typename Phenotype, typename Translator, typename EA>
+    void translate(Genome& G, Phenotype& P, Translator t, EA& ea) {
+        t(G,P,ea);
+    }
+    
     /*! Indirect representation type.
      
      Here, the phenotype is calculated from the genome type.
@@ -143,8 +155,8 @@ namespace ealib {
         template <typename EA>
         phenotype_type& phenotype(EA& ea) {
             if(_phenotype == 0) {
-                translator_type t(ea);
-                _phenotype.reset(new phenotype_type(t(_genome,ea)));
+                _phenotype.reset(new phenotype_type());
+                translate(_genome, *_phenotype, translator_type(ea), ea);
             }
             return *_phenotype;
         }

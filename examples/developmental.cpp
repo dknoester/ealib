@@ -32,7 +32,7 @@ typedef evolutionary_algorithm
 , mutation::operators::delta_growth
 , recombination::asexual
 , generational_models::moran_process< >
-, ancestors::random_delta_graph
+, ancestors::random_delta_growth_graph
 > ea_type;
 
 

@@ -9,10 +9,10 @@ if $(PREFIX) = "" {
 alias libea :
     /boost//program_options
     /boost//serialization
-    /boost//signals
     /boost//iostreams
     /boost//regex
     /boost//system
+    /boost//filesystem
     /site-config//z
     : : : <include>./include
     ;
@@ -23,37 +23,48 @@ lib libea_runner :
     libea
     ;
 
-run test/test_serialization.cpp
+unit-test serialization : 
+    test/test_serialization.cpp
     test/test_metadata.cpp
     test/test_rng.cpp
-    test/test_torus.cpp
     test/test_information.cpp
     test/test_analysis.cpp
     test/test.cpp
-    src/cmdline_interface.cpp
     libea
     /boost//unit_test_framework
     ;
 
-run test/test_lod.cpp
+unit-test torus : 
+    test/test_torus.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+unit-test lsystem : 
+    test/test_lsystem.cpp
+    libea
+    /boost//unit_test_framework
+    ;
+
+unit-test lod : 
+    test/test_lod.cpp
     test/test.cpp
-    src/cmdline_interface.cpp
     libea
     /boost//unit_test_framework
     ;
 
-run test/test_metapopulation.cpp
+unit-test metapopulation : 
+    test/test_metapopulation.cpp
     test/test_qhfc.cpp
     test/test.cpp
-    src/cmdline_interface.cpp
     libea
     /boost//unit_test_framework
     ;
 
-run test/test_digital_evolution.cpp
+unit-test digevo : 
+    test/test_digital_evolution.cpp
     test/test_digital_evolution_types.cpp
     test/test.cpp
-    src/cmdline_interface.cpp
     libea
     /boost//unit_test_framework
     ;

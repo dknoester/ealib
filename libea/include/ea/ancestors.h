@@ -25,6 +25,7 @@
 #include <ea/mutation.h>
 #include <ea/generators.h>
 #include <ea/individual.h>
+#include <ea/representation.h>
 
 namespace ealib {
     
