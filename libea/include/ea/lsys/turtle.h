@@ -30,6 +30,9 @@
 namespace bnu = boost::numeric::ublas;
 
 namespace ealib {
+
+    LIBEA_MD_DECL(TURTLE_MAX_DRAWS, "ea.turtle.max_draws", int);
+
     namespace lsys {
         
         /*! Context for 2D turtles.
@@ -134,6 +137,9 @@ namespace ealib {
         //! Tag to select drawing points.
         struct pointS { };
         
+        //! Default turtle symbols.
+        enum turtle2_symbol { SYM_BEGIN=0, SYM_F=0, SYM_G, SYM_PLUS, SYM_MINUS, SYM_LBRACKET, SYM_RBRACKET, SYM_PIPE, SYM_END };
+        
         /*! 2D turtle for an L-system.
          */
         template
@@ -152,13 +158,13 @@ namespace ealib {
             
             //! Constructor.
             lsystem_turtle2() {
-                parent::symbol('F')
-                .symbol('G')
-                .symbol('+')
-                .symbol('-')
-                .symbol('[')
-                .symbol(']')
-                .symbol('|');
+                parent::symbol(SYM_F)
+                .symbol(SYM_G)
+                .symbol(SYM_PLUS)
+                .symbol(SYM_MINUS)
+                .symbol(SYM_LBRACKET)
+                .symbol(SYM_RBRACKET)
+                .symbol(SYM_PIPE);
             }
             
             //! Clears the current drawing context.
@@ -171,25 +177,25 @@ namespace ealib {
             context_type& context() { return _initial; }
             
             //! Draw string s into the given coordinate system.
-            void draw(coor_system_type& coor, const typename parent::string_type& s) {
+            void draw(coor_system_type& coor, const typename parent::string_type& s, unsigned int max_draws=0) {
                 clear();
                 _cstack.push_back(_initial);
-                drawfirst(coor, line_selector_tag());
-                
-                for(typename parent::string_type::const_iterator i=s.begin(); i!=s.end(); ++i) {
+                unsigned int c=0;
+                for(typename parent::string_type::const_iterator i=s.begin(); (i!=s.end()) && ((max_draws == 0) || (c < max_draws)); ++i, ++c) {
                     switch(*i) {
-                        case 'F': line(coor); break;
-                        case 'G': fwd(coor); break;
-                        case '+': ccw(coor); break;
-                        case '-': cw(coor); break;
-                        case '[': push(); break;
-                        case ']': pop(); break;
-                        case '|': scaled_line(coor); break;
+                        case SYM_F: line(coor); break;
+                        case SYM_G: fwd(coor); break;
+                        case SYM_PLUS: ccw(coor); break;
+                        case SYM_MINUS: cw(coor); break;
+                        case SYM_LBRACKET: push(); break;
+                        case SYM_RBRACKET: pop(); break;
+                        case SYM_PIPE: scaled_line(coor); break;
                         default: {
                             // if we recognize the symbol, it's a variable that
                             // should be ignored.  otherwise, it's a parameter:
                             if(parent::_V.find(*i) != parent::_V.end()) {
-                                _pstack.push_back(*i);
+                                // turning off parameters for now...
+                                // _pstack.push_back(*i);
                             }
                             break;
                         }
@@ -198,8 +204,8 @@ namespace ealib {
             }
             
             //! Execute the L-system to a depth of n, and draw its output into coor.
-            void draw(coor_system_type& coor, std::size_t n) {
-                draw(coor, parent::exec_n(n));
+            void draw(coor_system_type& coor, std::size_t n, unsigned int max_draws=0) {
+                draw(coor, parent::exec_n(n), max_draws);
             }
             
         protected:
@@ -217,15 +223,6 @@ namespace ealib {
             inline context_type& current_context() {
                 assert(!_cstack.empty());
                 return _cstack.back();
-            }
-            
-            //! Initial draw (does nothing for lineS).
-            void drawfirst(coor_system_type& coor, lineS) {
-            }
-            
-            //! Initial draw.
-            void drawfirst(coor_system_type& coor, pointS) {
-                coor.point(current_context().point());
             }
             
             //! Draw a line.
@@ -297,38 +294,37 @@ namespace ealib {
 		struct random_turtle2 {
 			template <typename EA>
 			typename EA::genome_type operator()(EA& ea) {
+                using namespace ealib::lsys;
                 typename EA::genome_type g;
                 g.resize(get<REPRESENTATION_INITIAL_SIZE>(ea), 127);
                 
-                int symbols[] = { 'F', 'G', '+', '-', '[', ']', '|' };
-
                 // add the symbols:
-                for(std::size_t i=0; i<7; ++i) {
+                for(std::size_t i=SYM_BEGIN; i<SYM_END; ++i) {
                     int j=ea.rng()(g.size());
                     g[j] = translators::lsystem::SYMBOL;
                     g[++j] = 255 - translators::lsystem::SYMBOL;
+                    g[++j] = i;
                 }
                 
-                // add the axiom:
-                int j=ea.rng()(g.size());
-                g[j] = translators::lsystem::AXIOM;
-                g[++j] = 255 - translators::lsystem::AXIOM;
-                g[++j] = 'F';
+                // add the axiom (a couple times for redundancy):
+                for(std::size_t i=0; i<4; ++i) {
+                    int j=ea.rng()(g.size());
+                    g[j] = translators::lsystem::AXIOM;
+                    g[++j] = 255 - translators::lsystem::AXIOM;
+                    g[++j] = SYM_F;
+                }
                 
                 // add a few random rules:
                 for(std::size_t i=0; i<get<LSYS_INITIAL_RULES>(ea); ++i) {
                     int j=ea.rng()(g.size());
                     g[j] = translators::lsystem::RULE;
                     g[++j] = 255 - translators::lsystem::RULE;
-
                     std::size_t rsize=ea.rng()(get<MUTATION_INDEL_MIN_SIZE>(ea),
                                                get<MUTATION_INDEL_MAX_SIZE>(ea));
+                    g[++j] = rsize;
                     for(std::size_t k=0; k<rsize; ++k) {
-                        g[++j] = *ea.rng().choice(symbols, symbols+7);
+                        g[++j] = ea.rng()(SYM_BEGIN, SYM_END);
                     }
-                    
-                    g[++j] = translators::lsystem::STOP;
-                    g[++j] = 255 - translators::lsystem::STOP;
                 }
                 return g;
 			}

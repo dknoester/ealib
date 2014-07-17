@@ -74,6 +74,12 @@ namespace ealib {
         bad_argument_exception(const std::string& m) : ealib_exception("bad argument: " + m) {
         }
     };
+    
+    //! Thrown when translation fails.
+    struct translation_failed : ealib_exception {
+        translation_failed() {
+        }
+    };
 
     //! Check an argument for some condition, and throw an exception if the condition failed.
     inline void check_argument(bool cond, const std::string& m) {

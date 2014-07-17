@@ -23,11 +23,14 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <ea/algorithm.h>
 #include <ea/metadata.h>
 
 namespace ealib {
     
     LIBEA_MD_DECL(LSYS_INITIAL_RULES, "ea.lsystem.initial_rules", std::size_t);
+    LIBEA_MD_DECL(LSYS_MAX_SYMBOLS, "ea.lsystem.max_symbols", std::size_t);
+    LIBEA_MD_DECL(LSYS_MAX_RULE_SIZE, "ea.lsystem.max_rule_size", int);
     
     namespace lsys {
         
@@ -164,9 +167,9 @@ namespace ealib {
          
          Three different kinds of genes defined:
          
-         SYMBOL: start_codon | id | symbol | stop_codon?
-         AXIOM: start_codon | id | symbol | stop_codon?
-         RULE: start_codon | id | symbol | string | stop_codon?
+         SYMBOL: start_codon | id | symbol
+         AXIOM: start_codon | id | symbol
+         RULE: start_codon | id | symbol | size | symbol*
          
          start_codon: (x \in {SYMBOL, AXIOM, RULE}, 255-x); used to indicate the
          beginning of a gene that should be translated.
@@ -182,7 +185,7 @@ namespace ealib {
         struct lsystem {
 
             //! Constants for the gene types.
-            enum gene_type { SYMBOL=42, AXIOM=43, RULE=44, PARAMS=45, STOP=255 };
+            enum gene_type { SYMBOL=42, AXIOM=43, RULE=44, PARAMS=45 };
 
             //! Constructor.
             template <typename EA>
@@ -192,42 +195,41 @@ namespace ealib {
             //! Translate the given genome into an L-System.
             template <typename Genome, typename Phenotype, typename EA>
             void operator()(Genome& G, Phenotype& P, EA& ea) {
+                typename Phenotype::symbol_type n = get<LSYS_MAX_SYMBOLS>(ea);
+                int r = get<LSYS_MAX_RULE_SIZE>(ea);
+                
                 for(typename Genome::iterator i=G.begin(); i!=G.end(); ++i) {
-                    if(((*i + *(i+1)) == 255) && (*i != STOP)) {
-                        translate_gene(i,P);
+                    if((*i + *(i+1)) == 255) {
+                        translate_gene(i, n, r, P);
                     }
                 }
             }
             
-            //! Returns an iterator to the first stop codon after f, or f+32, whichever is closest.
-            template <typename ForwardIterator>
-            ForwardIterator stop_codon(ForwardIterator f) {
-                ForwardIterator l=f;
-                for( ; l!=f+32; ++l) {
-                    if(((*l + *(l+1)) == 255) && (*l == STOP)) {
-                        break;
-                    }
-                }
-                return l;
-            }
-            
-            //! Translate a gene starting at f.
+            //! Translate a gene starting at f with max n symbols.
             template <typename ForwardIterator, typename LSystem>
-            void translate_gene(ForwardIterator f, LSystem& L) {
+            void translate_gene(ForwardIterator f, typename LSystem::symbol_type n, int r, LSystem& L) {
+                using namespace ealib::algorithm;
                 switch(*f) {
                     case SYMBOL: {
-                        L.symbol(*(f+3));
+                        //          SYMBOL: start_codon | id | symbol
+                        L.symbol(modnorm(*(f+3), 0, n));
                         break;
                     }
                     case AXIOM: {
-                        L.axiom(*(f+3));
+                        //          AXIOM: start_codon | id | symbol
+                        L.axiom(modnorm(*(f+3), 0, n));
                         break;
                     }
                     case RULE: {
-                        L.rule(*(f+3), typename LSystem::string_type(f+4, stop_codon(f+4)));
+                        //         RULE: start_codon | id | symbol | size | symbol*
+                        typename LSystem::string_type s(modnorm(*(f+4), 0, r));
+                        for(std::size_t i=0; i<s.size(); ++i) {
+                            s[i] = modnorm(*(f+5+i), 0, n);
+                        }
+                        
+                        L.rule(*(f+3), s);
                         break;
                     }
-                    case STOP: break;
                     default: break;
                 }
             }

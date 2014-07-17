@@ -653,6 +653,7 @@
 		428CB52518F81F0500E6093D /* test-torus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-torus"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4295BC0B19647FF800DD51F9 /* translation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translation.h; sourceTree = "<group>"; };
 		42A170E218E9C41D00C3A248 /* rank.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rank.h; sourceTree = "<group>"; };
+		42A694E919781102002A0AA3 /* python.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = python.h; sourceTree = "<group>"; };
 		42AFECF81955AEE100847019 /* roc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = roc.h; sourceTree = "<group>"; };
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
 		42B55B6E1641C2C500F240C5 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
@@ -1096,6 +1097,7 @@
 				42801D6D1973F82100A633A0 /* turtle.h */,
 				42801D6F1973FC4F00A633A0 /* cartesian.h */,
 				42801D7E1974A57400A633A0 /* spatial_graph.h */,
+				42A694E919781102002A0AA3 /* python.h */,
 			);
 			path = lsys;
 			sourceTree = "<group>";

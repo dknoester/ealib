@@ -29,55 +29,11 @@
 #include <ea/lsys/turtle.h>
 #include <ea/lsys/cartesian.h>
 #include <ea/lsys/spatial_graph.h>
+#include <ea/lsysi/python.h>
 using namespace ealib::lsys;
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
 
-
-/*! Simple 2D coordinate system that writes Python plotting commands to
- a file.
- */
-struct python2 {
-    //! Constructor.
-    python2(const std::string& filename) {
-        _out.open(filename.c_str());
-        _out << "import pylab as pl" << std::endl;
-        _out << "import matplotlib as mp" << std::endl << std::endl;
-    }
-    
-    //! Destructor.
-    ~python2() {
-        _out << "pl.show()" << std::endl;
-        _out.close();
-    }
-    
-    //! Add a line to this coordinate system.
-    template <typename Point>
-    void line(const Point& p1, const Point& p2, const std::string c="red") {
-        _out << "pl.plot([" << p1(0) << "," << p2(0) << "], [" << p1(1) << "," << p2(1) << "], c=\"" << c << "\")" << std::endl;
-    }
-    
-    //! Add a line to this coordinate system.
-    template <typename Point>
-    void gline(const Point& p1, const Point& p2, const std::string c="red") {
-        _out << "pl.plot([" << bg::get<0>(p1) << "," << bg::get<0>(p2) << "], ["
-        << bg::get<1>(p1) << "," << bg::get<1>(p2) << "], c=\"" << c << "\")" << std::endl;
-    }
-    
-    //! Add a point to this coordinate system.
-    template <typename Point>
-    void point(const Point& p, const std::string c="red") {
-        _out << "pl.plot([" << p(0) << "], [" << p(1) << "], 'o', markersize=3, c=\"" << c << "\")" << std::endl;
-    }
-    
-    //! Add a point to this coordinate system.
-    template <typename Point>
-    void gpoint(const Point& p, const std::string c="red") {
-        _out << "pl.plot([" << bg::get<0>(p) << "], [" << bg::get<1>(p) << "], 'o', markersize=3, c=\"" << c << "\")" << std::endl;
-    }
-    
-    std::ofstream _out;
-};
 
 BOOST_AUTO_TEST_CASE(test_lsystem_algae) {
     typedef lsystem<char> lsys_type;

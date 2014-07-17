@@ -82,6 +82,11 @@ namespace ealib {
                 bg::model::box<point_type> query_box(p1, p2);
                 _rtree.query(bgi::intersects(query_box), oi);
             }
+            
+            //! Returns the number of carrier points in this graph.
+            std::size_t size() const {
+                return boost::num_vertices(_G);
+            }
 
             //! Returns the current graph representation of the points in this coordinate space.
             graph_type& graph() {

@@ -21,28 +21,47 @@
 #define _EA_TRANSLATION_H_
 
 namespace ealib {
-    namespace translators {
+    
+    //! Helper method to aid in translation of genome -> phenotype.
+    template <typename Genome, typename Phenotype, typename Translator, typename EA>
+    void translate(Genome& G, Phenotype& P, Translator t, EA& ea) {
+        t(G,P,ea);
+    }
+
+    /*! Generic translator class to aid in translating a genome to a phenotype.
+     */
+    template <typename Genome, typename Phenotype>
+    class translator {
+    public:
+        typedef Genome genome_type;
+        typedef Phenotype phenotype_type;
         
-        /*! This translator is used to "reconstruct" a phenotype from a genome.
-         
-         It can be thought of as a *very* simple form of indirect encoding, where 
-         the phenotype is constructable from the genome.
-         
-         In other words, the phenotype != genome_type, but we don't need a full-blown
-         translator.
-         */
-        struct construction {
-            template <typename EA>
-            construction(EA& ea) {
-            }
-            
-            template <typename EA>
-            typename EA::phenotype_type operator()(typename EA::genome_type& g, EA& ea) {
-                return typename EA::phenotype_type(g, ea);
-            }
-        };
-        
-    } // translators
+        //! Constructor.
+        translator() {
+        }
+    };
+    
+
+//        /*! This translator is used to "reconstruct" a phenotype from a genome.
+//         
+//         It can be thought of as a *very* simple form of indirect encoding, where 
+//         the phenotype is constructable from the genome.
+//         
+//         In other words, the phenotype != genome_type, but we don't need a full-blown
+//         translator.
+//         */
+//        struct construction {
+//            template <typename EA>
+//            construction(EA& ea) {
+//            }
+//            
+//            template <typename EA>
+//            typename EA::phenotype_type operator()(typename EA::genome_type& g, EA& ea) {
+//                return typename EA::phenotype_type(g, ea);
+//            }
+//        };
+//        
+//    } // translators
 } // network
 
 #endif

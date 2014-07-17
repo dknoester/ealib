@@ -30,9 +30,9 @@ namespace ealib {
     LIBEA_MD_DECL(POLE_MAXSTEPS, "ea.fitness_function.pole_balancing.max_steps", int);
     
 	/*! Fitness function for 1D singple pole balancing.
-
+     
      Inspired by cart_and_pole() by Richard Sutton and Charles Anderson, and
-     go_cart() by Ken Stanley.   As in Stanley's version, this simulator uses 
+     go_cart() by Ken Stanley.   As in Stanley's version, this simulator uses
      normalized, continous inputs instead of discretizing the input space.
      */
 	struct pole_balancing : public fitness_function<unary_fitness<double> > {
@@ -79,28 +79,32 @@ namespace ealib {
             double theta=0.0; // pole angle, radians
             double theta_dot=0.0; // pole angular velocity
             double input[5]; // inputs to the phenotype
-            typename EA::phenotype_type &P = ealib::phenotype(ind, ea); // phenotype; ANN, MKV, etc.
-            int maxsteps = get<POLE_MAXSTEPS>(ea);
-            
-            // update the phenotype and cart:
-            for(int i=0; i<maxsteps; ++i) {
-                input[0] = 1.0;
-                input[1] = (x + 2.4) / 4.8;
-                input[2] = (x_dot + 0.75) / 1.5;
-                input[3] = (theta + twelve_degrees) / 0.41;
-                input[4] = (theta_dot + 1.0) / 2.0;
-
-                // code to update the inputs and get outputs from the phenotype goes here, e.g.:
-                P.update(input, input+5);
-                update_cart(*P.begin_output(), x, x_dot, theta, theta_dot);
+            try {
+                typename EA::phenotype_type &P = ealib::phenotype(ind, ea); // phenotype; ANN, MKV, etc.
+                int maxsteps = get<POLE_MAXSTEPS>(ea);
                 
-                if((x < -2.4) || (x > 2.4) // out of bounds
-                   || (theta < -twelve_degrees) || (theta > twelve_degrees)) { // dropped the pole
-                    return static_cast<double>(i);
+                // update the phenotype and cart:
+                for(int i=0; i<maxsteps; ++i) {
+                    input[0] = 1.0;
+                    input[1] = (x + 2.4) / 4.8;
+                    input[2] = (x_dot + 0.75) / 1.5;
+                    input[3] = (theta + twelve_degrees) / 0.41;
+                    input[4] = (theta_dot + 1.0) / 2.0;
+                    
+                    // code to update the inputs and get outputs from the phenotype goes here, e.g.:
+                    P.update(input, input+5);
+                    update_cart(*P.begin_output(), x, x_dot, theta, theta_dot);
+                    
+                    if((x < -2.4) || (x > 2.4) // out of bounds
+                       || (theta < -twelve_degrees) || (theta > twelve_degrees)) { // dropped the pole
+                        return static_cast<double>(i);
+                    }
                 }
+                
+                return static_cast<double>(maxsteps);
+            } catch(translation_failed& ex) {
+                return 0.0;
             }
-            
-            return static_cast<double>(maxsteps);
         }
 	};
     

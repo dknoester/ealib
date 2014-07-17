@@ -21,6 +21,7 @@
 #define _EA_REPRESENTATION_H_
 
 #include <ea/metadata.h>
+#include <ea/translation.h>
 
 namespace ealib {
     
@@ -110,12 +111,6 @@ namespace ealib {
         genome_type _genome; //!< Genome for this representation.
     };
     
-    
-    //! Helper method to aid in translation of genome -> phenotype.
-    template <typename Genome, typename Phenotype, typename Translator, typename EA>
-    void translate(Genome& G, Phenotype& P, Translator t, EA& ea) {
-        t(G,P,ea);
-    }
     
     /*! Indirect representation type.
      

@@ -346,8 +346,8 @@ namespace ealib {
         detail::initialize_fitness_function(ff, typename FitnessFunction::stability_tag(), ea);
     }
 
-    
     namespace detail {
+        
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
@@ -397,7 +397,7 @@ namespace ealib {
     //! Fitness trait accessor (may calculate if null).
     template <typename EA>
     typename EA::fitness_type& fitness(typename EA::individual_type& ind, EA& ea) {
-        detail::calculate_fitness(ind, typename EA::fitness_function_type::constant_tag(), ea);
+        calculate_fitness(ind, ea);
         return ind.traits().fitness();
     }
     
