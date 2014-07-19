@@ -20,6 +20,9 @@
 #ifndef _EA_TRANSLATION_H_
 #define _EA_TRANSLATION_H_
 
+#include <utility>
+#include <vector>
+
 namespace ealib {
     
     //! Helper method to aid in translation of genome -> phenotype.
@@ -28,19 +31,51 @@ namespace ealib {
         t(G,P,ea);
     }
 
+	
+	template <typename Genome, typename Phenotype>
+	struct abstract_gene {
+		virtual void operator()(typename Genome::iterator f, Phenotype& P) = 0;
+	};
+
+	
     /*! Generic translator class to aid in translating a genome to a phenotype.
      */
-    template <typename Genome, typename Phenotype>
+	template <typename Genome, typename Phenotype>
     class translator {
     public:
         typedef Genome genome_type;
         typedef Phenotype phenotype_type;
-        
+        typedef abstract_gene<genome_type, phenotype_type> abstract_gene_type;
+		typedef boost::shared_ptr<abstract_gene_type> gene_ptr_type;
+		typedef std::vector<gene_ptr_type> gene_list_type;
+		
+		
         //! Constructor.
         translator() {
         }
+		
+		//! Translate genome G into phenotype P.
+		template <typename EA>
+		void operator()(genome_type& G, phenotype_type& P, EA& ea) {
+			for(typename genome_type::iterator i=G.begin(); i!=G.end(); ++i) {
+				if(((*i + *(i+1)) == 255) && (*(i+1) < _genes.size())) {
+					(*_genes[*(i+1)])(i+2, P, ea);
+				}
+			}
+		}
+
+		template <typename Gene, typename EA>
+		void add_gene(EA& ea) {
+			gene_ptr_type p(new Gene(ea));
+			_genes.push_back(p);
+		}
+		
+	protected:
+		gene_list_type _genes;
     };
     
+
+	
 
 //        /*! This translator is used to "reconstruct" a phenotype from a genome.
 //         
