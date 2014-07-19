@@ -29,7 +29,7 @@
 #include <ea/lsys/turtle.h>
 #include <ea/lsys/cartesian.h>
 #include <ea/lsys/spatial_graph.h>
-#include <ea/lsysi/python.h>
+#include <ea/lsys/python.h>
 using namespace ealib::lsys;
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
@@ -82,118 +82,120 @@ BOOST_AUTO_TEST_CASE(test_lsystem_koch) {
     const std::string t("F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F");
     BOOST_CHECK(std::equal(s.begin(), s.end(), t.begin()));
     
-    python2 g("koch.py");
-    L.draw(g,s);
+    //    python2 g("koch.py");
+    //    L.draw(g,s);
 }
 
-BOOST_AUTO_TEST_CASE(test_lsystem_dragon) {
-    typedef lsystem_turtle2<python2> LSystem;
-    LSystem L;
-    L.axiom(L.splitc("FX"))
-    .rule('X', L.splitc("X+YF"))
-    .rule('Y', L.splitc("FX-Y"));
-    
-    L.context()
-    .origin(0,0)
-    .angle(90)
-    .heading(1,0);
-    
-    python2 g("dragon.py");
-    L.draw(g,10);
-}
 
-BOOST_AUTO_TEST_CASE(test_lsystem_plant) {
-    typedef lsystem_turtle2<python2, pointS> LSystem;
-    LSystem L;
-    L.axiom(L.splitc("X"))
-    .rule('F', L.splitc("FF"))
-    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
-    
-    L.context()
-    .origin(0,0)
-    .angle(-25)
-    .heading(1,2);
-    
-    python2 g("plant-points.py");
-    L.draw(g,7);
-}
 
-BOOST_AUTO_TEST_CASE(test_lsystem_plant2) {
-    typedef lsystem_turtle2<python2> LSystem;
-    LSystem L;
-    L.axiom(L.splitc("X"))
-    .rule('F', L.splitc("FF"))
-    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
-    
-    L.context()
-    .origin(0,0)
-    .angle(-25)
-    .heading(1,2);
-    
-    python2 g("plant-lines.py");
-    L.draw(g,7);
-}
+//BOOST_AUTO_TEST_CASE(test_lsystem_nn) {
+//    namespace bg = boost::geometry;
+//    
+//    typedef lsystem_turtle2<cartesian2, pointS> LSystem;
+//    LSystem L;
+//    L.axiom(L.string('F')).rule('F', L.splitc("F+F-F-F+F"));
+//    
+//    L.context()
+//    .origin(0,0)
+//    .angle(90)
+//    .heading(1,0)
+//    .step_magnitude(1.0);
+//    
+//    LSystem::string_type s = L.exec_n(2);
+//    const std::string t("F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F");
+//    BOOST_CHECK(std::equal(s.begin(), s.end(), t.begin()));
+//    
+//    cartesian2 g;
+//    L.draw(g,s);
+//    
+//    cartesian2::object_vector_type n;
+//    g.knn(cartesian2::point_type(0,0), 5, std::back_inserter(n));
+//    BOOST_CHECK_EQUAL(5, n.size());
+//    
+//    //    for(std::size_t i=0; i<n.size(); ++i) {
+//    //        std::cout << "(" << bg::get<0>(n[i].first) << "," << bg::get<1>(n[i].first) << "), " << n[i].second << std::endl;
+//    //    }
+//    
+//    n.clear();
+//    g.enclosed(cartesian2::point_type(0,0), cartesian2::point_type(4,2), std::back_inserter(n));
+//    BOOST_CHECK_EQUAL(10, n.size());
+//    
+//    //    for(std::size_t i=0; i<n.size(); ++i) {
+//    //        std::cout << "(" << bg::get<0>(n[i].first) << "," << bg::get<1>(n[i].first) << "), " << n[i].second << std::endl;
+//    //    }
+//    
+//}
 
-BOOST_AUTO_TEST_CASE(test_lsystem_nn) {
-    namespace bg = boost::geometry;
-    
-    typedef lsystem_turtle2<cartesian2, pointS> LSystem;
-    LSystem L;
-    L.axiom(L.string('F')).rule('F', L.splitc("F+F-F-F+F"));
-    
-    L.context()
-    .origin(0,0)
-    .angle(90)
-    .heading(1,0)
-    .step_magnitude(1.0);
-    
-    LSystem::string_type s = L.exec_n(2);
-    const std::string t("F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F");
-    BOOST_CHECK(std::equal(s.begin(), s.end(), t.begin()));
-    
-    cartesian2 g;
-    L.draw(g,s);
-    
-    cartesian2::object_vector_type n;
-    g.knn(cartesian2::point_type(0,0), 5, std::back_inserter(n));
-    BOOST_CHECK_EQUAL(5, n.size());
-    
-    //    for(std::size_t i=0; i<n.size(); ++i) {
-    //        std::cout << "(" << bg::get<0>(n[i].first) << "," << bg::get<1>(n[i].first) << "), " << n[i].second << std::endl;
-    //    }
-    
-    n.clear();
-    g.enclosed(cartesian2::point_type(0,0), cartesian2::point_type(4,2), std::back_inserter(n));
-    BOOST_CHECK_EQUAL(10, n.size());
-    
-    //    for(std::size_t i=0; i<n.size(); ++i) {
-    //        std::cout << "(" << bg::get<0>(n[i].first) << "," << bg::get<1>(n[i].first) << "), " << n[i].second << std::endl;
-    //    }
-    
-}
-
-BOOST_AUTO_TEST_CASE(test_lsystem_graph) {
-    typedef lsystem_turtle2<spatial_graph2, pointS> LSystem;
-    LSystem L;
-    
-    L.axiom(L.splitc("X"))
-    .rule('F', L.splitc("FF"))
-    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
-    
-    L.context()
-    .origin(0,0)
-    .angle(-25)
-    .heading(0,1);
-    
-    spatial_graph2 g;
-    L.draw(g,4);
-    g.grow(0.5);
-    
-    spatial_graph2::graph_type& G=g.graph();
-    python2 p("graph.pl");
-    
-    spatial_graph2::graph_type::edge_iterator ei,ei_end;
-    for(boost::tie(ei,ei_end)=boost::edges(G); ei!=ei_end; ++ei) {
-        p.gline(G[boost::source(*ei,G)].point, G[boost::target(*ei,G)].point);
-    }
-}
+//BOOST_AUTO_TEST_CASE(test_lsystem_dragon) {
+//    typedef lsystem_turtle2<python2> LSystem;
+//    LSystem L;
+//    L.axiom(L.splitc("FX"))
+//    .rule('X', L.splitc("X+YF"))
+//    .rule('Y', L.splitc("FX-Y"));
+//    
+//    L.context()
+//    .origin(0,0)
+//    .angle(90)
+//    .heading(1,0);
+//    
+//    python2 g("dragon.py");
+//    L.draw(g,10);
+//}
+//
+//BOOST_AUTO_TEST_CASE(test_lsystem_plant) {
+//    typedef lsystem_turtle2<python2, pointS> LSystem;
+//    LSystem L;
+//    L.axiom(L.splitc("X"))
+//    .rule('F', L.splitc("FF"))
+//    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
+//    
+//    L.context()
+//    .origin(0,0)
+//    .angle(-25)
+//    .heading(1,2);
+//    
+//    python2 g("plant-points.py");
+//    L.draw(g,7);
+//}
+//
+//BOOST_AUTO_TEST_CASE(test_lsystem_plant2) {
+//    typedef lsystem_turtle2<python2> LSystem;
+//    LSystem L;
+//    L.axiom(L.splitc("X"))
+//    .rule('F', L.splitc("FF"))
+//    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
+//    
+//    L.context()
+//    .origin(0,0)
+//    .angle(-25)
+//    .heading(1,2);
+//    
+//    python2 g("plant-lines.py");
+//    L.draw(g,7);
+//}
+//
+//BOOST_AUTO_TEST_CASE(test_lsystem_graph) {
+//    typedef lsystem_turtle2<spatial_graph2, pointS> LSystem;
+//    LSystem L;
+//    
+//    L.axiom(L.splitc("X"))
+//    .rule('F', L.splitc("FF"))
+//    .rule('X', L.splitc("F-[[X]+X]+F[+FX]-X"));
+//    
+//    L.context()
+//    .origin(0,0)
+//    .angle(-25)
+//    .heading(0,1);
+//    
+//    spatial_graph2 g;
+//    L.draw(g,4);
+//    g.grow(0.5);
+//    
+//    spatial_graph2::graph_type& G=g.graph();
+//    python2 p("graph.pl");
+//    
+//    spatial_graph2::graph_type::edge_iterator ei,ei_end;
+//    for(boost::tie(ei,ei_end)=boost::edges(G); ei!=ei_end; ++ei) {
+//        p.gline(G[boost::source(*ei,G)].point, G[boost::target(*ei,G)].point);
+//    }
+//}

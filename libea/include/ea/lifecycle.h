@@ -92,7 +92,6 @@ namespace ealib {
                 }
             }
             ea.end_epoch();
-            checkpoint::save(ea);
         }
 
         //! Advance the EA by one epoch.
@@ -101,11 +100,12 @@ namespace ealib {
             advance_epoch(get<RUN_UPDATES>(ea), ea);
         }
         
-        //! Advance the EA by all configured epochs.
+        //! Advance the EA by all configured epochs, and checkpoint after each.
         template <typename EA>
         void advance_all(EA& ea) {
 			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
                 advance_epoch(ea);
+                checkpoint::save(ea);
 			}
 		}
     };

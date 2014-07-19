@@ -671,7 +671,6 @@
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
 		42B55B6E1641C2C500F240C5 /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		42B55B701641C2C500F240C5 /* test_information.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_information.cpp; sourceTree = "<group>"; };
-		42B55B711641C2C500F240C5 /* test_novelty_search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_novelty_search.cpp; sourceTree = "<group>"; };
 		42B5EBD019599FE700093AB3 /* basic_neural_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = basic_neural_network.h; sourceTree = "<group>"; };
 		42B5EBD11959A43800093AB3 /* continuous_time.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = continuous_time.h; sourceTree = "<group>"; };
 		42B89EC719377D7200435794 /* convolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = convolution.h; sourceTree = "<group>"; };
@@ -1066,7 +1065,6 @@
 				42D68D89163F891F00659AE1 /* test_metapopulation.cpp */,
 				42CF4A70196A208D00CBA20B /* test_neurodevelopment.cpp */,
 				42CF4A71196A208D00CBA20B /* test_neuroevolution.cpp */,
-				42B55B711641C2C500F240C5 /* test_novelty_search.cpp */,
 				42C661321860D2FF004476D3 /* test_qhfc.cpp */,
 				423CBDFB157D0E450003A644 /* test_rng.cpp */,
 				423CBDF6157D0E450003A644 /* test_serialization.cpp */,
