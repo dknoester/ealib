@@ -679,7 +679,6 @@
 		42B89ECD19377EDC00435794 /* gates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gates.h; sourceTree = "<group>"; };
 		42B89ECE19377EDC00435794 /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		42B89ECF19377EDC00435794 /* markov_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network.h; sourceTree = "<group>"; };
-		42C26B3F1945E62400F0E6B9 /* emscript.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = emscript.cfg; sourceTree = "<group>"; };
 		42C26B401945FA7900F0E6B9 /* torus2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = torus2.h; sourceTree = "<group>"; };
 		42C661251860A403004476D3 /* constant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constant.h; sourceTree = "<group>"; };
 		42C661321860D2FF004476D3 /* test_qhfc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_qhfc.cpp; sourceTree = "<group>"; };
@@ -1008,7 +1007,6 @@
 				42DC57041940BE5B005044F1 /* all_ones.cfg */,
 				4259F9C519657F9200A78321 /* pole.cfg */,
 				42DC57051940BE5B005044F1 /* digital_evolution.cfg */,
-				42C26B3F1945E62400F0E6B9 /* emscript.cfg */,
 				42DC57061940BE5B005044F1 /* markov_network.cfg */,
 				42DC57071940BE5B005044F1 /* metapopulation.cfg */,
 				42DC57081940BE5B005044F1 /* nsga2.cfg */,
