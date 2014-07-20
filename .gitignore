@@ -10,18 +10,21 @@
 *.lai
 *.la
 *.a
-.DS_Store
-bin
-libea/bin
-tmp
-DerivedData
-build
-dist
-*.xcscheme
-*.xcuserstate
-*.plist
-*.map
 *.js
+*.map
+
+# ignore tmp/build directories
 *.swp
-checkpoint-*
+tmp
+bin
+dist
+DerivedData
+
+# ignore os x / xcode metadata:
+.DS_Store
 xcuserdata
+**/*.xccheckout
+
+# ignore output from ealib:
+checkpoint-*
+*.dat
