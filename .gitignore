@@ -22,7 +22,6 @@ dist
 *.plist
 *.map
 *.js
-html/processing.min.js
-html/emscript.html
 *.swp
 checkpoint-*
+xcuserdata

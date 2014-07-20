@@ -6,21 +6,23 @@ if $(PREFIX) = "" {
     PREFIX = "/usr/local" ;
 }
 
-alias libea :
-    /boost//program_options
+alias libea : : : : <include>./include ;
+
+alias libea_libs :
     /boost//serialization
     /boost//iostreams
     /boost//regex
     /boost//system
     /boost//filesystem
+    /boost//program_options
     /site-config//z
-    : : : <include>./include
     ;
 
 lib libea_runner :
     src/main.cpp
     src/cmdline_interface.cpp
     libea
+    libea_libs
     ;
 
 unit-test serialization : 
@@ -31,18 +33,21 @@ unit-test serialization :
     test/test_analysis.cpp
     test/test.cpp
     libea
+    libea_libs
     /boost//unit_test_framework
     ;
 
 unit-test torus : 
     test/test_torus.cpp
     libea
+    libea_libs
     /boost//unit_test_framework
     ;
 
 unit-test lsystem : 
     test/test_lsystem.cpp
     libea
+    libea_libs
     /boost//unit_test_framework
     ;
 
@@ -50,6 +55,7 @@ unit-test lod :
     test/test_lod.cpp
     test/test.cpp
     libea
+    libea_libs
     /boost//unit_test_framework
     ;
 
@@ -58,6 +64,7 @@ unit-test metapopulation :
     test/test_qhfc.cpp
     test/test.cpp
     libea
+    libea_libs
     /boost//unit_test_framework
     ;
 
@@ -66,6 +73,7 @@ unit-test digevo :
     test/test_digital_evolution_types.cpp
     test/test.cpp
     libea
+    libea_libs
     /boost//unit_test_framework
     ;
 

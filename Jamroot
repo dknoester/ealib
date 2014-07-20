@@ -57,12 +57,6 @@ exe example-qhfc :
     : <link>static
     ;
 
-exe example-emscript :
-    examples/emscript.cpp
-    /libea//libea_runner
-    : <link>static
-    ;
-
 exe example-dev :
     examples/developmental.cpp
     /libea//libea_runner
