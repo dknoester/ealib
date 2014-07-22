@@ -34,6 +34,41 @@
 namespace ealib {
 	namespace algorithm {
         
+        
+        
+//        template <typename T> inline constexpr
+//        int signum(T x, std::false_type is_signed) {
+//            return T(0) < x;
+//        }
+//        
+//        template <typename T> inline constexpr
+//        int signum(T x, std::true_type is_signed) {
+//            return (T(0) < x) - (x < T(0));
+//        }
+//        
+//        template <typename T> inline constexpr
+//        int signum(T x) {
+//            return signum(x, std::is_signed<T>());
+//        }
+
+        template <typename T>
+        int signum(T x) {
+            return (T(0) < x) - (x < T(0));
+        }
+        
+        template <typename T>
+        int sign(T x) {
+            if(x >= T(0)) {
+                return 1;
+            }
+            return -1;
+        }
+        
+        template <typename T, typename U>
+        T copysign(T x, U y) {
+            return abs(x) * sign(y);
+        }
+        
         template <typename Container, typename ForwardIterator, typename OutputIterator>
         OutputIterator circ_copy_n(Container& c, ForwardIterator f, std::size_t n, OutputIterator oi) {
             while(n > 0) {

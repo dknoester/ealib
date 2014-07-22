@@ -105,8 +105,8 @@ namespace ealib {
             double x = R[0][0] * static_cast<double>(h[0]) + R[0][1] * static_cast<double>(h[1]);
             double y = R[1][0] * static_cast<double>(h[0]) + R[1][1] * static_cast<double>(h[1]);
             // round "up" (really, away from zero), preserve sign:
-            h[0] = std::copysign(static_cast<int>(fabs(x) + 0.5), x);
-            h[1] = std::copysign(static_cast<int>(fabs(y) + 0.5), y);
+            h[0] = algorithm::copysign(static_cast<int>(fabs(x) + 0.5), x);
+            h[1] = algorithm::copysign(static_cast<int>(fabs(y) + 0.5), y);
         }
         
         //! Rotate by theta radians.
@@ -412,12 +412,12 @@ namespace ealib {
             
             int x = p1.r[0] - p2.r[0];
             if(abs(x) > 1) { // crossing torus boundary
-                x = static_cast<int>(std::copysign(1.0, -x));
+                x = static_cast<int>(algorithm::copysign(1.0, -x));
             }
             
             int y = p1.r[1] - p2.r[1];
             if(abs(y) > 1) { // crossing torus boundary
-                y = static_cast<int>(std::copysign(1.0, -y));
+                y = static_cast<int>(algorithm::copysign(1.0, -y));
             }
             
             // p1.h = (-x,-y)
