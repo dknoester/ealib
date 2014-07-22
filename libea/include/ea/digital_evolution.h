@@ -107,7 +107,7 @@ namespace ealib {
         typedef instruction_set<digital_evolution> isa_type;
         typedef task_library<digital_evolution> task_library_type;
         typedef shared_ptr_vector<individual_ptr_type> population_type;
-        typedef resources<digital_evolution> resources_type;
+        typedef resource_vector<digital_evolution> resources_type;
         typedef typename resources_type::resource_ptr_type resource_ptr_type;
         typedef boost::indirect_iterator<typename population_type::iterator> iterator;
         typedef boost::indirect_iterator<typename population_type::const_iterator> const_iterator;

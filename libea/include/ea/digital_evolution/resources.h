@@ -242,14 +242,14 @@ namespace ealib {
      */
     template
     < typename EA
-    > class resources {
+    > class resource_vector {
     public:
         typedef detail::abstract_resource<EA> abstract_resource_type;
         typedef boost::shared_ptr<abstract_resource_type> resource_ptr_type;
         typedef std::vector<resource_ptr_type> resource_list_type;
         
         //! Default constructor.
-        resources() {
+        resource_vector() {
         }
         
         //! Clears (zeroes-out) all resource levels.
@@ -287,8 +287,8 @@ namespace ealib {
         resource_list_type _resources; //!< Container for resources.
         
     private:
-        resources(const resources&);
-        resources& operator=(const resources&);
+        resource_vector(const resource_vector&);
+        resource_vector& operator=(const resource_vector&);
     };
     
     
