@@ -35,8 +35,8 @@
 
 namespace ealib {
 
-    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", int);
-    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", int);
+    LIBEA_MD_DECL(SPATIAL_X, "ea.environment.x", std::size_t);
+    LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", std::size_t);
 
     /*! The position_type is contained by individuals to describe their position
      and orientation in the environment.  It can be thought of as an index into 

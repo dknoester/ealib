@@ -130,7 +130,7 @@ namespace ann {
 		//! Updates the ANN n times given inputs [f,l).
 		template <typename ForwardIterator>
 		void update(ForwardIterator f, ForwardIterator l, std::size_t n=1) {
-			assert(std::distance(f,l)==_nin);
+			assert(std::distance(f,l)==static_cast<typename ForwardIterator::difference_type>(_nin));
 			std::copy(f, l, _Y.begin());
 			for( ; n>0; --n) {
 				update();
