@@ -1,6 +1,4 @@
-project
-    : requirements <define>BOOST_PARAMETER_MAX_ARITY=7 <define>BOOST_GEOMETRY_EMPTY_INPUT_NO_THROW
-    ;
+project : requirements <define>BOOST_PARAMETER_MAX_ARITY=7 <define>BOOST_GEOMETRY_EMPTY_INPUT_NO_THROW ;
 
 use-project /libea : libea ;
 use-project /libmkv : libmkv ;

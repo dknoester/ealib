@@ -6,6 +6,8 @@ if $(PREFIX) = "" {
     PREFIX = "/usr/local" ;
 }
 
+project : requirements <define>BOOST_PARAMETER_MAX_ARITY=7 <define>BOOST_GEOMETRY_EMPTY_INPUT_NO_THROW ;
+
 alias libann : : : : <include>./include ;
 
 alias install : install-headers ;
