@@ -19,13 +19,12 @@
  */
 #include <boost/test/unit_test.hpp>
 
-#include <mkv/markov_network_evolution.h>
+#include <ea/mkv/markov_network_evolution.h>
 #include <ea/generational_models/moran_process.h>
 #include <ea/fitness_function.h>
 #include <ea/cmdline_interface.h>
 #include <ea/datafiles/fitness.h>
 using namespace ealib;
-using namespace mkv;
 
 
 /*! Sample fitness function for Markov networks.
@@ -80,7 +79,7 @@ template <typename EA>
 class cli : public cmdline_interface<EA> {
 public:
     virtual void gather_options() {
-        mkv::add_options(this);
+        add_mkv_options(this);
         
         add_option<POPULATION_SIZE>(this);
         add_option<MORAN_REPLACEMENT_RATE_P>(this);
@@ -93,9 +92,9 @@ public:
     
     
     virtual void gather_tools() {
-        add_tool<mkv::dominant_genetic_graph>(this);
-        add_tool<mkv::dominant_reduced_graph>(this);
-        add_tool<mkv::dominant_causal_graph>(this);
+        add_tool<analysis::dominant_genetic_graph>(this);
+        add_tool<analysis::dominant_reduced_graph>(this);
+        add_tool<analysis::dominant_causal_graph>(this);
     }
     
     virtual void gather_events(EA& ea) {

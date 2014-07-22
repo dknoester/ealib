@@ -8,15 +8,18 @@ if $(PREFIX) = "" {
 
 alias libann : : : : <include>./include ;
 
-run test/test_neural_network.cpp
-    /boost//unit_test_framework
-    ;
-
 alias install : install-headers ;
-
 install install-headers :
     [ glob-tree *.h : test ]
     : <location>$(PREFIX)/include <install-source-root>include
     ;
 
 explicit install install-headers ;
+
+alias libann_test :
+    libann
+    /libea//libea
+    /boost//unit_test_framework
+    ;
+
+unit-test ann : test/test_neural_network.cpp libann_test ;

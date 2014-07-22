@@ -8,7 +8,9 @@ if $(PREFIX) = "" {
 
 alias libea : : : : <include>./include ;
 
-alias libea_libs :
+lib libea_cmdline :
+    src/cmdline_interface.cpp
+    libea
     /boost//serialization
     /boost//iostreams
     /boost//regex
@@ -16,71 +18,27 @@ alias libea_libs :
     /boost//filesystem
     /boost//program_options
     /site-config//z
+    : : : 
+    # requirements:
+    <library>/boost//program_options
+    <library>/boost//serialization
+    <library>/boost//iostreams
+    <library>/boost//regex
+    <library>/boost//system
+    <library>/boost//filesystem
+    <library>/boost//program_options
+    <library>/site-config//z
     ;
 
 lib libea_runner :
     src/main.cpp
-    src/cmdline_interface.cpp
-    libea
-    libea_libs
-    ;
-
-unit-test serialization : 
-    test/test_serialization.cpp
-    test/test_metadata.cpp
-    test/test_rng.cpp
-    test/test_information.cpp
-    test/test_analysis.cpp
-    test/test.cpp
-    libea
-    libea_libs
-    /boost//unit_test_framework
-    ;
-
-unit-test torus : 
-    test/test_torus.cpp
-    libea
-    libea_libs
-    /boost//unit_test_framework
-    ;
-
-unit-test lsystem : 
-    test/test_lsystem.cpp
-    libea
-    libea_libs
-    /boost//unit_test_framework
-    ;
-
-unit-test lod : 
-    test/test_lod.cpp
-    test/test.cpp
-    libea
-    libea_libs
-    /boost//unit_test_framework
-    ;
-
-unit-test metapopulation : 
-    test/test_metapopulation.cpp
-    test/test_qhfc.cpp
-    test/test.cpp
-    libea
-    libea_libs
-    /boost//unit_test_framework
-    ;
-
-unit-test digevo : 
-    test/test_digital_evolution.cpp
-    test/test_digital_evolution_types.cpp
-    test/test.cpp
-    libea
-    libea_libs
-    /boost//unit_test_framework
+    libea_cmdline
     ;
 
 alias install : install-lib install-headers ;
 
 install install-lib :
-    libea_runner
+    libea_runner libea_cmdline
     : <location>$(PREFIX)/lib <install-type>LIB <install-dependencies>on
     ;
 
@@ -90,3 +48,42 @@ install install-headers :
     ;
 
 explicit install install-lib install-headers ;
+
+alias libea_test :
+    libea_cmdline
+    : : : <library>/boost//unit_test_framework
+    ;
+
+unit-test ealib :
+    test/test_suite.cpp
+    test/test_graph.cpp
+    test/test_serialization.cpp
+    test/test_metadata.cpp
+    test/test_rng.cpp
+    test/test_information.cpp
+    test/test_analysis.cpp
+    test/test_digital_evolution.cpp
+    test/test_digital_evolution_types.cpp
+    test/test_genetic_algorithm.cpp
+    test/test_lod.cpp
+    test/test_metapopulation.cpp
+    test/test_qhfc.cpp
+    test/test_lsystem.cpp
+    test/test_torus.cpp
+    test/test_translation.cpp
+    libea_test
+    ;
+    
+unit-test markov_network :
+    test/test_markov_network.cpp
+    test/test_markov_network_ea.cpp
+    /libmkv//libmkv
+    libea_test
+    ;
+
+unit-test neural_network :
+    test/test_neurodevelopment.cpp
+    test/test_neuroevolution.cpp
+    /libann//libann
+    libea_test
+    ;

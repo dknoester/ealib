@@ -6,22 +6,20 @@ if $(PREFIX) = "" {
     PREFIX = "/usr/local" ;
 }
 
-alias libmkv :
-    /boost//regex
-    : : : <include>./include
-    ;
-
-run test/test_markov_network.cpp
-    test/test_markov_network_ea.cpp
-    libea
-    /boost//unit_test_framework
-    ;
+alias libmkv : : : : <include>./include ;
 
 alias install : install-headers ;
-
 install install-headers :
     [ glob-tree *.h : test ]
     : <location>$(PREFIX)/include <install-source-root>include
     ;
 
 explicit install install-headers ;
+
+alias libmkv_test :
+    libmkv
+    /libea//libea
+    /boost//unit_test_framework
+    ;
+
+unit-test mkv : test/test_markov_network.cpp libmkv_test ;

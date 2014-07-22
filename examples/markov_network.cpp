@@ -78,7 +78,7 @@ template <typename EA>
 class cli : public cmdline_interface<EA> {
 public:
     virtual void gather_options() {
-        mkv::add_options(this);
+        add_mkv_options(this);
         
         add_option<POPULATION_SIZE>(this);
         add_option<MORAN_REPLACEMENT_RATE_P>(this);

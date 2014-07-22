@@ -24,17 +24,11 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <mkv/markov_network.h>
+#include <ea/mkv/markov_network_evolution.h>
+#include <ea/data_structures/circular_vector.h>
 
-BOOST_AUTO_TEST_CASE(test_markov_network) {
-    using namespace mkv;
-    
-    // this is currently a placeholder until we make an ea-indepent test suite
-    // for markov networks.
 
-}
 
-/*
 BOOST_AUTO_TEST_CASE(test_logic_gate) {
     using namespace ealib;
     using namespace mkv;
@@ -79,7 +73,7 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
     cvector<int> genome(data, data+32);
 
     markov_network< > N(2,2,1);
-    markov_network_translator translate(1,8,1,8);
+    translators::markov_network_translator translate(1,8,1,8);
     translate.translate_genome(N,genome);
     
     BOOST_CHECK(N.ngates()==1);
@@ -163,7 +157,7 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_gate) {
     cvector<int> genome(data, data+32);
     
     markov_network< > N(2,2,1);
-    markov_network_translator translate(1,8,1,8);
+    translators::markov_network_translator translate(1,8,1,8);
     translate.translate_genome(N,genome);
     
     BOOST_CHECK(N.ngates()==1);
@@ -256,7 +250,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network) {
     cvector<int> genome(data, data+76);
 
     markov_network< > N(2,2,2,42);
-    markov_network_translator translate(1,8,1,8);
+    translators::markov_network_translator translate(1,8,1,8);
     translate.translate_genome(N,genome);
 
     BOOST_CHECK(N.ngates()==3);
@@ -311,4 +305,3 @@ BOOST_AUTO_TEST_CASE(test_markov_network) {
         BOOST_CHECK(g.M(7,1)==0.0);
     }
 }
-*/

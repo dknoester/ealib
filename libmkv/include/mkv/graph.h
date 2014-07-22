@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_MKV_GRAPH_H_
-#define _EA_MKV_GRAPH_H_
+#ifndef _MKV_GRAPH_H_
+#define _MKV_GRAPH_H_
 
 #include <boost/graph/adjacency_list.hpp>
 

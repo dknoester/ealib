@@ -22,6 +22,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <functional>
+
 #include <ea/rng.h>
 #include <ea/functional.h>
 #include <mkv/gates.h>

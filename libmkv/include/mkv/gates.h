@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_MKV_GATES_H_
-#define _EA_MKV_GATES_H_
+#ifndef _MKV_GATES_H_
+#define _MKV_GATES_H_
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
@@ -29,40 +29,12 @@
 #include <mkv/graph.h>
 
 namespace mkv {
-    
     namespace bnu = boost::numeric::ublas;
-    
     typedef bnu::vector<std::size_t> index_vector_type; //!< Index vector (logical vector).
     typedef bnu::vector<double> weight_vector_type; //!< Type for feedback weights vector.
-    
     typedef bnu::matrix<double> matrix_type; //!< Probability table type.
     typedef bnu::matrix_column<matrix_type> column_type; //!< Column type.
     typedef bnu::matrix_row<matrix_type> row_type; //!< Row type.
-    
-    
-    
-    
-    
-    
-    //
-    //
-    //
-    //        //! Parse a Markov gate.
-    //        void operator()(markov_gate& g) const {
-    //            G[v].gt = vertex_properties::MARKOV;
-    //            add_edges(g.inputs, g.outputs);
-    //        }
-    //
-    //        //! Parse an Adaptive Markov gate.
-    //        void operator()(adaptive_gate& g) const {
-    //            G[v].gt = vertex_properties::ADAPTIVE;
-    //            add_edges(g.inputs, g.outputs);
-    //            boost::add_edge(boost::vertex(g.p,G), v, edge_properties(edge_properties::REINFORCE), G);
-    //            boost::add_edge(boost::vertex(g.n,G), v, edge_properties(edge_properties::INHIBIT), G);
-    //        }
-    
-    
-    
     
     /*! Abstract gate.
      */
