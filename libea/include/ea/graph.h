@@ -403,7 +403,7 @@ namespace ealib {
             typename EA::genome_type operator()(EA& ea) {
                 typename EA::genome_type G;
                 mutation::operators::delta_growth gm;
-                for(std::size_t i=0; i<get<GRAPH_EVENTS_N>(ea); ++i) {
+                for(int i=0; i<get<GRAPH_EVENTS_N>(ea); ++i) {
                     gm(G,ea);
                 }
                 return G;

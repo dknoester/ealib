@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(test_self_replicator_instructions) {
     
     // check that h_alloc increases the size of the organism's memory:
     isa(isa["h_alloc"], p->hw(), p, ea);
-    BOOST_CHECK_EQUAL(r.size(), 250);
+    BOOST_CHECK_EQUAL(r.size(), 250u);
     
     // Check that h_copy:
     // (1) Copies the instruction at the read head to the location pointed to by

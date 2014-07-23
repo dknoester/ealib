@@ -58,7 +58,7 @@ namespace ealib {
 		//! Translate genome G into phenotype P.
 		void operator()(genome_type& G, phenotype_type& P) {
 			for(typename genome_type::iterator i=G.begin(); i!=G.end(); ++i) {
-				if(((*i + *(i+1)) == 255) && (*(i+1) < _genes.size())) {
+				if(((*i + *(i+1)) == 255) && (*(i+1) < static_cast<int>(_genes.size()))) {
 					(*_genes[*(i+1)])(i+2, P);
 				}
 			}
