@@ -1,6 +1,6 @@
 ** These instructions are current as of 7/22/2014 **
 
-There are Three different sets of instructions for installing Boost here: HPCC (quick way), HPCC (self-built), and OS X.
+There are Three different sets of instructions for installing Boost here: HPCC (quick way), HPCC (self-built), and OS X (xcode version 5.1.1, OS X 10.9.4).
 
 **After** you've installed Boost, get a copy of the latest EALib and Avida4 sample project:
 
