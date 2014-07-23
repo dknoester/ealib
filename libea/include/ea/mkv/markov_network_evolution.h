@@ -305,7 +305,7 @@ namespace ealib {
     , template <typename> class Traits=fitness_trait
     > class markov_network_evolution
     : public evolutionary_algorithm
-    < indirect<circular_genome<int>, markov_network< >, translators::call_markov_network_translator>
+    < indirect<circular_genome<int>, mkv::markov_network< >, translators::call_markov_network_translator>
     , FitnessFunction
     , mutation::operators::indel<mutation::operators::per_site<mutation::site::uniform_integer> >
     , RecombinationOperator

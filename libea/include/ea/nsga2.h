@@ -27,6 +27,7 @@
 #include <ea/metadata.h>
 #include <ea/comparators.h>
 #include <ea/access.h>
+#include <ea/selection.h>
 #include <ea/selection/rank.h>
 #include <ea/traits.h>
 
