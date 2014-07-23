@@ -74,14 +74,14 @@ BOOST_AUTO_TEST_CASE(pmf_functional) {
     pmf<unsigned int> p = probability_mass_function(x,&x[4]);
     
     BOOST_CHECK_EQUAL(p.event_count(), 4u);
-    BOOST_CHECK_EQUAL(p.size(), 2);
+    BOOST_CHECK_EQUAL(p.size(), 2u);
     BOOST_CHECK_EQUAL(p[0], 0.5);
     BOOST_CHECK_EQUAL(p[1], 0.5);
     
     unsigned int y[]={0,0,0,0,1,1,1,2,2,3};
     p = probability_mass_function(y,&y[10]);
-    BOOST_CHECK_EQUAL(p.event_count(), 10);
-    BOOST_CHECK_EQUAL(p.size(), 4);
+    BOOST_CHECK_EQUAL(p.event_count(), 10u);
+    BOOST_CHECK_EQUAL(p.size(), 4u);
     BOOST_CHECK_EQUAL(p[0], 0.4);
     BOOST_CHECK_EQUAL(p[1], 0.3);
     BOOST_CHECK_EQUAL(p[2], 0.2);
@@ -90,8 +90,8 @@ BOOST_AUTO_TEST_CASE(pmf_functional) {
     std::vector<unsigned int> x1;
     x1.push_back(0);    x1.push_back(0);    x1.push_back(1);    x1.push_back(1);
     p = probability_mass_function(x1.begin(), x1.end());
-    BOOST_CHECK_EQUAL(p.event_count(), 4);
-    BOOST_CHECK_EQUAL(p.size(), 2);
+    BOOST_CHECK_EQUAL(p.event_count(), 4u);
+    BOOST_CHECK_EQUAL(p.size(), 2u);
     BOOST_CHECK_EQUAL(p[0], 0.5);
     BOOST_CHECK_EQUAL(p[1], 0.5);
 }

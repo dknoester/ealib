@@ -54,23 +54,23 @@ BOOST_AUTO_TEST_CASE(test_graph_mutations) {
     BOOST_CHECK_EQUAL(num_vertices(G), 2u);
     
     eg::add_edge(G,ea.rng());
-    BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 1);
+    BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 1u);
     eg::remove_edge(G,ea.rng());
-    BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 0);
+    BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 0u);
     eg::add_edge(G,ea.rng());
     
     eg::duplicate_vertex(G,ea.rng());
-    BOOST_CHECK_EQUAL(num_vertices(G), 3);
-    BOOST_CHECK_EQUAL(degree(vertex(2,G),G), 1);
-    BOOST_CHECK((degree(vertex(0,G),G)==2) || (degree(vertex(1,G),G)==2));
+    BOOST_CHECK_EQUAL(num_vertices(G), 3u);
+    BOOST_CHECK_EQUAL(degree(vertex(2,G),G), 1u);
+    BOOST_CHECK((degree(vertex(0,G),G)==2u) || (degree(vertex(1,G),G)==2u));
 
     eg::merge_vertices(G,ea.rng());
-    BOOST_CHECK_EQUAL(num_vertices(G), 2);
-    BOOST_CHECK((degree(vertex(0,G),G)>=1) && (degree(vertex(1,G),G)>=1));
+    BOOST_CHECK_EQUAL(num_vertices(G), 2u);
+    BOOST_CHECK((degree(vertex(0,G),G)>=1u) && (degree(vertex(1,G),G)>=1u));
     
     eg::remove_vertex(G,ea.rng());
-    BOOST_CHECK_EQUAL(num_vertices(G), 1);
-    BOOST_CHECK((degree(vertex(0,G),G) == 0) || (degree(vertex(0,G),G) == 2)); // 2 is for self-loops as a result of a merge
+    BOOST_CHECK_EQUAL(num_vertices(G), 1u);
+    BOOST_CHECK((degree(vertex(0,G),G) == 0u) || (degree(vertex(0,G),G) == 2u)); // 2 is for self-loops as a result of a merge
 }
 
 
