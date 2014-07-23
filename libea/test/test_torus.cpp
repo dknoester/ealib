@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(test_torus1) {
     typedef std::vector<int> ivector;
     typedef torus1_proxy<ivector> itorus;
     ivector v(10);
-    BOOST_CHECK_EQUAL(v.size(), 10);
+    BOOST_CHECK_EQUAL(v.size(), 10u);
     algorithm::iota(v.begin(), v.end());
 
     itorus t(v);
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(test_torus1) {
     i += 5;
     ivector w(i,i+10);
     for(int j=0; j<w.size(); ++j) {
-        BOOST_CHECK_EQUAL(w[j], (j+5)%w.size());
+        BOOST_CHECK_EQUAL(w[j], static_cast<int>((j+5)%w.size()));
     }
     
     t.erase(t.begin()+8, t.begin()+13);

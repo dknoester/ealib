@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test_graph_mutations) {
     
     eg::add_vertex(G,ea.rng());
     eg::add_vertex(G,ea.rng());
-    BOOST_CHECK_EQUAL(num_vertices(G), 2);
+    BOOST_CHECK_EQUAL(num_vertices(G), 2u);
     
     eg::add_edge(G,ea.rng());
     BOOST_CHECK_EQUAL(degree(vertex(0,G),G), 1);

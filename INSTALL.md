@@ -4,7 +4,10 @@ MSU HPCC (QUICK WAY):
 Put this:
     export BOOST_BUILD_PATH=/mnt/home/dk/share/boost-build
 
-... in your ~/.bashrc file (or other shell startup script if you prefer).  That should do it.
+and this:
+    export PATH=$PATH:/mnt/home/dk/bin
+
+... in your ~/.bashrc (or other shells startup script).  That should do it.
 
 
 ========

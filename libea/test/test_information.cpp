@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(pmf_functional) {
     unsigned int x[]={0,0,1,1};
     pmf<unsigned int> p = probability_mass_function(x,&x[4]);
     
-    BOOST_CHECK_EQUAL(p.event_count(), 4);
+    BOOST_CHECK_EQUAL(p.event_count(), 4u);
     BOOST_CHECK_EQUAL(p.size(), 2);
     BOOST_CHECK_EQUAL(p[0], 0.5);
     BOOST_CHECK_EQUAL(p[1], 0.5);
