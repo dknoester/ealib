@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_torus1) {
     
     
     itorus::iterator i=t.begin();
-    for(int j=0; j<(t.size()*2); ++i,++j) {
+    for(std::size_t j=0; j<(t.size()*2); ++i,++j) {
         BOOST_CHECK_EQUAL(v[j%v.size()], t[j]);
         BOOST_CHECK_EQUAL(t[j], *i);
     }
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(test_torus1) {
     i = t.begin();
     i += 5;
     ivector w(i,i+10);
-    for(int j=0; j<w.size(); ++j) {
+    for(std::size_t j=0; j<w.size(); ++j) {
         BOOST_CHECK_EQUAL(w[j], static_cast<int>((j+5)%w.size()));
     }
     
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_torus3) {
     // 21 22 23
     // 24 25 26
     
-    BOOST_CHECK(T.size()==27);
+    BOOST_CHECK(T.size()==27u);
     BOOST_CHECK(T(0,0,0)==0);
     BOOST_CHECK(T(2,2,2)==26);
     BOOST_CHECK(T(-1,0,0)==6);
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_torus2) {
     // 3 4 5
     // 6 7 8
     
-    BOOST_CHECK(T.size()==9);
+    BOOST_CHECK(T.size()==9u);
     BOOST_CHECK(T(0,0)==0);
     BOOST_CHECK(T(2,2)==8);
     BOOST_CHECK(T(-1,0)==6);
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_circular_vector) {
 
     typedef cvector<int> cv_type;
     cv_type cv(data, data+12);
-    BOOST_CHECK(cv.size()==12);
+    BOOST_CHECK(cv.size()==12u);
     BOOST_CHECK(*cv.rbegin()==32767);
     
     cv_type::iterator i=cv.begin();
