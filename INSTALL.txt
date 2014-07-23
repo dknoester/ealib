@@ -1,3 +1,24 @@
+** These instructions are current as of 7/22/2014 **
+
+There are Three different sets of instructions for installing Boost here: HPCC (quick way), HPCC (self-built), and OS X.
+
+**After** you've installed Boost, get a copy of the latest EALib and Avida4 sample project:
+
+    git clone https://github.com/dknoester/ealib.git ealib
+    git clone https://github.com/dknoester/avida4.git avida4
+
+To make sure everything's working:
+
+    cd ealib
+    bjam
+    cd ../avida4
+    bjam
+
+A sample run (from avida4/):
+
+    ./bin/clang-darwin-4.2.1/debug/link-static/avida-logic9 -c ./etc/logic9.cfg --verbose
+
+
 ========
 MSU HPCC (QUICK WAY):
 ========
@@ -52,12 +73,53 @@ lib z : : <link>shared <name>z <search>$(SYS) ;
 Copy boost.jam:
     cp contrib/boost.jam ~/share/boost-build/
 
+Set the boost build root; add this:
+    export BOOST_BUILD_PATH=$HOME/share/boost-build
+... to your ~/.bashrc (or other shell startup script).
+
 Build boost:
-    cd ../../..
+    (back in boost_1_55_0/)
     ./bootstrap.sh --prefix=${HOME}
     ./b2
     ./b2 install
 
-Set the boost build root; add this:
-    export BOOST_BUILD_PATH=$HOME/share/boost-build
-... to your ~/.bashrc (or other shell startup script).
+That should be it...
+
+
+========
+OS X
+========
+
+These instructions install Boost to /usr/local.  Make sure that /usr/local/bin is on your path.  If you don't install Boost there, you'll have trouble with XCode.  Also, these instructions do not install all of Boost; some libraries are left out due to trouble with the latest clang.
+
+Download boost (current rls == 1.55):
+    wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz
+    tar -xzf boost_1_55_0.tar.gz
+    cd boost_1_55_0
+
+Build bjam:
+    cd tools/build/v2
+    ./bootstrap.sh --with-toolset=clang
+    sudo ./b2 install --toolset=clang
+
+Copy boost.jam:
+    sudo cp contrib/boost.jam /usr/local/share/boost-build/build/
+
+Site config (/usr/local/share/boost-build/site-config.jam):
+    using clang ;
+    import boost ;
+    boost.use-project ;
+    project site-config ;
+    lib z ;
+
+Put this in your ~/.bashrc:
+    export BOOST_BUILD_PATH=/usr/local/share/boost-build
+
+Build boost:
+    (back in boost_1_55_0/)
+    ./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer
+    ./b2
+
+STOP.  Look at the "Performing configuration checks" output.  Make sure that zlib is "yes."  If not, go install it (e.g., from MacPorts: zlib 1.2.8_0).  Delete the bin.v2 directory and go back to the bootstrap step above.  Then...
+
+    sudo ./b2 install
