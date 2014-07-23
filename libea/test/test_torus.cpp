@@ -48,10 +48,10 @@ BOOST_AUTO_TEST_CASE(test_torus1) {
     }
     
     t.erase(t.begin()+8, t.begin()+13);
-    BOOST_CHECK_EQUAL(t.size(), 5);
+    BOOST_CHECK_EQUAL(t.size(), 5u);
     
     t.erase(t.begin(), t.begin()+2);
-    BOOST_CHECK_EQUAL(t.size(), 3);
+    BOOST_CHECK_EQUAL(t.size(), 3u);
     
 //    
 //    // insertion:
