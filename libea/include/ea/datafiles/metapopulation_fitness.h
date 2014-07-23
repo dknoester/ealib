@@ -75,10 +75,10 @@ namespace ealib {
                     
                     for(typename MEA::subpopulation_type::iterator j=i->begin(); j!=i->end(); ++j) {
                         gen(get<IND_GENERATION>(*j));
-                        fit(static_cast<double>(fitness(*j,*i)));
+                        fit(static_cast<double>(ealib::fitness(*j,*i)));
                         mpsize(i->size());
                         mpgen(get<IND_GENERATION>(*j));
-                        mpfit(static_cast<double>(fitness(*j,*i)));
+                        mpfit(static_cast<double>(ealib::fitness(*j,*i)));
                     }
                     
                     _df.write(mean(gen))
