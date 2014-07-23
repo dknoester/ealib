@@ -246,7 +246,7 @@ namespace ealib {
         struct markov_network_lifecycle : ealib::default_lifecycle {
             //! Called after EA initialization.
             template <typename EA>
-            void initialize(EA& ea) {
+            void after_initialization(EA& ea) {
                 const std::string& gates = get<MKV_GATE_TYPES>(ea);
                 if(!boost::algorithm::icontains(gates, "logic")) {
                     translator.disable(translators::LOGIC);
