@@ -74,6 +74,7 @@ metadata build_md() {
     put<SPATIAL_X>(10,md);
     put<SPATIAL_Y>(10,md);
     put<SCHEDULER_TIME_SLICE>(30,md);
+    put<SCHEDULER_RESOURCE_SLICE>(30,md);
     put<MUTATION_PER_SITE_P>(0.0075,md);
     put<CHECKPOINT_PREFIX>("checkpoint",md);
     put<RNG_SEED>(1,md);

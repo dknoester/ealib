@@ -484,6 +484,7 @@
 		425D1065197D84640082C0BA /* analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		425D1067197D84E60082C0BA /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		425D107A197DF45F0082C0BA /* test-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-mkv"; sourceTree = BUILT_PRODUCTS_DIR; };
+		425D10B01986810E0082C0BA /* wright_fisher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wright_fisher.h; sourceTree = "<group>"; };
 		42678A15196E21B100214873 /* checkpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkpoint.h; sourceTree = "<group>"; };
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
 		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
@@ -502,7 +503,7 @@
 		42841C7F15ADACF100AB18BE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		4285662C196B0B4100C5B13F /* example-dev */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-dev"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4285662D196B0B7800C5B13F /* developmental.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = developmental.cpp; sourceTree = "<group>"; };
-		428B712718490E8F00E3BB4E /* test-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-mkv"; sourceTree = BUILT_PRODUCTS_DIR; };
+		428B712718490E8F00E3BB4E /* test-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "test-mkv"; path = "test-markov-network"; sourceTree = BUILT_PRODUCTS_DIR; };
 		428B7204184F664D00E3BB4E /* test-ann */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-ann"; sourceTree = BUILT_PRODUCTS_DIR; };
 		428B720D184F77AB00E3BB4E /* algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = algorithm.h; sourceTree = "<group>"; };
 		428B7210184F77AB00E3BB4E /* epistasis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = epistasis.h; sourceTree = "<group>"; };
@@ -585,7 +586,7 @@
 		42CF4A61196A200A00CBA20B /* neurodevelopment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neurodevelopment.h; sourceTree = "<group>"; };
 		42CF4A62196A200A00CBA20B /* neuroevolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neuroevolution.h; sourceTree = "<group>"; };
 		42CF4A64196A201E00CBA20B /* markov_network_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network_evolution.h; sourceTree = "<group>"; };
-		42CF4A6F196A204D00CBA20B /* test-neuroevolution */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-neuroevolution"; sourceTree = BUILT_PRODUCTS_DIR; };
+		42CF4A6F196A204D00CBA20B /* test-neuroevolution */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "test-neuroevolution"; path = "test-neural-network"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42CF4A70196A208D00CBA20B /* test_neurodevelopment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neurodevelopment.cpp; sourceTree = "<group>"; };
 		42CF4A71196A208D00CBA20B /* test_neuroevolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neuroevolution.cpp; sourceTree = "<group>"; };
 		42CF4A75196A393D00CBA20B /* test_markov_network_ea.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_markov_network_ea.cpp; sourceTree = "<group>"; };
@@ -1068,6 +1069,7 @@
 			children = (
 				428B7258184F77AB00E3BB4E /* crowding.h */,
 				428B7259184F77AB00E3BB4E /* generational.h */,
+				425D10B01986810E0082C0BA /* wright_fisher.h */,
 				42C661831862805D004476D3 /* in_place.h */,
 				42C6618418628626004476D3 /* isolated_subpopulations.h */,
 				42DC571B19448FD2005044F1 /* periodic_competition.h */,

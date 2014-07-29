@@ -74,7 +74,7 @@ namespace ealib {
     template
     < typename Lifecycle=default_lifecycle
     , typename RecombinationOperator=recombination::asexual
-    , typename Scheduler=weighted_round_robin
+    , typename Scheduler=weighted_round_robin< >
     , typename AncestorGenerator=selfrep_ancestor
     , typename ReplacementStrategy=random_neighbor
     , typename StopCondition=dont_stop

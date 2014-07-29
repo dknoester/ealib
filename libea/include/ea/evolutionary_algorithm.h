@@ -91,7 +91,7 @@ namespace ealib {
         typedef boost::indirect_iterator<typename population_type::reverse_iterator> reverse_iterator;
         typedef boost::indirect_iterator<typename population_type::const_reverse_iterator> const_reverse_iterator;
         
-		//! Internal state of a metapopulation.
+		//! Internal state of an evolutionary algorithm.
         class state_type {
         public:
             //! Default constructor.

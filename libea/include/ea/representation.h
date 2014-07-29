@@ -30,40 +30,32 @@ namespace ealib {
 	LIBEA_MD_DECL(REPRESENTATION_MIN_SIZE, "ea.representation.min_size", int);
 	LIBEA_MD_DECL(REPRESENTATION_MAX_SIZE, "ea.representation.max_size", int);
     
-    /* We are defining a {\em representation} as a (genome, phenotype, 
-     translation code) tuple.
+    /* We are defining a {\em representation} as a (genome_type, phenotype_type,
+     translator) tuple.
      
      The idea here is that some kinds of EAs require that an individual's genotype
      be converted to another form prior to fitness evaluation.  This is usually
-     referred to as the "encoding type."
+     referred to as the "encoding type."  Common encoding types are direct (each 
+     codon in the genome directly corresponds to a phenotypic feature), indirect 
+     (the phenotype must be translated from the genome), generative (the phenotype
+     must be produced by the genome), and developmental (the phenotype is "grown"
+     from the genome, and can change during the individual's lifetime).
      
-     Here we define two different encoding types: direct and indirect.
+     \note generative and development are not yet supported.
      */
     
-    //! Indicates that the individual's genotype directly encodes the phenotype.
+    //! Tag indicating that the individual's genome directly encodes the phenotype.
     struct directS { };
     
-    /*! Indicates that the individaul's genotype indirectly encodes the phenotype
-     (i.e., must be translated or generated prior to fitness evaluation).
+    /*! Tag indicating that the individaul's genome indirectly encodes the phenotype.
      */
     struct indirectS { };
     
-    /* Generative encodings are not yet defined, though they will likely be added
-     later.
-     
-     These different encoding types are used when make_phenotype() is called
-     on an individual.  Note that the default is directS.
-     
-     To be clear about definitions:
-     
-     Genotype: That which makes up the genetic component of an individual; inherited.
-     In EALib, genotypes == representation.
-     
-     Phenotype: That component of an individual that is evaluated by the fitness
-     function; can be the genotype (direct), an object that was translated
-     from the genotype (indirect), or even an object that was generated
-     (generative).
-     */
+    //! Tag indicating that the individual's phenotype must be generated (not yet supported).
+    struct generativeS { };
+
+    //! Tag indicating that the individual's phenotype must be developed from the genome (not yet supported).
+    struct developmentalS { };
 
     
     /*! Direct representation type.

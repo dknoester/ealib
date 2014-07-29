@@ -28,6 +28,7 @@
 namespace ealib {    
     
     LIBEA_MD_DECL(SCHEDULER_TIME_SLICE, "ea.scheduler.time_slice", unsigned int);
+    LIBEA_MD_DECL(SCHEDULER_RESOURCE_SLICE, "ea.scheduler.resource_slice", unsigned int);
     
     typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
     
@@ -40,205 +41,72 @@ namespace ealib {
                 return ind.priority();
             }
         };
-        
+
+        //! Fixed priority.
+        struct fixed_priority {
+            template <typename EA>
+            double operator()(typename EA::individual_type& ind, EA& ea) {
+                return 1.0;
+            }
+        };
+
     } // access
 
-    
-    /*! Runlevel queue scheduler.
-     
-     Here, individuals are sorted into different runlevels.  Each runlevel receives
-     twice as many virtual cpu cycles as the runlevel immediately below it.  All individuals
-     in the current runlevel are granted a single virtual cpu cycle before the runlevel
-     is advanced.  This avoids strange runlevel size effects (i.e., where a higher runlevel
-     has twice as many individuals as a lower runlevel).
-     */
-    struct runlevel_queue {
-        //! Schedule organisms.
-        template <typename EA>
-        void operator()(typename EA::population_type& population, EA& ea) {
-            typedef std::list<typename EA::individual_ptr_type> queue_type;
-            typedef std::map<int,queue_type> runlevelq_type;
 
-            // shuffle the population to avoid effects related to ordering of individuals:
-            std::random_shuffle(population.begin(), population.end(), ea.rng());
-
-            // split them into runlevels:
-            runlevelq_type q;
-            for(typename EA::population_type::iterator i=population.begin(); i!=population.end(); ++i) {
-                // we have to take the ceiling of the priority here; otherwise, an organism
-                // that consumes only a small amount is effectively the same as an organism
-                // that consumes none; this creates a relavitely large subset of the population
-                // that can drift while the rest of the population competes for resources.
-                q[ceil((*i)->priority())].push_back(*i);
-            }
-            
-            // have to fill in the runlevels between priorities, if any:
-            // not sure about this, actually.  the problem is that scheduling slows **way**
-            // down if the priority distribution is sparse.
-            for(int i=1; i<q.rbegin()->first; ++i) {
-                q[i]; // "touch"; constructs if needed.
-            }
-            
-            unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
-            long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
-            double delta_t = 1.0/get<SCHEDULER_TIME_SLICE>(ea);
-            std::size_t livecount=population.size();
-            std::size_t deadcount=0;
-            typename runlevelq_type::reverse_iterator runlevel=q.rbegin(), last=q.rbegin();
-            typename queue_type::iterator i=runlevel->second.begin();
-            
-            while((budget > 0) && (deadcount<livecount)) {
-                if((budget % eff_population_size) == 0) {
-                    ea.resources().update(delta_t);
-                }
-                
-                if(i != runlevel->second.end()) {
-                    typename EA::individual_ptr_type p=*i;
-                    if(p->alive()) {
-                        p->execute(1,p,ea);
-                        --budget;
-                        ++i;
-                    } else {
-                        runlevel->second.erase(i++);
-                        ++deadcount;
-                    }
-                } else {
-                    if(runlevel == last) {
-                        runlevel = q.rbegin();
-                        ++last;
-                    } else {
-                        ++runlevel;
-                    }
-                    
-                    if(last == q.rend()) {
-                        last = q.rbegin();
-                    }
-
-                    i = runlevel->second.begin();
-                }
-            }
-            
-            typename EA::population_type next;
-            next.reserve(population.size());
-            for(std::size_t i=0; i<population.size(); ++i) {
-                if(population[i]->alive()) {
-                    next.push_back(population[i]);
-                }
-            }
-            std::swap(population, next);
-        }
-        
-        //! Link a standing population to this scheduler.
-        template <typename EA>
-        void link(EA& ea) {
-        }
-    };
-    
-
-    /*! Priority-proportional scheduler.
-     
-     Grants all organisms an amount of CPU time proportional to their priority,
-     where priority is defined as the multiple of cycles above an org that has 
-     priority 1.0.
-     */
-    struct priority_proportional {
-        //! Schedule organisms.
-        template <typename EA>
-        void operator()(typename EA::population_type& population, EA& ea) {
-            typedef unary_fitness<double> priority_type; //!< Type for storing priorities.
-            typedef std::vector<long> exc_list;
-            
-
-            exc_list live, names;
-            int last=population.size();
-            for(std::size_t i=0; i<population.size(); ++i) {
-                int r=static_cast<int>(population[i]->priority());
-                for(int j=0; j<r; ++j) {
-                    live.push_back(i);
-                }
-            }
-            
-            std::random_shuffle(live.begin(), live.end(), ea.rng());
-            
-            unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
-            long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
-            double delta_t = 1.0/get<SCHEDULER_TIME_SLICE>(ea);
-            
-            std::size_t i=0;
-            int deadcount=0;
-            while((budget > 0) && (deadcount<last)) {
-                if((budget % eff_population_size) == 0) {
-                    ea.resources().update(delta_t);
-                }
-                
-                typename EA::individual_ptr_type p=population[live[i]];
-                i = (i+1) % live.size();
-                names.push_back(p->name());
-                
-                if(p->alive()) {
-                    p->execute(1,p,ea);
-                    --budget;
-                } else {
-                    ++deadcount;
-                }
-            }
-            
-            typename EA::population_type next;
-            for(std::size_t i=0; i<population.size(); ++i) {
-                typename EA::individual_ptr_type p=population[i];
-                if(p->alive()) {
-                    next.push_back(p);
-                }
-            }
-            std::swap(population, next);
-        }
-        
-        //! Link a standing population to this scheduler.
-        template <typename EA>
-        void link(EA& ea) {
-        }
-    };
-
-    
     /*! Weighted round-robin scheduler.
      
-     Grants organisms an amount of CPU time equal to their priority.
+     Executes all individuals in a round-robin fashion, granting each a number
+     CPU cycles equal to their priority during each execution.
      */
+    template <typename PriorityAccessor=access::priority>
     struct weighted_round_robin {
+        typedef PriorityAccessor accessor_type;
+
         template <typename EA>
         void operator()(typename EA::population_type& population, EA& ea) {
+            // only the individuals in the population at the start of this update
+            // are allowed to execute, and some of them are likely to be replaced.
+            // offspring are appended to population **asynchronously.**
+            //
             // WARNING: Population is unstable!  Must use []-indexing.
             std::random_shuffle(population.begin(), population.end(), ea.rng());
-            
-            // these are the individuals in the population at the start of the update.
-            // they are the *only* ones that can execute during this update,
-            // and some of them are likely to be replaced.
-            // offspring are appended to population asynchronously, thus we're
-            // indexing into the population instead of iterating.
-            
-            unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
-            long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
-            double delta_t = 1.0/get<SCHEDULER_TIME_SLICE>(ea);
-            
-            std::size_t last=population.size();
-            std::size_t i=0;
+
+            const unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
+            const long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
+            const double delta_t = 1.0/static_cast<double>(get<SCHEDULER_RESOURCE_SLICE>(ea));
+            const long ncycles_per_period = budget * delta_t;
+            const std::size_t N=population.size();
+
+            long consumed=0; // total consumed CPU cycles
+            int last_period=-1; // update period
+            std::size_t i=0; // current index into population vector
             std::size_t deadcount=0;
-            while((budget > 0) && (deadcount<last)) {
-                if((budget % eff_population_size) == 0) {
+            
+            while((consumed < budget) && (deadcount < N)) {
+                // updates are divided into periods, where each period corresponds
+                // to a partial resource update:
+                int period=consumed/ncycles_per_period;
+                if(period != last_period) {
                     ea.resources().update(delta_t);
+                    last_period = period;
                 }
-                typename EA::individual_ptr_type p=population[i];
-                i = (i+1) % last;
                 
+                typename EA::individual_ptr_type p=population[i];
                 if(p->alive()) {
-                    p->execute(static_cast<std::size_t>(p->priority()),p,ea);
-                    budget -= static_cast<std::size_t>(p->priority());
+                    std::size_t n=static_cast<std::size_t>(_acc(*p,ea));
+                    p->execute(n, p, ea);
+                    consumed += n;
                 } else {
                     ++deadcount;
                 }
+                
+                // new individuals are appended to the population; don't execute
+                // them during this update:
+                i = (i+1) % N;
             }
             
             typename EA::population_type next;
+            next.reserve(get<POPULATION_SIZE>(ea));
             for(std::size_t i=0; i<population.size(); ++i) {
                 typename EA::individual_ptr_type p=population[i];
                 if(p->alive()) {
@@ -252,64 +120,16 @@ namespace ealib {
         template <typename EA>
         void link(EA& ea) {
         }
+        
+        accessor_type _acc; //!< Accessor for an individual's priority.
     };
-    
     
     /*! Round-robin scheduler.
      
-     Grants all organisms an equal amount of CPU time, exactly time slice cycles
-     per update.
+     Executes all organisms in a round-robin fashion, granting each a single
+     CPU instruction per execution.
      */
-    struct round_robin {
-        //! Schedule organisms.
-        template <typename EA>
-        void operator()(typename EA::population_type& population, EA& ea) {
-            // WARNING: Population is unstable!  Must use []-indexing.
-            std::random_shuffle(population.begin(), population.end(), ea.rng());
-
-            // these are the individuals in the population at the start of the update.
-            // they are the *only* ones that can execute during this update,
-            // and some of them are likely to be replaced.
-            // offspring are appended to population asynchronously, thus we're
-            // indexing into the population instead of iterating.
-            
-            unsigned int eff_population_size = std::min(static_cast<unsigned int>(population.size()),get<POPULATION_SIZE>(ea));
-            long budget=get<SCHEDULER_TIME_SLICE>(ea) * eff_population_size;
-            double delta_t = 1.0/get<SCHEDULER_TIME_SLICE>(ea);
-            
-            std::size_t last=population.size();
-            std::size_t i=0;
-            std::size_t deadcount=0;
-            while((budget > 0) && (deadcount<last)) {
-                if((budget % eff_population_size) == 0) {
-                    ea.resources().update(delta_t);
-                }
-                typename EA::individual_ptr_type p=population[i];
-                i = (i+1) % last;
-                
-                if(p->alive()) {
-                    p->execute(1,p,ea);
-                    --budget;
-                } else {
-                    ++deadcount;
-                }
-            }
-            
-            typename EA::population_type next;
-            for(std::size_t i=0; i<population.size(); ++i) {
-                typename EA::individual_ptr_type p=population[i];
-                if(p->alive()) {
-                    next.push_back(p);
-                }
-            }
-            std::swap(population, next);
-        }
-        
-        //! Link a standing population to this scheduler.
-        template <typename EA>
-        void link(EA& ea) {
-        }
-    };
+    typedef weighted_round_robin<access::fixed_priority> round_robin;
     
     /* Faster scheduler; will need to templatify this, and likely turn it into
      the default scheduler.

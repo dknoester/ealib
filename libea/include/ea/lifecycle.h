@@ -47,7 +47,6 @@ namespace ealib {
      |          |
      |    initial_population
      |          |
-     |          |
      |    **after_initial_population()**
      |          |
      v          v
@@ -64,6 +63,10 @@ namespace ealib {
          This is a good place to handle programmatic setup tasks.  E.g., adding
          instructions to a digital evolution ISA, loading external data files,
          and the like.
+         
+         Note that there is also an "after_initialization" method in the
+         cmdline_interface, which is perhaps more convenient.  This method
+         should really only be used when you need to do something strange.
          */
         template <typename EA>
         void after_initialization(EA& ea) {
@@ -71,6 +74,7 @@ namespace ealib {
         
         /*! Called after the initial population has been generated.
          
+         See note re: cmdline_interface above; the same holds true here.
          */
         template <typename EA>
         void after_initial_population(EA& ea) {

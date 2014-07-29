@@ -303,7 +303,8 @@ namespace ealib {
     
     //! Helper method that builds a limited resource.
     template <typename EA>
-    typename EA::resource_ptr_type make_resource(const std::string& name, double initial, double inflow, double outflow, double consume, EA& ea) {
+    typename EA::resource_ptr_type make_resource(const std::string& name,
+                                                 double initial, double inflow, double outflow, double consume, EA& ea) {
         typedef typename EA::resource_ptr_type resource_ptr_type;
         resource_ptr_type p(new detail::limited<EA>(name, initial, inflow, outflow, consume));
         ea.resources().add(p);
@@ -317,7 +318,7 @@ namespace ealib {
                                                  double initial, double inflow, double outflow, double consume, EA& ea) {
         typedef typename EA::resource_ptr_type resource_ptr_type;
         resource_ptr_type p(new detail::spatial<EA>(name, diffuse, initial, inflow,
-                                                outflow, consume, get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea)));
+                                                    outflow, consume, get<SPATIAL_X>(ea), get<SPATIAL_Y>(ea)));
         ea.resources().add(p);
         return p;
     }

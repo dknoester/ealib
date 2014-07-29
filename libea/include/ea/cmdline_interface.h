@@ -138,6 +138,9 @@ namespace ealib {
         
         //! Called after initialization (good place to calculate config options).
         virtual void after_initialization(EA& ea) { }
+
+        //! Called after the initial population is generated.
+        virtual void after_initial_population(EA& ea) { }
         
         //! Execute an EA based on the given command-line parameters.
         virtual void exec(int argc, char* argv[]) {
@@ -264,6 +267,7 @@ namespace ealib {
                 add_event<datafiles::runtime>(ea);
             }
             generate_initial_population(ea);
+            after_initial_population(ea);
             ea.lifecycle().advance_all(ea);
         }
         
