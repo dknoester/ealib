@@ -42,7 +42,17 @@ namespace ealib {
             Selector select(n,src,ea);
             select(src, dst, n, ea);
         }
-	}    
+	}
+    
+    /*! Select individuals from src into dst using the given selector type.
+     This is "survivor selection" -- The near-final step of most generational models,
+     immediately prior to population swaps (if any).
+	 */
+	template <typename Selector, typename Population, typename EA>
+	void select(Population& src, Population& dst, EA& ea) {
+        Selector select(src, ea);
+        select(src, dst, ea);
+	}
 
 } // ea
 

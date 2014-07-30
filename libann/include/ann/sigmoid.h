@@ -28,7 +28,7 @@ namespace ann {
 	/*! Heaviside function (aka unit step), a binary activation sigmoid type.
      
      Domain: [-1.0, 1.0]
-     Range: {0.0, 1.0}
+     Range: {-1.0, 1.0}
      
      \warning The definition of H(0) can be significant; this was not selected
      with care.
@@ -40,7 +40,7 @@ namespace ann {
 		
 		//! Calculate the heaviside function of x.
 		double operator()(double x) {
-			return (x <= 0.0) ? 0.0 : 1.0;
+			return 2.0 * ((x <= 0.0) ? 0.0 : 1.0) - 1.0;
 		}
         
 		// it's not clear what the derivative is here...
@@ -53,7 +53,7 @@ namespace ann {
 	/*! Logistic function, a type of sigmoid.
      
      Domain: [-1.0, 1.0]
-     Range: [0.0, 1.0]
+     Range: [-1.0, 1.0]
      
      Lambda was selected to provides a nice sigmoid over the full domain.
 	 */
@@ -64,7 +64,7 @@ namespace ann {
 		
 		//! Calculate the logistic sigmoid of x.
 		double operator()(double x) {
-			return 1/(1+exp(-lambda*x));
+			return 2.0/(1.0+exp(-lambda*x)) - 1.0;
 		}
 		
 		//! Calculate the derivative of the logistic sigmoid of x.

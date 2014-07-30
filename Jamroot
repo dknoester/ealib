@@ -54,10 +54,3 @@ exe example-qhfc :
     /libea//libea_runner
     : <link>static
     ;
-
-exe example-dev :
-    examples/developmental.cpp
-    /libea//libea_runner
-    /libann//libann
-    : <link>static
-    ;

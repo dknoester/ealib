@@ -34,6 +34,7 @@ public:
         add_option<POPULATION_SIZE>(this);
         add_option<REPRESENTATION_SIZE>(this);
         add_option<SCHEDULER_TIME_SLICE>(this);
+        add_option<SCHEDULER_RESOURCE_SLICE>(this);
         add_option<MUTATION_PER_SITE_P>(this);
         add_option<MUTATION_INSERTION_P>(this);
         add_option<MUTATION_DELETION_P>(this);

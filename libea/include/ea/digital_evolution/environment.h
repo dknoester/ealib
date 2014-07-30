@@ -107,6 +107,8 @@ namespace ealib {
             // round "up" (really, away from zero), preserve sign:
             h[0] = algorithm::copysign(static_cast<int>(fabs(x) + 0.5), x);
             h[1] = algorithm::copysign(static_cast<int>(fabs(y) + 0.5), y);
+            assert((h[0] >= -1) && (h[0]<=1));
+            assert((h[1] >= -1) && (h[1]<=1));
         }
         
         //! Rotate by theta radians.

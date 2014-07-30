@@ -22,6 +22,7 @@
 
 #include <ea/metadata.h>
 #include <ea/selection/tournament.h>
+#include <ea/selection/none.h>
 
 namespace ealib {
 	namespace generational_models {
@@ -32,16 +33,23 @@ namespace ealib {
          recombines them to produce offspring, and then the offspring are mutated
          and replace the parents.
 		 */
-        template <typename ParentSelectionStrategy=selection::tournament< > >
-        struct generational {
+        template
+        < typename ParentSelectionStrategy=selection::tournament< >
+        , typename SurvivorSelectionStrategy=selection::none
+        > struct generational {
             typedef ParentSelectionStrategy parent_selection_type;
+            typedef SurvivorSelectionStrategy survivor_selection_type;
 			
 			//! Apply this generational model to the EA to produce a single new generation.
 			template <typename Population, typename EA>
 			void operator()(Population& population, EA& ea) {
+                // are there survivors?
+                Population survivors;
+                select<survivor_selection_type>(population, survivors, ea);
+                
                 // build the offspring:
                 Population offspring;
-                std::size_t n = population.size();
+                std::size_t n = population.size() - survivors.size();
                 
                 recombine_n(population, offspring,
                             parent_selection_type(n,population,ea),
@@ -50,8 +58,11 @@ namespace ealib {
                 
 				// mutate them:
 				mutate(offspring.begin(), offspring.end(), ea);
+                
+                // add the survivors:
+                offspring.insert(offspring.end(), survivors.begin(), survivors.end());
 				
-				// and swap it in for the current population:
+				// and swap them in for the current population:
                 std::swap(population, offspring);
 			}
 		};

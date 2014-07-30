@@ -94,7 +94,6 @@
 		425D107B197DF46D0082C0BA /* test_markov_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42D178CF1937771B0063A55B /* test_markov_network.cpp */; };
 		426A04A617B1205B000F5151 /* cmdline_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 426A04A417B1205B000F5151 /* cmdline_interface.cpp */; };
 		42856627196B0B4100C5B13F /* libea.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBD9F157D0E0B0003A644 /* libea.a */; };
-		4285662F196B0B7800C5B13F /* developmental.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4285662D196B0B7800C5B13F /* developmental.cpp */; };
 		428B712218490E8F00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		428B71FF184F664D00E3BB4E /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		42B55B731641C2C500F240C5 /* test_suite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B55B6E1641C2C500F240C5 /* test_suite.cpp */; };
@@ -485,6 +484,7 @@
 		425D1067197D84E60082C0BA /* graph.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 		425D107A197DF45F0082C0BA /* test-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-mkv"; sourceTree = BUILT_PRODUCTS_DIR; };
 		425D10B01986810E0082C0BA /* wright_fisher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wright_fisher.h; sourceTree = "<group>"; };
+		425D10C1198969C20082C0BA /* none.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = none.h; sourceTree = "<group>"; };
 		42678A15196E21B100214873 /* checkpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkpoint.h; sourceTree = "<group>"; };
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
 		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
@@ -502,7 +502,6 @@
 		42841C7E15ADACF000AB18BE /* CONTRIBUTORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = CONTRIBUTORS; sourceTree = "<group>"; };
 		42841C7F15ADACF100AB18BE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		4285662C196B0B4100C5B13F /* example-dev */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-dev"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4285662D196B0B7800C5B13F /* developmental.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = developmental.cpp; sourceTree = "<group>"; };
 		428B712718490E8F00E3BB4E /* test-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "test-mkv"; path = "test-markov-network"; sourceTree = BUILT_PRODUCTS_DIR; };
 		428B7204184F664D00E3BB4E /* test-ann */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-ann"; sourceTree = BUILT_PRODUCTS_DIR; };
 		428B720D184F77AB00E3BB4E /* algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = algorithm.h; sourceTree = "<group>"; };
@@ -922,7 +921,6 @@
 				4256FA651892BA14004AB7F9 /* metapopulation.cpp */,
 				4256FA661892BA14004AB7F9 /* nsga2.cpp */,
 				422B05C419641F9F00DA675B /* pole_balancing.cpp */,
-				4285662D196B0B7800C5B13F /* developmental.cpp */,
 				4256FA671892BA14004AB7F9 /* qhfc.cpp */,
 			);
 			path = examples;
@@ -1083,6 +1081,7 @@
 			isa = PBXGroup;
 			children = (
 				428B7281184F77AB00E3BB4E /* elitism.h */,
+				425D10C1198969C20082C0BA /* none.h */,
 				428B7282184F77AB00E3BB4E /* proportionate.h */,
 				42A170E218E9C41D00C3A248 /* rank.h */,
 				428B7283184F77AB00E3BB4E /* random.h */,
@@ -1696,7 +1695,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4285662F196B0B7800C5B13F /* developmental.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

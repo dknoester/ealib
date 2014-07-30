@@ -42,9 +42,10 @@ namespace ealib {
          
          \warning Fitness can not be negative.
 		 */
-        template <typename ParentSelectionStrategy=selection::proportionate< >,
-        typename SurvivorSelectionStrategy=selection::random< > >
-		struct moran_process {
+        template
+        < typename ParentSelectionStrategy=selection::proportionate< >
+        , typename SurvivorSelectionStrategy=selection::random< >
+        > struct moran_process {
             typedef ParentSelectionStrategy parent_selection_type;
             typedef SurvivorSelectionStrategy survivor_selection_type;
 

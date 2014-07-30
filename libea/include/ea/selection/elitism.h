@@ -50,6 +50,11 @@ namespace ealib {
 			elitism(std::size_t n, Population& src, EA& ea) : _embedded(n,src,ea) {
 			}
             
+            //! Initializing constructor.
+			template <typename Population, typename EA>
+			elitism(Population& src, EA& ea) : _embedded(src,ea) {
+			}
+            
 			/*! Preserve the elite individuals from the src population.
              */
 			template <typename Population, typename EA>
@@ -63,7 +68,22 @@ namespace ealib {
                     std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
                     algorithm::copy_n(src.rbegin(), e, std::inserter(dst,dst.end()));
                 }
-            };
+            }
+            
+            /*! Preserve the elite individuals from the src population.
+             */
+			template <typename Population, typename EA>
+			void operator()(Population& src, Population& dst, EA& ea) {
+				std::size_t e = get<ELITISM_N>(ea);
+                _embedded(src, dst, ea);
+                
+                // now, append the e most-fit individuals:
+                if(e > 0) {
+                    std::sort(src.begin(), src.end(), comparators::fitness<EA>(ea));
+                    algorithm::copy_n(src.rbegin(), e, std::inserter(dst,dst.end()));
+                }
+            }
+
 
 			embedded_selection_type _embedded; //!< Underlying selection strategy.
 		};

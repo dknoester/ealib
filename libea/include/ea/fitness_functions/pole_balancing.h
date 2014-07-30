@@ -35,7 +35,7 @@ namespace ealib {
      go_cart() by Ken Stanley.   As in Stanley's version, this simulator uses
      normalized, continous inputs instead of discretizing the input space.
      */
-	struct pole_balancing : public fitness_function<unary_fitness<double> > {
+	struct pole_balancing : public fitness_function<unary_fitness<double>, constantS, stochasticS> {
         
         /*! Takes an action and the current values of the four state variables and
          updates their values by estimating the state TAU seconds later.
@@ -71,14 +71,15 @@ namespace ealib {
         
         /*! Evaluate the fitness of a single individual.
          */
-        template <typename Individual, typename EA>
-		double operator()(Individual& ind, EA& ea) {
+        template <typename Individual, typename RNG, typename EA>
+		double operator()(Individual& ind, RNG& rng, EA& ea) {
             const double twelve_degrees=12.0 * boost::math::constants::pi<double>() / 180.0;
             double x=0.0; // cart position, meters
-            double x_dot=0.0; // cart velocity
-            double theta=0.0; // pole angle, radians
-            double theta_dot=0.0; // pole angular velocity
+            double x_dot=rng.p() - 0.5; // cart velocity
+            double theta=rng.uniform_real(-twelve_degrees/2.0, twelve_degrees/2.0); // pole angle, radians
+            double theta_dot=rng.p() - 0.5; // pole angular velocity
             double input[5]; // inputs to the phenotype
+            
             try {
                 typename EA::phenotype_type &P = ealib::phenotype(ind, ea); // phenotype; ANN, MKV, etc.
                 int maxsteps = get<POLE_MAXSTEPS>(ea);
