@@ -1069,12 +1069,12 @@
 			children = (
 				428B7258184F77AB00E3BB4E /* crowding.h */,
 				428B7259184F77AB00E3BB4E /* generational.h */,
-				425D10B01986810E0082C0BA /* wright_fisher.h */,
 				42C661831862805D004476D3 /* in_place.h */,
 				42C6618418628626004476D3 /* isolated_subpopulations.h */,
 				42DC571B19448FD2005044F1 /* periodic_competition.h */,
 				428B725A184F77AB00E3BB4E /* moran_process.h */,
 				428B725D184F77AB00E3BB4E /* steady_state.h */,
+				425D10B01986810E0082C0BA /* wright_fisher.h */,
 			);
 			path = generational_models;
 			sourceTree = "<group>";

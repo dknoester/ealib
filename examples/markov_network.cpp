@@ -91,8 +91,9 @@ public:
     
     
     virtual void gather_tools() {
-        //        add_tool<mkv::genetic_graph>(this);
-        //        add_tool<mkv::reduced_graph>(this);
+        add_tool<analysis::dominant_genetic_graph>(this);
+        add_tool<analysis::dominant_causal_graph>(this);
+        add_tool<analysis::dominant_reduced_graph>(this);
     }
     
     virtual void gather_events(EA& ea) {
