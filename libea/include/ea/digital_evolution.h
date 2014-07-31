@@ -92,11 +92,11 @@ namespace ealib {
         typedef Lifecycle lifecycle_type;
         typedef IndividualTraits<digital_evolution> individual_traits_type;
         typedef organism<individual_traits_type> individual_type;
+        typedef boost::shared_ptr<individual_type> individual_ptr_type;
         typedef typename individual_type::genome_type genome_type;
         typedef typename individual_type::phenotype_type phenotype_type;
         typedef typename individual_type::hardware_type hardware_type;
         typedef typename individual_type::mutation_operator_type mutation_operator_type;
-        typedef boost::shared_ptr<individual_type> individual_ptr_type;
         typedef metadata md_type;
         typedef default_rng_type rng_type;
         typedef digital_evolution_event_handler<digital_evolution> event_handler_type;

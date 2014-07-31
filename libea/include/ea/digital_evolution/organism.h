@@ -46,7 +46,48 @@ namespace ealib {
         void serialize(Archive& ar, const unsigned int version) {
         }
     };
+
+    template <typename T>
+    struct default_lod_devo_traits {
+        typedef typename T::individual_ptr_type individual_ptr_type;
+        typedef std::vector<individual_ptr_type> parent_vector_type;
         
+        //! Constructor.
+        default_lod_devo_traits() {
+        }
+        
+        //! Destructor.
+        virtual ~default_lod_devo_traits() {
+        }
+        
+        //! Clear this individual's parents.
+        void lod_clear() {
+            _lod_parents.clear();
+        }
+        
+        //! Retrieve all of this individual's parents.
+        parent_vector_type& lod_parents() { return _lod_parents; }
+        
+        //! Shorthand for asexual populations.
+        individual_ptr_type lod_parent() {
+            assert(!_lod_parents.empty());
+            return _lod_parents.front();
+        }
+        
+        //! Returns true if this individual has parents.
+        bool has_parents() {
+            return !_lod_parents.empty();
+        }
+        
+        //! Serialize this trait (LoDs are not serializable).
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+        }
+        
+        parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.
+    };
+    
+    
 	/*! Digital organism.
 
 	 */

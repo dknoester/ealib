@@ -472,6 +472,7 @@
 		426A04A417B1205B000F5151 /* cmdline_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmdline_interface.cpp; sourceTree = "<group>"; };
 		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
 		426F9F5E18E363CC00910682 /* statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = statistics.h; sourceTree = "<group>"; };
+		4277BE49198A5C5A00B8F54B /* weighted_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = weighted_vector.h; sourceTree = "<group>"; };
 		427F5E5918806FB3003CCA5C /* subpopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = subpopulation.h; sourceTree = "<group>"; };
 		42801D54197024C900A633A0 /* xor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xor.h; sourceTree = "<group>"; };
 		42801D5519705ECC00A633A0 /* izhikevich.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = izhikevich.h; sourceTree = "<group>"; };
@@ -484,7 +485,7 @@
 		42841C2915A5F4D800AB18BE /* test_torus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_torus.cpp; sourceTree = "<group>"; };
 		42841C7E15ADACF000AB18BE /* CONTRIBUTORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = CONTRIBUTORS; sourceTree = "<group>"; };
 		42841C7F15ADACF100AB18BE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		428B712718490E8F00E3BB4E /* test-mkv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "test-mkv"; path = "test-markov-network"; sourceTree = BUILT_PRODUCTS_DIR; };
+		428B712718490E8F00E3BB4E /* test-markov-network */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-markov-network"; sourceTree = BUILT_PRODUCTS_DIR; };
 		428B7204184F664D00E3BB4E /* test-ann */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-ann"; sourceTree = BUILT_PRODUCTS_DIR; };
 		428B720D184F77AB00E3BB4E /* algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = algorithm.h; sourceTree = "<group>"; };
 		428B7210184F77AB00E3BB4E /* epistasis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = epistasis.h; sourceTree = "<group>"; };
@@ -567,7 +568,7 @@
 		42CF4A61196A200A00CBA20B /* neurodevelopment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neurodevelopment.h; sourceTree = "<group>"; };
 		42CF4A62196A200A00CBA20B /* neuroevolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neuroevolution.h; sourceTree = "<group>"; };
 		42CF4A64196A201E00CBA20B /* markov_network_evolution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = markov_network_evolution.h; sourceTree = "<group>"; };
-		42CF4A6F196A204D00CBA20B /* test-neuroevolution */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "test-neuroevolution"; path = "test-neural-network"; sourceTree = BUILT_PRODUCTS_DIR; };
+		42CF4A6F196A204D00CBA20B /* test-neural-network */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-neural-network"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42CF4A70196A208D00CBA20B /* test_neurodevelopment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neurodevelopment.cpp; sourceTree = "<group>"; };
 		42CF4A71196A208D00CBA20B /* test_neuroevolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_neuroevolution.cpp; sourceTree = "<group>"; };
 		42CF4A75196A393D00CBA20B /* test_markov_network_ea.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test_markov_network_ea.cpp; sourceTree = "<group>"; };
@@ -769,6 +770,7 @@
 				4212C0CC19376016001D435A /* shared_ptr_vector.h */,
 				4212C0CD19376016001D435A /* torus.h */,
 				42C26B401945FA7900F0E6B9 /* torus2.h */,
+				4277BE49198A5C5A00B8F54B /* weighted_vector.h */,
 			);
 			path = data_structures;
 			sourceTree = "<group>";
@@ -794,7 +796,7 @@
 			children = (
 				423CBD9F157D0E0B0003A644 /* libea.a */,
 				423CBE57157D0FCC0003A644 /* test-ealib */,
-				428B712718490E8F00E3BB4E /* test-mkv */,
+				428B712718490E8F00E3BB4E /* test-markov-network */,
 				428B7204184F664D00E3BB4E /* test-ann */,
 				4256FA6C1892BB02004AB7F9 /* example-all-ones */,
 				4256FA841892BBB2004AB7F9 /* example-logic9 */,
@@ -805,7 +807,7 @@
 				4256FAC01892BBDC004AB7F9 /* example-qhfc */,
 				42DF0684194530D100C9A364 /* example-emscript */,
 				422B05C319641F6E00DA675B /* example-pole */,
-				42CF4A6F196A204D00CBA20B /* test-neuroevolution */,
+				42CF4A6F196A204D00CBA20B /* test-neural-network */,
 				425D107A197DF45F0082C0BA /* test-mkv */,
 			);
 			name = Products;
@@ -1443,7 +1445,7 @@
 			);
 			name = "test-markov-network";
 			productName = libfn_test;
-			productReference = 428B712718490E8F00E3BB4E /* test-mkv */;
+			productReference = 428B712718490E8F00E3BB4E /* test-markov-network */;
 			productType = "com.apple.product-type.tool";
 		};
 		428B71FA184F664D00E3BB4E /* test-ann */ = {
@@ -1477,7 +1479,7 @@
 			);
 			name = "test-neural-network";
 			productName = libfn_test;
-			productReference = 42CF4A6F196A204D00CBA20B /* test-neuroevolution */;
+			productReference = 42CF4A6F196A204D00CBA20B /* test-neural-network */;
 			productType = "com.apple.product-type.tool";
 		};
 		42DF0679194530D100C9A364 /* example-emscript */ = {
