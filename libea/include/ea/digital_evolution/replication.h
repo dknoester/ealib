@@ -41,7 +41,9 @@ namespace ealib {
         template <typename EA>
         std::pair<typename EA::location_iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
             std::pair<typename EA::neighborhood_iterator, typename EA::neighborhood_iterator> i = ea.env().neighborhood(*parent);
-            return std::make_pair(ea.rng().choice(i.first, i.second).make_location_iterator(), true);
+            typename EA::location_iterator l = ea.rng().choice(i.first, i.second).make_location_iterator();
+            assert((l->r[0] != parent->position().r[0]) || (l->r[1] != parent->position().r[1]));
+            return std::make_pair(l, true);
         }
     };
 

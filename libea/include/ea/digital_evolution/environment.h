@@ -39,15 +39,14 @@ namespace ealib {
     LIBEA_MD_DECL(SPATIAL_Y, "ea.environment.y", std::size_t);
 
     /*! The position_type is contained by individuals to describe their position
-     and orientation in the environment.  It can be thought of as an index into 
+     and heading in the environment.  It can be thought of as an index into
      the environment.
      
      An individual's position is described by two vectors: r, which gives the
      coordinates of the individual in the environment, and h, which gives the
-     orientation (heading) of the individual (i.e., it's "facing", in Avida
-     parlance).
+     heading of the individual (i.e., it's "facing", in Avida parlance).
      
-     A nice side effect of using vectors to describe position and orientation is
+     A nice side effect of using vectors to describe position and heading is
      that r+h gives the coordinates of the location that this position_type is
      facing.
      
@@ -107,8 +106,9 @@ namespace ealib {
             // round "up" (really, away from zero), preserve sign:
             h[0] = algorithm::copysign(static_cast<int>(fabs(x) + 0.5), x);
             h[1] = algorithm::copysign(static_cast<int>(fabs(y) + 0.5), y);
-            assert((h[0] >= -1) && (h[0]<=1));
-            assert((h[1] >= -1) && (h[1]<=1));
+            assert((fabs(h[0]) + fabs(h[1])) > 0);
+            assert(fabs(h[0]) <= 1);
+            assert(fabs(h[1]) <= 1);
         }
         
         //! Rotate by theta radians.
@@ -140,7 +140,7 @@ namespace ealib {
 		}
 
         int r[2]; //!< Individual's position vector (x,y).
-        int h[2]; //!< Individual's orientation vector (x,y).
+        int h[2]; //!< Individual's heading vector (x,y).
     };
     
     
@@ -257,7 +257,7 @@ namespace ealib {
             
             //! Iterator equality comparison.
             bool equal(const neighborhood_iterator& that) const {
-                return (_pos == that._pos) && (_count == that._count);
+                return (_count == that._count) && (_pos.r[0] == that._pos.r[0]) && (_pos.r[1] == that._pos.r[1]);
             }
             
             //! Dereference this iterator.
@@ -268,7 +268,10 @@ namespace ealib {
             //! Get an iterator to the location this neighborhood iterator points to.
             location_iterator make_location_iterator() {
                 location_type& l=dereference();
-                return _locs.data().begin() + _locs.size2()*l.r[1] + l.r[0];
+                location_iterator i = _locs.data().begin() + _locs.size2()*l.r[0] + l.r[1];
+                assert(l.r[0] == i->r[0]);
+                assert(l.r[1] == i->r[1]);
+                return i;
             }
 
             position_type _pos; //!< Position (origin location) of this iterator.
