@@ -194,7 +194,6 @@ namespace ealib {
             ("config,c", po::value<string>(), "ealib configuration file")
             ("checkpoint,l", po::value<string>(), "load a checkpoint file")
             ("override", "override checkpoint options")
-            ("reset", "reset all fitness values prior to continuing a checkpoint")
             ("analyze", po::value<string>(), "analyze the results of this EA")
             ("verbose", "output configuration options and per-update time and memory usage");
 
@@ -246,10 +245,6 @@ namespace ealib {
         //! Continue a previously-checkpointed EA.
 		void continue_checkpoint(ea_type& ea) {
             load(ea);
-            // conditionally reset the EA:
-            if(_vm.count("reset")) {
-                ea.reset();
-            }
             after_initialization(ea);
             gather_events(ea);
             if(_vm.count("verbose")) {

@@ -275,11 +275,7 @@ namespace ealib {
         void end_epoch() {
             _state->events.end_of_epoch(*this);
         }
-        
-        //! Resets the population (does nothing in digital evolution).
-        void reset() {
-        }
-        
+
         //! Resets this EA's RNG seed.
         void reset_rng(unsigned int s) {
             put<RNG_SEED>(s,*this); // save the seed!

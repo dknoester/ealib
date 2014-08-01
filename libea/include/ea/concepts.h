@@ -216,16 +216,9 @@ namespace ealib {
 		BOOST_CONCEPT_USAGE(EvolutionaryAlgorithmConcept) {
             BOOST_CONCEPT_ASSERT((PopulationConcept<population_type>));
             BOOST_CONCEPT_ASSERT((IndividualConcept<individual_type>));
-            x.reset();
             x.reset_rng(1);
             x.update();
 		}
-        
-        //! Resets the EA's RNG seed.
-        void reset(unsigned int);
-        
-        //! Advance this EA by one update.
-        void update();
         
 	private:
 		X x;

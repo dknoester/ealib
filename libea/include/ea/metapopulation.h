@@ -67,7 +67,7 @@ namespace ealib {
     , typename StopCondition=dont_stop
     , typename PopulationGenerator=fill_metapopulation
     , typename Lifecycle=default_lifecycle
-    , template <typename> class SubpopulationTraits=fitness_trait
+    , template <typename> class SubpopulationTraits=null_trait
     > class metapopulation {
     public:
         typedef multiPopulationS population_structure_tag;
@@ -267,12 +267,7 @@ namespace ealib {
             individual_ptr_type p(new individual_type(ind));
             return p;
         }
-        
-        //! Resets the population (does nothing in digital evolution).
-        void reset() {
-            nullify_fitness(begin(), end(), *this);
-        }
-        
+
         //! Resets this EA's RNG seed.
         void reset_rng(unsigned int s) {
             put<RNG_SEED>(s,*this); // save the seed!

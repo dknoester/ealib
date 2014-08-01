@@ -156,22 +156,20 @@ BOOST_AUTO_TEST_CASE(test_digevo_types) {
     typedef metapopulation<ea_type1> mea_type1;
     mea_type1 mea1;
     
-    //    //! Meta-population, with founders:
-    //    typedef meta_population<population_founder<ea_type1> > mea_type2;
-    //    mea_type2 mea2;
-    //
-    //    //! Meta-population, with founders and LOD tracking:
-    //    typedef meta_population<
-    //    population_founder<ea_type1>,
-    //    ancestors::default_representation,
-    //    mutation::operators::no_mutation,
-    //	constant,
-    //    abstract_configuration,
-    //	recombination::no_recombination,
-    //    generational_models::isolated_subpopulations,
-    //    attr::lod_attributes
-    //    > mea_type3;
-    //    cli<mea_type3> cli3;
+    //! Meta-population, with founders:
+    typedef metapopulation
+    < ea_type1
+    , quiet_nan
+    , mutation::operators::no_mutation
+    , recombination::no_recombination
+    , generational_models::isolated_subpopulations
+    , ancestors::default_subpopulation
+    , dont_stop
+    , fill_metapopulation
+    , default_lifecycle
+    , subpopulation_founder_trait
+    > mea_type2;
+    mea_type2 mea2;
 }
 
 

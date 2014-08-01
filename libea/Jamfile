@@ -6,7 +6,7 @@ if $(PREFIX) = "" {
     PREFIX = "/usr/local" ;
 }
 
-project : requirements <define>BOOST_PARAMETER_MAX_ARITY=7 <define>BOOST_GEOMETRY_EMPTY_INPUT_NO_THROW ;
+project : usage-requirements <define>BOOST_PARAMETER_MAX_ARITY=7 <define>BOOST_GEOMETRY_EMPTY_INPUT_NO_THROW ;
 
 alias libea : : : : <include>./include ;
 
@@ -21,7 +21,7 @@ lib libea_cmdline :
     /boost//program_options
     /site-config//z
     : : : 
-    # requirements:
+    # usage-requirements:
     <library>/boost//program_options
     <library>/boost//serialization
     <library>/boost//iostreams
