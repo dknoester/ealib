@@ -473,6 +473,7 @@
 		426F9F5D18E363CC00910682 /* information.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = information.h; sourceTree = "<group>"; };
 		426F9F5E18E363CC00910682 /* statistics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = statistics.h; sourceTree = "<group>"; };
 		4277BE49198A5C5A00B8F54B /* weighted_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = weighted_vector.h; sourceTree = "<group>"; };
+		4277BE5B198BD0B400B8F54B /* find_by_name.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = find_by_name.h; sourceTree = "<group>"; };
 		427F5E5918806FB3003CCA5C /* subpopulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = subpopulation.h; sourceTree = "<group>"; };
 		42801D54197024C900A633A0 /* xor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xor.h; sourceTree = "<group>"; };
 		42801D5519705ECC00A633A0 /* izhikevich.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = izhikevich.h; sourceTree = "<group>"; };
@@ -994,6 +995,7 @@
 			children = (
 				428B7213184F77AB00E3BB4E /* dominant.h */,
 				424C7E361965E72A00059899 /* archive.h */,
+				4277BE5B198BD0B400B8F54B /* find_by_name.h */,
 				428B7219184F77AB00E3BB4E /* fitness.h */,
 				428B7210184F77AB00E3BB4E /* epistasis.h */,
 				428B7211184F77AB00E3BB4E /* girvan_newman_clustering.h */,

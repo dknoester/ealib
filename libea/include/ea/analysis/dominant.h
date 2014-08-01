@@ -22,7 +22,6 @@
 #define _EA_ANALYSIS_DOMINANT_H_
 
 #include <algorithm>
-#include <boost/filesystem.hpp>
 
 #include <ea/analysis.h>
 #include <ea/comparators.h>
