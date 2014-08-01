@@ -45,8 +45,7 @@ namespace ealib {
      \warning LoDs are not currently serializable.
      */
     template <typename T>
-    struct lod_trait : public fitness_trait<T> {
-        typedef fitness_trait<T> parent;
+    struct lod_trait {
         typedef typename T::individual_ptr_type individual_ptr_type;
         typedef std::vector<individual_ptr_type> parent_vector_type;
         
@@ -80,11 +79,23 @@ namespace ealib {
         //! Serialize this trait (LoDs are not serializable).
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<parent>(*this));
         }
         
         parent_vector_type _lod_parents; //!< Vector of pointers to this individual's parents.
     };
+    
+
+    /*! Combined line of descent and fitness trait.
+     */
+    template <typename T>
+    struct lod_with_fitness_trait : lod_trait<T>, fitness_trait<T> {
+        //! Serialize this trait (LoDs are not serializable).
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::make_nvp("fitness_trait", boost::serialization::base_object<fitness_trait<T> >(*this));
+        }
+    };
+    
     
     
     /*! Contains line of descent information.

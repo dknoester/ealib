@@ -79,7 +79,7 @@ namespace ealib {
     , typename ReplacementStrategy=random_neighbor
     , typename StopCondition=dont_stop
     , typename PopulationGenerator=generate_single_ancestor
-    , template <typename> class IndividualTraits=default_devo_traits
+    , template <typename> class IndividualTraits=null_trait
     > class digital_evolution {
     public:
         typedef singlePopulationS population_structure_tag;

@@ -44,7 +44,7 @@ typedef evolutionary_algorithm
 , dont_stop
 , fill_population
 , default_lifecycle
-, lod_trait
+, lod_with_fitness_trait
 > ea_type;
 
 

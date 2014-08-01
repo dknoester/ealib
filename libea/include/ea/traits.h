@@ -25,13 +25,11 @@
 
 namespace ealib {
     
-    /*! Fitness trait for individuals in an evolutionary algorithm.
+    /*! Fitness trait.
      
-     Traits are defined as runtime information that is attached to individuals
-     in an EA.  For example, pointers to a phenotype or a line of descent.  
-     Traits may support serialization.
-     
-     The default traits type simply provides a field for fitness.
+     This trait type adds a fitness field to an individual.  As ealib::individual
+     already contains a fitness value, this is meant more for subpopulations, as
+     in a metapopulation EA.
      */
     template <typename T>
     struct fitness_trait {
@@ -46,7 +44,7 @@ namespace ealib {
         //! Serialize this trait.
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::make_nvp("fitness", _fitness);
+            ar & boost::serialization::make_nvp("fitness_trait", _fitness);
         }
 
         fitness_type _fitness; //!< Fitness for the individual that holds this trait.
@@ -54,7 +52,7 @@ namespace ealib {
 
     //! Empty traits type.
     template <typename T>
-    struct empty_traits {
+    struct null_trait {
         //! Serialize this trait.
         template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
