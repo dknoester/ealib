@@ -193,7 +193,6 @@ namespace ealib {
             ("help,h", "produce this help message")
             ("config,c", po::value<string>(), "ealib configuration file")
             ("checkpoint,l", po::value<string>(), "load a checkpoint file")
-            ("override", "override checkpoint options")
             ("analyze", po::value<string>(), "analyze the results of this EA")
             ("verbose", "output configuration options and per-update time and memory usage");
 
@@ -209,7 +208,7 @@ namespace ealib {
             
             if(_vm.count("help")) {
                 ostringstream msg;
-                msg << "Usage: " << argv[0] << " [-c config_file] [--verbose] [-l checkpoint] [--override] [--analyze] [--option_name value...]" << endl;
+                msg << "Usage: " << argv[0] << " [-c config_file] [--verbose] [-l checkpoint] [--analyze] [--option_name value...]" << endl;
                 msg << all_options << endl;
                 throw ealib::ealib_exception(msg.str());
             }
