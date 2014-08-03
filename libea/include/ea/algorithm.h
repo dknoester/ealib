@@ -33,7 +33,20 @@
 
 namespace ealib {
 	namespace algorithm {
-
+        
+        //! Returns true if a dominates b.
+        template <typename Sequence>
+        bool dominates(const Sequence& a, const Sequence& b) {
+            assert(a.size() == b.size());
+            bool any=false, all=true;
+            
+            for(std::size_t i=0; i<a.size(); ++i) {
+                any = any || (a[i] > b[i]);
+                all = all && (a[i] >= b[i]);
+            }
+            return any && all;
+        }
+        
         template <typename T>
         int signum(T x) {
             return (T(0) < x) - (x < T(0));

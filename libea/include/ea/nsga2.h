@@ -23,6 +23,7 @@
 #include <boost/serialization/nvp.hpp>
 #include <algorithm>
 
+#include <ea/algorithm.h>
 #include <ea/individual.h>
 #include <ea/metadata.h>
 #include <ea/comparators.h>
@@ -109,17 +110,7 @@ namespace ealib {
             //! Returns true if a dominates b.
             template <typename Individual, typename EA>
             bool dominates(Individual& a, Individual& b, EA& ea) {
-                const typename EA::fitness_type& fa=ealib::fitness(a,ea);
-                const typename EA::fitness_type& fb=ealib::fitness(b,ea);
-                assert(fa.size() == fb.size());
-                
-                bool any=false, all=true;
-                
-                for(std::size_t i=0; i<fa.size(); ++i) {
-                    any = any || (fa[i] > fb[i]);
-                    all = all && (fa[i] >= fb[i]);
-                }
-                return any && all;
+                return algorithm::dominates(ealib::fitness(a,ea), ealib::fitness(b,ea));
             }
             
             //! Calculates crowding distance among individuals in population I.

@@ -269,6 +269,11 @@ namespace ealib {
         
         //! Retrieve the value of objective i (const-qualified).
         const objective_type operator[](std::size_t i) const { return _f[i]; }
+        
+        //! Push a new fitness value.
+        void push_back(const T t) {
+            _f.push_back(t);
+        }
 
         //! String cast operator.
         operator std::string() { return algorithm::vcat(_f.begin(), _f.end()); }
