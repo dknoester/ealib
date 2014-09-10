@@ -229,6 +229,7 @@ namespace ealib {
         //! Analyze an EA instance.
 		void analyze(ea_type& ea) {
             load_if(ea);
+            ea.initialize(_md);
             after_initialization(ea);
             gather_tools();
             
@@ -244,6 +245,7 @@ namespace ealib {
         //! Continue a previously-checkpointed EA.
 		void continue_checkpoint(ea_type& ea) {
             load(ea);
+            ea.initialize(_md);
             after_initialization(ea);
             gather_events(ea);
             if(_vm.count("verbose")) {
