@@ -281,7 +281,6 @@ namespace ealib {
             
             template <typename EA>
             typename EA::population_entry_type operator()(EA& ea) {
-                typedef typename EA::genome_type genome_type;
                 typename EA::individual_type ind;
                 ind.name() = next<INDIVIDUAL_COUNT>(ea);
                 ind.repr() = _i.repr();                

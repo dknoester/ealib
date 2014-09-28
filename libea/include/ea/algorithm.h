@@ -258,9 +258,7 @@ namespace ealib {
         
         //! Normalize the range [f,l) to v, outputting results to o, and return an iterator to the end of the range.
         template <typename ForwardIterator, typename OutputIterator>
-        ForwardIterator normalize(ForwardIterator f, ForwardIterator l, OutputIterator o, double v) {
-            typedef typename OutputIterator::value_type value_type;
-            
+        ForwardIterator normalize(ForwardIterator f, ForwardIterator l, OutputIterator o, double v) {            
             double s=std::accumulate(f,l,0.0);
             double offset=0.0;
             if(s == 0.0) {
