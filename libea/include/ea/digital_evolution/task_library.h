@@ -197,7 +197,6 @@ namespace ealib {
          phenotype is annotated with the amount of resources consumed.
          */
         void check_tasks(individual_type& org, EA& ea) {
-            typedef typename EA::individual_type::io_type io_type;
             typedef typename EA::individual_type::iobuffer_type iobuffer_type;
             
             iobuffer_type& inputs = org.inputs();

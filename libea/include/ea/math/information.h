@@ -221,11 +221,6 @@ namespace ealib {
         //! Calculates the multivariate information of event sequences x, y, and z, I(x;y;z).
         template <typename Sequence>
         double multivariate_information(const Sequence& x, const Sequence& y, const Sequence& z) {
-            using namespace boost::numeric::ublas;
-            typedef typename Sequence::value_type value_type;
-            typedef matrix<value_type> Matrix;
-            typedef matrix_column<Matrix> Column;
-            
             return entropy(x) + entropy(y) + entropy(z)
             - joint_entropy(x,y) - joint_entropy(x,z) - joint_entropy(y,z)
             + joint_entropy(x,y,z);
@@ -307,7 +302,6 @@ namespace ealib {
         template <typename Matrix, typename Sequence>
         double joint_mutual_information(Matrix& x, Sequence& y) {
             using namespace boost::numeric::ublas;
-            typedef typename Sequence::value_type value_type;
             typedef matrix_column<Matrix> Column;
             typedef matrix_range<Matrix> Submatrix;
             
