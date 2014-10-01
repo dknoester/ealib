@@ -92,34 +92,36 @@ OS X
 
 These instructions install Boost to /usr/local.  Make sure that /usr/local/bin is on your path.  If you don't install Boost there, you'll have trouble with XCode.  Also, these instructions do not install all of Boost; some libraries are left out due to trouble with the latest clang.
 
-Download boost (current rls == 1.55):
-    wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz
-    tar -xzf boost_1_55_0.tar.gz
-    cd boost_1_55_0
+Download boost: (current rls == 1.56): 
+    tar -xzf boost_<<FILENAME>>.tar.gz
+    cd boost_<<DIR NAME>>
 
 Build bjam:
-    cd tools/build/v2
+    cd tools/build
     ./bootstrap.sh --with-toolset=clang
     sudo ./b2 install --toolset=clang
 
 Copy boost.jam:
-    sudo cp contrib/boost.jam /usr/local/share/boost-build/build/
+    sudo cp src/contrib/boost.jam /usr/local/share/boost-build/src/tools
 
-Site config (/usr/local/share/boost-build/site-config.jam):
+Put this in your ~/.bashrc:
+    export BOOST_BUILD_PATH=/usr/local/share/boost-build
+
+Build boost:
+    (back in boost_<<DIRNAME>>)
+    ./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer --without-icu
+    ./b2
+
+STOP.  Look at the "Performing configuration checks" output.  Make sure that zlib is "yes."  If not, go install it (e.g., from MacPorts: zlib 1.2.8_0).  Delete the bin.v2 directory and go back to the bootstrap step above.  Then...
+
+    sudo ./b2 install
+
+Site config:
+    Copy the below into /usr/local/share/boost-build/site-config.jam:
+
     using clang ;
     import boost ;
     boost.use-project ;
     project site-config ;
     lib z ;
 
-Put this in your ~/.bashrc:
-    export BOOST_BUILD_PATH=/usr/local/share/boost-build
-
-Build boost:
-    (back in boost_1_55_0/)
-    ./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer
-    ./b2
-
-STOP.  Look at the "Performing configuration checks" output.  Make sure that zlib is "yes."  If not, go install it (e.g., from MacPorts: zlib 1.2.8_0).  Delete the bin.v2 directory and go back to the bootstrap step above.  Then...
-
-    sudo ./b2 install
