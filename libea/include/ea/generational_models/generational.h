@@ -21,6 +21,7 @@
 #define _EA_GENERATIONAL_MODELS_GENERATIONAL_H_
 
 #include <ea/metadata.h>
+#include <ea/selection.h>
 #include <ea/selection/tournament.h>
 #include <ea/selection/none.h>
 
