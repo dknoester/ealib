@@ -191,6 +191,26 @@ namespace ealib {
                 mutation_type _mt;
             };
             
+            //! This site operator probabilistically applies a mutation type.
+            template <typename MutationType1, typename MutationType2>
+            struct mutation_pair {
+                typedef MutationType1 mutation1_type;
+                typedef MutationType2 mutation2_type;
+                
+                template <typename Iterator, typename EA>
+                void operator()(Iterator i, EA& ea) {
+                    if(ea.rng().bit()) {
+                        _mt1(i, ea);
+                    } else {
+                        _mt2(i, ea);
+                    }
+                }
+                
+                mutation1_type _mt1;
+                mutation2_type _mt2;
+            };
+            
+            
         } // site
         
         /*! This namespace contains various mutation operators.  The idea is

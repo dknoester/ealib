@@ -546,6 +546,7 @@
 		428B7288184F77AB00E3BB4E /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
 		4295BC0B19647FF800DD51F9 /* translation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translation.h; sourceTree = "<group>"; };
 		42A170E218E9C41D00C3A248 /* rank.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rank.h; sourceTree = "<group>"; };
+		42A24EF519E06F0500186A43 /* population_fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_fitness.h; sourceTree = "<group>"; };
 		42A694E919781102002A0AA3 /* python.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = python.h; sourceTree = "<group>"; };
 		42AFECF81955AEE100847019 /* roc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = roc.h; sourceTree = "<group>"; };
 		42B55B6D1641C2C500F240C5 /* test_digital_evolution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_digital_evolution.cpp; sourceTree = "<group>"; };
@@ -1015,6 +1016,7 @@
 				425BF6401950756E001D36A2 /* multiobjective_fitness.h */,
 				42DC57021940B392005044F1 /* metapopulation_fitness.h */,
 				428B7238184F77AB00E3BB4E /* population_entropy.h */,
+				42A24EF519E06F0500186A43 /* population_fitness.h */,
 				428B7239184F77AB00E3BB4E /* priority.h */,
 				428B723A184F77AB00E3BB4E /* reactions.h */,
 				428B723B184F77AB00E3BB4E /* resources.h */,
@@ -1531,13 +1533,13 @@
 				428B711C18490E8F00E3BB4E /* test-markov-network */,
 				425D1071197DF45F0082C0BA /* test-mkv */,
 				42CF4A66196A204D00CBA20B /* test-neural-network */,
-				422B05B819641F6E00DA675B /* example-pole */,
 				4256FA6B1892BB01004AB7F9 /* example-all-ones */,
 				4256FA791892BBB2004AB7F9 /* example-logic9 */,
 				4256FA851892BBBE004AB7F9 /* example-lod */,
 				4256FA911892BBC5004AB7F9 /* example-mkv */,
 				4256FA9D1892BBCD004AB7F9 /* example-mp */,
 				4256FAA91892BBD5004AB7F9 /* example-nsga2 */,
+				422B05B819641F6E00DA675B /* example-pole */,
 				4256FAB51892BBDC004AB7F9 /* example-qhfc */,
 				42DF0679194530D100C9A364 /* example-emscript */,
 			);

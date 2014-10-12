@@ -19,10 +19,11 @@
  */
 #include <ea/evolutionary_algorithm.h>
 #include <ea/generational_models/steady_state.h>
+#include <ea/selection/rank.h>
 #include <ea/genome_types/bitstring.h>
 #include <ea/fitness_functions/all_ones.h>
 #include <ea/cmdline_interface.h>
-#include <ea/datafiles/fitness.h>
+#include <ea/datafiles/population_fitness.h>
 using namespace ealib;
 
 /*! Evolutionary algorithm definition.  EAs are assembled by providing a series of
@@ -34,7 +35,7 @@ typedef evolutionary_algorithm
 , all_ones
 , mutation::operators::per_site<mutation::site::bit>
 , recombination::asexual
-, generational_models::steady_state< >
+, generational_models::steady_state<selection::proportionate< >, selection::rank< > >
 , ancestors::random_bitstring
 > ea_type;
 
@@ -62,7 +63,7 @@ public:
     
     //! Define events (e.g., datafiles) here.
     virtual void gather_events(EA& ea) {
-//        add_event<datafiles::fitness_dat>(ea);
+        add_event<datafiles::population_fitness_dat>(ea);
     };
 };
 

@@ -24,6 +24,7 @@
 
 #include <ea/fitness_function.h>
 #include <ea/metadata.h>
+#include <ea/datafile.h>
 
 namespace ealib {
 	
@@ -72,7 +73,7 @@ namespace ealib {
         /*! Evaluate the fitness of a single individual.
          */
         template <typename Individual, typename RNG, typename EA>
-		double operator()(Individual& ind, RNG& rng, EA& ea) {
+		double operator()(Individual& ind, RNG& rng, EA& ea, datafile* df=0) {
             const double twelve_degrees=12.0 * boost::math::constants::pi<double>() / 180.0;
             double x=0.0; // cart position, meters
             double x_dot=rng.p() - 0.5; // cart velocity
@@ -96,13 +97,18 @@ namespace ealib {
                     P.update(input, input+5);
                     update_cart(*P.begin_output(), x, x_dot, theta, theta_dot);
                     
+                    if(df) {
+                        df->write(i).write(x).write(theta).endl();
+                    }
+                    
                     if((x < -2.4) || (x > 2.4) // out of bounds
                        || (theta < -twelve_degrees) || (theta > twelve_degrees)) { // dropped the pole
-                        return static_cast<double>(i);
+                        return static_cast<double>(i) / static_cast<double>(maxsteps);
                     }
                 }
                 
-                return static_cast<double>(maxsteps);
+                return 1.0;
+                
             } catch(translation_failed& ex) {
                 return 0.0;
             }
