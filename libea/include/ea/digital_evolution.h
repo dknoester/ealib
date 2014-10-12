@@ -399,7 +399,7 @@ namespace ealib {
         
         //! Erases all individuals in this EA.
         void clear() {
-            _state->env.clear();
+            _state->env.clear(*this);
             _state->population.clear();
         }
         

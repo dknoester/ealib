@@ -24,6 +24,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/median.hpp>
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <numeric>
