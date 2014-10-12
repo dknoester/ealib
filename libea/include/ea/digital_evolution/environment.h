@@ -324,6 +324,7 @@ namespace ealib {
             }
         }
         
+        
         /*! Links the individuals in the existing population to their positions
          in the environment.
          
