@@ -44,7 +44,7 @@ namespace ealib {
     };
     
     
-    LIBEA_MD_DECL(STAGNANT_UPDATES, "ea.stop.stagnant_n", unsigned int);
+    LIBEA_MD_DECL(STOP_STAGNANT_UPDATES, "ea.stop.stagnant_n", unsigned int);
 
     /*! Function object that stops the EA when the max fitness has not improved
      for X updates.
@@ -69,7 +69,7 @@ namespace ealib {
                 _maxf = boost::accumulators::max(fit);
             }
             
-            if((ea.current_update() - _last_improvement) > get<STAGNANT_UPDATES>(ea)) {
+            if((ea.current_update() - _last_improvement) > get<STOP_STAGNANT_UPDATES>(ea)) {
                 return true;
             }
             return false;

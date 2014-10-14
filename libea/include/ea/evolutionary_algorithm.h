@@ -214,9 +214,10 @@ namespace ealib {
             } else {
                 _state->md += md;
             }
-			
-            initialize_fitness_function(_state->fitness_function, *this);
-            _state->lifecycle.after_initialization(*this);
+            if(!exists<RUN_SKIP_INITIALIZATION>(*this)) {
+                initialize_fitness_function(_state->fitness_function, *this);
+                _state->lifecycle.after_initialization(*this);
+            }
         }
 		
         //! Marks the beginning of a new epoch.

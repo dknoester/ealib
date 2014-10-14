@@ -27,6 +27,7 @@ namespace ealib {
     
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
+    LIBEA_MD_DECL(RUN_SKIP_INITIALIZATION, "ea.run.skip_initialization", int);
     
     /*! At the conceptual level, this class defines the states and actions of
      an EA's lifecycle.  Where appropriate, these states correspond to methods
@@ -107,10 +108,17 @@ namespace ealib {
         //! Advance the EA by all configured epochs, and checkpoint after each.
         template <typename EA>
         void advance_all(EA& ea) {
-			for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
-                advance_epoch(ea);
-                checkpoint::save(ea);
-			}
+            if(exists<RUN_EPOCHS>(ea)) {
+                for(int i=0; i<get<RUN_EPOCHS>(ea); ++i) {
+                    advance_epoch(ea);
+                    checkpoint::save(ea);
+                }
+            } else {
+                while(!ea.stop()) {
+                    advance_epoch(ea);
+                    checkpoint::save(ea);                    
+                }
+            }
 		}
     };
     
