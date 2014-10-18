@@ -117,8 +117,8 @@ struct task_switch_tracking : end_of_update_event<EA> {
             
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                 ++sub_pop_size;
-                for(typename EA::subpopulation_type::iterator j=i->population().begin(); j!=i->population().end(); ++j){
-                    typename EA::subpopulation_type::individual_type& ind=**j;
+                for(typename EA::subpopulation_type::iterator j=i->begin(); j!=i->end(); ++j){
+                    typename EA::subpopulation_type::individual_type& ind=*j;
                     if (ind.alive()) {
                         ts += get<NUM_SWITCHES>(ind, 0);
                         ++org;
