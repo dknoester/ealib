@@ -114,10 +114,10 @@ namespace ealib {
                     checkpoint::save(ea);
                 }
             } else {
-                while(!ea.stop()) {
+                do {
                     advance_epoch(ea);
                     checkpoint::save(ea);                    
-                }
+                } while(!ea.stop());
             }
 		}
     };

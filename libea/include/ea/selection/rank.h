@@ -22,6 +22,8 @@
 
 #include <algorithm>
 #include <iterator>
+
+#include <ea/access.h>
 #include <ea/comparators.h>
 
 namespace ealib {

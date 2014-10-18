@@ -30,11 +30,11 @@
 #include <ea/datafile.h>
 #include <ea/metadata.h>
 #include <ea/individual.h>
-#include <ea/selection/elitism.h>
-#include <ea/selection/random.h>
+#include <ea/selection/rank.h>
 #include <ea/generational_models/crowding.h>
 #include <ea/metapopulation.h>
 #include <ea/evolutionary_algorithm.h>
+#include <ea/stopping.h>
 
 
 namespace ealib {
@@ -67,7 +67,8 @@ namespace ealib {
     LIBEA_MD_DECL(QHFC_PERCENT_REFILL, "ea.qhfc.percent_refill", double);
     LIBEA_MD_DECL(QHFC_BREED_TOP_FREQ, "ea.qhfc.breed_top_freq", double);
     LIBEA_MD_DECL(QHFC_NO_PROGRESS_GEN, "ea.qhfc.no_progess_gen", double);
-    
+    LIBEA_MD_DECL(QHFC_STOP_STAGNANT_GEN, "ea.qhfc.stop.stagnant_generations", unsigned int);
+
     // run time only:
     LIBEA_MD_DECL(QHFC_ADMISSION_LEVEL, "ea.qhfc.admission_level", double);
     LIBEA_MD_DECL(QHFC_LAST_PROGRESS_GEN, "ea.qhfc.last_progess_gen", double);
@@ -218,7 +219,7 @@ namespace ealib {
 
                 // export the exports to i+1 subpopulation
                 typename EA::subpopulation_type::population_type next;
-                selection::elitism<selection::random< > > sel(t->size()-exports.size(), t->population(), t);
+                selection::rank< > sel(t->size()-exports.size(), t->population(), t);
                 sel(t->population(), next, t->size()-exports.size(), *t);
                 next.insert(next.end(), exports.begin(), exports.end());
                 std::swap(t->population(), next);
@@ -253,7 +254,7 @@ namespace ealib {
                                                                                     static_cast<std::size_t>(get<QHFC_PERCENT_REFILL>(ea)*top.size()),
                                                                                     ea);
                         typename EA::subpopulation_type::population_type next;
-                        selection::elitism<selection::random< > > sel(top.size()-imports.size(), top.population(), top);
+                        selection::rank< > sel(top.size()-imports.size(), top.population(), top);
                         sel(top.population(), next, top.size()-imports.size(), top);
                         next.insert(next.end(), imports.begin(), imports.end());
                         std::swap(top.population(), next);
@@ -313,6 +314,7 @@ namespace ealib {
     , typename AncestorGenerator
     , typename StopCondition=dont_stop
     , typename Lifecycle=default_lifecycle
+    , template <typename> class IndividualTraits=fitness_trait
     > class qhfc
     : public metapopulation
     < evolutionary_algorithm // begin subpopulation
@@ -325,6 +327,7 @@ namespace ealib {
     , dont_stop
     , fill_population
     , Lifecycle
+    , IndividualTraits
     > // end subpopulation
     , quiet_nan
     , mutation::operators::no_mutation
@@ -424,6 +427,24 @@ namespace ealib {
         };
         
     } // datafiles
+    
+    
+
+    /*! Stops the EA after the top population is stagnant for a configurable number
+     of updates.
+     */
+    struct qhfc_stagnant {
+        qhfc_stagnant() {
+        }
+        
+        template <typename EA>
+        bool operator()(EA& ea) {
+            typename EA::subpopulation_type& top=*ea.rbegin();
+            return (top.current_update() - get<QHFC_LAST_PROGRESS_GEN>(ea)) > get<QHFC_STOP_STAGNANT_GEN>(ea);
+        }
+    };
+    
+
 } // ealib
 
 #endif

@@ -69,7 +69,7 @@ namespace ealib {
                 _maxf = boost::accumulators::max(fit);
             }
             
-            if((ea.current_update() - _last_improvement) > get<STOP_STAGNANT_UPDATES>(ea)) {
+            if((ea.current_update() - _last_improvement) >= get<STOP_STAGNANT_UPDATES>(ea)) {
                 return true;
             }
             return false;
