@@ -93,9 +93,9 @@ namespace ealib {
 				bio::filtering_stream<bio::input> f;
 				f.push(bio::gzip_decompressor());
 				f.push(ifs);
-				load(f,ea);
+				load(f, ea, md);
 			} else {
-				load(ifs,ea);
+				load(ifs, ea, md);
 			}
 			std::cerr << "done." << std::endl;
 		}
