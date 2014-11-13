@@ -195,6 +195,9 @@ namespace ealib {
 
         //! Returns true if this fitness is null, false otherwise.
         bool is_null() const { return std::isnan(_f); }
+		
+		//! Returns true if this fitness is +infinity, false otherwise.
+		bool is_inf() const { return _f == std::numeric_limits<double>::infinity(); }
 
         //! Return the minimum fitness value.
         T minimum() const { return -std::numeric_limits<value_type>::max(); }
@@ -211,18 +214,24 @@ namespace ealib {
         template<class Archive>
 		void save(Archive & ar, const unsigned int version) const {
             int null_fitness=is_null();
+			int inf_fitness=is_inf();
 			ar & BOOST_SERIALIZATION_NVP(null_fitness);
-			if(!is_null()) {
+			ar & BOOST_SERIALIZATION_NVP(inf_fitness);
+			if(!is_null() && !is_inf()) {
 				ar & boost::serialization::make_nvp("value_type", _f);
 			}
 		}
 		
 		template<class Archive>
 		void load(Archive & ar, const unsigned int version) {
-            int null_fitness=1;
+			int null_fitness=1;
+			int inf_fitness=1;
 			ar & BOOST_SERIALIZATION_NVP(null_fitness);
+			ar & BOOST_SERIALIZATION_NVP(inf_fitness);
 			if(null_fitness) {
                 nullify();
+			} else if(inf_fitness) {
+				_f = std::numeric_limits<double>::infinity();
 			} else {
 				ar & boost::serialization::make_nvp("value_type", _f);
 			}

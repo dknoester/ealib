@@ -126,7 +126,7 @@ namespace ealib {
                 const_cast<metadata*>(&that)->flush();
                 _values.clear();
                 for(md_string_type::const_iterator i=that._strings.begin(); i!=that._strings.end(); ++i) {
-                    _strings[i->first] = i->second;
+					_strings[i->first] = i->second;
                 }
             }
             return *this;
