@@ -46,7 +46,6 @@ public:
         add_option<REPRESENTATION_SIZE>(this);
         add_option<METAPOPULATION_SIZE>(this);
         add_option<MUTATION_PER_SITE_P>(this);
-        add_option<ELITISM_N>(this);
         add_option<QHFC_BREED_TOP_FREQ>(this);
         add_option<QHFC_DETECT_EXPORT_NUM>(this);
         add_option<QHFC_PERCENT_REFILL>(this);
