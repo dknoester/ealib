@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(test_circular_vector) {
 		0, 0, 0, 10
 	};
 
-    typedef cvector<int> cv_type;
+    typedef circular_vector<int> cv_type;
     cv_type cv(data, data+12);
     BOOST_CHECK(cv.size()==12u);
     BOOST_CHECK(*cv.rbegin()==32767);

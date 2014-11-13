@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_logic_gate) {
 		0, 0, 0, 0,
 		0, 0, 0, 0
 	};
-    cvector<int> genome(data, data+32);
+    circular_vector<int> genome(data, data+32);
 
     markov_network< > N(2,2,1);
     translators::markov_network_translator translate(1,8,1,8);
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_gate) {
 		0, 0, 0, 0,
 		0, 0, 0, 0
 	};
-    cvector<int> genome(data, data+32);
+    circular_vector<int> genome(data, data+32);
     
     markov_network< > N(2,2,1);
     translators::markov_network_translator translate(1,8,1,8);
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(test_markov_network) {
         3, 0,
         4, 0
     };
-    cvector<int> genome(data, data+76);
+    circular_vector<int> genome(data, data+76);
 
     markov_network< > N(2,2,2,42);
     translators::markov_network_translator translate(1,8,1,8);

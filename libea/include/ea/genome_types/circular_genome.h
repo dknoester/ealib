@@ -32,13 +32,13 @@ namespace ealib {
 	/*! Canonical numeric representation for genetic algorithms.
 	 */
 	template <typename T>
-	struct circular_genome : public cvector<T> {
+	struct circular_genome : public circular_vector<T> {
 		//! Type of this representation.
 		typedef circular_genome<T> representation_type;
 		//! Type of codon in this genome.
 		typedef T codon_type;
 		//! Base type of this representation.
-		typedef cvector<T> base_type;
+		typedef circular_vector<T> base_type;
 		
 		//! Constructor.
 		circular_genome() : base_type() {

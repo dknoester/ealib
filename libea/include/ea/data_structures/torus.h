@@ -71,40 +71,40 @@ namespace ealib {
             }
 		}
 
-        //! Returns an iterator to the beginning of the cvector.
+        //! Returns an iterator to the beginning of the circular_vector.
         iterator begin() { return iterator(0, _c.begin(), _c.end(), _c.begin()); }
         
-        //! Returns an iterator to the end of the cvector.
+        //! Returns an iterator to the end of the circular_vector.
         iterator end() {
             return iterator(1, _c.begin(), _c.end(), _c.begin());
         }
         
-        //! Returns an iterator to the beginning of the cvector (const-qualified).
+        //! Returns an iterator to the beginning of the circular_vector (const-qualified).
         const_iterator begin() const {
             return const_iterator(0, _c.begin(), _c.end(), _c.begin());
         }
         
-        //! Returns an iterator to the end of the cvector (const-qualified).
+        //! Returns an iterator to the end of the circular_vector (const-qualified).
         const_iterator end() const {
             return const_iterator(1, _c.begin(), _c.end(), _c.begin());
         }
         
-        //! Returns a reverse iterator to the beginning (end) of the cvector.
+        //! Returns a reverse iterator to the beginning (end) of the circular_vector.
         reverse_iterator rbegin() {
             return reverse_iterator(0, _c.rbegin(), _c.rend(), _c.rbegin());
         }
         
-        //! Returns a reverse iterator to the end (beginning) of the cvector.
+        //! Returns a reverse iterator to the end (beginning) of the circular_vector.
         reverse_iterator rend() {
             return reverse_iterator(1, _c.rbegin(), _c.ernd(), _c.rbegin());
         }
         
-        //! Returns a reverse iterator to the beginning (end) of the cvector (const-qualified).
+        //! Returns a reverse iterator to the beginning (end) of the circular_vector (const-qualified).
         const_reverse_iterator rbegin() const {
             return const_reverse_iterator(0, _c.rbegin(), _c.rend(), _c.rbegin());
         }
         
-        //! Returns a reverse iterator to the end (beginning) of the cvector (const-qualified).
+        //! Returns a reverse iterator to the end (beginning) of the circular_vector (const-qualified).
         const_reverse_iterator rend() const {
             return const_reverse_iterator(1, _c.rbegin(), _c.ernd(), _c.rbegin());
         }

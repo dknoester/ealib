@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_CVECTOR_H_
-#define _EA_CVECTOR_H_
+#ifndef _EA_CIRCULAR_VECTOR_H_
+#define _EA_CIRCULAR_VECTOR_H_
 
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <vector>
@@ -46,12 +46,17 @@ namespace ealib {
         circular_iterator(unsigned int lc, ForwardIterator f, ForwardIterator l, ForwardIterator c) : _loop_count(lc), _begin(f), _end(l), _cur(c) {
         }
         
-        //! Constructs a circular_iterator from another circular_iterator with a different current position.
-        circular_iterator(const circular_iterator& that, ForwardIterator c) {
+        //! Copy constructor.
+        circular_iterator(const circular_iterator& that) {
             *this = that;
-            _cur = c;
         }
-        
+
+		//! Constructs a circular_iterator from another circular_iterator with a different current position.
+		circular_iterator(const circular_iterator& that, ForwardIterator c) {
+			*this = that;
+			_cur = c;
+		}
+		
         //! Assignment operator.
         circular_iterator& operator=(const circular_iterator& that) {
             if(this != &that) {
@@ -62,9 +67,22 @@ namespace ealib {
             }
             return *this;
         }
-        
+		
+		//! Increment and assign (advance).
+		circular_iterator& operator+=(typename circular_iterator::iterator_adaptor_::difference_type n) {
+			std::advance(*this, n);
+			return *this;
+		}
+		
+		//! Increment (advance).
+		circular_iterator operator+(typename circular_iterator::iterator_adaptor_::difference_type n) {
+			circular_iterator i(*this);
+			std::advance(i, n);
+			return i;
+		}
+		
         ForwardIterator current() { return _cur; }
-
+		
     protected:
         unsigned int _loop_count; //!< Loop counter.
         ForwardIterator _begin, _end, _cur; //!< Range and current iterators.
@@ -120,15 +138,15 @@ namespace ealib {
     
     /*! Circular vector.
      
-     The key difference between cvector and std::vector is that advancing an iterator
+     The key difference between circular_vector and std::vector is that advancing an iterator
      never "falls off" the end of the vector.  Once an iterator is advanced to end(),
      it loops to begin().  Checking for i!=end() is still valid via a loop counter
      in the iterator.
      */
 	template <typename T>
-	class cvector : public std::vector<T> {
+	class circular_vector : public std::vector<T> {
 	public:
-        typedef cvector<T> this_type;
+        typedef circular_vector<T> this_type;
         typedef std::vector<T> base_type;
         typedef typename base_type::value_type value_type;
         typedef typename base_type::pointer pointer;        
@@ -136,34 +154,34 @@ namespace ealib {
 		typedef typename base_type::const_reference const_reference;
         typedef typename base_type::size_type size_type;
         typedef typename base_type::difference_type difference_type;
-        typedef circular_iterator<cvector,typename base_type::iterator> iterator;
-        typedef circular_iterator<cvector,typename base_type::const_iterator> const_iterator;
-        typedef circular_iterator<cvector,typename base_type::reverse_iterator> reverse_iterator;
-        typedef circular_iterator<cvector,typename base_type::const_reverse_iterator> const_reverse_iterator;
+        typedef circular_iterator<circular_vector,typename base_type::iterator> iterator;
+        typedef circular_iterator<circular_vector,typename base_type::const_iterator> const_iterator;
+        typedef circular_iterator<circular_vector,typename base_type::reverse_iterator> reverse_iterator;
+        typedef circular_iterator<circular_vector,typename base_type::const_reverse_iterator> const_reverse_iterator;
 
-		//! Constructs an empty cvector.
-		cvector() : base_type() {
+		//! Constructs an empty circular_vector.
+		circular_vector() : base_type() {
 		}
 
-        //! Constructs a cvector with n elements.
-        cvector(size_type n) : base_type(n) {
+        //! Constructs a circular_vector with n elements.
+        circular_vector(size_type n) : base_type(n) {
         }
 
-        //! Constructs a cvector with n copies of t.
-        cvector(size_type n, const T& t) : base_type(n,t) {
+        //! Constructs a circular_vector with n copies of t.
+        circular_vector(size_type n, const T& t) : base_type(n,t) {
         }
 
-        //! Constructs a cvector with a copy of the range [f,l).
+        //! Constructs a circular_vector with a copy of the range [f,l).
 		template <typename ForwardIterator>
-		cvector(ForwardIterator f, ForwardIterator l) : base_type(f,l) {
+		circular_vector(ForwardIterator f, ForwardIterator l) : base_type(f,l) {
 		}
         
         //! Copy constructor.
-        cvector(const cvector& that) : base_type(that) {
+        circular_vector(const circular_vector& that) : base_type(that) {
         }
         
         //! Destructor.
-        virtual ~cvector() {
+        virtual ~circular_vector() {
         }
 
         //! Assignment operator.
@@ -204,42 +222,42 @@ namespace ealib {
             }
 		}
 
-        //! Returns an iterator to the beginning of the cvector.
+        //! Returns an iterator to the beginning of the circular_vector.
         iterator begin() {
             return iterator(0, base_type::begin(), base_type::end(), base_type::begin());
         }
 
-        //! Returns an iterator to the end of the cvector.
+        //! Returns an iterator to the end of the circular_vector.
         iterator end() {
             return iterator(1, base_type::begin(), base_type::end(), base_type::begin());
         }
         
-        //! Returns an iterator to the beginning of the cvector (const-qualified).
+        //! Returns an iterator to the beginning of the circular_vector (const-qualified).
         const_iterator begin() const {
             return const_iterator(0, base_type::begin(), base_type::end(), base_type::begin());
         }
         
-        //! Returns an iterator to the end of the cvector (const-qualified).
+        //! Returns an iterator to the end of the circular_vector (const-qualified).
         const_iterator end() const {
             return const_iterator(1, base_type::begin(), base_type::end(), base_type::begin());
         }
 
-        //! Returns a reverse iterator to the beginning (end) of the cvector.
+        //! Returns a reverse iterator to the beginning (end) of the circular_vector.
         reverse_iterator rbegin() {
             return reverse_iterator(0, base_type::rbegin(), base_type::rend(), base_type::rbegin());
         }
         
-        //! Returns a reverse iterator to the end (beginning) of the cvector.
+        //! Returns a reverse iterator to the end (beginning) of the circular_vector.
         reverse_iterator rend() {
             return reverse_iterator(1, base_type::rbegin(), base_type::ernd(), base_type::rbegin());
         }
         
-        //! Returns a reverse iterator to the beginning (end) of the cvector (const-qualified).
+        //! Returns a reverse iterator to the beginning (end) of the circular_vector (const-qualified).
         const_reverse_iterator rbegin() const {
             return const_reverse_iterator(0, base_type::rbegin(), base_type::rend(), base_type::rbegin());
         }
         
-        //! Returns a reverse iterator to the end (beginning) of the cvector (const-qualified).
+        //! Returns a reverse iterator to the end (beginning) of the circular_vector (const-qualified).
         const_reverse_iterator rend() const {
             return const_reverse_iterator(1, base_type::rbegin(), base_type::rend(), base_type::rbegin());
         }
@@ -274,27 +292,27 @@ namespace ealib {
         }
 	};
     
-    template <typename CVector>
-    struct cvector_offset {
-        typedef CVector cvector_type;
-        typedef typename CVector::value_type value_type;
+    template <typename circular_vector>
+    struct circular_vector_offset {
+        typedef circular_vector circular_vector_type;
+        typedef typename circular_vector::value_type value_type;
         
-        cvector_offset(cvector_type* cv=0, int offset=0) : _cv(cv), _offset(offset) {
+        circular_vector_offset(circular_vector_type* cv=0, int offset=0) : _cv(cv), _offset(offset) {
         }
         
         inline void reset(int offset) {
             _offset = offset;
         }
         
-        inline void reset(cvector_type* cv) {
+        inline void reset(circular_vector_type* cv) {
             _cv = cv;
         }
         
-        inline typename cvector_type::reference operator[](int i) {
+        inline typename circular_vector_type::reference operator[](int i) {
             return (*_cv)[i+_offset];
         }
         
-        cvector_type* _cv; //!< Underlying cvector.
+        circular_vector_type* _cv; //!< Underlying circular_vector.
         int _offset; //!< Offset to apply to all indexing operations.
     };
 	
