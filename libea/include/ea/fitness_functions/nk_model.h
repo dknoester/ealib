@@ -58,6 +58,7 @@ namespace ealib {
      */
     template <typename MeanTag=geometricS>
     struct nk_model : public fitness_function<unary_fitness<double>, constantS, deterministicS> {
+		typedef fitness_function<unary_fitness<double>, constantS, deterministicS> parent_type;
         typedef std::vector<double> k_table;
         typedef std::vector<k_table> nk_table;
         nk_table nkt;
@@ -95,6 +96,8 @@ namespace ealib {
                     kt[j] = rng.uniform_real_nz(0.0,1.0);
                 }
             }
+			
+			parent_type::initialize(ea);
         }
         
         //! Calculate the fitness of the given representation.

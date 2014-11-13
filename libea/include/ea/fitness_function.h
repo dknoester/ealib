@@ -320,21 +320,34 @@ namespace ealib {
         typedef typename fitness_type::direction_tag direction_tag;
         typedef ConstantTag constant_tag;
         typedef StabilityTag stability_tag;
-        
+		
+		//! Constructor.
+		fitness_function() : _initialized(false) {
+		}
+		
+		//! Returns true if this fitness function is initialized.
+		bool is_initialized() const {
+			return _initialized;
+		}
+		
         //! Initialize this (deterministic) fitness function.
         template <typename EA>
         void initialize(EA& ea) {
+			_initialized = true;
         }
         
         //! Initialize this (stochastic) fitness function.
         template <typename RNG, typename EA>
         void initialize(RNG& rng, EA& ea) {
-        }
+			_initialized = true;
+		}
         
         //! Number of objectives associated with this fitness function.
         std::size_t size() const {
             return 1;
         }
+		
+		bool _initialized; //!< True if this fitness function is initialized, false otherwise.
     };
     
     
@@ -352,19 +365,27 @@ namespace ealib {
             typename EA::rng_type rng(get<FF_INITIAL_RNG_SEED>(ea)+1); // +1 to avoid clock
             ff.initialize(rng, ea);
         }
-    } // detail
-    
-    //! Initialize the fitness function; called prior to any fitness evaluation, but after meta-data.
-    template <typename FitnessFunction, typename EA>
-    void initialize_fitness_function(FitnessFunction& ff, EA& ea) {
-        detail::initialize_fitness_function(ff, typename FitnessFunction::stability_tag(), ea);
-    }
+		
+		//! Unconditionally reinitialize the fitness function.
+		template <typename EA>
+		void reinitialize_fitness_function(EA& ea) {
+			typename EA::fitness_function_type& ff = ea.fitness_function();
+			initialize_fitness_function(ff, typename EA::fitness_function_type::stability_tag(), ea);
+		}
 
-    namespace detail {
-        
+		//! Lazy initialization of the fitness function.
+		template <typename EA>
+		void initialize_fitness_function(EA& ea) {
+			typename EA::fitness_function_type& ff = ea.fitness_function();
+			if(!ff.is_initialized()) {
+				initialize_fitness_function(ff, typename EA::fitness_function_type::stability_tag(), ea);
+			}
+		}
+
         //! Deterministic: evaluate fitness without an embedded RNG.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, deterministicS, EA& ea) {
+			initialize_fitness_function(ea);
             i.traits().fitness() = ea.fitness_function()(i, ea);
             ea.events().fitness_evaluated(i,ea);
         }
@@ -372,7 +393,8 @@ namespace ealib {
         //! Stochastic: provide an RNG for use during fitness evaluation.
         template <typename EA>
         void calculate_fitness(typename EA::individual_type& i, stochasticS, EA& ea) {
-            int seed = ea.rng().seed();
+			initialize_fitness_function(ea);
+			int seed = ea.rng().seed();
             typename EA::rng_type rng(seed);
             put<FF_RNG_SEED>(seed, i); // save the seed that was used to evaluate this individual
             i.traits().fitness() = ea.fitness_function()(i, rng, ea);
@@ -459,11 +481,13 @@ namespace ealib {
         virtual ~reinitialize_fitness_function() { }
         
         virtual void operator()(EA& ea) {
-            initialize_fitness_function(ea.fitness_function(), ea);
+			detail::reinitialize_fitness_function(ea);
         }
     };
 
-    //! Periodically reinitializes the fitness function.
+	/*! Periodically reinitializes the fitness function and nullifies fitnesses
+	 of all individuals in the population.
+	 */
     template <typename EA>
     struct nullifying_reinitialize_fitness_function : periodic_event<FF_INITIALIZATION_PERIOD, EA> {
         nullifying_reinitialize_fitness_function(EA& ea) : periodic_event<FF_INITIALIZATION_PERIOD, EA>(ea) {
@@ -472,8 +496,8 @@ namespace ealib {
         virtual ~nullifying_reinitialize_fitness_function() { }
         
         virtual void operator()(EA& ea) {
-            initialize_fitness_function(ea.fitness_function(), ea);
-            nullify_fitness(ea.begin(), ea.end(), ea);
+			detail::reinitialize_fitness_function(ea);
+			nullify_fitness(ea.begin(), ea.end(), ea);
         }
     };
 

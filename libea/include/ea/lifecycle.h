@@ -27,7 +27,6 @@ namespace ealib {
     
 	LIBEA_MD_DECL(RUN_UPDATES, "ea.run.updates", int);
 	LIBEA_MD_DECL(RUN_EPOCHS, "ea.run.epochs", int);
-    LIBEA_MD_DECL(RUN_SKIP_INITIALIZATION, "ea.run.skip_initialization", int);
     
     /*! At the conceptual level, this class defines the states and actions of
      an EA's lifecycle.  Where appropriate, these states correspond to methods

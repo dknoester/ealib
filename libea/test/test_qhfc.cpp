@@ -42,7 +42,6 @@ BOOST_AUTO_TEST_CASE(test_qhfc) {
     put<QHFC_PERCENT_REFILL>(0.25,M);
     put<QHFC_CATCHUP_GEN>(20,M);
     put<QHFC_NO_PROGRESS_GEN>(2,M);
-    put<CHECKPOINT_PREFIX>("checkpoint",M);
     put<CHECKPOINT_OFF>(0,M);
     
     ea_type ea(M);

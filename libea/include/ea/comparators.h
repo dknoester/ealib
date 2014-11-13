@@ -20,6 +20,8 @@
 #ifndef _EA_COMPARATORS_H_
 #define _EA_COMPARATORS_H_
 
+#include <functional>
+
 #include <ea/traits.h>
 #include <ea/fitness_function.h>
 
@@ -95,6 +97,29 @@ namespace ealib {
             EA& _ea; //!< Reference to the EA in which the individuals to be compared reside.
             AttributeAccessor _acc; //!< Accessor for the compared attribute.
         };
+		
+		/*! Comparator for indirect values.
+		 
+		 This comparator enables sorting of an index vector based on corresponding
+		 value.  For example, given a vector X of length n and index vector Y also of
+		 length n, this comparator enables the sorting of Y based on the values
+		 of the y_i elements in X.
+		 */
+		template
+		< typename ValueSequence
+		, typename IndexSequence
+		, template <typename> class Comparator=std::less
+		> struct indirect {
+			indirect(ValueSequence& X) : _X(X) { }
+			
+			bool operator()(const typename IndexSequence::value_type& a, const typename IndexSequence::value_type& b) {
+				return _comp(_X[a], _X[b]);
+			}
+			
+			ValueSequence _X;
+			Comparator<typename ValueSequence::value_type> _comp;
+		};
+		
     } // comparators
 } // ea
 

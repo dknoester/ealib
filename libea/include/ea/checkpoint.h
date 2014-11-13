@@ -25,9 +25,8 @@
 namespace ealib {
 	
 	LIBEA_MD_DECL(CHECKPOINT_OFF, "ea.run.checkpoint_off", int);
-	LIBEA_MD_DECL(CHECKPOINT_PREFIX, "ea.run.checkpoint_prefix", std::string);
-	LIBEA_MD_DECL(CHECKPOINT_FIXED_NAME, "ea.run.checkpoint_fixed_name", std::string);
-    
+	LIBEA_MD_DECL(CHECKPOINT_NAME, "ea.run.checkpoint_name", std::string);
+	
 } // ealib
 
 /* The mess below is to support a version of ealib that doesn't link against
@@ -122,11 +121,11 @@ namespace ealib {
 		void save(EA& ea) {
             if(!get<CHECKPOINT_OFF>(ea,0)) {
                 std::string fname;
-                if(exists<CHECKPOINT_FIXED_NAME>(ea)) {
-                    fname = get<CHECKPOINT_FIXED_NAME>(ea);
+                if(exists<CHECKPOINT_NAME>(ea)) {
+                    fname = get<CHECKPOINT_NAME>(ea);
                 } else {
                     std::ostringstream filename;
-                    filename << get<CHECKPOINT_PREFIX>(ea) << "-" << ea.current_update() << ".xml";
+                    filename << "checkpoint-" << ea.current_update() << ".xml";
                     fname = filename.str();
                 }
                 save(fname, ea);

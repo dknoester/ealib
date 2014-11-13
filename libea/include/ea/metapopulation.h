@@ -223,7 +223,6 @@ namespace ealib {
                 i->initialize(md);
             }
             
-            initialize_fitness_function(_state->fitness_function, *this);
             _state->lifecycle.after_initialization(*this);
         }
 

@@ -64,7 +64,6 @@ public:
         add_option<TOURNAMENT_SELECTION_K>(this);
         add_option<RUN_UPDATES>(this);
         add_option<RUN_EPOCHS>(this);
-        add_option<CHECKPOINT_PREFIX>(this);
         add_option<RNG_SEED>(this);
         add_option<RECORDING_PERIOD>(this);
 

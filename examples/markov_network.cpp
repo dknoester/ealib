@@ -28,13 +28,7 @@ using namespace mkv;
 
 /*! Sample fitness function for Markov networks.
  */
-struct example_fitness : fitness_function<unary_fitness<double>, constantS, stochasticS> {
-    
-    /*! Initialize this fitness function -- load data, etc. */
-    template <typename RNG, typename EA>
-    void initialize(RNG& rng, EA& ea) {
-    }
-    
+struct example_fitness : fitness_function<unary_fitness<double>, constantS, stochasticS> {    
 	template <typename Individual, typename RNG, typename EA>
 	double operator()(Individual& ind, RNG& rng, EA& ea) {
         // get the phenotype (markov network):
@@ -84,7 +78,6 @@ public:
         add_option<MORAN_REPLACEMENT_RATE_P>(this);
         add_option<RUN_UPDATES>(this);
         add_option<RUN_EPOCHS>(this);
-        add_option<CHECKPOINT_PREFIX>(this);
         add_option<RNG_SEED>(this);
         add_option<RECORDING_PERIOD>(this);
     }
