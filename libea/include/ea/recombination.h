@@ -31,7 +31,7 @@ namespace ealib {
      */
     template <typename EA>
     void inherits_from(typename EA::individual_type& parent, typename EA::individual_type& offspring, EA& ea) {
-        put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), offspring);
+		put<IND_UNIQUE_NAME>(ea.rng().uuid(), offspring);
         put<IND_GENERATION>(get<IND_GENERATION>(parent)+1.0, offspring);
         put<IND_BIRTH_UPDATE>(ea.current_update(), offspring);
     }

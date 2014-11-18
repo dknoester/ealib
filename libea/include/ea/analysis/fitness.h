@@ -34,7 +34,7 @@ namespace ealib {
             datafile df("unary_population_fitness.dat");
             df.add_field("individual").add_field("fitness");
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                df.write(get<IND_NAME>(*i))
+                df.write(get<IND_UNIQUE_NAME>(*i))
                 .write(static_cast<double>(ealib::fitness(*i,ea))).endl();
             }
         }
@@ -48,7 +48,7 @@ namespace ealib {
             }
             
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                df.write(get<IND_NAME>(*i));
+                df.write(get<IND_UNIQUE_NAME>(*i));
                 for(std::size_t j=0; j<ea.fitness_function().size(); ++j) {
                     df.write(static_cast<double>(ealib::fitness(*i,ea)[j]));
                 }

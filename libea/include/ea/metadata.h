@@ -25,6 +25,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/program_options.hpp>
+
 #include <string>
 #include <map>
 
@@ -275,7 +276,7 @@ namespace ealib {
         ++v;
         return v;
     }
-    
+	
     //! Convenience method to test a periodic condition against metadata.
     template <typename Attribute, typename HasMetaData>
     bool periodic(const typename Attribute::value_type v, HasMetaData& hmd) {
@@ -292,16 +293,13 @@ struct name : ealib::attribute<type> { \
 }
 
 namespace ealib {
-    LIBEA_MD_DECL(IND_NAME, "individual.name", long);
+	LIBEA_MD_DECL(IND_UNIQUE_NAME, "individual.unique_name", std::string);
     LIBEA_MD_DECL(IND_GENERATION, "individual.generation", double);
     LIBEA_MD_DECL(IND_BIRTH_UPDATE, "individual.birth_update", long);
     
     LIBEA_MD_DECL(POPULATION_SIZE, "ea.population.size", unsigned int);
     LIBEA_MD_DECL(METAPOPULATION_SIZE, "ea.metapopulation.size", unsigned int);
 
-    // ea.individual.*
-    LIBEA_MD_DECL(INDIVIDUAL_COUNT, "ea.individual.count", long);
-    
 	// ea.representation.*
 	LIBEA_MD_DECL(REALSTRING_MEAN, "ea.representation.realstring.mean", double);
 	LIBEA_MD_DECL(REALSTRING_VARIANCE, "ea.representation.realstring.variance", double);

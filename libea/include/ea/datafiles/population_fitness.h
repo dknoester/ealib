@@ -44,7 +44,7 @@ namespace ealib {
             virtual void operator()(EA& ea) {
                 for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
                     _df.write(ea.current_update())
-                    .write(get<IND_NAME>(*i))
+                    .write(get<IND_UNIQUE_NAME>(*i))
                     .write(static_cast<double>(ealib::fitness(*i,ea)))
                     .endl();
                 }

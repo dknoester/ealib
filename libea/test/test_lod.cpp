@@ -28,7 +28,7 @@ LIBEA_ANALYSIS_TOOL(test_population_lod_tool) {
     line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
     
     for(typename line_of_descent<EA>::iterator i=lod.begin(); i!=lod.end(); ++i) {
-        std::cout << get<IND_NAME>(*i) << std::endl;
+        std::cout << get<IND_UNIQUE_NAME>(*i) << std::endl;
     }
 }
 

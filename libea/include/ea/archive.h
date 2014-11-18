@@ -21,6 +21,7 @@
 #ifndef _EA_ARCHIVE_H_
 #define _EA_ARCHIVE_H_
 
+#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
@@ -49,7 +50,10 @@ namespace ealib {
             ia >> boost::serialization::make_nvp("population", pop);
         }
         
-        //! Loads an archived population from file filename into pop.
+        /*! Loads an archived population from file filename into pop.
+		 
+		 If the archive does not exist, an error is thrown.
+		 */
         template <typename EA>
         void load(const std::string& filename, typename EA::population_type& pop, EA& ea) {
             std::ifstream ifs(filename.c_str());
@@ -71,7 +75,18 @@ namespace ealib {
             }
             std::cerr << "done." << std::endl;
         }
-        
+
+		/*! Loads an archived population from file filename into pop.
+		 
+		 If the archive does not exist, no error is thrown.
+		 */
+		template <typename EA>
+		void load_if(const std::string& filename, typename EA::population_type& pop, EA& ea) {
+			if(boost::filesystem::exists(filename)) {
+				load(filename, pop, ea);
+			}
+		}
+		
         //! Save a population archive from pop to output stream os.
         template <typename EA>
         void save(std::ostream& os, typename EA::population_type& pop, EA& ea) {

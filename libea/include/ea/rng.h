@@ -20,10 +20,15 @@
 #ifndef _EA_RNG_H_
 #define _EA_RNG_H_
 
+#include <boost/lexical_cast.hpp>
 #include <boost/random.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include <iterator>
 #include <vector>
 #include <limits>
@@ -59,6 +64,8 @@ namespace ealib {
 		typedef boost::variate_generator<engine_type&, uniform_real_dist> real_rng_type;
 		//! Generator for uniformly-distributed random integers.
 		typedef boost::variate_generator<engine_type&, uniform_int_dist> int_rng_type;
+		//! Generator for UUIDs.
+		typedef boost::uuids::basic_random_generator<engine_type> uuid_generator_type;
 		//! Normal real distribution.
 		typedef boost::normal_distribution< > normal_real_dist;
 		//! Generator for normally-distributed random real numbers.
@@ -71,7 +78,7 @@ namespace ealib {
 		typedef int argument_type;
 		//! Type returned by this RNG (to support concept requirements).
 		typedef int result_type;
-		
+
 		//! Constructor.
 		rng() {
 			reset(static_cast<unsigned int>(std::time(0)));
@@ -86,6 +93,7 @@ namespace ealib {
 		rng(const rng& that) : _eng(that._eng) {
             _p.reset(new real_rng_type(_eng, uniform_real_dist(0.0,1.0)));
 			_bit.reset(new int_rng_type(_eng, uniform_int_dist(0,1)));
+			_uuid.reset(new uuid_generator_type(_eng));
         }
         
 		//! Assignment operator.
@@ -94,10 +102,12 @@ namespace ealib {
                 _eng = that._eng;
                 _p.reset(new real_rng_type(_eng, uniform_real_dist(0.0,1.0)));
                 _bit.reset(new int_rng_type(_eng, uniform_int_dist(0,1)));
-            }
+				_uuid.reset(new uuid_generator_type(_eng));
+			}
             return *this;
         }		
 
+		//! Equivalence operator.
         bool operator==(const rng& that) {
             return _eng == that._eng;
         }
@@ -109,7 +119,8 @@ namespace ealib {
 			}
 			_eng.seed(s);
 			_p.reset(new real_rng_type(_eng, uniform_real_dist(0.0,1.0)));
-			_bit.reset(new int_rng_type(_eng, uniform_int_dist(0,1)));			
+			_bit.reset(new int_rng_type(_eng, uniform_int_dist(0,1)));
+			_uuid.reset(new uuid_generator_type(_eng));
 		}
 		
 		/*! Returns a random number in the range [0,n).
@@ -320,11 +331,17 @@ namespace ealib {
 			rm.erase(i);
 			return first;
 		}
+		
+		//! Returns a random UUID in string format.
+		std::string uuid() {
+			return boost::lexical_cast<std::string>((*_uuid)());
+		}
 
 	private:
 		engine_type _eng; //!< Underlying generator of randomness.
 		boost::scoped_ptr<real_rng_type> _p; //!< Generator for probabilities.
 		boost::scoped_ptr<int_rng_type> _bit; //!< Generator for bits.
+		boost::scoped_ptr<uuid_generator_type> _uuid; //!< Generator for UUIDs.
 
 		// These enable serialization and de-serialization of the rng state.
 		friend class boost::serialization::access;

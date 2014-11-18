@@ -42,7 +42,7 @@ namespace ealib {
 	void generate_ancestors(RepresentationGenerator g, std::size_t n, EA& ea) {
         // build the placeholder ancestor:
         typename EA::individual_ptr_type ap = ea.make_individual(g(ea));
-        put<IND_NAME>(next<INDIVIDUAL_COUNT>(ea), *ap);
+		put<IND_UNIQUE_NAME>(ea.rng().uuid(), *ap);
         put<IND_GENERATION>(-1.0, *ap);
         put<IND_BIRTH_UPDATE>(ea.current_update(), *ap);
         
@@ -274,72 +274,81 @@ namespace ealib {
          This works by creating the next individual, then replacing its representation
          with the one to be replicated, and then mutating that representation.
          */
-        template <typename IndividualType>
-        struct replicate_with_mutation {
-            replicate_with_mutation(IndividualType i) : _i(i) {
-            }
-            
-            template <typename EA>
-            typename EA::population_entry_type operator()(EA& ea) {
-                typename EA::individual_type ind;
-                ind.name() = next<INDIVIDUAL_COUNT>(ea);
-                ind.repr() = _i.repr();                
-                mutate(ind,ea);
-                return make_population_entry(ind, ea);
-            }
-            
-            IndividualType _i;
-        };
-        
-        
-        /*! Initialization method that generates a complete population.
-         */
-        template <typename IndividualGenerator>
-        struct complete_population {
-            template <typename EA>
-            void operator()(EA& ea) {
-                typename EA::population_type ancestral;
-                typename EA::individual_type a = typename EA::individual_type();
-                a.name() = next<INDIVIDUAL_COUNT>(ea);
-                a.generation() = -1.0;
-                a.birth_update() = ea.current_update();
-                ancestral.append(make_population_entry(a,ea));
-                
-                IndividualGenerator ig;
-                ea.population().clear();
-                generate_individuals_n(ea.population(), ig, get<POPULATION_SIZE>(ea), ea);
-                
-                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    ea.events().inheritance(ancestral,ind(i,ea),ea);
-                }
-            }
-        };
-        
-        
-        /*! Initialization method whereby the population is grown from a single individual (with mutation).
-         */
-        template <typename IndividualGenerator>
-        struct grown_population {
-            template <typename EA>
-            void operator()(EA& ea) {
-                typedef typename EA::individual_type individual_type;
-                // generate the ancestral population:
-                typename EA::population_type ancestral;
-                IndividualGenerator ig;
-                fitness_type(ancestral, ig, 1, ea);
-                individual_type& a = ind(ancestral.begin(),ea);
-                
-                // replicate this ancestor to fill up our population:
-                ea.population().clear();
-                replicate_with_mutation<individual_type> rg(a);
-                fitness_type(ea.population(), rg, get<POPULATION_SIZE>(ea), ea);
-                
-                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
-                    ea.events().inheritance(ancestral,ind(i,ea),ea);
-                }
-            }
-        };
-                
+//        template <typename IndividualType>
+//        struct replicate_with_mutation {
+//            replicate_with_mutation(IndividualType i) : _i(i) {
+//            }
+//            
+//            template <typename EA>
+//            typename EA::population_entry_type operator()(EA& ea) {
+//                typename EA::individual_type ind;
+//				
+//				put<IND_UNIQUE_NAME>(ea.rng().uuid(), *ap);
+//				put<IND_GENERATION>(-1.0, *ap);
+//				put<IND_BIRTH_UPDATE>(ea.current_update(), *ap);
+//
+//				
+//                ind.name() = next<INDIVIDUAL_COUNT>(ea);
+//				
+//				put<IND_UNIQUE_NAME>(ea.rng().uuid(), *ap);
+//
+//                ind.repr() = _i.repr();
+//                mutate(ind,ea);
+//                return make_population_entry(ind, ea);
+//            }
+//            
+//            IndividualType _i;
+//        };
+//        
+//        
+//        /*! Initialization method that generates a complete population.
+//         */
+//        template <typename IndividualGenerator>
+//        struct complete_population {
+//            template <typename EA>
+//            void operator()(EA& ea) {
+//                typename EA::population_type ancestral;
+//                typename EA::individual_type a = typename EA::individual_type();
+//                a.name() = next<INDIVIDUAL_COUNT>(ea);
+//                a.generation() = -1.0;
+//                a.birth_update() = ea.current_update();
+//                ancestral.append(make_population_entry(a,ea));
+//                
+//                IndividualGenerator ig;
+//                ea.population().clear();
+//                generate_individuals_n(ea.population(), ig, get<POPULATION_SIZE>(ea), ea);
+//                
+//                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+//                    ea.events().inheritance(ancestral,ind(i,ea),ea);
+//                }
+//            }
+//        };
+//        
+//        
+//        /*! Initialization method whereby the population is grown from a single individual (with mutation).
+//         */
+//        template <typename IndividualGenerator>
+//        struct grown_population {
+//            template <typename EA>
+//            void operator()(EA& ea) {
+//                typedef typename EA::individual_type individual_type;
+//                // generate the ancestral population:
+//                typename EA::population_type ancestral;
+//                IndividualGenerator ig;
+//                fitness_type(ancestral, ig, 1, ea);
+//                individual_type& a = ind(ancestral.begin(),ea);
+//                
+//                // replicate this ancestor to fill up our population:
+//                ea.population().clear();
+//                replicate_with_mutation<individual_type> rg(a);
+//                fitness_type(ea.population(), rg, get<POPULATION_SIZE>(ea), ea);
+//                
+//                for(typename EA::population_type::iterator i=ea.population().begin(); i!=ea.population().end(); ++i) {
+//                    ea.events().inheritance(ancestral,ind(i,ea),ea);
+//                }
+//            }
+//        };
+		
         /*! Initializes all subpopulations that are part of a meta-population EA.
          */
         struct all_subpopulations {

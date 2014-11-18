@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(test_checkpoint) {
     // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
         BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
-        BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
+        BOOST_CHECK(get<IND_UNIQUE_NAME>(*i) == get<IND_UNIQUE_NAME>(*j));
     }
 }
 
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_replicability) {
     // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
         BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
-        BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
+        BOOST_CHECK(get<IND_UNIQUE_NAME>(*i) == get<IND_UNIQUE_NAME>(*j));
         BOOST_CHECK(ea1.rng() == ea2.rng());
     }
 }
@@ -80,6 +80,6 @@ BOOST_AUTO_TEST_CASE(test_archive) {
     // check that the individuals in ea1 are pretty much the same as the individuals in ea2:
     for(all_ones_ea::iterator i=ea1.begin(), j=ea2.begin(); i!=ea1.end(); ++i, ++j) {
         BOOST_CHECK(ealib::fitness(*i,ea1) == ealib::fitness(*j,ea2));
-        BOOST_CHECK(get<IND_NAME>(*i) == get<IND_NAME>(*j));
+        BOOST_CHECK(get<IND_UNIQUE_NAME>(*i) == get<IND_UNIQUE_NAME>(*j));
     }
 }

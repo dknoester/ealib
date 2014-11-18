@@ -22,21 +22,22 @@
 #define _EA_ANALYSIS_FIND_BY_NAME_H_
 
 #include <ea/analysis.h>
-#include <ea/comparators.h>
+#include <ea/metadata.h>
 
 namespace ealib {
     namespace analysis {
-        
-        //! Returns an iterator to the dominant (most fit) individual in ea.
-        template <typename EA>
-        typename EA::iterator find_by_name(long ind_name, EA& ea) {
-            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-                if(get<IND_NAME>(*i) == ind_name) {
-                    return i;
-                }
-            }
-        }
-        
+		
+		//! Returns an iterator to the named individual, or ea.end() if it couldn't be found.
+		template <typename EA>
+		typename EA::iterator find_by_name(const std::string& name, EA& ea) {
+			for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+				if(get<IND_UNIQUE_NAME>(*i) == name) {
+					return i;
+				}
+			}
+			return ea.end();
+		}
+		
     } // analysis
 } // ea
 
