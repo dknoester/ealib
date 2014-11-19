@@ -12,6 +12,7 @@ alias libea : : : : <include>./include ;
 
 lib libea_cmdline :
     src/cmdline_interface.cpp
+    src/expansion.cpp
     libea
     /boost//serialization
     /boost//iostreams

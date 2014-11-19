@@ -25,6 +25,9 @@
 #include <ea/metadata.h>
 
 namespace ealib {
+	
+	LIBEA_MD_DECL(ANALYSIS_IND_NAME, "ea.analysis.individual_name", std::string);
+	
     namespace analysis {
 		
 		//! Returns an iterator to the named individual, or ea.end() if it couldn't be found.

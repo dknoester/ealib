@@ -1,4 +1,4 @@
-/* test_analysis.cpp
+/* expansion.h
  *
  * This file is part of EALib.
  *
@@ -17,18 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test.h"
-#include <ea/analysis/fitness.h>
-#include <ea/analysis/archive.h>
+#ifndef _EA_EXPANSION_H_
+#define _EA_EXPANSION_H_
 
-//! Population analysis tests.
-BOOST_AUTO_TEST_CASE(test_population_analysis) {
-    all_ones_ea ea(build_ea_md());
-    analysis::unary_population_fitness<all_ones_ea> upf;
-}
+#include <string>
 
-//! Archive tests.
-BOOST_AUTO_TEST_CASE(test_archive_analysis) {
-    all_ones_ea ea;
-	analysis::archive_dominant<all_ones_ea> ad_tool;
-}
+namespace ealib {
+	
+	/*! Returns an expansion (i.e., with environment variables replaced by their
+	 values) of the given string.
+	 */
+	std::string expansion(const std::string& s);
+	
+} // ealib
+
+#endif

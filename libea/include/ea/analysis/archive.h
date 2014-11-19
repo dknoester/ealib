@@ -36,32 +36,6 @@ namespace ealib {
 	LIBEA_MD_DECL(ARCHIVE_OUTPUT, "ea.archive.output", std::string);
 	
     namespace analysis {
-				
-		/*! Copy a named individual from one archive to another.
-		 
-		 If the input archive does not exist, an exception is thrown.  If the 
-		 output archive does not exist, it is created, otherwise the individual
-		 is added to the output archive.
-		 */
-		LIBEA_ANALYSIS_TOOL(copy_individual) {
-			// load the input archive:
-			typename EA::population_type input;
-			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
-			ea.population().swap(input);
-			
-			typename EA::iterator ind = find_by_name(get<IND_UNIQUE_NAME>(ea), ea);
-			
-			if(ind == ea.end()) {
-				throw bad_argument_exception("Could not find individual with name " + get<IND_UNIQUE_NAME>(ea));
-			}
-			
-			// load the output archive, it it exists:
-			typename EA::population_type output;
-			archive::load_if(get<ARCHIVE_OUTPUT>(ea), output, ea);
-			
-			output.insert(output.end(), ea.copy_individual(*ind));
-			archive::save(get<ARCHIVE_OUTPUT>(ea), output, ea);
-		}
 		
 		/*! Archive a dominant individual from a checkpoint into an output archive.
 		 
@@ -76,49 +50,95 @@ namespace ealib {
 			// copy the dominant:
 			typename EA::iterator ind = dominant(ea);
 			output.insert(output.end(), ea.copy_individual(*ind));
-
+			
 			// save the output archive:
 			archive::save(get<ARCHIVE_OUTPUT>(ea), output, ea);
 		}
 		
-		
-		/*! Remove a named individual from an archive.
+		/*! Copy a named individual from one archive to another.
+		 
+		 If the input archive does not exist, an exception is thrown.  If the 
+		 output archive does not exist, it is created, otherwise the individual
+		 is added to the output archive.
 		 */
-		LIBEA_ANALYSIS_TOOL(remove_individual) {
+		LIBEA_ANALYSIS_TOOL(copy_individual) {
+			// load the input archive:
 			typename EA::population_type input;
 			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
 			ea.population().swap(input);
 			
-			typename EA::iterator i=find_by_name(get<IND_UNIQUE_NAME>(ea), ea);
-			ea.erase(i);
+			typename EA::iterator ind = find_by_name(get<IND_UNIQUE_NAME>(ea), ea);
+			if(ind == ea.end()) {
+				throw bad_argument_exception("Could not find individual with name " + get<IND_UNIQUE_NAME>(ea));
+			}
+			
+			// load the output archive, it it exists:
+			typename EA::population_type output;
+			archive::load_if(get<ARCHIVE_OUTPUT>(ea), output, ea);
+			
+			output.insert(output.end(), ea.copy_individual(*ind));
+			archive::save(get<ARCHIVE_OUTPUT>(ea), output, ea);
+		}
+
+		/*! List the individuals in an archive.
+		 */
+		LIBEA_ANALYSIS_TOOL(list_individuals) {
+			// load the input archive:
+			typename EA::population_type input;
+			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
+			ea.population().swap(input);
+			
+			std::cout << "name,fitness" << std::endl;
+			for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+				std::cout << get<IND_UNIQUE_NAME>(*i) << "," << ealib::fitness(*i,ea) << std::endl;
+			}
+		}
+
+		/*! Remove a named individual from an archive.
+		 */
+		LIBEA_ANALYSIS_TOOL(remove_individual) {
+			// load the input archive:
+			typename EA::population_type input;
+			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
+			ea.population().swap(input);
+			
+			// find the named individual, and erase it:
+			typename EA::iterator ind = find_by_name(get<IND_UNIQUE_NAME>(ea), ea);
+			if(ind == ea.end()) {
+				throw bad_argument_exception("Could not find individual with name " + get<IND_UNIQUE_NAME>(ea));
+			}
+			ea.erase(ind);
 			
 			archive::save(get<ARCHIVE_INPUT>(ea), ea.population(), ea);
 		}
 
-        
-        /*! Trim an archive down to the top ANALYSIS_N best-ranked individuals.
-         */
-        LIBEA_ANALYSIS_TOOL(trim_archive) {
-            const std::string& input = get<ANALYSIS_INPUT>(ea);
-            const std::string& output = get<ANALYSIS_OUTPUT>(ea);
-            
-			if(!boost::filesystem::exists(input)) {
-				throw bad_argument_exception("could not open file: " + input);
-			}
+		/*! Recalculate fitness for all the individuals in an archive.
+		 */
+		LIBEA_ANALYSIS_TOOL(recalculate_fitnesses) {
+			// load the input archive:
+			typename EA::population_type input;
+			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
+			ea.population().swap(input);
 			
-			typename EA::population_type archive;
-            archive::load(input, archive, ea);
+			ealib::recalculate_fitness(ea.begin(), ea.end(), ea);
+			archive::save(get<ARCHIVE_INPUT>(ea), ea.population(), ea);
+		}
+		
+		/*! Rename all individuals in an archive.
+		 */
+		LIBEA_ANALYSIS_TOOL(rename_individuals) {
+			// load the input archive:
+			typename EA::population_type input;
+			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
+			ea.population().swap(input);
+			
+			for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+				put<IND_UNIQUE_NAME>(ea.rng().uuid(), *i);
+			}
+			archive::save(get<ARCHIVE_INPUT>(ea), ea.population(), ea);
+		}
 
-			int nerase = archive.size() - get<ANALYSIS_N>(ea);
-			
-			if(nerase > 0) {
-				std::sort(archive.begin(), archive.end(), comparators::fitness<EA>(ea));
-				archive.erase(archive.begin(), archive.begin() + nerase);
-                archive::save(output, archive, ea);
-			}
-        }
-        
-    } // analysis
+	} // analysis
 } // ea
 
 #endif

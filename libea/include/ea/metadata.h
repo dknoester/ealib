@@ -2,7 +2,7 @@
  * 
  * This file is part of EALib.
  * 
- * Copyright 2014 David B. Knoester, Randal S. Olson.
+ * Copyright 2014 David B. Knoester.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _EA_strings_H_
-#define _EA_strings_H_
+#ifndef _EA_METADATA_H_
+#define _EA_METADATA_H_
+
+#include <wordexp.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/any.hpp>
@@ -140,7 +142,17 @@ namespace ealib {
         
         //! Returns a reference to this meta-data object (for compatibiliy with the get & set methods below).
         metadata& md() { return *this; }
-        
+		
+		//! Returns the string backing an attribute's value.
+		template <typename Attribute>
+		std::string& getstr(const std::string& k) {
+			md_string_type::iterator j=_strings.find(k);
+			if(j == _strings.end()) {
+				throw uninitialized_metadata_exception(k);
+			}
+			return j->second;
+		}
+		
 		//! Returns a reference to an attribute's value.
         template <typename Attribute>
         typename Attribute::reference_type getattr(const std::string& k) {

@@ -1,4 +1,4 @@
-/* test_analysis.cpp
+/* expansion.cpp
  *
  * This file is part of EALib.
  *
@@ -17,18 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "test.h"
-#include <ea/analysis/fitness.h>
-#include <ea/analysis/archive.h>
+#include <wordexp.h>
+#include <sstream>
 
-//! Population analysis tests.
-BOOST_AUTO_TEST_CASE(test_population_analysis) {
-    all_ones_ea ea(build_ea_md());
-    analysis::unary_population_fitness<all_ones_ea> upf;
-}
+#include <ea/expansion.h>
+#include <ea/exceptions.h>
 
-//! Archive tests.
-BOOST_AUTO_TEST_CASE(test_archive_analysis) {
-    all_ones_ea ea;
-	analysis::archive_dominant<all_ones_ea> ad_tool;
+/*! Returns an expansion (i.e., with environment variables replaced by their
+ values) of the given string.
+ */
+std::string ealib::expansion(const std::string& s) {
+	wordexp_t p;
+	if(wordexp(s.c_str(), &p, 0)) {
+		wordfree(&p);
+		throw bad_argument_exception("error in expansion: " + s);
+	}
+	std::ostringstream v;
+	for(std::size_t i=0; i<p.we_wordc; ++i) {
+		v << p.we_wordv[i];
+	}
+	wordfree(&p);
+	return v.str();
 }

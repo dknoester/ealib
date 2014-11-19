@@ -57,6 +57,7 @@
 
 /* Begin PBXBuildFile section */
 		421D68B81735719700A45DD6 /* test_analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 421D68B61735719700A45DD6 /* test_analysis.cpp */; };
+		42248E751A1D3A7D0094DC89 /* expansion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42248E741A1D3A7D0094DC89 /* expansion.cpp */; };
 		422B05BE19641F6E00DA675B /* libea.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBD9F157D0E0B0003A644 /* libea.a */; };
 		422B05C619641F9F00DA675B /* pole_balancing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 422B05C419641F9F00DA675B /* pole_balancing.cpp */; };
 		423CBE41157D0ECF0003A644 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF0157D0E450003A644 /* main.cpp */; };
@@ -427,6 +428,8 @@
 		4212C0CC19376016001D435A /* shared_ptr_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shared_ptr_vector.h; sourceTree = "<group>"; };
 		4212C0CD19376016001D435A /* torus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = torus.h; sourceTree = "<group>"; };
 		421D68B61735719700A45DD6 /* test_analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_analysis.cpp; sourceTree = "<group>"; };
+		42248E731A1D39BE0094DC89 /* expansion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = expansion.h; sourceTree = "<group>"; };
+		42248E741A1D3A7D0094DC89 /* expansion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = expansion.cpp; path = libea/src/expansion.cpp; sourceTree = SOURCE_ROOT; };
 		422B05B719641F1E00DA675B /* pole_balancing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pole_balancing.h; sourceTree = "<group>"; };
 		422B05C319641F6E00DA675B /* example-pole */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "example-pole"; sourceTree = BUILT_PRODUCTS_DIR; };
 		422B05C419641F9F00DA675B /* pole_balancing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pole_balancing.cpp; sourceTree = "<group>"; };
@@ -844,6 +847,7 @@
 		423CBDEF157D0E450003A644 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				42248E741A1D3A7D0094DC89 /* expansion.cpp */,
 				423CBDF0157D0E450003A644 /* main.cpp */,
 				426A04A417B1205B000F5151 /* cmdline_interface.cpp */,
 			);
@@ -946,6 +950,7 @@
 				42C9451E18E44FC200F05BE3 /* archive.h */,
 				42678A15196E21B100214873 /* checkpoint.h */,
 				428B722F184F77AB00E3BB4E /* cmdline_interface.h */,
+				42248E731A1D39BE0094DC89 /* expansion.h */,
 				428B7230184F77AB00E3BB4E /* comparators.h */,
 				428B7231184F77AB00E3BB4E /* concepts.h */,
 				4212C0CA19376016001D435A /* data_structures */,
@@ -1561,6 +1566,7 @@
 			files = (
 				423CBE41157D0ECF0003A644 /* main.cpp in Sources */,
 				426A04A617B1205B000F5151 /* cmdline_interface.cpp in Sources */,
+				42248E751A1D3A7D0094DC89 /* expansion.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -28,6 +28,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <cstdlib>
 
 #include <ea/algorithm.h>
 #include <ea/concepts.h>
@@ -38,6 +39,7 @@
 #include <ea/lifecycle.h>
 #include <ea/datafiles/runtime.h>
 #include <ea/rng.h>
+#include <ea/expansion.h>
 
 namespace ealib {
 
@@ -203,9 +205,12 @@ namespace ealib {
             po::notify(_vm);
             
             if(_vm.count("config")) {
-                parse_config_file(_vm["config"].template as<string>());
-            }
-            
+				parse_config_file(ealib::expansion(_vm["config"].template as<string>()));
+			} else if(std::getenv("LIBEA_CONFIG_FILE")) {
+				// otherwise, if the environment variable "LIBEA_CONFIG_FILE" is set, use that:
+				parse_config_file(ealib::expansion(std::string(std::getenv("LIBEA_CONFIG_FILE"))));
+			}
+				
             if(_vm.count("help")) {
                 ostringstream msg;
                 msg << "Usage: " << argv[0] << " [-c config_file] [--verbose] [-l checkpoint] [--analyze] [--option_name value...]" << endl;
