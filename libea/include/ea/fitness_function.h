@@ -278,7 +278,17 @@ namespace ealib {
         
         //! Retrieve the value of objective i (const-qualified).
         const objective_type operator[](std::size_t i) const { return _f[i]; }
-        
+		
+		//! Returns a begin iterator to the objectives.
+		typename value_type::iterator begin() {
+			return _f.begin();
+		}
+		
+		//! Returns a begin iterator to the objectives.
+		typename value_type::iterator end() {
+			return _f.end();
+		}
+		
         //! Push a new fitness value.
         void push_back(const T t) {
             _f.push_back(t);

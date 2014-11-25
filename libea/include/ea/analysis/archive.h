@@ -34,6 +34,7 @@ namespace ealib {
 	
 	LIBEA_MD_DECL(ARCHIVE_INPUT, "ea.archive.input", std::string);
 	LIBEA_MD_DECL(ARCHIVE_OUTPUT, "ea.archive.output", std::string);
+	LIBEA_MD_DECL(ARCHIVE_N, "ea.archive.n", int);
 	
     namespace analysis {
 		
@@ -77,6 +78,23 @@ namespace ealib {
 			archive::load_if(get<ARCHIVE_OUTPUT>(ea), output, ea);
 			
 			output.insert(output.end(), ea.copy_individual(*ind));
+			archive::save(get<ARCHIVE_OUTPUT>(ea), output, ea);
+		}
+		
+		/*! Merge the contents of two archives.
+		 
+		 If either archive does not exist, an exception is thrown.
+		 */
+		LIBEA_ANALYSIS_TOOL(merge_archives) {
+			// load the input archive:
+			typename EA::population_type input;
+			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
+
+			// load the output archive:
+			typename EA::population_type output;
+			archive::load(get<ARCHIVE_OUTPUT>(ea), output, ea);
+			
+			output.insert(output.end(), input.begin(), input.end());
 			archive::save(get<ARCHIVE_OUTPUT>(ea), output, ea);
 		}
 

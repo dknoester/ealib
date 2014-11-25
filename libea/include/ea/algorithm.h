@@ -36,7 +36,7 @@ namespace ealib {
 	namespace algorithm {
         
         //! Returns true if a dominates b.
-        template <typename Sequence>
+		template <typename Sequence>
         bool dominates(const Sequence& a, const Sequence& b) {
             assert(a.size() == b.size());
             bool any=false, all=true;

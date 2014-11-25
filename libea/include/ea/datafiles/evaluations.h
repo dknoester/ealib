@@ -38,9 +38,9 @@ namespace ealib {
          fitness evaluations.  Does not, itself, trigger fitness evaluations.
          */
         template <typename EA>
-        struct fitness_evaluations : fitness_evaluated_event<EA> {
+        struct fitness_evaluations_dat : fitness_evaluated_event<EA> {
             
-            fitness_evaluations(EA& ea) : fitness_evaluated_event<EA>(ea), _df("fitness_evaluations.dat"), _evals(0) {
+            fitness_evaluations_dat(EA& ea) : fitness_evaluated_event<EA>(ea), _df("fitness_evaluations.dat"), _evals(0) {
                 _df.add_field("evaluation")
                 .add_field("mean_generation")
                 .add_field("min_fitness")
@@ -48,7 +48,7 @@ namespace ealib {
                 .add_field("max_fitness");
             }
             
-            virtual ~fitness_evaluations() {
+            virtual ~fitness_evaluations_dat() {
             }
             
             virtual void operator()(typename EA::individual_type& ind, EA& ea) {
