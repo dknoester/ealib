@@ -31,8 +31,20 @@ namespace ealib {
     namespace analysis {
 		
 		//! Returns an iterator to the named individual, or ea.end() if it couldn't be found.
+		template <typename Population, typename EA>
+		typename EA::population_type::iterator find_by_name(const std::string& name, Population& P, EA& ea) {
+			for(typename Population::iterator i=P.begin(); i!=P.end(); ++i) {
+				if(get<IND_UNIQUE_NAME>(**i) == name) {
+					return i;
+				}
+			}
+			return P.end();
+		}
+		
+		//! Returns an iterator to the named individual, or ea.end() if it couldn't be found.
 		template <typename EA>
 		typename EA::iterator find_by_name(const std::string& name, EA& ea) {
+			return find_by_name(name, ea.population(), ea);
 			for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
 				if(get<IND_UNIQUE_NAME>(*i) == name) {
 					return i;
@@ -40,6 +52,7 @@ namespace ealib {
 			}
 			return ea.end();
 		}
+
 		
     } // analysis
 } // ea

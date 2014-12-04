@@ -147,14 +147,14 @@ namespace ealib {
          the first sample value.
          */
         template <typename ForwardIterator>
-        double exp_mean(ForwardIterator f, ForwardIterator l, std::size_t n) {
+        double exp_mean_n(ForwardIterator f, ForwardIterator l, std::size_t n) {
             double alpha = 2.0 / (static_cast<double>(n)+1.0);
             return detail::exp_mean(f,l,alpha);
         }
         
         //! Calculates the exponential mean with a given alpha (see above).
         template <typename ForwardIterator>
-        double exp_mean(ForwardIterator f, ForwardIterator l, double alpha) {
+        double exp_mean_alpha(ForwardIterator f, ForwardIterator l, double alpha) {
             return detail::exp_mean(f,l,alpha);
         }
         

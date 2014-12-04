@@ -68,9 +68,9 @@ namespace ealib {
 			archive::load(get<ARCHIVE_INPUT>(ea), input, ea);
 			ea.population().swap(input);
 			
-			typename EA::iterator ind = find_by_name(get<IND_UNIQUE_NAME>(ea), ea);
+			typename EA::iterator ind = find_by_name(get<ANALYSIS_IND_NAME>(ea), ea);
 			if(ind == ea.end()) {
-				throw bad_argument_exception("Could not find individual with name " + get<IND_UNIQUE_NAME>(ea));
+				throw bad_argument_exception("Could not find individual with name " + get<ANALYSIS_IND_NAME>(ea));
 			}
 			
 			// load the output archive, it it exists:
@@ -121,9 +121,9 @@ namespace ealib {
 			ea.population().swap(input);
 			
 			// find the named individual, and erase it:
-			typename EA::iterator ind = find_by_name(get<IND_UNIQUE_NAME>(ea), ea);
+			typename EA::iterator ind = find_by_name(get<ANALYSIS_IND_NAME>(ea), ea);
 			if(ind == ea.end()) {
-				throw bad_argument_exception("Could not find individual with name " + get<IND_UNIQUE_NAME>(ea));
+				throw bad_argument_exception("Could not find individual with name " + get<ANALYSIS_IND_NAME>(ea));
 			}
 			ea.erase(ind);
 			

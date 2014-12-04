@@ -548,6 +548,7 @@
 		428B7287184F77AB00E3BB4E /* universal_sampling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = universal_sampling.h; sourceTree = "<group>"; };
 		428B7288184F77AB00E3BB4E /* selection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = selection.h; sourceTree = "<group>"; };
 		4295BC0B19647FF800DD51F9 /* translation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = translation.h; sourceTree = "<group>"; };
+		429E459F1A2A184C00590C8D /* evolution_strategy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = evolution_strategy.h; sourceTree = "<group>"; };
 		42A170E218E9C41D00C3A248 /* rank.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rank.h; sourceTree = "<group>"; };
 		42A24EF519E06F0500186A43 /* population_fitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = population_fitness.h; sourceTree = "<group>"; };
 		42A694E919781102002A0AA3 /* python.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = python.h; sourceTree = "<group>"; };
@@ -1057,6 +1058,7 @@
 				428B725A184F77AB00E3BB4E /* moran_process.h */,
 				428B725D184F77AB00E3BB4E /* steady_state.h */,
 				425D10B01986810E0082C0BA /* wright_fisher.h */,
+				429E459F1A2A184C00590C8D /* evolution_strategy.h */,
 			);
 			path = generational_models;
 			sourceTree = "<group>";
