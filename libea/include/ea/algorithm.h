@@ -367,7 +367,29 @@ namespace ealib {
             }
             return sum / static_cast<T>(c);
         }
-        
+		
+		//! Calculates the weighted mean of the values between [f, l).
+		template <typename ForwardIterator, typename WeightIterator, typename T>
+		T vweighted_mean(ForwardIterator f, ForwardIterator l, WeightIterator w, T init) {
+			ForwardIterator t=f;
+			WeightIterator v=w;
+			T wsum = 0.0;
+			for(; t!=l; ++t, ++v) {
+				assert((*v) >= 0.0);
+				wsum += *v;
+			}
+			if(wsum == 0.0) {
+				return vmean(f, l, init);
+			}
+			
+			T sum=init;
+			for( ; f!=l; ++f, ++w) {
+				sum += (*f) * (*w) / wsum;
+			}
+			return sum;
+		}
+
+		
         /*! Decode excitatory/inhibitory bit pairs into an integer.
          */
         template <typename ForwardIterator>

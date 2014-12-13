@@ -354,7 +354,18 @@ namespace ealib {
             // if we get here, the environment is full; throw.
             throw fatal_error_exception("environment: could not find available location");
         }
-        
+
+		//! Insert individual p at the first available location.
+		void insert_at(individual_ptr_type p, const position_type& pos, EA& ea) {
+			location_type& l=location(pos);
+			if(l.occupied()) {
+				throw fatal_error_exception("environment: position already occupied");
+			}
+			
+			l.p = p;
+			p->position() = l.position();
+		}
+				
         /*! Replaces an individual living at location i (if any) with
          individual p.  The individual's heading is set to 0.  If i is end(),
          sequentially search for the first available location.  If an available

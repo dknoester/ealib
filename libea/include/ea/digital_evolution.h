@@ -373,7 +373,13 @@ namespace ealib {
             _state->env.insert(x, *this);
             return iterator(_state->population.insert(pos.base(), x));
         }
-        
+
+		//! Inserts individual x into the population and environment.
+		iterator insert_at(iterator i, individual_ptr_type x, const position_type& pos) {
+			_state->env.insert_at(x, pos, *this);
+			return iterator(_state->population.insert(i.base(), x));
+		}
+
         //! Inserts individuals [f,l) into the population before pos.
         template <typename InputIterator>
         void insert(iterator pos, InputIterator f, InputIterator l) {
