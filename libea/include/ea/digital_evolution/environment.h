@@ -56,7 +56,7 @@ namespace ealib {
      */
     struct position_type {
         //! Constructor.
-        position_type(int xpos=0, int ypos=0, int xori=1, int yori=0) {
+        explicit position_type(int xpos=0, int ypos=0, int xori=1, int yori=0) {
             r[0] = xpos; r[1] = ypos;
             h[0] = xori; h[1] = yori;
         }
@@ -390,6 +390,11 @@ namespace ealib {
         //! Returns a location given (x,y) coordinates.
         location_type& location(std::size_t x, std::size_t y) {
             return _locs(x, y);
+        }
+        
+        //! Returns a location given an index.
+        location_type& location(std::size_t i) {
+            return _locs(i % _locs.size1(), i / _locs.size2());
         }
 
         //! Returns a [begin,end) pair of iterators over an individual's neighborhood.
