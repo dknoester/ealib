@@ -611,6 +611,7 @@
 		42EF7D7C19363266001A647B /* representation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = representation.h; sourceTree = "<group>"; };
 		42F9EB9419376A1F00FDF339 /* access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = access.h; sourceTree = "<group>"; };
 		42FAF70B194885250013939A /* logic9.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = logic9.h; sourceTree = "<group>"; };
+		48E57B661BA0A8B900E630CC /* matrix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1230,6 +1231,7 @@
 			isa = PBXGroup;
 			children = (
 				42DC571A1941F0D5005044F1 /* cell_death.h */,
+				48E57B661BA0A8B900E630CC /* matrix.h */,
 			);
 			path = extra_instruction_sets;
 			sourceTree = "<group>";

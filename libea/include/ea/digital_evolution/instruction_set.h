@@ -544,14 +544,15 @@ namespace ealib {
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx); 
                         
-            hw.setRegValue(rbx,ea.env().location(p->position())->x);
-            hw.setRegValue(rcx,ea.env().location(p->position())->y);
+            hw.setRegValue(rbx,ea.env().location(p->position()).r[0]);
+            hw.setRegValue(rcx,ea.env().location(p->position()).r[1]);
         }
         
         //! Get whether a neighboring organism exists.
         DIGEVO_INSTRUCTION_DECL(is_origin) {
-            if ((ea.env().location(p->position())->x == 0) &&
-                (ea.env().location(p->position())->y == 0)) {
+            //p->env().location(pos).position()
+            if ((ea.env().location(p->position()).r[0] == 0) &&
+                (ea.env().location(p->position()).r[1] == 0)) {
                 hw.setRegValue(hw.modifyRegister(), 1);
             } else {
                 hw.setRegValue(hw.modifyRegister(), 0);

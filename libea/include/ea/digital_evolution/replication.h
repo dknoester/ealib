@@ -23,6 +23,7 @@
 
 
 namespace ealib {
+    
 
     /*! Selects the location of the first neighbor to the parent as the location
      for an offspring.
@@ -57,6 +58,42 @@ namespace ealib {
             if (l->occupied()) {
                 return std::make_pair(l, false);
 
+            }
+            return std::make_pair(l, true);
+        }
+    };
+    
+    /*! Selects the location of the neighbor faced by the parent (using a matrix) as the location
+     for an offspring.
+     */
+    struct empty_facing_neighbor_matrix {
+        template <typename EA>
+        std::pair<typename EA::location_iterator, bool> operator()(typename EA::individual_ptr_type parent, EA& ea) {
+            typename EA::location_iterator l = ea.env().neighbor(parent);
+            typename EA::environment_type::location_type mp = ea.env().location(parent->position());
+
+            // check to make sure we aren't peeking around an edge
+            int me_x = mp.r[0];
+            int me_y = mp.r[1];
+            
+            int max_x = get<SPATIAL_X>(ea) - 1;
+            int max_y = get<SPATIAL_Y>(ea) - 1;
+            
+            int you_x = l->r[0];
+            int you_y = l->r[1];
+            
+            // If the neighbor wraps around, exit.
+            if (((me_x == 0 ) && (you_x == max_x)) ||
+                ((me_x == max_x) && (you_x == 0)) ||
+                ((me_y == 0) && (you_y == max_y)) ||
+                ((me_y == max_y) && (you_y == 0))) {
+                return std::make_pair(l, false);
+            }
+
+            
+            if (l->occupied()) {
+                return std::make_pair(l, false);
+                
             }
             return std::make_pair(l, true);
         }

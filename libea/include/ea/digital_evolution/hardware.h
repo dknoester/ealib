@@ -38,7 +38,14 @@ namespace ealib {
             struct uniform_isa {
                 template <typename Iterator, typename EA>
                 void operator()(Iterator i, EA& ea) {
-                    *i = ea.rng().uniform_integer(0, ea.isa().size());
+                    typename Iterator::value_type v = ea.rng().uniform_integer(0, ea.isa().size());
+                    
+                    if(v > 33) {
+                        *i = 0;
+                    }
+                    
+                    *i = v;
+//                    *i = ea.rng().uniform_integer(0, ea.isa().size());
                 }
             };
 
