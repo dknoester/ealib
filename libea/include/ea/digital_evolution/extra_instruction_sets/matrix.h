@@ -30,7 +30,7 @@ namespace ealib {
         
         //! Detects matrix edges -- 1 if edge; 0 otherwise
         template<typename EA>
-        bool matrix_edge(EA ea,
+        bool matrix_edge(EA& ea,
                          typename EA::environment_type::location_type me,
                          typename EA::environment_type::location_type you) {
             
@@ -106,6 +106,7 @@ namespace ealib {
 
         //! Broadcast a message.
         DIGEVO_INSTRUCTION_DECL(bc_msg_matrix) {
+  //          return;
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
             
