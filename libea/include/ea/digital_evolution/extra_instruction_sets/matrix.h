@@ -106,7 +106,6 @@ namespace ealib {
 
         //! Broadcast a message.
         DIGEVO_INSTRUCTION_DECL(bc_msg_matrix) {
-  //          return;
             int rbx = hw.modifyRegister();
             int rcx = hw.nextRegister(rbx);
             
@@ -125,15 +124,27 @@ namespace ealib {
             }
         }
 
+        
+        //! Detect matrix edge: 1=edge; 0=otherwise
+        DIGEVO_INSTRUCTION_DECL(on_edge_matrix) {
+            int rbx = hw.modifyRegister();
+            
+            int my_x = (p->position()).r[0];
+            int my_y = (p->position()).r[1];
+            int edge = 0;
+            
+            if (my_x == 0 ||
+                my_x == (get<SPATIAL_X>(ea) - 1) ||
+                my_y == 0 ||
+                my_y == (get<SPATIAL_Y>(ea) - 1) ) {
+                edge = 1;
+            }
+            
+            hw.setRegValue(rbx,edge);
+        }
+        
 
         
-        /*
-        //! Apaptosis (triggers death) instruction.
-        DIGEVO_INSTRUCTION_DECL(apoptosis) {
-            p->alive() = false;
-            ea.events().death(*p,ea);
-            put<APOPTOSIS_STATUS>(1, *p);
-        }*/
         
     } // instructions
 } // ea
