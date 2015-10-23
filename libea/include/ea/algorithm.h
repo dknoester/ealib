@@ -452,6 +452,17 @@ namespace ealib {
             return d;
         }
 
+        /*! Outputs the bits in n to the OutputIterator o.
+         */
+        template <typename OutputIterator>
+        void int2range(int n, OutputIterator o) {
+            for(int i=0; i<sizeof(n)*8; ++i) {
+                *o++ = n & 0x01;
+                n >>= 1;
+            }
+        }
+
+        
         //! Cast the range [f,l) of binary values to type T.
         template <typename T, typename ForwardIterator>
         T binary_range_cast(ForwardIterator f, ForwardIterator l) {
