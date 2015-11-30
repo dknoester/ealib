@@ -40,9 +40,9 @@ namespace ealib {
                 void operator()(Iterator i, EA& ea) {
                     typename Iterator::value_type v = ea.rng().uniform_integer(0, ea.isa().size());
                     
-                    if(v > 33) {
-                        *i = 0;
-                    }
+//                    if(v > 33) {
+//                        *i = 0;
+//                    }
                     
                     *i = v;
 //                    *i = ea.rng().uniform_integer(0, ea.isa().size());
