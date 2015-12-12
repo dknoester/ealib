@@ -72,6 +72,7 @@ namespace ealib {
             repr[79] = ea.isa()["output"]; //output
             repr[80] = ea.isa()["donate_res_to_group"]; // donate_res_to_group
             
+            repr[90] =  ea.isa()["rotate_cw"];
             repr[91] =  ea.isa()["h_search"]; // hsearch
             repr[92] =  ea.isa()["h_copy"]; // hcopy
             repr[93] =  ea.isa()["nop_c"]; // nopc
@@ -132,7 +133,7 @@ namespace ealib {
             repr[78] = ea.isa()["output"]; //output
             repr[79] = ea.isa()["donate_res_to_group"]; // donate_res_to_group
 
-            
+            repr[90] =  ea.isa()["rotate_cw"];
             repr[91] =  ea.isa()["h_search"]; // hsearch
             repr[92] =  ea.isa()["h_copy"]; // hcopy
             repr[93] =  ea.isa()["nop_c"]; // nopc
@@ -192,6 +193,7 @@ namespace ealib {
             repr[79] = ea.isa()["output"]; //output
             repr[80] = ea.isa()["donate_res_to_group"]; // donate_res_to_group
             
+            repr[90] =  ea.isa()["rotate_cw"];
             repr[91] =  ea.isa()["h_search"]; // hsearch
             repr[92] =  ea.isa()["h_copy"]; // hcopy
             repr[93] =  ea.isa()["nop_c"]; // nopc
@@ -249,7 +251,8 @@ namespace ealib {
             repr[79] = ea.isa()["nand"]; // nand
             repr[80] = ea.isa()["output"]; //output
             repr[81] = ea.isa()["donate_res_to_group"]; // donate_res_to_group
-                        
+            
+            repr[90] =  ea.isa()["rotate_cw"];
             repr[91] =  ea.isa()["h_search"]; // hsearch
             repr[92] =  ea.isa()["h_copy"]; // hcopy
             repr[93] =  ea.isa()["nop_c"]; // nopc
@@ -308,6 +311,7 @@ namespace ealib {
             repr[78] = ea.isa()["output"]; //output
             repr[79] = ea.isa()["donate_res_to_group"]; // donate_res_to_group
             
+            repr[90] =  ea.isa()["rotate_cw"];
             repr[91] =  ea.isa()["h_search"]; // hsearch
             repr[92] =  ea.isa()["h_copy"]; // hcopy
             repr[93] =  ea.isa()["nop_c"]; // nopc
@@ -366,6 +370,7 @@ namespace ealib {
             repr[80] = ea.isa()["output"]; //output
             repr[81] = ea.isa()["donate_res_to_group"]; // donate_res_to_group
             
+            repr[90] =  ea.isa()["rotate_cw"];
             repr[91] =  ea.isa()["h_search"]; // hsearch
             repr[92] =  ea.isa()["h_copy"]; // hcopy
             repr[93] =  ea.isa()["nop_c"]; // nopc
