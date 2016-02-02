@@ -316,6 +316,27 @@ namespace ealib {
     , Lifecycle
     , Traits
     > {
+    public:
+        typedef evolutionary_algorithm
+        < indirect<circular_genome<int>, mkv::markov_network< >, translators::call_markov_network_translator>
+        , FitnessFunction
+        , mutation::operators::indel<mutation::operators::per_site<mutation::site::uniform_integer> >
+        , RecombinationOperator
+        , GenerationalModel
+        , ancestors::markov_network_ancestor
+        , StopCondition
+        , PopulationGenerator
+        , Lifecycle
+        , Traits
+        > parent;
+
+        //! Default constructor.
+        markov_network_evolution() {
+        }
+
+        //! Initializing constructor.
+        markov_network_evolution(const metadata& md) : parent(md) {
+        }
     };
     
 } // ealib
