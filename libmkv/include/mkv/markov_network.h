@@ -196,7 +196,7 @@ namespace mkv {
          \param f is any type that supports operator[] (e.g., RA iterator or sequence).
          */
         template <typename RandomAccess>
-        void update(RandomAccess f, std::size_t n=1) {
+        void update(RandomAccess f, std::size_t n=1, float epsilon=0) {
             for( ; n>0; --n) {
                 for(typename gate_vector_type::iterator i=_gates.begin(); i!=_gates.end(); ++i) {
                     // calculate the input to this gate
@@ -218,7 +218,13 @@ namespace mkv {
                     mkv::index_vector_type& outputs=(*i)->outputs;
                     for(std::size_t j=0; j<outputs.size(); ++j) {
                         state_type& t = _Tplus1(outputs[j]);
-                        t = _uf(t, ((y>>j) & 0x01));
+//                        t = _uf(t, ((y>>j) & 0x01));
+                        
+                        state_type b = ((y>>j) & 0x01);
+                        if(_rng.p(epsilon)) {
+                            b ^= 0x01;
+                        }
+                        t = _uf(t, b);
                     }
                 }
             }
@@ -227,8 +233,8 @@ namespace mkv {
         }
         
         //! Update this Markov network n times, assuming all inputs have been set.
-        void update(std::size_t n=1) {
-            update(_T.begin(), n);
+        void update(std::size_t n=1, float epsilon=0) {
+            update(_T.begin(), n, epsilon);
         }
         
     protected:

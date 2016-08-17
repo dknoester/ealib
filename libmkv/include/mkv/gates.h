@@ -28,6 +28,8 @@
 #include <ea/algorithm.h>
 #include <mkv/graph.h>
 
+
+
 namespace mkv {
     namespace bnu = boost::numeric::ublas;
     typedef bnu::vector<std::size_t> index_vector_type; //!< Index vector (logical vector).
@@ -109,8 +111,11 @@ namespace mkv {
             return p;
         }
         
+
+        
         //! Return the output of this gate based on input x.
         virtual int operator()(int x, RandomNumberGenerator& rng) {
+            
             return M[x];
         }
         
