@@ -132,6 +132,22 @@ namespace ealib {
             rotate(R);
         }
         
+        /*! Convenience method to rotate ccw by pi/2 radians. For math reasons, rather than using higher radians.
+         You need to call twice. */
+        void rotate_cardinal_ccw() {
+            static const double R[2][2] = {{0.707, -0.707}, {0.707, 0.707}};
+            rotate(R);
+            rotate(R);
+        }
+        
+        /*! Convenience method to rotate cw by pi/2 radians. For math reasons, rather than using higher radians.
+         You need to call twice. */
+        void rotate_cardinal_cw() {
+            static const double R[2][2] = {{0.707, 0.707}, {-0.707, 0.707}};
+            rotate(R);
+            rotate(R);
+        }
+
         //! Serialize this position.
 		template<class Archive>
         void serialize(Archive & ar, const unsigned int version) {
