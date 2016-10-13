@@ -80,6 +80,24 @@ namespace ealib {
             hw.pushLabelStack(Hardware::NOP_C);
         }
         
+        
+        //! Push nop-d onto the label stack
+        DIGEVO_INSTRUCTION_DECL(nop_d) {
+            hw.pushLabelStack(Hardware::NOP_D);
+        }
+        
+        
+        //! Push nop-e onto the label stack
+        DIGEVO_INSTRUCTION_DECL(nop_e) {
+            hw.pushLabelStack(Hardware::NOP_E);
+        }
+        
+        
+        //! Push nop-f onto the label stack
+        DIGEVO_INSTRUCTION_DECL(nop_f) {
+            hw.pushLabelStack(Hardware::NOP_F);
+        }
+        
         //! Spend a cycle doing nothing.
         DIGEVO_INSTRUCTION_DECL(nop_x) {
         }
@@ -591,6 +609,28 @@ namespace ealib {
             int jumpAmt = hw.getRegValue(rbx);
             hw.advanceHead(Hardware::IP, jumpAmt);
         }
+        
+        
+        
+        /*! Rotates the organism by ?bx? * pi/2.
+         to keep the math for headers working call it twice. */
+        DIGEVO_INSTRUCTION_DECL(rotate_cardinal) {
+            p->position().rotate(hw.getRegValue(hw.modifyRegister()) * M_PI/4);
+            p->position().rotate(hw.getRegValue(hw.modifyRegister()) * M_PI/4);
+
+        }
+        
+        
+        //! Rotates the organism clockwise by pi/2.
+        DIGEVO_INSTRUCTION_DECL(rotate_cardinal_cw) {
+            p->position().rotate_cardinal_cw();
+        }
+        
+        //! Rotates the organism counter-clockwise by pi/2.
+        DIGEVO_INSTRUCTION_DECL(rotate_cardinal_ccw) {
+            p->position().rotate_cardinal_ccw();
+        }
+        
         
     } // instructions
 

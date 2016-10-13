@@ -68,10 +68,13 @@ namespace ealib {
         const static int NOP_A = 0;
         const static int NOP_B = 1; 
         const static int NOP_C = 2;
+        const static int NOP_D = 3;
+        const static int NOP_E = 4;
+        const static int NOP_F = 5;
         const static int NOP_X = 3;
         
         const static int NUM_HEADS = 4;
-        const static int NUM_REGISTERS = 3;
+        const static int NUM_REGISTERS = 6;
         
         const static int IP = 0;
         const static int RH = 1;
@@ -81,6 +84,10 @@ namespace ealib {
         const static int AX = 0; 
         const static int BX = 1; 
         const static int CX = 2;
+        const static int DX = 3;
+        const static int EX = 4;
+        const static int FX = 5;
+        
         
         struct abstract_hardware_trace {
             //! Called immediately upon entry to execute().
