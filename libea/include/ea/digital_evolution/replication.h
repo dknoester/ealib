@@ -108,10 +108,10 @@ namespace ealib {
             std::pair<typename EA::neighborhood_iterator, typename EA::neighborhood_iterator> i = ea.env().neighborhood(*parent);
             for( ; i.first != i.second; ++i.first) {
                 if(!i.first->occupied()) {
-                    return std::make_pair(i.first, true);
+                    return std::make_pair(i.first.make_location_iterator(), true);
                 }
             }
-            return std::make_pair(i.second, false);
+            return std::make_pair(i.second.make_location_iterator(), false);
         }
     };
     
