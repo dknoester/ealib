@@ -21,7 +21,7 @@
 #define _EA_DIGITAL_EVOLUTION_ANCESTORS_SELFREP_NOT_ANCESTOR_H_
 
 #include <ea/digital_evolution.h>
-#include <ea/meta_data.h>
+#include <ea/metadata.h>
 
 
 namespace ealib {
@@ -29,8 +29,8 @@ namespace ealib {
      */
     struct selfrep_not_ancestor {
         template <typename EA>
-        typename EA::representation_type operator()(EA& ea) {
-            typename EA::representation_type repr;
+        typename EA::genome_type operator()(EA& ea) {
+            typename EA::genome_type repr;
             repr.resize(get<REPRESENTATION_SIZE>(ea));
             std::fill(repr.begin(), repr.end(), ea.isa()["nop_x"]);
             
