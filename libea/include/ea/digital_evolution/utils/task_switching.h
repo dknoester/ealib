@@ -301,7 +301,7 @@ struct task_profile_birth_event : birth_event<EA> {
     virtual void operator()(typename EA::individual_type& offspring, // individual offspring
                             typename EA::individual_type& parent, // individual parent
                             EA& ea) {
-         get<TASK_PROFILE>(parent,"") += "R";
+         get<TASK_PROFILE>(parent,"") += "+";
         
     }
 };
