@@ -283,6 +283,31 @@ struct ts_birth_event : birth_event<EA> {
 
 
 
+/*! An organism rotates to face its parent....
+ */
+template <typename EA>
+struct task_profile_birth_event : birth_event<EA> {
+    
+    //! Constructor.
+    task_profile_birth_event(EA& ea) : birth_event<EA>(ea) {
+    }
+    
+    //! Destructor.
+    virtual ~task_profile_birth_event() {
+    }
+    
+    /*! Called for every inheritance event. We are using the orientation of the first parent...
+     */
+    virtual void operator()(typename EA::individual_type& offspring, // individual offspring
+                            typename EA::individual_type& parent, // individual parent
+                            EA& ea) {
+         get<TASK_PROFILE>(parent,"") += "R";
+        
+    }
+};
+
+
+
 #endif
 
 
