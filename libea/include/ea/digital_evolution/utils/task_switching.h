@@ -51,6 +51,7 @@ LIBEA_MD_DECL(LAST_TASK, "ea.ts.last_task", std::string);
 LIBEA_MD_DECL(NUM_SWITCHES, "ea.ts.num_switches", int);
 LIBEA_MD_DECL(GERM_MUTATION_PER_SITE_P, "ea.ts.germ_mutation_per_site_p", double);
 LIBEA_MD_DECL(NUM_GROUP_REPLICATIONS, "ea.ts.num_group_replications", int);
+LIBEA_MD_DECL(TASK_PROFILE, "ea.ts.task_profile", std::string);
 
 
 LIBEA_MD_DECL(RES_INITIAL_AMOUNT, "ea.ts.res_initial_amount", double);
@@ -86,6 +87,38 @@ struct task_switching_cost : reaction_event<EA> {
         
     }
 };
+
+
+
+/*! Track an organism's task profile.
+ */
+
+template <typename EA>
+struct task_profile_tracking : reaction_event<EA> {
+    
+    task_profile_tracking(EA& ea) : reaction_event<EA>(ea) {
+    }
+    
+    virtual ~task_profile_tracking() { }
+    virtual void operator()(typename EA::individual_type& ind, // individual
+                            typename EA::task_library_type::task_ptr_type task, // task pointer
+                            double r, // amount of resource consumed
+                            EA& ea) {
+        
+        // task->name()
+        std::string t = task->name();
+        if (t == "not") { get<TASK_PROFILE>(ind,"") += "0"; }
+        else if (t == "nand") { get<TASK_PROFILE>(ind,"") += "1"; }
+        else if (t == "and") { get<TASK_PROFILE>(ind,"") += "2"; }
+        else if (t == "ornot") { get<TASK_PROFILE>(ind,"") += "3"; }
+        else if (t == "or") { get<TASK_PROFILE>(ind,"") += "4"; }
+        else if (t == "andnot") { get<TASK_PROFILE>(ind,"") += "5";  }
+        else if (t == "nor") { get<TASK_PROFILE>(ind,"") += "6"; }
+        else if (t == "xor") { get<TASK_PROFILE>(ind,"") += "7"; }
+        else if (t == "equals") { get<TASK_PROFILE>(ind,"") += "8"; }
+    }
+};
+
 
 
 /*! Prints information about the mean number of task-switches
