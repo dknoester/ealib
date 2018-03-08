@@ -41,6 +41,8 @@
 #include <ea/rng.h>
 #include <ea/expansion.h>
 
+#include <ea/analysis/archive.h>
+
 namespace ealib {
 
     //! Abstract base class allowing for a limited set of interactions with an EA.
@@ -154,6 +156,8 @@ namespace ealib {
                 analyze(ea);
             } else if(_vm.count("checkpoint")) {
                 continue_checkpoint(ea);
+            } else if (_vm.count("merge_checkpoint")) {
+                merge_and_continue_checkpoint(ea);
             } else {
                 run(ea);
             }
@@ -196,7 +200,8 @@ namespace ealib {
             ("config,c", po::value<string>(), "ealib configuration file")
             ("checkpoint,l", po::value<string>(), "load a checkpoint file")
             ("analyze", po::value<string>(), "analyze the results of this EA")
-            ("verbose", "output configuration options and per-update time and memory usage");
+            ("verbose", "output configuration options and per-update time and memory usage")
+            ("merge_checkpoint,mc", po::value<string>(), "load an archived population and a checkpoint file");
 
             po::options_description all_options;
             all_options.add(cmdline_only_options).add(_ea_options);
@@ -259,6 +264,26 @@ namespace ealib {
             ea.lifecycle().advance_all(ea);
         }
         
+        void merge_and_continue_checkpoint(ea_type& ea) {
+            // set the checkpoint
+            std::string checkname = _vm["merge_checkpoint"].template as<std::string>();
+            
+            load(ea, checkname);
+            
+            
+            typename EA::population_type input;
+            archive::load_if(get<ARCHIVE_INPUT>(ea), input, ea);
+            ea.population().swap(input);
+            ea.initialize(_md);
+            after_initialization(ea);
+            gather_events(ea);
+            if(_vm.count("verbose")) {
+                add_event<datafiles::runtime>(ea);
+            }
+            ea.lifecycle().advance_all(ea);
+        }
+        
+        
 		//! Run the EA.
 		void run(ea_type& ea) {
             ea.initialize(_md);
@@ -288,6 +313,13 @@ namespace ealib {
             std::string cpfile(_vm["checkpoint"].template as<std::string>());
             checkpoint::load(cpfile, ea, _md);
         }
+        
+        //! Load the EA from the checkpoint file of a specified name.
+        void load(ea_type& ea, std::string checkname) {
+            std::string cpfile(checkname);
+            checkpoint::load(cpfile, ea, _md);
+        }
+
         
         // This grants the following templated functions access to the internals
         // of the cmdline_interface... a little hackish, but it avoids macro/template

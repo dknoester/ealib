@@ -35,6 +35,8 @@ namespace ealib {
 	LIBEA_MD_DECL(ARCHIVE_INPUT, "ea.archive.input", std::string);
 	LIBEA_MD_DECL(ARCHIVE_OUTPUT, "ea.archive.output", std::string);
 	LIBEA_MD_DECL(ARCHIVE_N, "ea.archive.n", int);
+    LIBEA_MD_DECL(ARCHIVE_MARK, "ea.archive.mark", int);
+
 	
     namespace analysis {
 		
@@ -56,6 +58,31 @@ namespace ealib {
 			archive::save(get<ARCHIVE_OUTPUT>(ea), output, ea);
 		}
 		
+        /*! Archive a population from a checkpoint into an output archive.
+         
+         If the output archive does not exist, it is created.  If it does exist,
+         the population is added to it.
+         */
+        LIBEA_ANALYSIS_TOOL(archive_population) {
+            // load the output archive, it it exists:
+            typename EA::population_type output;
+            archive::load_if(get<ARCHIVE_OUTPUT>(ea), output, ea);
+            
+            int archive_mark = get<ARCHIVE_MARK>(ea,0);
+            // copy the population:
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                get<ARCHIVE_MARK>(*i,0) = archive_mark;
+                output.insert(output.end(), ea.copy_individual(*i));
+            }
+            
+            // save the output archive:
+            archive::save(get<ARCHIVE_OUTPUT>(ea), output, ea);
+        }
+        
+        
+
+        
+        
 		/*! Copy a named individual from one archive to another.
 		 
 		 If the input archive does not exist, an exception is thrown.  If the 
