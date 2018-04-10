@@ -124,6 +124,23 @@ namespace ealib {
         }
     };
     
+    /*! Function object that fills the metapopulation with subpopulations, which
+     are themselves then filled.
+     
+     Note: generate_ancestors uses metapopulation.make_individual to build the
+     subpopulations.  metapopulation.make_individual calls initialize on the
+     subpopulation.  it *does not* fill the subpopulation with individuals, so
+     we do that explicitly.
+     */
+    struct one_metapopulation {
+        template <typename EA>
+        void operator()(EA& ea) {
+            // construct the ancestral subpopulations:
+            generate_ancestors(1, ea);
+            typename EA::iterator i=ea.begin();
+            generate_initial_population(*i);
+        }
+    };
     
     namespace ancestors {
         
