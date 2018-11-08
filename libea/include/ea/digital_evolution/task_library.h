@@ -224,6 +224,40 @@ namespace ealib {
             }
         }
         
+        
+        void check_tasks_moderate_group_size(individual_type& org, EA& ea) {
+            typedef typename EA::individual_type::iobuffer_type iobuffer_type;
+            
+            iobuffer_type& inputs = org.inputs();
+            iobuffer_type& outputs = org.outputs();
+            
+            if((inputs.size() >= 2) && (!outputs.empty())) {
+                for(typename tasklist_type::iterator i=_tasklist.begin(); i!=_tasklist.end(); ++i) {
+                    abstract_task_type& task=(**i);
+                    if(task.check(inputs[0], inputs[1], outputs[0])) {
+                        // ok, the *task* was performed.
+                        ea.events().task(org, *i, ea);
+                        
+                        if(task.reaction_occurs(org,ea)) {
+                            // if the reaction occurs, consume resources:
+                            double r = task.resource()->consume(org);
+                            double mod_r = r / ea.size();
+                            // giving back extra resources
+                            task.resource()->contribute(r-mod_r);
+                            org.phenotype()[task.name()] += mod_r;
+                            ea.events().reaction(org, *i, mod_r, ea);
+                        } else {
+                            // if the reaction did not occur, let's still update the
+                            // phenotype to indicate that the task was performed:
+                            org.phenotype()[task.name()] += 0.0;
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        
     protected:
         tasklist_type _tasklist; //!< Active tasks.
         

@@ -64,7 +64,7 @@ namespace ealib {
         
         template <typename T, typename U>
         T copysign(T x, U y) {
-            return abs(x) * sign(y);
+            return std::abs(x) * sign(y);
         }
         
         template <typename Container, typename ForwardIterator, typename OutputIterator>
