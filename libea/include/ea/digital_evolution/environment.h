@@ -106,7 +106,7 @@ namespace ealib {
             // round "up" (really, away from zero), preserve sign:
             h[0] = algorithm::copysign(static_cast<int>(fabs(x) + 0.5), x);
             h[1] = algorithm::copysign(static_cast<int>(fabs(y) + 0.5), y);
-            assert((fabs(h[0]) + fabs(h[1])) > 0);
+            assert((std::abs(h[0]) + fabs(h[1])) > 0);
             assert(fabs(h[0]) <= 1);
             assert(fabs(h[1]) <= 1);
         }
