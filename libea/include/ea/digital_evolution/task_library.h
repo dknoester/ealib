@@ -224,8 +224,10 @@ namespace ealib {
             }
         }
         
-        
-        void check_tasks_moderate_group_size(individual_type& org, EA& ea) {
+        LIBEA_MD_DECL(RESOURCE_GROUP_SIZE_THRESH, "ea.resource.group_size_thresh", int);
+        LIBEA_MD_DECL(RESOURCE_FRACTION, "ea.resource.fraction", int);
+
+        void check_tasks_moderate_amount(individual_type& org, EA& ea) {
             typedef typename EA::individual_type::iobuffer_type iobuffer_type;
             
             iobuffer_type& inputs = org.inputs();
@@ -241,9 +243,14 @@ namespace ealib {
                         if(task.reaction_occurs(org,ea)) {
                             // if the reaction occurs, consume resources:
                             double r = task.resource()->consume(org);
-                            double mod_r = r / ea.size();
-                            // giving back extra resources
-                            task.resource()->contribute(r-mod_r);
+                            double mod_r = r;
+                            
+                            if (ea.size() > get<RESOURCE_GROUP_SIZE_THRESH>(ea, ea.size())) {
+                                mod_r *= get<RESOURCE_FRACTION>(ea,1);
+                                // giving back extra resources
+                                task.resource()->contribute(r-mod_r);
+                            }
+                            
                             org.phenotype()[task.name()] += mod_r;
                             ea.events().reaction(org, *i, mod_r, ea);
                         } else {
