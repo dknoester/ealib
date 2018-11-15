@@ -26,6 +26,9 @@
 #include <ea/metadata.h>
 #include <ea/digital_evolution/events.h>
 
+LIBEA_MD_DECL(RESOURCE_GROUP_SIZE_THRESH, "ea.resource.group_size_thresh", int);
+LIBEA_MD_DECL(RESOURCE_FRACTION, "ea.resource.fraction", int);
+
 namespace ealib {
     
     /*! Abstract base class for all task types.
@@ -224,8 +227,7 @@ namespace ealib {
             }
         }
         
-        LIBEA_MD_DECL(RESOURCE_GROUP_SIZE_THRESH, "ea.resource.group_size_thresh", int);
-        LIBEA_MD_DECL(RESOURCE_FRACTION, "ea.resource.fraction", int);
+
 
         void check_tasks_moderate_amount(individual_type& org, EA& ea) {
             typedef typename EA::individual_type::iobuffer_type iobuffer_type;
