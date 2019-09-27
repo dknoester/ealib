@@ -1,6 +1,162 @@
-** These instructions are current as of 7/22/2014 **
+# Installing EALib
 
-There are Three different sets of instructions for installing Boost here: HPCC (quick way), HPCC (self-built), and OS X (xcode version 5.1.1, OS X 10.9.4).
+**These instructions are current as of 9/26/2019**
+
+## Max OS X
+
+### Prerequisites
+
+1. These instructions are for XCode 11.0, Boost 1.71.0, and have been verified on Max OS X 10.14.6.  Other versions may work, YMMV.
+1. These instructions install Boost to /usr/local.  If you don't install Boost there, you'll have trouble with XCode.  
+1. Make sure that /usr/local/bin is on your path.
+1. Note that these instructions do not install all of Boost; some libraries are left out because we don't need them.
+
+### Step 1: XCode
+
+Install XCode from the AppStore.
+
+Verify that the command-line tools are installed:
+```bash
+   <terminal>% xcode-select --install
+   xcode-select: error: command line tools are already installed, use "Software Update" to install updates
+```
+
+Verify that clang is installed:
+```bash
+<terminal>% clang --version
+Apple clang version 11.0.0 (clang-1100.0.20.17)
+Target: x86_64-apple-darwin18.7.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+```
+
+### Step 2: Boost
+
+Download [Boost 1.71.0](https://www.boost.org/users/download) to a temporary directory (let's call it "tmp"):
+```bash
+    <terminal>:tmp% tar -xzf boost_1_71_0.tar.gz
+    <terminal>:tmp% cd boost_1_71_0
+```
+
+Build b2 (which is Boost's equivalent of "autoconf+make"):
+```bash
+<terminal>:boost_1_71_0% cd tools/build
+<terminal>:build% ./bootstrap.sh --with-toolset=clang
+<terminal>:build% sudo ./b2 install --toolset=clang
+```
+
+Copy boost.jam:
+```bash
+<terminal>:build% sudo cp src/contrib/boost.jam /usr/local/share/boost-build/src/tools
+```
+
+Export BOOST_BUILD_PATH to your environment.  Assuming you use bash, put this in your \~/.bashrc file:
+```bash
+export BOOST_BUILD_PATH=/usr/local/share/boost-build
+```
+
+Now you're ready to build Boost.  Go up to the boost_1_71_0 directory, and:
+```bash
+<terminal>:boost_1_71_0% ./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer --without-icu
+<terminal>:boost_1_71_0% ./b2
+```
+
+**STOP.**  Look at the "Performing configuration checks" output (scroll back, it was the first thing printed).  Make sure that zlib is "yes."  If not, go install it (e.g., from HomeBrew).  Delete the bin.v2 directory and go back to the bootstrap step above.  Once zlib is "yes":
+```bash
+<terminal>:boost_1_71_0% sudo ./b2 install
+```
+
+Copy the below into ```/usr/local/share/boost-build/site-config.jam``` (you'll need to sudo):
+```
+    using clang ;
+    import boost ;
+    boost.use-project ;
+    project site-config ;
+    lib z ;
+```
+
+That's it.  You should have a bunch of "libboost"-prefixed files in ```/usr/local/lib``` now, and ```/usr/local/include/boost``` should be present and populated.
+
+## Step 3: Install EALib
+
+Clone EALib to a new directory (this won't be temporary):
+
+```bash
+    <terminal>:src% git clone https://github.com/dknoester/ealib.git ealib
+```    
+
+Last step, we just need to make sure that the Mac OS deployment target is correct:
+
+1. Open ealib.xcodeproj
+1. In project viewer, click the ealib project (top of list, in blue).
+1. In the file-viewer pane (middle) click the ealib project (top), then the "Info" tab, make sure that the deployment target is set to the version of Mac OS you're using.
+    
+    
+## (Bonus) Step 4: Install Avida4
+
+**After** you've installed Boost & EALib, clone the Avida4 project into the directory along-side EALib:
+
+```bash
+<terminal>:src% git clone https://github.com/dknoester/avida4.git avida4
+<terminal>:src% ls
+```bash
+avida4 ealib
+```
+
+Build Avida4:
+```bash
+<terminal>:src% cd avida4
+<terminal>:avida4% b2
+...found 192 targets...
+...updating 10 targets...
+clang-darwin.compile.c++ ../ealib/libea/bin/clang-darwin-11.0/debug/link-static/src/expansion.o
+clang-darwin.compile.c++ ../ealib/libea/bin/clang-darwin-11.0/debug/link-static/src/main.o
+clang-darwin.compile.c++ ../ealib/libea/bin/clang-darwin-11.0/debug/link-static/src/cmdline_interface.o
+clang-darwin.archive ../ealib/libea/bin/clang-darwin-11.0/debug/link-static/libea_runner.a
+clang-darwin.archive ../ealib/libea/bin/clang-darwin-11.0/debug/link-static/libea_cmdline.a
+clang-darwin.compile.c++ bin/clang-darwin-11.0/debug/link-static/src/logic9.o
+clang-darwin.link bin/clang-darwin-11.0/debug/link-static/avida-logic9
+common.copy /Users/toaster/bin/avida-logic9
+...updated 10 targets...
+```
+
+And test:
+```bash
+<terminal>:avida4% ./bin/clang-darwin-11.0/debug/link-static/avida-logic9 -c etc/logic9.cfg --verbose
+
+Active configuration options:
+    config=etc/logic9.cfg
+    ea.environment.x=60
+    ea.environment.y=60
+    ea.mutation.deletion.p=0.05
+    ea.mutation.insertion.p=0.05
+    ea.mutation.site.p=0.0075
+    ea.population.size=3600
+    ea.representation.size=100
+    ea.run.checkpoint_name=checkpoint.xml
+    ea.run.epochs=1
+    ea.run.updates=100
+    ea.scheduler.resource_slice=30
+    ea.scheduler.time_slice=30
+    ea.statistics.recording.period=10
+    verbose=
+
+update instantaneous_t average_t memory_usage
+0 0.0004 0.0004 3.8828
+1 0.0000 0.0002 3.8828
+2 0.0000 0.0001 3.8828
+3 0.0001 0.0001 3.8828
+...
+97 0.0008 0.0003 4.2695
+98 0.0008 0.0003 4.2695
+99 0.0007 0.0003 4.2695
+```
+
+That's it!
+
+## Previous (2015) instructions for HPCC
+
+Note: The below is severely outdated, and in need of updating.  Happy to accept pull requests.  A better way to do this is probably to containerize your project?  Not sure, but see here: https://wiki.hpcc.msu.edu/display/ITH/Singularity.
 
 **After** you've installed Boost, get a copy of the latest EALib and Avida4 sample project:
 
@@ -17,17 +173,6 @@ To make sure everything's working:
 A sample run (from avida4/):
 
     ./bin/clang-darwin-4.2.1/debug/link-static/avida-logic9 -c ./etc/logic9.cfg --verbose
-
-
-========
-MSU HPCC (QUICK WAY):
-========
-
-Put these:
-    export BOOST_BUILD_PATH=/mnt/home/dk/share/boost-build
-    export PATH=$PATH:/mnt/home/dk/bin
-
-... in your ~/.bashrc (or other shell startup script).  That should do it.
 
 
 ========
@@ -86,53 +231,3 @@ Build boost:
 That should be it...
 
 
-========
-OS X
-========
-
-These instructions are for XCode 11.0.  They install Boost to /usr/local.  Make sure that /usr/local/bin is on your path.  If you don't install Boost there, you'll have trouble with XCode.  Also, these instructions do not install all of Boost; some libraries are left out because we don't need them.
-
-Install XCode from the AppStore.
-
-Verify that the command-line tools are installed:
-    xcode-select --install
-
-Download Boost (this has been verified w/ Boost 1.71; use other versions at your own risk):
-    tar -xzf boost_1_71_0.tar.gz
-    cd boost_1_71_0
-
-Build bjam:
-    cd tools/build
-    ./bootstrap.sh --with-toolset=clang
-    sudo ./b2 install --toolset=clang
-
-Copy boost.jam:
-    sudo cp src/contrib/boost.jam /usr/local/share/boost-build/src/tools
-
-Put this in your ~/.bashrc:
-    export BOOST_BUILD_PATH=/usr/local/share/boost-build
-
-Build boost:
-    (back in boost_<<DIRNAME>>)
-    ./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer --without-icu
-    ./b2
-
-STOP.  Look at the "Performing configuration checks" output (scroll back, it was the first thing printed).  Make sure that zlib is "yes."  If not, go install it (e.g., from MacPorts or HomeBrew).  Delete the bin.v2 directory and go back to the bootstrap step above.  Then...
-
-    sudo ./b2 install
-
-Site config:
-    Copy the below into /usr/local/share/boost-build/site-config.jam (you'll need to sudo):
-
-    using clang ;
-    import boost ;
-    boost.use-project ;
-    project site-config ;
-    lib z ;
-
-Ensure that the Mac OS deployment target is correct:
-    Open ealib.xcodeproj
-    In project viewer, click ealib project (top).
-    Under ealib project, info tab, make sure that the deployment target is set to the version of Mac OS you're using.
-    
-    
