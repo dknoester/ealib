@@ -30,8 +30,6 @@ struct lifecycle : public default_lifecycle {
     //! Called after EA initialization.
     template <typename EA>
     void after_initialization(EA& ea) {
-        // for compatibility with emscripten, we're fully qualifying the names of
-        // some instructions.  for c++ only, feel free to drop them.
         using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
@@ -43,13 +41,13 @@ struct lifecycle : public default_lifecycle {
         append_isa<nand>(ea);
         append_isa<push>(ea);
         append_isa<pop>(ea);
-        append_isa<ealib::instructions::swap>(ea); // namespace clash with std; emscripten bug
+        append_isa<swap>(ea);
         append_isa<inc>(ea);
-        append_isa<ealib::instructions::dec>(ea); // ""
+        append_isa<dec>(ea);
         append_isa<tx_msg>(ea);
         append_isa<rx_msg>(ea);
         append_isa<bc_msg>(ea);
-        append_isa<ealib::instructions::rotate>(ea); // ""
+        append_isa<rotate>(ea);
         append_isa<rotate_cw>(ea);
         append_isa<rotate_ccw>(ea);
         append_isa<if_less>(ea);

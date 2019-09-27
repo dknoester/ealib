@@ -25,10 +25,11 @@ BOOST_AUTO_TEST_CASE(test_md) {
 	put<MUTATION_PER_SITE_P>(1.0,ea1);
 	
 	std::ostringstream out;
-	boost::archive::xml_oarchive oa(out);
-	oa << BOOST_SERIALIZATION_NVP(ea1);
-	
-	std::istringstream in(out.str());
+    { // archives have to go out-of-scope to flush contents: https://github.com/boostorg/serialization/issues/82
+        boost::archive::xml_oarchive oa(out);
+        oa << BOOST_SERIALIZATION_NVP(ea1);
+    }
+   	std::istringstream in(out.str());
 	boost::archive::xml_iarchive ia(in);
 	ia >> BOOST_SERIALIZATION_NVP(ea2);
 	

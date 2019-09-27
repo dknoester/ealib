@@ -20,6 +20,7 @@ lib libea_cmdline :
     /boost//system
     /boost//filesystem
     /boost//program_options
+    /boost//timer
     /site-config//z
     : : : 
     # usage-requirements:
@@ -30,6 +31,7 @@ lib libea_cmdline :
     <library>/boost//system
     <library>/boost//filesystem
     <library>/boost//program_options
+    <library>/boost//timer
     <library>/site-config//z
     ;
 

@@ -62,8 +62,6 @@
 		422B05C619641F9F00DA675B /* pole_balancing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 422B05C419641F9F00DA675B /* pole_balancing.cpp */; };
 		423CBE41157D0ECF0003A644 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF0157D0E450003A644 /* main.cpp */; };
 		423CBE63157D0FF50003A644 /* test_serialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF6157D0E450003A644 /* test_serialization.cpp */; };
-		423CBE66157D0FF50003A644 /* test_metadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF9157D0E450003A644 /* test_metadata.cpp */; };
-		423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDFB157D0E450003A644 /* test_rng.cpp */; };
 		423CBE75157D10C80003A644 /* libboost_unit_test_framework.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 423CBE6F157D10C80003A644 /* libboost_unit_test_framework.dylib */; };
 		424C7E371966CC5300059899 /* test_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4281FEDA16C45C840066610C /* test_graph.cpp */; };
 		4256FA751892BB36004AB7F9 /* all_ones.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4256FA611892BA14004AB7F9 /* all_ones.cpp */; };
@@ -103,6 +101,9 @@
 		42CF4A73196A208D00CBA20B /* test_neuroevolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CF4A71196A208D00CBA20B /* test_neuroevolution.cpp */; };
 		42CF4A74196A36B100CBA20B /* test_neurodevelopment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CF4A70196A208D00CBA20B /* test_neurodevelopment.cpp */; };
 		42D178B4193771020063A55B /* test_neural_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42D1789D193770940063A55B /* test_neural_network.cpp */; };
+		A6451A76233BE50100C0A07E /* test_metadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDF9157D0E450003A644 /* test_metadata.cpp */; };
+		A6451A77233BEA6100C0A07E /* test_rng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 423CBDFB157D0E450003A644 /* test_rng.cpp */; };
+		A6451A78233BEEF300C0A07E /* expansion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42248E741A1D3A7D0094DC89 /* expansion.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1520,15 +1521,16 @@
 		423CBC72157D0D440003A644 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Michigan State University";
 			};
 			buildConfigurationList = 423CBC75157D0D440003A644 /* Build configuration list for PBXProject "ealib" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 423CBC70157D0D440003A644;
 			productRefGroup = 423CBC7C157D0D440003A644 /* Products */;
@@ -1588,10 +1590,10 @@
 				42B55B751641C2C500F240C5 /* test_information.cpp in Sources */,
 				425D106B197DF2B00082C0BA /* test_lod.cpp in Sources */,
 				425D106E197DF2C20082C0BA /* test_lsystem.cpp in Sources */,
-				423CBE66157D0FF50003A644 /* test_metadata.cpp in Sources */,
+				A6451A76233BE50100C0A07E /* test_metadata.cpp in Sources */,
+				A6451A77233BEA6100C0A07E /* test_rng.cpp in Sources */,
 				425D106C197DF2B40082C0BA /* test_metapopulation.cpp in Sources */,
 				425D106D197DF2B90082C0BA /* test_qhfc.cpp in Sources */,
-				423CBE68157D0FF50003A644 /* test_rng.cpp in Sources */,
 				423CBE63157D0FF50003A644 /* test_serialization.cpp in Sources */,
 				42B55B731641C2C500F240C5 /* test_suite.cpp in Sources */,
 				425D106F197DF2C50082C0BA /* test_torus.cpp in Sources */,
@@ -1668,6 +1670,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				42B89ED21937AAB000435794 /* cmdline_interface.cpp in Sources */,
+				A6451A78233BEEF300C0A07E /* expansion.cpp in Sources */,
 				425D1062197D7F760082C0BA /* test_markov_network.cpp in Sources */,
 				425D1063197D7F790082C0BA /* test_markov_network_ea.cpp in Sources */,
 			);
@@ -1826,12 +1829,16 @@
 		422B05C119641F6E00DA675B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		422B05C219641F6E00DA675B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
@@ -1839,6 +1846,33 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 423CBC85157D0D910003A644 /* ealib.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
@@ -1847,12 +1881,39 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 423CBC85157D0D910003A644 /* ealib.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 			};
 			name = Release;
 		};
 		423CBDA1157D0E0B0003A644 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 			};
 			name = Debug;
@@ -1860,6 +1921,7 @@
 		423CBDA2157D0E0B0003A644 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 			};
 			name = Release;
@@ -1867,102 +1929,135 @@
 		423CBE5F157D0FCD0003A644 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		423CBE60157D0FCD0003A644 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FA731892BB02004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		4256FA741892BB02004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FA821892BBB2004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		4256FA831892BBB2004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FA8E1892BBBE004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		4256FA8F1892BBBE004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FA9A1892BBC5004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		4256FA9B1892BBC5004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FAA61892BBCD004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		4256FAA71892BBCD004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FAB21892BBD5004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		4256FAB31892BBD5004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FABE1892BBDC004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		4256FABF1892BBDC004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		4256FACE1892BC53004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1970,6 +2065,7 @@
 		4256FACF1892BC53004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -1977,6 +2073,7 @@
 		4256FAE01892BC7F004AB7F9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1984,6 +2081,7 @@
 		4256FAE11892BC7F004AB7F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -1991,18 +2089,23 @@
 		425D1078197DF45F0082C0BA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		425D1079197DF45F0082C0BA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		42841C8515AFB14100AB18BE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -2010,6 +2113,7 @@
 		42841C8615AFB14100AB18BE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -2017,48 +2121,64 @@
 		428B712518490E8F00E3BB4E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		428B712618490E8F00E3BB4E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		428B7202184F664D00E3BB4E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		428B7203184F664D00E3BB4E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		42CF4A6D196A204D00CBA20B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		42CF4A6E196A204D00CBA20B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};
 		42DF0682194530D100C9A364 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Debug;
 		};
 		42DF0683194530D100C9A364 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 			};
 			name = Release;
 		};

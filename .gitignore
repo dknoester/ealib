@@ -2,6 +2,8 @@
 *.slo
 *.lo
 *.o
+*.pyc
+*.egg-info
 
 # Compiled Dynamic libraries
 *.so
@@ -15,16 +17,21 @@
 
 # ignore tmp/build directories
 *.swp
+*.Rhistory
+*.Rcheck
 tmp
 bin
 dist
 DerivedData
+var
 
 # ignore os x / xcode metadata:
 .DS_Store
+.metadata
 xcuserdata
+xcshareddata
 **/*.xccheckout
 
 # ignore output from ealib:
-checkpoint-*
+checkpoint*
 *.dat

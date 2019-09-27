@@ -232,9 +232,9 @@ BOOST_AUTO_TEST_CASE(test_logic9_environment) {
     BOOST_CHECK(tor(x, y, 11));
     BOOST_CHECK(tandnot(x, y, 1));
     BOOST_CHECK(tandnot(x, y, 2));
-    BOOST_CHECK(tnor(x, y, 4294967284));
+    BOOST_CHECK(tnor(x, y, -12));
     BOOST_CHECK(txor(x, y, 3));
-    BOOST_CHECK(tequals(x, y, 4294967292));
+    BOOST_CHECK(tequals(x, y, -4));
 }
 
 

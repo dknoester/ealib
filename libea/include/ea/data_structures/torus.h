@@ -157,7 +157,7 @@ namespace ealib {
     public:
         typedef T value_type;
         typedef value_type& reference;
-        typedef const reference const_reference;
+        typedef const value_type& const_reference;
         typedef boost::numeric::ublas::matrix<value_type> storage_type;
         typedef typename storage_type::array_type::iterator iterator;
         

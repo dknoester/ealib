@@ -50,8 +50,10 @@ BOOST_AUTO_TEST_CASE(rng_serialization) {
 	default_rng_type rng1(1), rng2(2);
 
 	std::ostringstream out;
-	boost::archive::xml_oarchive oa(out);
-	oa << BOOST_SERIALIZATION_NVP(rng1);
+    { // archives have to go out-of-scope to flush contents: https://github.com/boostorg/serialization/issues/82
+        boost::archive::xml_oarchive oa(out);
+        oa << BOOST_SERIALIZATION_NVP(rng1);
+    }
 	
 	std::istringstream in(out.str());
 	boost::archive::xml_iarchive ia(in);

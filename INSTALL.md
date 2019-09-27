@@ -90,11 +90,16 @@ That should be it...
 OS X
 ========
 
-These instructions install Boost to /usr/local.  Make sure that /usr/local/bin is on your path.  If you don't install Boost there, you'll have trouble with XCode.  Also, these instructions do not install all of Boost; some libraries are left out due to trouble with the latest clang.
+These instructions are for XCode 11.0.  They install Boost to /usr/local.  Make sure that /usr/local/bin is on your path.  If you don't install Boost there, you'll have trouble with XCode.  Also, these instructions do not install all of Boost; some libraries are left out because we don't need them.
 
-Download boost: (current rls == 1.56): 
-    tar -xzf boost_<<FILENAME>>.tar.gz
-    cd boost_<<DIR NAME>>
+Install XCode from the AppStore.
+
+Verify that the command-line tools are installed:
+    xcode-select --install
+
+Download Boost (this has been verified w/ Boost 1.71; use other versions at your own risk):
+    tar -xzf boost_1_71_0.tar.gz
+    cd boost_1_71_0
 
 Build bjam:
     cd tools/build
@@ -112,12 +117,12 @@ Build boost:
     ./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer --without-icu
     ./b2
 
-STOP.  Look at the "Performing configuration checks" output.  Make sure that zlib is "yes."  If not, go install it (e.g., from MacPorts: zlib 1.2.8_0).  Delete the bin.v2 directory and go back to the bootstrap step above.  Then...
+STOP.  Look at the "Performing configuration checks" output (scroll back, it was the first thing printed).  Make sure that zlib is "yes."  If not, go install it (e.g., from MacPorts or HomeBrew).  Delete the bin.v2 directory and go back to the bootstrap step above.  Then...
 
     sudo ./b2 install
 
 Site config:
-    Copy the below into /usr/local/share/boost-build/site-config.jam:
+    Copy the below into /usr/local/share/boost-build/site-config.jam (you'll need to sudo):
 
     using clang ;
     import boost ;
@@ -125,3 +130,9 @@ Site config:
     project site-config ;
     lib z ;
 
+Ensure that the Mac OS deployment target is correct:
+    Open ealib.xcodeproj
+    In project viewer, click ealib project (top).
+    Under ealib project, info tab, make sure that the deployment target is set to the version of Mac OS you're using.
+    
+    
