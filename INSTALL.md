@@ -28,6 +28,7 @@ Apple clang version 11.0.0 (clang-1100.0.20.17)
 Target: x86_64-apple-darwin18.7.0
 Thread model: posix
 InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+<terminal>:ealib%
 ```
 
 ### Step 2: Boost
@@ -79,18 +80,53 @@ That's it.  You should have a bunch of "libboost"-prefixed files in ```/usr/loca
 
 ## Step 3: Install EALib
 
-Clone EALib to a new directory (this won't be temporary):
+**IMPORTANT: Open a new terminal for Steps 3 & 4 to pick up environment changes.**
+
+Clone EALib to a new directory, and verify it builds:
 
 ```bash
-    <terminal>:src% git clone https://github.com/dknoester/ealib.git ealib
-```    
+<terminal>:src% git clone https://github.com/dknoester/ealib.git ealib
+<terminal>:src% cd ealib
+<terminal>:ealib% b2
+...patience...
+...found 457 targets...
+...updating 47 targets...
+clang-darwin.compile.c++ bin/clang-darwin-11.0/debug/link-static/examples/all_ones.o
+clang-darwin.compile.c++ bin/clang-darwin-11.0/debug/link-static/examples/lod.o
+clang-darwin.compile.c++ bin/clang-darwin-11.0/debug/link-static/examples/pole_balancing.o
+clang-darwin.compile.c++ bin/clang-darwin-11.0/debug/link-static/examples/logic9.o
+...
+*** No errors detected
+clang-darwin.compile.c++ libea/bin/clang-darwin-11.0/debug/test/test_neurodevelopment.o
+clang-darwin.compile.c++ libea/bin/clang-darwin-11.0/debug/test/test_neuroevolution.o
+clang-darwin.link libea/bin/clang-darwin-11.0/debug/neural_network
+testing.unit-test libea/bin/clang-darwin-11.0/debug/neural_network.passed
+Running 4 test cases...
 
-Last step, we just need to make sure that the Mac OS deployment target is correct:
+*** No errors detected
+clang-darwin.compile.c++ libea/bin/clang-darwin-11.0/debug/test/test_markov_network_ea.o
+clang-darwin.link libea/bin/clang-darwin-11.0/debug/markov_network
+testing.unit-test libea/bin/clang-darwin-11.0/debug/markov_network.passed
+Running 4 test cases...
 
-1. Open ealib.xcodeproj
-1. In project viewer, click the ealib project (top of list, in blue).
-1. In the file-viewer pane (middle) click the ealib project (top), then the "Info" tab, make sure that the deployment target is set to the version of Mac OS you're using.
-    
+*** No errors detected
+...updated 47 targets...
+<terminal>:ealib%
+```
+
+There will be a couple warnings.  Happy to accept pull requests to fix them.
+
+Now let's verify that XCode works.  First, set the Mac OS deployment target:
+
+1. Open ealib/ealib.xcodeproj in XCode.
+1. In project navigator (folder icon, upper left), click the ealib project (top of list, in blue).
+1. In the target-viewer pane (middle) click the ealib project (top), then the "Info" tab, make sure that the deployment target is set to the version of Mac OS you're using.
+
+Finally, let's verify that it builds:
+1. Highlight the "all" target (upper left drop-down, right of the "stop" button)
+1. Command-B (Product -> Build)
+
+There should be lots of warnings, but no errors.    
     
 ## (Bonus) Step 4: Install Avida4
 
@@ -101,6 +137,7 @@ Last step, we just need to make sure that the Mac OS deployment target is correc
 <terminal>:src% ls
 ```bash
 avida4 ealib
+<terminal>:src%
 ```
 
 Build Avida4:
@@ -118,6 +155,7 @@ clang-darwin.compile.c++ bin/clang-darwin-11.0/debug/link-static/src/logic9.o
 clang-darwin.link bin/clang-darwin-11.0/debug/link-static/avida-logic9
 common.copy /Users/toaster/bin/avida-logic9
 ...updated 10 targets...
+<terminal>:ealib%
 ```
 
 And test:
@@ -150,7 +188,12 @@ update instantaneous_t average_t memory_usage
 97 0.0008 0.0003 4.2695
 98 0.0008 0.0003 4.2695
 99 0.0007 0.0003 4.2695
+<terminal>:avida4%
 ```
+
+For XCode, **first close the EALib project if you have it open!**  Then, open avida4/avida4.**xcworkspace** -- **NOT** the project!  The workspace brings in the EALib project as a dependency, which is also why it's important that avida4 and ealib repos live in the same directory as each other.
+
+You'll need to set the deployment target for Avida4 now (project navigator -> avida4 -> avida4 -> Info tab), and then build by selecting the "all (avida4 project)" project.  Again, there should be warnings but no errors.
 
 That's it!
 
