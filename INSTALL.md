@@ -6,14 +6,15 @@
 
 ### Prerequisites
 
-1. These instructions are for XCode 11.0, Boost 1.71.0, and have been verified on Max OS X 10.14.6.  Other versions may work, YMMV.
+1. These instructions are for XCode 11.0, Boost 1.71.0, and have been verified on Max OS X 10.14.6.  Other versions may work, but XCode MUST be version 11.0 to ensure that the project files are compatible.
 1. These instructions install Boost to /usr/local.  If you don't install Boost there, you'll have trouble with XCode.  
 1. Make sure that /usr/local/bin is on your path.
 1. Note that these instructions do not install all of Boost; some libraries are left out because we don't need them.
+1. If you've tried installing Boost before, you may run into trouble during build or configure steps.  Try to uninstall it, or at least unset the BOOST_BUILD_PATH environment variable.
 
 ### Step 1: XCode
 
-Install XCode from the AppStore.
+Install XCode aa from the AppStore.
 
 Verify that the command-line tools are installed:
 ```bash
@@ -51,11 +52,6 @@ Copy boost.jam:
 <terminal>:build% sudo cp src/contrib/boost.jam /usr/local/share/boost-build/src/tools
 ```
 
-Export BOOST_BUILD_PATH to your environment.  Assuming you use bash, put this in your \~/.bashrc file:
-```bash
-export BOOST_BUILD_PATH=/usr/local/share/boost-build
-```
-
 Now you're ready to build Boost.  Go up to the boost_1_71_0 directory, and:
 ```bash
 <terminal>:boost_1_71_0% ./bootstrap.sh --with-toolset=clang --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer --without-icu
@@ -67,6 +63,13 @@ Now you're ready to build Boost.  Go up to the boost_1_71_0 directory, and:
 <terminal>:boost_1_71_0% sudo ./b2 install
 ```
 
+You should now have a bunch of "libboost"-prefixed files in ```/usr/local/lib``` now and ```/usr/local/include/boost``` should be present and populated.
+
+Now we have to get you ready to build EALib:  Export BOOST_BUILD_PATH to your environment.  Assuming you use bash, put this in your \~/.bashrc file:
+```bash
+export BOOST_BUILD_PATH=/usr/local/share/boost-build
+```
+
 Copy the below into ```/usr/local/share/boost-build/site-config.jam``` (you'll need to sudo):
 ```
     using clang ;
@@ -76,7 +79,8 @@ Copy the below into ```/usr/local/share/boost-build/site-config.jam``` (you'll n
     lib z ;
 ```
 
-That's it.  You should have a bunch of "libboost"-prefixed files in ```/usr/local/lib``` now, and ```/usr/local/include/boost``` should be present and populated.
+That's it.
+
 
 ## Step 3: Install EALib
 
