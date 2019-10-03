@@ -1,8 +1,14 @@
 # Installing EALib
 
-**These instructions are current as of 9/26/2019**
+**These instructions are current as of 10/3/2019**
 
 ## Max OS X
+
+### Boost
+
+EALib relies on the Boost C++ libraries and the Boost.Build software building tool.  It does so for two big reasons: First, Boost has libraries that help out with lots of things that are super useful for evolutionary algorithms (serialization, random number generators, smart pointers, graphs, and linear algebra, to name a few).  Second, they go through great pains to make sure things are cross-platform, which helps when we want to develop locally & run things on a remote cluster.
+
+That said, Boost is considered hard to use.  The good news is that you won't usually need to mess with Boost after it's built - The instructions below install it to a system-wide location, and you won't usually need to touch it again.
 
 ### Prerequisites
 
@@ -14,7 +20,7 @@
 
 ### Step 1: XCode
 
-Install XCode aa from the AppStore.
+Install XCode 11.0 from the App Store.
 
 Verify that the command-line tools are installed:
 ```bash

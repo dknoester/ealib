@@ -514,27 +514,7 @@ namespace ealib {
                 }
             }
         }
-    
-        //! Broadcast a message.
-        DIGEVO_INSTRUCTION_DECL(bc_msg_check_task) {
-            int rbx = hw.modifyRegister();
-            int rcx = hw.nextRegister(rbx);
-
-            typedef typename EA::environment_type::neighborhood_iterator neighborhood_iterator;
-            std::pair<neighborhood_iterator,neighborhood_iterator> ni=ea.env().neighborhood(*p);
-            for(; ni.first!=ni.second; ++ni.first) {
-                typename EA::environment_type::location_type& l=*ni.first;
-                if(l.occupied()) {
-                    l.inhabitant()->hw().deposit_message(hw.getRegValue(rbx), hw.getRegValue(rcx));
-                }
-            }
-
-            p->outputs().push_front(hw.getRegValue(hw.modifyRegister()));
-            p->outputs().resize(1);
-            ea.tasklib().check_tasks(*p,ea);
-        }
-
-        
+            
         //! Broadcast a message.
         DIGEVO_INSTRUCTION_DECL(bc_msg_check_task) {
             int rbx = hw.modifyRegister();
@@ -553,7 +533,6 @@ namespace ealib {
             p->outputs().resize(1);
             ea.tasklib().check_tasks(*p,ea);
         }
-        
         
         //! Rotates the organism by ?bx? * pi/4.
         DIGEVO_INSTRUCTION_DECL(rotate) {

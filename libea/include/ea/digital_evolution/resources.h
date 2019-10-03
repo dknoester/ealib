@@ -85,6 +85,10 @@ namespace ealib {
             //! Returns the amount of consumed resource.
             virtual double consume(typename EA::individual_type& ind) { return 1.0; }
             
+            //! Adds to the amount of resources available.
+            virtual void contribute(double a) {
+            }
+
             //! Returns the current resource level.
             virtual double level(const position_type& pos) { return 1.0; }
         };
@@ -118,7 +122,6 @@ namespace ealib {
             virtual void contribute(double a) {
                 _level += a;
             }
-            
             
             //! Returns the current resource level.
             virtual double level(const position_type& pos) { return _level; }
@@ -184,6 +187,11 @@ namespace ealib {
                 return r;
             }
             
+            //! Adds to the amount of resources available.
+            virtual void contribute(double a) {
+                _level += a;
+            }
+
             //! Returns the current resource level.
             virtual double level(const position_type& pos) {
                 return _R(pos.r[0]+1, pos.r[1]+1);
