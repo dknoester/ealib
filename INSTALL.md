@@ -283,4 +283,65 @@ Build boost:
 
 That should be it...
 
+========
+MSU HPCC (UPDATED 11.20.2019): 
+========
+Make sure that your path includes ${HOME}/bin, e.g., put this:
+    export PATH=$PATH:${HOME}/bin
+... in your ~/.bashrc (or other shell startup script).
+
+Download boost (current rls == 1.71)
+cd boost_1_71_0
+
+Build b2 (which is Boost's equivalent of "autoconf+make"):
+```bash
+<terminal>:boost_1_71_0% cd tools/build
+<terminal>:build% ./bootstrap.sh --with-toolset=gcc
+<terminal>:build% ./b2 install --toolset=gcc --prefix=${HOME}
+```
+
+Copy boost.jam:
+```bash
+<terminal>:build% cp src/contrib/boost.jam ~/share/boost-build/src/tools
+```
+
+Now you're ready to build Boost.  Go up to the boost_1_71_0 directory, and:
+```bash
+<terminal>:boost_1_71_0% ./bootstrap.sh --with-toolset=gcc --with-libraries=filesystem,iostreams,program_options,regex,serialization,system,test,timer --without-icu --prefix=${HOME}
+<terminal>:boost_1_71_0% ./b2
+```
+
+**STOP.**  Look at the "Performing configuration checks" output (scroll back, it was the first thing printed).  Make sure that zlib is "yes."  If not, go install it.  Delete the bin.v2 directory and go back to the bootstrap step above.  Once zlib is "yes":
+```bash
+<terminal>:boost_1_71_0% ./b2 install
+```
+
+You should now have a bunch of "libboost"-prefixed files in ```~/lib``` now and ```~/include/boost``` should be present and populated.
+
+Now we have to get you ready to build EALib:  Export BOOST_BUILD_PATH to your environment.  Assuming you use bash, put this in your \~/.bashrc file:
+```bash
+export BOOST_BUILD_PATH=${HOME}/share/boost-build
+```
+
+Copy the below into ```~/share/boost-build/site-config.jam``` :
+```
+using gcc : : : <compileflags>-ftemplate-depth-255 ;
+import os ;
+local HOME = [ os.environ HOME ] ;
+local INC = $(HOME)/include ;
+local LIB = $(HOME)/lib ;
+local SYS = /usr/lib64 ;
+
+import boost ;
+using boost : 1.71 :
+    <include>$(INC)
+    <library>$(LIB)
+    <layout>system
+    ;
+boost.use-project 1.71 ;
+
+project site-config : requirements <include>$(INC) ;
+lib z : : <link>shared <name>z <search>$(SYS) ;
+
+That should be it...
 
