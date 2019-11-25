@@ -232,6 +232,12 @@ A sample run (from avida4/):
 MSU HPCC (ROLL YOUR OWN, AT YOUR OWN RISK, INSTALLS IN YOUR HOME DIR): 
 ========
 
+Boost may (or maynot work) with all module configurations. I made the following modifications to my own modules to get it to work: 
+module rm Boost
+module load gcc
+(Put these in your bashrc file if you decide to go this route.)
+
+
 Make sure that your path includes ${HOME}/bin, e.g., put this:
     export PATH=$PATH:${HOME}/bin
 ... in your ~/.bashrc (or other shell startup script).
@@ -345,4 +351,13 @@ lib z : : <link>shared <name>z <search>$(SYS) ;
 ```
 
 That should be it...
+
+To build your executables: 
+```
+b2 link=static
+```
+or for release mode: 
+```
+b2 link=static release
+```
 
