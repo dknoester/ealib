@@ -296,6 +296,33 @@ Make sure that your path includes ${HOME}/bin, e.g., put this:
     export PATH=$PATH:${HOME}/bin
 ... in your ~/.bashrc (or other shell startup script).
 
+Change your modules to use gcc 9.1.0. To make this work, I modified my .bashrc file to include: 
+``` 
+module rm Boost
+module rm GNU/6.4.0-2.28 
+module rm  OpenMPI/2.1.2 
+module rm imkl/2018.1.163
+module rm OpenBLAS/0.2.20
+module rm FFTW/3.3.7
+module rm ScaLAPACK/2.0.2-OpenBLAS-0.2.20
+module rm  Python/3.6.4
+module rm binutils/2.28
+module load GCCcore/9.1.0
+```
+This resulted in the following modules loaded: 
+```
+module list
+
+Currently Loaded Modules:
+  1) Java/1.8.0_152   3) powertools/1.2   5) GMP/6.1.2      7) GCCcore/9.1.0
+  2) MATLAB/2018a     4) bzip2/1.0.6      6) libffi/3.2.1   8) zlib/1.2.11
+
+Inactive Modules:
+  1) tbb/2018_U3    3) libreadline/7.0   5) SQLite/3.21.0
+  2) CMake/3.11.1   4) Tcl/8.6.8
+ ```
+ Other modules may work, or may not work. 
+
 Download boost (current rls == 1.71)
 cd boost_1_71_0
 
