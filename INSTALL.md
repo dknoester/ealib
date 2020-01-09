@@ -310,8 +310,8 @@ module rm binutils/2.28
 module load GCCcore/9.1.0
 ```
 This resulted in the following modules loaded: 
-```
-module list
+```bash
+<terminal>:module list
 
 Currently Loaded Modules:
   1) Java/1.8.0_152   3) powertools/1.2   5) GMP/6.1.2      7) GCCcore/9.1.0
